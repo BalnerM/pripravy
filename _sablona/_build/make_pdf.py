@@ -12,10 +12,7 @@ import sys
 import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build import ALL, PAGES  # noqa: E402
-
-ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "pdf"
+from build import ALL, SITES  # noqa: E402
 
 
 def find_chrome():
@@ -32,24 +29,28 @@ def find_chrome():
 
 def main():
     chrome = find_chrome()
-    OUT.mkdir(exist_ok=True)
-    names = [s for s, *_ in PAGES if s != "index"] + [ALL]
     errors = []
+    count = 0
     with tempfile.TemporaryDirectory() as profile:
-        for name in names:
-            dst = OUT / f"{name}.pdf"
-            dst.unlink(missing_ok=True)
-            cmd = [chrome, "--headless=new", "--disable-gpu", "--no-sandbox", "--no-pdf-header-footer",
-                   f"--user-data-dir={profile}", "--virtual-time-budget=20000",
-                   f"--print-to-pdf={dst}", (ROOT / f"{name}.html").as_uri() + "?pdf=1"]
-            subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=300)
-            if not dst.exists() or dst.stat().st_size < 20_000:
-                errors.append(name)
-                continue
-            print(f"  {dst.name}: {dst.stat().st_size // 1024} kB")
+        for site in SITES:  # každá jazyková verze má vlastní složku pdf/ (en/pdf/ …)
+            root, out = site["out"], site["out"] / "pdf"
+            out.mkdir(exist_ok=True)
+            for name in [s for s, *_ in site["pages"] if s != "index"] + [ALL]:
+                dst = out / f"{name}.pdf"
+                dst.unlink(missing_ok=True)
+                cmd = [chrome, "--headless=new", "--disable-gpu", "--no-sandbox", "--no-pdf-header-footer",
+                       f"--user-data-dir={profile}", "--virtual-time-budget=20000",
+                       f"--print-to-pdf={dst}", (root / f"{name}.html").as_uri() + "?pdf=1"]
+                subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=300)
+                rel = dst.relative_to(SITES[0]["out"]).as_posix()
+                if not dst.exists() or dst.stat().st_size < 20_000:
+                    errors.append(rel)
+                    continue
+                count += 1
+                print(f"  {rel}: {dst.stat().st_size // 1024} kB")
     if errors:
         sys.exit(f"PDF se nepodařilo vytvořit: {', '.join(errors)}")
-    print(f"PDF hotová: {len(names)} souborů v {OUT.name}/")
+    print(f"PDF hotová: {count} souborů")
 
 
 if __name__ == "__main__":

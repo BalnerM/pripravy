@@ -23,6 +23,9 @@ vygenerované `*.html` a `skripta_vse.html`; `pdf/` vzniká až v GitHub Actions
 ## Pravidla
 - **Komunikace s uživatelem česky.** **Jazyk skript** podle přání uživatele: výchozí čeština, na požádání angličtina
   (`LANG = "en"` v konfiguraci `build.py`; rámečky pak „Definition: …“ a texty v anglických nadpisech boxů).
+  **Obě verze najednou** (přepínač CZ/EN v liště): `ALT` v konfiguraci `build.py`, překlady v `_build/obsah_en/`
+  se stejnými soubory a id (build to kontroluje), grafy `make_figures.py --lang en` do `figures/en/`, texty ukázek
+  přes `i18n(cs, en)` v `app.js` – vzorem je `mlr/`. Angličtina jednoduchá, odborné pojmy zachovat.
 - **Python jen přes uv:** `uv run python …`, nové balíčky `uv add …`; žádné `pip install`. `build.py` a `make_pdf.py`
   potřebují jen standardní knihovnu (spouští se i obyčejným `python`).
 - **Repo je veřejné:** nikdy do něj nekopíruj ani necommituj slidy / PDF přednášek, skeny, zadání, osobní soubory

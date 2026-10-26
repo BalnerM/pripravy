@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decision trees and ensembles – MLR</title>
+<meta name="description" content="Bias, variance and noise, CART, bagging, random forest and AdaBoost.">
+<link rel="alternate" hreflang="cs" href="../06_stromy.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Contents">☰ Contents</button>
+  <a class="brand" href="index.html">MLR – exam notes<small>machine learning: principles, models and their parameters</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html" title="All study notes">←<span> All study notes</span></a>
+  <a class="iconbtn langbtn" href="../06_stromy.html" hreflang="cs" lang="cs" title="Česká verze">CZ</a>
+  <a class="iconbtn" href="pdf/06_stromy.pdf" download title="Download this page as PDF">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Dark mode</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigation">
+  <h4>Chapters</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Course map</span></a></li>
+    <li><a href="01_uvod.html"><span class="n">1</span><span>Introduction, branches of ML and optimization</span></a></li>
+    <li><a href="02_hodnoceni.html"><span class="n">2</span><span>Model evaluation and preprocessing</span></a></li>
+    <li><a href="03_redukce.html"><span class="n">3</span><span>Feature selection and dimensionality reduction</span></a></li>
+    <li><a href="04_linearni.html"><span class="n">4</span><span>Linear models, kernels and SVM</span></a></li>
+    <li><a href="05_vibecoding.html"><span class="n">5</span><span>Vibecoding: working with an AI agent</span></a></li>
+    <li><a href="06_stromy.html" class="active"><span class="n">6</span><span>Decision trees and ensembles</span></a></li>
+    <li><a href="07_neuronove_site.html"><span class="n">7</span><span>Artificial neural networks</span></a></li>
+    <li><a href="08_parametry.html"><span class="n">★</span><span>Cheat sheet: parameters and model comparison</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Glossary (definitions)</span></a></li>
+  </ol>
+  <h4>On this page</h4>
+  <ul class="toc">
+    <li><a href="#bias-variance">Bias, variance and noise</a></li>
+    <li><a href="#stromy">Decision trees</a></li>
+    <li><a href="#cart">CART</a></li>
+    <li><a href="#bagging">Ensembles and bagging</a></li>
+    <li><a href="#rf">Random forest</a></li>
+    <li><a href="#adaboost">Adaptive boosting (AdaBoost)</a></li>
+    <li><a href="#dalsi">Other tree algorithms and pruning</a></li>
+    <li><a href="#shrnuti-h">Summary</a></li>
+    <li><a href="#otazky">Exam questions</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – exam notes · Decision trees and ensembles – MLR · https://balnerm.github.io/pripravy/mlr/en/06_stromy.html</p>
+<p class="kicker">Lecture 6</p>
+<h1>Decision trees and ensembles</h1>
+<p class="lead">A sequence of yes/no questions is a model – and one that anyone can read. But a single tree is unstable: a small change in the data rewrites the whole tree. The chapter first splits the test error into <b>bias, variance and noise</b> (we can influence two of them), then shows how a tree is built (CART) and how to combine many trees into a stronger model: <b>bagging and random forest</b> reduce variance, <b>boosting</b> reduces bias.</p>
+
+<h2 id="bias-variance">Bias, variance and noise</h2>
+<div class="box definice" id="def-ocekavany-model"><div class="box-t">Definition: expected label and expected model</div>
+<p>The training set \(T = \{(\mathbf x_1, y_1), \dots, (\mathbf x_n, y_n)\}\) is a random sample from the distribution \(P(X, Y)\); the algorithm \(\mathcal A\) turns it into a model \(h_T = \mathcal A(T)\). The <b>expected label</b> \(\bar y(\mathbf x) = \mathbb E_{y\mid\mathbf x}[Y]\) is the best possible prediction at the point \(\mathbf x\). The <b>expected model</b> \(\bar h = \mathbb E_{T\sim P^n}[h_T]\) is the average of the models the algorithm would produce from all possible training sets.</p>
+<p class="jinak">\(\bar y\) is “the truth without noise”, \(\bar h\) is what our algorithm “can do on average”. If we had infinitely many training sets, we would average the models learned from them and get \(\bar h\).</p></div>
+<div class="box vzorec"><div class="box-t">Decomposition of the expected test error (MSE)</div>
+\[ \underbrace{\mathbb E_{\mathbf x, y, T}\big[(h_T(\mathbf x) - y)^2\big]}_{\text{expected test error}} = \underbrace{\mathbb E_{\mathbf x, T}\big[(h_T(\mathbf x) - \bar h(\mathbf x))^2\big]}_{\text{variance}} + \underbrace{\mathbb E_{\mathbf x}\big[(\bar h(\mathbf x) - \bar y(\mathbf x))^2\big]}_{\text{bias}^2} + \underbrace{\mathbb E_{\mathbf x, y}\big[(\bar y(\mathbf x) - y)^2\big]}_{\text{noise}} \]
+<table class="vars">
+<tr><td>variance</td><td>how much the model changes when we change the training data</td></tr>
+<tr><td>bias²</td><td>how far the average model is from the best possible prediction (systematic error of the algorithm)</td></tr>
+<tr><td>noise</td><td>irreducible error of the data – no algorithm and no amount of data removes it</td></tr>
+</table>
+<p>Derivation: “add and subtract” twice – first \(\bar h(\mathbf x)\), then \(\bar y(\mathbf x)\) – and expand \((a + b)^2 = a^2 + 2ab + b^2\). The cross terms drop out: the first because \(\mathbb E_T[h_T(\mathbf x)] = \bar h(\mathbf x)\), the second because \(\mathbb E_{y\mid\mathbf x}[y] = \bar y(\mathbf x)\).</p></div>
+<div class="box definice" id="def-bias-variance"><div class="box-t">Definition: bias–variance trade-off, underfitting and overfitting</div>
+<p>The <b>bias–variance trade-off</b> is the effect that increasing model complexity usually lowers the bias and raises the variance. <b>Underfitting</b> = the model is too simple, it has high bias (a large error already on the training data). <b>Overfitting</b> = the model is too complex, it has high variance (low training but high test error – it has learned the noise).</p>
+<p class="jinak">a simple model “misses the shape” but is stable; a complex model hits the shape but “jumps around” depending on which data it happened to get. The optimum is in the middle. Noise is the floor we cannot go below.</p></div>
+<h3 id="bv-vizualne">Bias and variance visually</h3>
+<figure class="wide"><div class="paper"><img src="../figures/en/fig06_terce.png" alt="Four targets for combinations of low and high bias and variance, and a plot of bias², variance and total error against model complexity" loading="lazy"></div>
+<figcaption><b>Fig. 6.1</b> Left: each target corresponds to one algorithm, each dot to one model trained on a <i>different</i> training set; the centre of the target is the best possible prediction \(\bar y(\mathbf x)\). Right: how the terms of the error decomposition change with model complexity (schematic, redrawn after slide 7 of the lecture; original source S. Fortmann-Roe).</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p><b>Targets.</b> <b>Bias</b> = how far the <i>centre of the cluster</i> of dots (the average model \(\bar h\)) is from the centre of the target – it is a systematic error that does not disappear even if we average infinitely many models. <b>Variance</b> = how <i>scattered</i> the dots are around their centre – how sensitively the model reacts to the data it happened to get. Low bias and low variance (top left) is the goal. High bias with low variance (bottom left) is a typical <b>underfitted</b> model – e.g. a line on curved data: almost the same every time, wrong in the same way every time. Low bias with high variance (top right) is a typical <b>overfitted</b> model – e.g. a deep tree: on average it hits the target, but every training set gives a completely different model. Noise is not in the picture – it would “blur” even the centre of the target itself.</p>
+<p><b>Curves.</b> With model complexity (tree depth, polynomial degree, small \(k\) in k-NN, large \(C\) in SVM…) <b>bias² decreases</b> (the model can express a more complex shape) and <b>variance increases</b> (the model has more freedom to adapt to noise). The total test error is their sum plus noise, so it has a “U” shape: on the left bias dominates (underfitting), on the right variance (overfitting). The minimum (“sweet spot”) is where the improvement in bias is balanced by the worsening of variance – we find it by validation. Noise is a horizontal floor below which no model can push the total error.</p></div>
+<figure><div class="paper"><img src="../figures/en/fig06_regimy.png" alt="Scheme of learning curves: training and test error against the number of samples with two marked regimes" loading="lazy"></div>
+<figcaption><b>Fig. 6.2</b> Learning curves: training and test error as a function of the size of the training set, and the acceptable error \(\varepsilon\) (schematic, redrawn after slide 8 of the lecture; original source Cornell CS4780, lecture note 12).</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>As the number of samples grows, <b>the training error goes up</b> (more points are harder to “memorize”) and <b>the test error goes down</b> (more data = a better estimate); both approach the same value. <b>Regime 1 – high variance</b> (left): the training error is below \(\varepsilon\), the test error above it, and there is a large gap between them; the gap is exactly the variance. The test curve is still falling, so <b>more data will help</b>, as will a simpler model or bagging. <b>Regime 2 – high bias</b> (right): both curves have already met, but <i>above</i> \(\varepsilon\). More data will not help – the curves converged in the wrong place; you need a more complex model, more features or boosting. At the exam: “first I look at the learning curves to know in which direction to change the model.”</p></div>
+<div class="tablewrap"><table>
+<tr><th></th><th>regime 1: high variance</th><th>regime 2: high bias</th></tr>
+<tr><td>how to recognize</td><td>training error ≪ test error; training &lt; \(\varepsilon\), test &gt; \(\varepsilon\)</td><td>training error &gt; \(\varepsilon\) and the test error is close to it</td></tr>
+<tr><td>what helps</td><td>more training data; a simpler model; <b>bagging</b></td><td>a more complex model; more features; <b>boosting</b></td></tr>
+</table></div>
+<p>The acceptable error \(\varepsilon\) is given by the application, not by the data. The two regimes need opposite treatment, so first find out which one you are in.</p>
+<h3 id="bv-data">The same on really computed data</h3>
+<figure class="wide"><div class="paper"><img src="../figures/en/fig06_bias_variance.png" alt="Error vs. tree complexity and learning curves in two regimes" loading="lazy"></div>
+<figcaption><b>Fig. 6.3</b> Regression trees on 1D data with noise \(\sigma^2 = 0.20\). Left: mean training and test error (30 training sets of 60 points) as a function of tree depth. Middle and right: learning curves – error as a function of the number of training samples for a tree of depth 8 and for a stump (depth 1); dashed: the acceptable error \(\varepsilon\).</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>The schemes in Fig. 6.1 and 6.2 also hold for a real computation. Left: the training error falls to zero with depth, the test error has a minimum (depth 3) and never drops below the noise 0.20. Middle (tree of depth 8): a large gap, the test error falls below \(\varepsilon\) with more data – regime 1, more data helped. Right (stump): both curves meet around 0.40 above \(\varepsilon\) – regime 2, even 1000 samples do not help.</p></div>
+
+<h2 id="stromy">Decision trees</h2>
+<div class="box definice" id="def-strom"><div class="box-t">Definition: decision tree and its parts</div>
+<p>A <b>decision tree</b> is a model that classifies a sample (or predicts a value) by going from the <b>root</b> to a <b>leaf</b>: each inner <b>node</b> asks one binary question about one feature (e.g. \(x_1 \gt \frac14\)), a <b>branch</b> is the answer and a <b>leaf</b> (terminal node) holds the resulting class or value. The <b>size</b> of a tree is the number of nodes (splits), the <b>depth</b> is the length of the longest path from the root to a leaf. A tree with a single node is a <b>stump</b>.</p>
+<p class="jinak">“twenty questions”: Does it have fur? Does it have four legs? … A prediction costs as many questions as the depth of the tree – it does not depend on the number of training samples.</p></div>
+<div class="schema narrow">
+<svg viewBox="0 0 560 250" role="img" aria-label="Decision tree with root n1, nodes n2 to n4 and leaves l1 to l4">
+  <g class="ln"><path d="M280 45 L120 100"/><path d="M280 45 L360 100"/><path d="M360 125 L250 175"/><path d="M360 125 L450 175"/><path d="M250 200 L200 225"/><path d="M250 200 L300 225"/><path d="M450 200 L410 225"/><path d="M450 200 L500 225"/></g>
+  <ellipse cx="280" cy="35" rx="40" ry="16" class="fl2"/><text x="280" y="40" text-anchor="middle">n₁</text><text x="345" y="35" class="t2">x₁ &gt; 1/4 ?</text><text x="225" y="22" class="t2">root</text>
+  <rect x="96" y="100" width="48" height="26" class="fl1"/><text x="120" y="118" text-anchor="middle">l₁</text><text x="160" y="70" class="t2">no</text>
+  <ellipse cx="360" cy="112" rx="40" ry="16" class="fl2"/><text x="360" y="117" text-anchor="middle">n₂</text><text x="410" y="112" class="t2">x₂ &gt; 1/8 ?</text><text x="330" y="78" class="t2">yes</text>
+  <ellipse cx="250" cy="188" rx="40" ry="16" class="fl2"/><text x="250" y="193" text-anchor="middle">n₃</text>
+  <ellipse cx="450" cy="188" rx="40" ry="16" class="fl2"/><text x="450" y="193" text-anchor="middle">n₄</text>
+  <rect x="176" y="222" width="48" height="24" class="fl1"/><text x="200" y="239" text-anchor="middle">l₃</text>
+  <rect x="276" y="222" width="48" height="24" class="fl1"/><text x="300" y="239" text-anchor="middle">l₄</text>
+  <rect x="386" y="222" width="48" height="24" class="fl1"/><text x="410" y="239" text-anchor="middle">l₂</text>
+  <rect x="476" y="222" width="48" height="24" class="fl1"/><text x="500" y="239" text-anchor="middle">l₃</text>
+  <text x="20" y="160" class="t2">node = question</text><text x="20" y="178" class="t2">leaf = answer</text><text x="20" y="196" class="t2">depth = 3</text>
+</svg></div>
+
+<h2 id="cart">CART</h2>
+<div class="box definice" id="def-cart"><div class="box-t">Definition: CART</div>
+<p><b>CART</b> (Classification And Regression Trees, Breiman et al. 1984) is an algorithm that builds a tree by recursive binary splitting: in each node it chooses one feature \(j\) and a threshold \(s\) that reduce the impurity (error) of the two resulting regions the most; it thus splits the feature space into axis-parallel rectangles. It is defined by three rules: the <b>splitting criterion</b>, the <b>stopping rule</b> and the <b>rule for the leaf value</b> (majority class or mean).</p>
+<p class="jinak">“find the question that splits the data most cleanly, and repeat it in each half”.</p></div>
+<div class="box vzorec"><div class="box-t">Splitting criterion (classification)</div>
+\[ E_k = \min_{j\in\{1,\dots,d\},\ s\in\mathbb R}\left[E_{R_k}(j, s) + E_{R_k^C}(j, s)\right],\qquad R_k(j, s) = \{\mathbf x_i: x_{ij} \gt s\},\quad R_k^C(j,s) = \{\mathbf x_i: x_{ij} \le s\},\qquad E_{R} = \sum_{i:\mathbf x_i\in R}I(y_i \ne \hat y_R) \]
+<table class="vars">
+<tr><td>\(j, s\)</td><td>feature and threshold – we minimize over both</td></tr>
+<tr><td>\(R_k, R_k^C\)</td><td>the two complementary regions created by splitting the \(k\)-th node</td></tr>
+<tr><td>\(\hat y_R\)</td><td>majority class of the region (the leaf value)</td></tr>
+<tr><td>\(I(\cdot)\)</td><td>indicator – counts misclassified points</td></tr>
+</table>
+<p>In practice Gini or entropy is used instead of the number of errors (see below). In regression the criterion is the sum of squares \(\sum_{i\in R}(y_i - \hat y_R)^2\) and the leaf value is the mean – the model is piecewise constant (“steps”).</p></div>
+<div class="box postup"><div class="box-t">Greedy tree growing</div>
+<ol>
+<li>For each region compute the best split – go through the features \(j\) and thresholds \(s\) (by brute force or using histograms).</li>
+<li>Take the best region (with the lowest error) and split it by that feature and threshold into two subregions.</li>
+<li>Repeat for each new subregion until a stopping rule applies.</li>
+</ol>
+<p>“Greedy”, because every split is locally the best and is never undone; searching for the globally best tree would be combinatorially impossible. In the lecture example (19 points) five splits reduce the number of errors 9 → 6 → 5 → 4 → 3 → 1 and the sum \(\sum_R n_RG_R\) from 9.47 to 1.60; the last leaf (4 : 1) stays impure because growth is stopped by <code>max_depth = 3</code>.</p></div>
+<div class="box definice" id="def-necistota"><div class="box-t">Definition: node impurity measures</div>
+<p>For the class proportions \(p_R(y)\) in a region \(R\): <b>error rate</b> \(1 - \max_yp_R(y)\); <b>entropy</b> \(H_R = -\sum_y p_R(y)\log p_R(y)\); <b>Gini impurity</b> \(G_R = \sum_y p_R(y)(1 - p_R(y)) = 1 - \sum_y p_R(y)^2\). All are zero for a pure node (a single class) and maximal when the classes are equally represented.</p>
+<p class="jinak">“how mixed the node is”. Gini and entropy are smooth and strictly concave, so they also reward a split that does not change the number of errors but makes one of the nodes purer – that is why they are preferred in practice.</p></div>
+<div class="box priklad"><div class="box-t">By hand (lecture, two classes, log₂)</div>
+<p>Leaf 4 : 1 (\(p = 0.8\)): 1 error (error rate 0.2); \(H = -0.8\log_20.8 - 0.2\log_20.2 = 0.72\) bits; \(G = 0.8\cdot0.2 + 0.2\cdot0.8 = 0.32\). Root 10 : 9: \(H = 1.00\) bit, \(G = 0.50\). Pure leaf: all three are zero.</p></div>
+<figure><div class="paper"><img src="../figures/en/fig06_impurity.png" alt="Error rate, entropy and Gini as a function of the class share" loading="lazy"></div>
+<figcaption><b>Fig. 6.4</b> Three impurity measures for two classes as a function of the share \(p\) of class 1; the leaf 4 : 1 is marked.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>All three measures are zero at the edges (pure node) and maximal at \(p = 0.5\). The error rate is piecewise linear – many splits get the same score. Entropy and Gini are curved, so they tell apart a “purer” split even with the same number of errors.</p></div>
+<h3>When to stop splitting</h3>
+<ul>
+<li>the region contains a single point; split only if the region has more than \(n_{\min}\) points;</li>
+<li>the region contains points of a single class;</li>
+<li>the maximum tree depth or the maximum number of splits (size) is reached.</li>
+</ul>
+<p>Without rules the tree grows until every leaf is pure – on the wine data (115 training, 63 test points) the training accuracy grows to 1.00, the test accuracy peaks at depth 2 (0.87) and ends at 0.83 (lecture). An alternative to stopping is <b>pruning</b>: let the tree grow fully and then cut off branches that do not improve the validation error.</p>
+<figure class="wide"><div class="paper"><img src="../figures/en/fig06_tree_depth.png" alt="Decision boundaries of a tree for depths 1, 3 and 10 and accuracy vs. depth" loading="lazy"></div>
+<figcaption><b>Fig. 6.5</b> Wine data (3 cultivars), two features: alcohol and flavanoids (our own choice, 115 training and 63 test samples as in the lecture). Background colour = decision of the tree.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>A tree splits the space into <b>axis-parallel rectangles</b>. Depth 1 (a stump) can make only one cut – two of the three classes (underfitting). Depth 3 captures the structure. Depth 10 makes narrow strips around individual points: training accuracy 1.00, test accuracy no longer grows. Training accuracy always grows with depth, test accuracy stops and can drop.</p></div>
+<div class="box parametry"><div class="box-t">Parameters: decision tree (CART)</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>what it means</th><th><span class="up">↑</span> when I increase it</th><th><span class="dn">↓</span> when I decrease it</th></tr>
+<tr><td><code>max_depth</code></td><td>maximum depth (number of questions on a path)</td><td>more complex tree, finer rectangles, training error → 0, high variance (overfitting)</td><td>simpler tree, higher bias; depth 1 = a stump (underfitting)</td></tr>
+<tr><td><code>min_samples_leaf</code></td><td>minimum number of samples in a leaf</td><td>larger, more “average” leaves, smoother model, less overfitting</td><td>leaves even with one point – the tree copies the noise</td></tr>
+<tr><td><code>min_samples_split</code> (\(n_{\min}\))</td><td>how many points a node must have to be split</td><td>earlier stop, smaller tree</td><td>even small nodes are split</td></tr>
+<tr><td><code>max_leaf_nodes</code> / number of splits</td><td>size of the tree</td><td>more complex model</td><td>simpler model</td></tr>
+<tr><td><code>criterion</code></td><td>Gini / entropy (classification), MSE (regression)</td><td colspan="2">Gini and entropy usually give very similar trees; the error rate is not used for growing</td></tr>
+<tr><td><code>ccp_alpha</code> (pruning)</td><td>price for each leaf during pruning</td><td>more aggressive pruning, smaller tree</td><td>the tree stays almost whole</td></tr>
+</table></div>
+<p class="volba">tune depth and leaf size in CV. A tree does not need feature scaling.</p></div>
+<div class="tablewrap"><table>
+<tr><th>pros of CART</th><th>cons of CART</th></tr>
+<tr><td>simple and intuitive, readable; handles numeric and categorical features; minimal preprocessing (does not depend on scaling – no normalization needed); handles missing values (surrogate splits); correlated features do not bother it</td><td><b>instability</b> – a small change in the data rewrites the whole tree (cure: bagging, random forest); <b>overfitting of deep trees</b> (cure: stopping rules, pruning, bagging, random forest)</td></tr>
+</table></div>
+
+<h2 id="bagging">Ensembles and bagging</h2>
+<div class="box definice" id="def-ansambl"><div class="box-t">Definition: ensemble method</div>
+<p>An <b>ensemble method</b> combines many base models (here trees) into one stronger model: <b>bagging</b> by a simple average, <b>boosting</b> (AdaBoost) by a weighted average; plus many variants (LPBoost, RUSBoost, RobustBoost, XGBoost…).</p>
+<p class="jinak">“the wisdom of the crowd”. Bagging attacks the <b>variance</b>, boosting the <b>bias</b>.</p></div>
+<div class="box definice" id="def-bootstrap"><div class="box-t">Definition: bootstrap sample and bagging</div>
+<p>A <b>bootstrap sample</b> is a random selection of \(n'\) samples from the training set <b>with replacement</b> (usually \(n' = n\)), so some samples appear in it several times and others not at all. <b>Bagging</b> (bootstrap aggregation) trains \(M\) models on \(M\) bootstrap samples and averages their predictions: \(h_{\text{bagg}}(\mathbf x) = \frac1M\sum_{m=1}^Mh_{T_m}(\mathbf x)\) (majority vote for classification).</p>
+<p class="jinak">each tree sees slightly different data and so makes slightly different mistakes; when averaging, the random errors of the individual trees cancel each other out. The bias stays (an average of similarly deep trees), the variance drops.</p></div>
+<div class="box vzorec"><div class="box-t">Variance of the average of M trees</div>
+\[ \operatorname{Var}[h_{\text{bagg}}(\mathbf x)] = \frac{\sigma_1^2}{M}\ \ \text{(independent trees)},\qquad \operatorname{Var}[h_{\text{bagg}}(\mathbf x)] = \rho\,\sigma_1^2 + \frac{1 - \rho}{M}\sigma_1^2\ \ \text{(correlated trees)} \]
+<table class="vars">
+<tr><td>\(\sigma_1^2\)</td><td>variance of the prediction of one tree (over training sets)</td></tr>
+<tr><td>\(M\)</td><td>number of trees in the average</td></tr>
+<tr><td>\(\rho\)</td><td>correlation between trees – the trees share the same data, so they are not independent</td></tr>
+</table>
+<p>As \(M\) grows the second term vanishes, but the first \(\rho\sigma_1^2\) stays – the variance does not drop below \(\rho\sigma_1^2\). In the lecture: going from one bootstrap tree to \(M = 50\) reduced the prediction variance from 0.00465 to 0.00175 – <b>2.7×, not 50×</b>. (Plugging in gives \(\rho \approx 0.36\).) That is why random forest additionally “decorrelates” the trees.</p></div>
+<figure class="wide"><div class="paper"><img src="../figures/en/fig06_bagging.png" alt="Predictions of one tree and of bagging over 20 training sets, and the theoretical variance as a function of M" loading="lazy"></div>
+<figcaption><b>Fig. 6.6</b> Left and middle: predictions of a regression tree (max_depth = 4) and of bagging (M = 50) trained on 20 different training sets of 45 points (thin blue lines). Right: variance of the average of \(M\) trees by the formula, for three correlations \(\rho\).</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>A single tree “jumps” depending on the data it got (mean prediction variance 0.165); the bagged predictions for the same 20 sets are much closer together (0.095) and smoother. The average over the sets (\(\approx\bar h\)) is similar for both – bagging does not change the bias. Right: the more correlated the trees are, the sooner the drop in variance stops.</p></div>
+<div data-demo="strom-bagging"></div>
+
+<h2 id="rf">Random forest</h2>
+<div class="box definice" id="def-random-forest"><div class="box-t">Definition: random forest</div>
+<p><b>Random forest</b> is bagging of decision trees with one extra source of randomness: at each node split the tree may only choose from a <b>random subset of features</b>. It therefore has two independent sources of randomness – which samples a tree sees (bootstrap) and which features each split may use.</p>
+<p class="jinak">if one feature were very strong, all bagged trees would mainly ask about it and would be similar to each other (high \(\rho\)). The random choice of features forces them to be diverse, the trees are less correlated, and so averaging pays off more.</p></div>
+<div class="box definice" id="def-oob"><div class="box-t">Definition: out-of-bag (OOB) samples</div>
+<p>The <b>out-of-bag samples</b> of a tree are the training samples that did not get into its bootstrap sample (the others are in-bag); they serve as validation data. The OOB score of a sample is computed only from the trees for which that sample is OOB.</p>
+<p class="jinak">a bootstrap of size \(n\) leaves out each sample with probability \((1 - 1/n)^n \to e^{-1} \approx 37\,\%\) (for \(n = 10\): 0.35; \(n = 100\): 0.366) – hence the rule “2/3 in-bag, 1/3 OOB”. This gives an estimate of the test error without cross-validation – useful with small data. But each sample is evaluated by only ≈ 1/3 of the trees, so the OOB score tends to be slightly pessimistic; do not mix OOB and validation scores when comparing models.</p></div>
+<figure><div class="paper"><img src="../figures/en/fig06_rf.png" alt="OOB error of a random forest as a function of the number of trees for three values of max_features" loading="lazy"></div>
+<figcaption><b>Fig. 6.7</b> Synthetic data (500 samples, 20 features, of which 6 informative and 4 redundant, 5 % noisy labels): OOB error as a function of the number of trees for three values of <code>max_features</code>.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>With the number of trees the error drops and then levels off – more trees do not overfit, they only cost more computation. <code>max_features</code> = all features is plain bagging (correlated trees); √d (≈ 4) gives the lowest error; 1 feature per split weakens the trees too much (each split is almost random, higher bias).</p></div>
+<div class="box parametry"><div class="box-t">Parameters: bagging and random forest</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>what it means</th><th><span class="up">↑</span> when I increase it</th><th><span class="dn">↓</span> when I decrease it</th></tr>
+<tr><td>number of trees \(M\) (<code>n_estimators</code>)</td><td>how many trees are averaged</td><td>variance drops down to the limit \(\rho\sigma^2\), the result is more stable; it <b>does not overfit</b>, only computation and memory grow</td><td>noisier prediction, higher variance</td></tr>
+<tr><td><code>max_features</code></td><td>how many random features each split may consider</td><td>stronger but more similar (correlated) trees; = all ⇒ bagging</td><td>more diverse, less correlated trees (variance ↓), but each one weaker (bias ↑); typically √d (classification), d/3 (regression)</td></tr>
+<tr><td>tree depth (<code>max_depth</code>, <code>min_samples_leaf</code>)</td><td>complexity of the individual trees</td><td>deep trees = low bias, high variance which averaging knocks down – the usual choice</td><td>shallow trees = higher bias, which bagging does not fix</td></tr>
+<tr><td>bootstrap size \(n'\)</td><td>how many samples each tree gets</td><td>trees more similar to each other</td><td>more diverse trees, each weaker</td></tr>
+</table></div>
+<p class="volba">enough trees (hundreds), tune <code>max_features</code> (√d as a start), let the trees be deep; the OOB score as cheap validation.</p></div>
+<div class="tablewrap"><table>
+<tr><th>pros of random forest</th><th>cons</th></tr>
+<tr><td>most of the advantages of CART (no scaling, mixed feature types); suitable for small data too (OOB); better performance than one tree, comparable to the best standard methods; test-error estimate without CV (OOB); reliable estimate of feature importance; easy to parallelize; stable, resists overfitting</td><td>less interpretable than a single tree; many deep trees = high computational and memory cost in training and prediction; can overfit on noisy and regression data</td></tr>
+</table></div>
+
+<h2 id="adaboost">Adaptive boosting (AdaBoost)</h2>
+<div class="box definice" id="def-adaboost"><div class="box-t">Definition: AdaBoost</div>
+<p><b>AdaBoost</b> is an ensemble method that trains weak classifiers \(h_m\) <b>one after another</b>, each on reweighted data (misclassified samples get a higher weight), and the result is their weighted vote: \(H(\mathbf x) = \operatorname{sign}\left(\sum_{m=1}^M\alpha_mh_m(\mathbf x)\right)\) for classes \(\pm1\).</p>
+<p class="jinak">each next “weak learner” focuses on what the previous ones got wrong, and a better learner has a stronger voice in the final vote. Many simple ones (e.g. stumps) make up a strong, complex classifier – boosting reduces bias.</p></div>
+<div class="box postup"><div class="box-t">AdaBoost algorithm (data \(\mathbf x_i\in\mathbb R^d\), \(y_i\in\{-1,+1\}\))</div>
+<ol>
+<li>Initialize the sample weights \(w_i^{(1)} = 1/n\).</li>
+<li>Find the weak classifier \(h_m\) with the smallest <b>weighted error</b> \(\epsilon_m = \sum_{i: h_m(\mathbf x_i)\ne y_i}w_i^{(m)}\).</li>
+<li>Compute its weight \(\alpha_m = \frac12\ln\frac{1 - \epsilon_m}{\epsilon_m}\).</li>
+<li>Reweight the samples: \(w_i^{(m+1)} = w_i^{(m)}e^{-\alpha_my_ih_m(\mathbf x_i)}/Z_m\), where \(Z_m = \sum_iw_i^{(m)}e^{-\alpha_my_ih_m(\mathbf x_i)}\) normalizes the weights to sum to 1.</li>
+<li>Repeat 2–4 for all \(M\) weak classifiers.</li>
+</ol>
+<p>Correctly classified samples (\(y_ih_m = +1\)) lose weight (\(e^{-\alpha}\)), wrong ones gain it (\(e^{+\alpha}\)). At \(\epsilon_m = 0.5\) (chance) \(\alpha_m = 0\) – the classifier has no vote; the smaller the error, the larger \(\alpha_m\).</p></div>
+<div class="box priklad"><div class="box-t">AdaBoost step by step (lecture: 10 samples, 3 stumps)</div>
+<ol>
+<li>All weights 0.10. The first stump misclassifies 3 samples: \(\epsilon_1 = 3\cdot0.10 = 0.30\), \(\alpha_1 = \frac12\ln\frac{0.70}{0.30} = 0.42\). (Own calculation: \(Z_1 = 0.917\); correct samples get weight 0.071, wrong ones 0.167.)</li>
+<li>The second stump on the reweighted data gets the three “hard” blue ones right and misclassifies three easy red ones: \(\epsilon_2 = 3\cdot0.07 = 0.21\), \(\alpha_2 = 0.65 \gt \alpha_1\).</li>
+<li>The third (horizontal) one misclassifies three of the four lightest samples (each exactly 1/22): \(\epsilon_3 = 0.14\), \(\alpha_3 = 0.92\).</li>
+<li>\(H(\mathbf x) = \operatorname{sign}(0.42h_1 + 0.65h_2 + 0.92h_3)\) – three axis-parallel stumps give a non-trivial region that classifies all 10 samples correctly.</li>
+</ol></div>
+<figure class="wide"><div class="paper"><img src="../figures/en/fig06_adaboost.png" alt="AdaBoost boundaries for 1, 3, 20 and 300 stumps" loading="lazy"></div>
+<figcaption><b>Fig. 6.8</b> AdaBoost with stumps on noisy “two moons” (200 training points); the titles give the accuracy on the training points and on 2000 new points.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>One stump = one cut (high bias). Each round adds a cut where mistakes were made so far – the boundary becomes more and more complex and the bias drops (test 0.82 → 0.90). At 300 rounds the training accuracy reaches 1.00 thanks to narrow “spikes” around individual points. <b>Label noise</b> (lecture): three mislabelled samples out of 80 start with 3.75 % of the total weight and after 40 rounds hold 37 %; the training error is 0 thanks to strips narrower than 0.01 around them – AdaBoost is sensitive to wrong labels.</p></div>
+<div class="box parametry"><div class="box-t">Parameters: AdaBoost</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>what it means</th><th><span class="up">↑</span> when I increase it</th><th><span class="dn">↓</span> when I decrease it</th></tr>
+<tr><td>number of rounds \(M\) (<code>n_estimators</code>)</td><td>how many weak classifiers are added one after another</td><td>bias ↓, more complex boundary; with label noise overfitting (the weight concentrates on the wrong samples)</td><td>simpler model, higher bias (underfitting)</td></tr>
+<tr><td>type / strength of the weak classifier</td><td>e.g. a stump (depth 1), a shallow tree</td><td>a stronger learner (deeper tree) = faster drop of the error, but easier overfitting</td><td>stumps = slow but safe progress</td></tr>
+<tr><td><code>learning_rate</code> (scikit-learn)</td><td>shrinking of the weights \(\alpha_m\) of each learner</td><td>faster learning, fewer rounds are enough</td><td>slower, more rounds needed, usually generalizes better</td></tr>
+</table></div>
+<p class="volba">few hyperparameters – mainly the number of rounds and the type of weak classifier; tune the number of rounds on validation data (early stopping).</p></div>
+<div class="tablewrap"><table>
+<tr><th>pros of AdaBoost</th><th>cons</th></tr>
+<tr><td>fast and simple; can combine any ML algorithms and even expert decisions; few hyperparameters (number of rounds, type of weak classifier); extensible to more classes (AdaBoost.M2)</td><td>tends to overfit; sensitive to label noise</td></tr>
+</table></div>
+<div class="tablewrap"><table>
+<tr><th></th><th>bagging / random forest</th><th>boosting (AdaBoost)</th></tr>
+<tr><td>what it reduces</td><td>variance</td><td>bias</td></tr>
+<tr><td>base models</td><td>deep, independently trained trees</td><td>weak (stumps), trained one after another</td></tr>
+<tr><td>combination</td><td>simple average / vote</td><td>weighted vote (\(\alpha_m\))</td></tr>
+<tr><td>parallelization</td><td>yes (the trees are independent)</td><td>no (each round depends on the previous one)</td></tr>
+<tr><td>label noise</td><td>robust</td><td>sensitive</td></tr>
+</table></div>
+
+<h2 id="dalsi">Other tree algorithms and pruning</h2>
+<div class="box definice" id="def-information-gain"><div class="box-t">Definition: information gain (ID3)</div>
+<p>The <b>information gain</b> of a feature is the difference between the entropy of the target before the split and the weighted (expected) entropy after splitting by the values of the feature. The <b>ID3</b> algorithm (Quinlan 1986) splits each node by the feature with the largest information gain; it works only with categorical features. <b>C4.5 / C5.0</b> is its modification that also handles numeric features.</p>
+<p class="jinak">“how many bits of uncertainty about the target I lose when I ask about this feature”. Procedure: total information → expected information for each feature → gain → split by the largest → repeat recursively.</p></div>
+<div class="box priklad"><div class="box-t">ID3 by hand: which question first? (lecture)</div>
+<div class="tablewrap"><table>
+<tr><th>animal</th><th>skin</th><th>legs</th><th>eyes</th><th>cute</th></tr>
+<tr><td>kitten</td><td>fur</td><td>4</td><td>2</td><td>yes</td></tr>
+<tr><td>snake</td><td>scales</td><td>0</td><td>2</td><td>no</td></tr>
+<tr><td>spider</td><td>chitin</td><td>8</td><td>8</td><td>no</td></tr>
+<tr><td>zebra</td><td>fur</td><td>4</td><td>2</td><td>no</td></tr>
+<tr><td>duck</td><td>feathers</td><td>2</td><td>2</td><td>no</td></tr>
+</table></div>
+<ol>
+<li>Target = animal (5 classes with one sample each): \(H = \log_25 = 2.32\) bits.</li>
+<li>Expected information after splitting by <b>legs</b>: {4: kitten, zebra}, {0}, {8}, {2} ⇒ \(\frac25\cdot1 + 0 + 0 + 0 = 0.40\) bits; by <b>eyes</b>: {2: four animals}, {8} ⇒ \(\frac45\cdot2 = 1.60\) bits.</li>
+<li>Gain: legs 1.92; skin 1.92; eyes 0.72; cute 0.72 bits.</li>
+<li>Split by legs or skin (a tie); then repeat in the branch that still mixes classes ({kitten, zebra}).</li>
+</ol></div>
+<p>Other algorithms: <b>CHAID</b> (Chi-squared Automatic Interaction Detection), <b>MARS</b> (Multivariate Adaptive Regression Splines). <b>Pruning</b>: first let the whole tree grow and then cut off branches that do not improve the validation error – an alternative to stopping rules.</p>
+
+<div class="box zkouska"><div class="box-t">How to say it at the exam</div>
+<p>“The expected test error splits into variance – how much the model changes with the training data –, bias² – how far the average model is from the best prediction – and irreducible noise. A large gap between training and test error means high variance: more data, a simpler model or bagging help. A high error even on training means bias: a more complex model, features or boosting help. CART builds a tree greedily – in each node it chooses the feature and threshold minimizing Gini or entropy – and stops by depth or leaf size. A tree is readable but unstable. Bagging averages trees from bootstrap samples and reduces variance, limited by the correlation of the trees; random forest decorrelates them by a random choice of features per split and offers an OOB error estimate. AdaBoost trains weak classifiers one after another on reweighted data and weights them by \(\alpha_m = \frac12\ln\frac{1-\epsilon_m}{\epsilon_m}\); it reduces bias but is sensitive to label noise.”</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Summary</h2>
+<p>Test error = variance + bias² + noise; model complexity balances bias and variance, and learning curves show which one dominates. A decision tree asks binary questions about single features and splits the space into axis-parallel rectangles; CART builds it greedily by impurity (Gini, entropy; squares for regression) and stops by depth, leaf size or purity, or prunes. A tree does not need scaling, but it is unstable and a deep one overfits. Bagging averages trees trained on bootstrap samples and reduces variance, but only down to \(\rho\sigma^2\); random forest adds a random subset of features per split, which decorrelates the trees, and the OOB samples (≈ 37 %) give an error estimate without CV. AdaBoost adds weak classifiers one after another on reweighted data with weights \(\alpha_m\), reduces bias but overfits on wrong labels. ID3 splits by information gain.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Error = variance + bias² + noise; you cannot remove the noise.</li>
+<li>Large train–test gap = variance (more data, simpler model, bagging); high error everywhere = bias (more complex model, boosting).</li>
+<li>CART: greedy splitting by Gini/entropy, axis-parallel cuts, no scaling.</li>
+<li>↑max_depth and ↓min_samples_leaf = more complex tree = overfitting.</li>
+<li>Bagging reduces variance only down to \(\rho\sigma^2\) – RF decorrelates the trees by feature sampling.</li>
+<li>More trees in RF do not overfit; OOB ≈ 1/3 of the data as free validation.</li>
+<li>AdaBoost: \(\alpha_m = \frac12\ln\frac{1-\epsilon_m}{\epsilon_m}\), reweights the mistakes; sensitive to label noise.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Exam questions</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Expand all answers</button><button class="iconbtn" data-qall="close">Collapse</button></div>
+<details class="q"><summary>Write the decomposition of the expected test error into bias, variance and noise. Which terms can we influence and how?</summary><div>
+<p>\(\mathbb E[(h_T(\mathbf x) - y)^2] = \mathbb E[(h_T - \bar h)^2] + \mathbb E[(\bar h - \bar y)^2] + \mathbb E[(\bar y - y)^2]\) = variance + bias² + noise. \(\bar h\) is the average model over training sets, \(\bar y\) the expected label. The cross terms drop out because \(\mathbb E_T[h_T] = \bar h\) and \(\mathbb E_{y|\mathbf x}[y] = \bar y\). We can influence the variance (more data, a simpler model, bagging, regularization) and the bias (a more complex model, more features, boosting); not the noise.</p></div></details>
+<details class="q"><summary>You see a large gap between training and test error. Which regime is it and what do you do? And when the training error is above ε?</summary><div>
+<p>A large gap (training &lt; ε &lt; test) = high variance: more training data, a simpler model (smaller depth, regularization), bagging. Training error above ε and test error close to it = high bias: more data will not help (the curves have already converged to a bad value); a more complex model, more features or boosting are needed.</p></div></details>
+<details class="q"><summary>Define node, leaf, branch, size and depth of a tree. What is a stump? Write the CART splitting criterion.</summary><div>
+<p>Node = a binary question about one feature; leaf = a terminal node with the answer; branch = the answer to a question; size = number of nodes (splits); depth = the longest root–leaf path; stump = a tree with a single node. CART minimizes, over the feature \(j\) and the threshold \(s\), the sum of the errors (impurities) of both resulting regions \(E_{R_k}(j,s) + E_{R_k^C}(j,s)\), \(R_k = \{x_{ij} \gt s\}\). It is greedy – it picks the locally best split and does not go back; a globally optimal tree would be combinatorially out of reach.</p></div></details>
+<details class="q"><summary>Compare error rate, entropy and Gini. Compute them for a leaf 4 : 1.</summary><div>
+<p>Error rate \(1 - \max p\), entropy \(-\sum p\log_2p\), Gini \(\sum p(1-p)\); all are 0 for a pure node, maximal when classes are equally represented. Leaf 4 : 1: error rate 0.2 (1 error), entropy 0.72 bits, Gini 0.32. Gini and entropy are smooth and concave, so they also reward a split that does not change the number of errors but creates a purer node – that is why they are preferred for growing.</p></div></details>
+<details class="q"><summary>How does a regression tree differ from a classification tree?</summary><div>
+<p>The splitting criterion is the sum of squared deviations from the mean of the region instead of impurity; the leaf value is the mean of \(y\) of the points in the leaf instead of the majority class; the resulting function is piecewise constant (“steps”).</p></div></details>
+<details class="q"><summary>What is a bootstrap? Why should the average of M trees reduce the variance M times, and why only 2–3× in practice?</summary><div>
+<p>Bootstrap = selecting \(n\) samples with replacement. The variance of the average of \(M\) independent variables is \(\sigma^2/M\). But trees from bootstraps of the same data are correlated (correlation \(\rho\)): \(\operatorname{Var} = \rho\sigma^2 + (1-\rho)\sigma^2/M\) – the first term does not decrease with \(M\). In the lecture \(M = 50\) reduced the variance only 2.7× (corresponds to \(\rho \approx 0.36\)).</p></div></details>
+<details class="q"><summary>What does random forest add to bagging and why does it help? What are OOB samples?</summary><div>
+<p>At each split only a random subset of features is considered (typically √d). The trees are more diverse and less correlated, so averaging reduces the variance more. The OOB samples of a tree are those that did not get into its bootstrap – \((1 - 1/n)^n \to e^{-1} \approx 37\,\%\); they serve as validation data and give an error estimate without CV. Each sample is evaluated by only ≈ 1/3 of the trees, so OOB is slightly pessimistic and should not be mixed with validation scores.</p></div></details>
+<details class="q"><summary>Write the AdaBoost prediction rule and the formula for αₘ. What does αₘ do at εₘ = 0.5? How are the weights updated and what is Zₘ for?</summary><div>
+<p>\(H(\mathbf x) = \operatorname{sign}(\sum_m\alpha_mh_m(\mathbf x))\), \(\alpha_m = \frac12\ln\frac{1-\epsilon_m}{\epsilon_m}\); at \(\epsilon_m = 0.5\) \(\alpha_m = 0\) – a random classifier has no vote, with a small error the weight is large. Weights: \(w_i \leftarrow w_ie^{-\alpha_my_ih_m(\mathbf x_i)}/Z_m\) – misclassified ones grow, correct ones shrink; \(Z_m\) is the normalization constant so that the weights sum to 1. Sensitivity to noise: a mislabelled sample is “always wrong”, its weight grows round after round and the next classifiers try to get it right at any cost.</p></div></details>
+<details class="q"><summary>Bagging vs. boosting: which error term does each reduce and which can be parallelized?</summary><div>
+<p>Bagging (and random forest) reduces variance by averaging independently trained (deep) trees – parallelizable. Boosting reduces bias by adding weak classifiers one after another, each focused on the mistakes of the previous ones – sequential, it cannot be parallelized.</p></div></details>
+
+<nav class="pager"><a class="prev" href="05_vibecoding.html"><small>← previous</small>Vibecoding: working with an AI agent</a><a class="next" href="07_neuronove_site.html"><small>next →</small>Artificial neural networks</a></nav>
+</main>
+</div>
+</body>
+</html>

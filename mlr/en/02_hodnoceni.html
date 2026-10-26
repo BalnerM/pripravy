@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model evaluation and preprocessing – MLR</title>
+<meta name="description" content="Training, validation and test data, metrics, ROC and AUC, imbalanced classes, cross-validation, preprocessing.">
+<link rel="alternate" hreflang="cs" href="../02_hodnoceni.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Contents">☰ Contents</button>
+  <a class="brand" href="index.html">MLR – exam notes<small>machine learning: principles, models and their parameters</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html" title="All study notes">←<span> All study notes</span></a>
+  <a class="iconbtn langbtn" href="../02_hodnoceni.html" hreflang="cs" lang="cs" title="Česká verze">CZ</a>
+  <a class="iconbtn" href="pdf/02_hodnoceni.pdf" download title="Download this page as PDF">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Dark mode</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigation">
+  <h4>Chapters</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Course map</span></a></li>
+    <li><a href="01_uvod.html"><span class="n">1</span><span>Introduction, branches of ML and optimization</span></a></li>
+    <li><a href="02_hodnoceni.html" class="active"><span class="n">2</span><span>Model evaluation and preprocessing</span></a></li>
+    <li><a href="03_redukce.html"><span class="n">3</span><span>Feature selection and dimensionality reduction</span></a></li>
+    <li><a href="04_linearni.html"><span class="n">4</span><span>Linear models, kernels and SVM</span></a></li>
+    <li><a href="05_vibecoding.html"><span class="n">5</span><span>Vibecoding: working with an AI agent</span></a></li>
+    <li><a href="06_stromy.html"><span class="n">6</span><span>Decision trees and ensembles</span></a></li>
+    <li><a href="07_neuronove_site.html"><span class="n">7</span><span>Artificial neural networks</span></a></li>
+    <li><a href="08_parametry.html"><span class="n">★</span><span>Cheat sheet: parameters and model comparison</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Glossary (definitions)</span></a></li>
+  </ol>
+  <h4>On this page</h4>
+  <ul class="toc">
+    <li><a href="#pipeline">From data to a tested model</a></li>
+    <li><a href="#metriky">Metrics</a></li>
+    <li><a href="#nevyvazenost">Imbalanced classes</a></li>
+    <li><a href="#validace">Validation approaches</a></li>
+    <li><a href="#predzpracovani">Preprocessing without data leakage</a></li>
+    <li><a href="#shrnuti-h">Summary</a></li>
+    <li><a href="#otazky">Exam questions</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – exam notes · Model evaluation and preprocessing – MLR · https://balnerm.github.io/pripravy/mlr/en/02_hodnoceni.html</p>
+<p class="kicker">Lecture 2</p>
+<h1>Model evaluation, metrics and preprocessing</h1>
+<p class="lead">Almost any model that is complex enough can push the training error close to zero. What we care about, though, is the number the model reaches on data it has <b>never seen</b>. This chapter shows how to split the data, how to measure performance (and what each metric hides), how to handle imbalanced classes and how to preprocess the data so that no information from the test set leaks into the evaluation.</p>
+
+<h2 id="pipeline">From data to a tested model</h2>
+<div class="box postup"><div class="box-t">Supervised learning pipeline</div>
+<ol>
+<li><b>Define the goal</b> – what do we want to predict?</li>
+<li><b>Split the data</b> – training / validation / test.</li>
+<li><b>Preprocess</b> – clean and prepare the features.</li>
+<li><b>Train and tune</b> – fit the models, adjust the settings.</li>
+<li><b>Evaluate</b> – performance on the validation data.</li>
+<li><b>Final test</b> – use the test data <b>once</b> for a realistic estimate.</li>
+</ol></div>
+<div class="box definice" id="def-train-val-test"><div class="box-t">Definition: training, validation and test set</div>
+<p>The <b>training set</b> is used to learn the model parameters. The <b>validation set</b> is used to tune hyperparameters, select features, compare models and watch for overfitting. The <b>test set</b> is kept aside until the end and used once – it gives an unbiased estimate of the performance on new data.</p>
+<p class="jinak">the training data are the textbook, the validation data a practice test on which you try different ways of learning, and the test data are the real exam that you must not see beforehand. Whoever tunes on the test “cheats” and gets an overly optimistic number.</p></div>
+<div class="box definice" id="def-riziko"><div class="box-t">Definition: population and empirical risk</div>
+<p>The <b>population (expected) risk</b> \(R(\theta) = \mathbb E_{(\mathbf x, y)\sim P}[L(f_\theta(\mathbf x), y)]\) is the expected loss of the model on future samples from the true (unknown) distribution \(P\). The <b>empirical risk</b> is the average loss on a finite sample of data, e.g. on the training set \(\hat R_{\text{train}}(\theta) = \frac{1}{n}\sum_{i} L(f_\theta(\mathbf x_i), y_i)\).</p>
+<p class="jinak">we train by minimizing the empirical risk on the training data, but we care about the population risk. We estimate it by the average loss on a held-out test set: \(\hat R_{\text{test}} \approx R(\theta)\). The whole model development is an optimization of <b>generalization</b>.</p></div>
+<div class="box intuice"><div class="box-t">Two optimization problems in supervised learning</div>
+<p><b>Inner problem – training</b> (SGD, backpropagation…): the parameters \(\theta\) are fitted to the training set, \(\theta^\ast = \arg\min_\theta \hat R_{\text{train}}(\theta)\). <b>Outer problem – model development</b>: the whole pipeline \(P\) (features, preprocessing, model, hyperparameters) is evaluated on the validation set, \(P^\ast = \arg\min_{P\in\mathcal H}\hat R_{\text{val}}(P)\). Test \(\hat R_{\text{test}}(P^\ast)\) – once, at the very end. Procedure: train → validate → tune → repeat; after choosing the final model, test once.</p></div>
+<div class="box definice" id="def-loss-metrika"><div class="box-t">Definition: loss function vs. metric</div>
+<p>The <b>loss function</b> is the number the optimizer minimizes in every step during training; it must be differentiable and is computed per sample (cross-entropy, MSE, hinge). A <b>metric</b> is the number we use to judge the result on validation/test data and that expresses what matters in the task (accuracy, F1, AUC, Dice, MAE).</p>
+<p class="jinak">accuracy is a step function of the model output (its gradient is zero almost everywhere), and F1 or AUC are computed from the whole set, not per sample – that is why we train on a smooth substitute and report the metric. Sometimes they are the same (MSE in regression). Without a loss function the computer would not know which model is better.</p></div>
+
+<h2 id="metriky">Metrics</h2>
+<div class="box intuice"><div class="box-t">One number never describes the whole model</div><p>For every metric ask: what does it measure – and what does it hide?</p></div>
+<h3>Accuracy and regression errors</h3>
+<div class="box vzorec"><div class="box-t">Basic metrics</div>
+\[ \text{Accuracy} = \frac{\#\{\hat y_i = y_i\}}{n} = \frac{TP + TN}{TP + TN + FP + FN},\qquad \text{MSE} = \frac1n\sum_i e_i^2,\qquad \text{MAE} = \frac1n\sum_i |e_i|,\qquad \text{RMSE} = \sqrt{\text{MSE}} \]
+<table class="vars">
+<tr><td>\(e_i = \hat y_i - y_i\)</td><td>error (residual) of the \(i\)-th prediction</td></tr>
+<tr><td>MSE</td><td>mean of squared errors = \(\frac1n\|\mathbf e\|_2^2\); punishes large errors much more</td></tr>
+<tr><td>MAE</td><td>mean of absolute errors = \(\frac1n\|\mathbf e\|_1\); more robust to outliers</td></tr>
+<tr><td>RMSE</td><td>square root of MSE – has the same units as \(y\)</td></tr>
+<tr><td>\(p\) in \(\frac1n\|\mathbf e\|_p^p\)</td><td>in general: \(p\) sets how expensive a large error is</td></tr>
+</table>
+<p>Error rate = 1 − accuracy.</p></div>
+<div class="box priklad"><div class="box-t">By hand (lecture)</div>
+<p>Classification: \(\mathbf y = [1, 0, 1, 2, 0]\), \(\hat{\mathbf y} = [1, 1, 1, 0, 0]\) ⇒ accuracy = 3/5 = 0.6.</p>
+<p>Regression: \(\mathbf y = [3,\ -0.5,\ 2,\ 7,\ 4.2]\), \(\hat{\mathbf y} = [2.5,\ 0,\ 2.1,\ 7.8,\ 3.5]\) ⇒ \(\mathbf e = [-0.5,\ 0.5,\ 0.1,\ 0.8,\ -0.7]\); MSE = 1.64/5 = 0.328; MAE = 2.6/5 = 0.52; RMSE = 0.573; \(R^2 = 0.946\).</p></div>
+<h3>Confusion matrix and the metrics from it</h3>
+<div class="box definice" id="def-matice-zamen"><div class="box-t">Definition: confusion matrix</div>
+<p>The <b>confusion matrix</b> is a table of counts that, for binary classification, cross-tabulates the true and the predicted class: <b>TP</b> (truly positive, predicted positive), <b>FN</b> (positive, predicted negative – type II error), <b>FP</b> (negative, predicted positive – type I error) and <b>TN</b> (negative, predicted negative).</p>
+<p class="jinak">an overview of exactly where the model makes mistakes. All common classification metrics are ratios of numbers from this table.</p></div>
+<div class="tablewrap"><table>
+<tr><th></th><th>predicted positive</th><th>predicted negative</th><th>row metric</th></tr>
+<tr><th>truly positive</th><td>TP</td><td>FN (type II error)</td><td>sensitivity = recall = TPR = TP/(TP+FN)</td></tr>
+<tr><th>truly negative</th><td>FP (type I error)</td><td>TN</td><td>specificity = TN/(TN+FP)</td></tr>
+<tr><th>column metric</th><td>precision (PPV) = TP/(TP+FP)</td><td>NPV = TN/(TN+FN)</td><td>accuracy = (TP+TN)/all</td></tr>
+</table></div>
+<div class="box definice" id="def-precision-recall"><div class="box-t">Definition: sensitivity (recall) and precision</div>
+<p><b>Sensitivity (recall, TPR)</b> is the share of truly positive samples that the model marked as positive: TP/(TP+FN). <b>Precision (PPV)</b> is the share of samples marked as positive that really are positive: TP/(TP+FP). <b>Specificity</b> is the share of truly negative samples marked as negative: TN/(TN+FP).</p>
+<p class="jinak">recall: “how many of the sick did I find?”; precision: “when I say sick, how often am I right?”; specificity: “how many healthy people did I leave alone?” None of them is enough alone – a model that says “positive” to everyone has sensitivity 1.</p></div>
+<div class="box definice" id="def-f1"><div class="box-t">Definition: F1 score (Dice)</div>
+<p>The <b>F1 score</b> is the harmonic mean of precision and sensitivity: \(F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision} + \text{recall}} = \frac{2TP}{2TP + FP + FN}\). It is identical to the Dice coefficient \(2|X\cap Y|/(|X| + |Y|)\) of the sets of predicted and true positives.</p>
+<p class="jinak">one number that is high only when the model both misses little and raises few false alarms. It does not depend on TN, so it is useful when there are few positive samples.</p></div>
+<div class="box priklad"><div class="box-t">By hand (lecture)</div>
+<p>10 samples: TP = 4, FP = 2, FN = 1, TN = 3 ⇒ precision 4/6 = 0.67; recall 4/5 = 0.80; \(F_1 = 8/11 = 0.73\) (accuracy 0.7). Model “always positive” (TP = 5, FP = 5): recall 1.0, but \(F_1 = 10/15 = 0.67\).</p></div>
+
+<h3>ROC curve, AUC and choosing the threshold</h3>
+<p>Most classifiers return a <b>score</b> (a measure of confidence) and only a <b>threshold</b> decides the class. What the score is: for logistic regression and networks the output of the sigmoid/softmax, for a random forest the share of trees voting for the class, for k-NN the share of the \(k\) neighbours, for SVM the signed distance from the hyperplane, for naive Bayes the posterior probability. Sometimes the threshold is part of the model (SVM).</p>
+<div class="box definice" id="def-roc"><div class="box-t">Definition: ROC curve</div>
+<p>The <b>ROC curve</b> (receiver operating characteristic) is the curve of points \((\text{FPR}, \text{TPR})\) that we get when we move the decision threshold step by step over all score values; \(\text{TPR} = TP/(TP+FN)\), \(\text{FPR} = FP/(FP+TN) = 1 - \text{specificity}\).</p>
+<p class="jinak">the whole classifier in one picture: every threshold is one point, choosing a threshold only picks a point on the curve. High threshold ⇒ almost nothing is positive, point (0, 0); low threshold ⇒ everything positive, (1, 1). A perfect classifier touches (0, 1), a random one lies on the diagonal.</p></div>
+<div class="box postup"><div class="box-t">Building the ROC curve</div>
+<ol><li>Compute the score \(s_i\) of all samples.</li><li>Sort the unique score values and use them as thresholds.</li><li>For each threshold binarize the predictions and compute TPR and FPR.</li><li>Plot the points (FPR, TPR) and connect them.</li></ol></div>
+<div class="box definice" id="def-auc"><div class="box-t">Definition: AUC (area under the ROC curve)</div>
+<p><b>ROC AUC</b> is the area under the ROC curve, \(\text{AUC} = \int_0^1 \text{TPR}\,d(\text{FPR})\). It equals the probability that a randomly chosen positive sample gets a higher score than a randomly chosen negative one: \(\text{AUC} = P(s(\mathbf x^+) \gt s(\mathbf x^-))\).</p>
+<p class="jinak">how well the model <b>ranks</b> positives above negatives, independent of the threshold. 0.5 = chance, 1 = perfect ranking. But AUC says nothing about whether the scores are good probabilities (calibration).</p></div>
+<figure class="wide"><div class="paper"><img src="../figures/en/fig02_roc.png" alt="Score distributions of two classes with a threshold and the matching ROC curve" loading="lazy"></div>
+<figcaption><b>Fig. 2.1</b> Left: scores of negative and positive samples and the threshold \(t = 1.2\); the coloured areas to the right of the threshold are FPR (blue) and TPR (orange). Right: ROC curve – each threshold is one point.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>Moving the threshold to the right lowers FPR (fewer false alarms) and TPR (more missed cases) – it is always a <b>trade-off</b>. The whole curve is one classifier; the shape of the curve (and AUC) depends on how much the score distributions of the two classes overlap. Better model = less overlap = curve closer to the top-left corner.</p></div>
+<div class="box priklad"><div class="box-t">Choosing the operating point (lecture, prevalence 5 %)</div>
+<p>The default threshold 0.5 on the probability is a habit, not a rule.</p>
+<ul>
+<li><b>Maximum accuracy</b> (FP and FN equally expensive): \(t = 2.54\), accuracy 0.956 – but it finds only 23 % of the positives.</li>
+<li><b>Youden index \(J = \text{TPR} - \text{FPR}\)</b> (the point farthest from the diagonal): \(t = 0.90\), sensitivity = specificity = 0.82.</li>
+<li><b>Required sensitivity</b> (screening: miss at most 5 %): \(t = 0.16\), paid for by FPR = 0.44.</li>
+</ul>
+<p>The threshold is chosen on <b>validation</b> data, never on the test set.</p></div>
+<div class="box parametry"><div class="box-t">Parameters: decision threshold of a classifier</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>what it means</th><th><span class="up">↑</span> when I increase it</th><th><span class="dn">↓</span> when I decrease it</th></tr>
+<tr><td>threshold \(t\)</td><td>from what score I say “positive”</td><td>fewer positive predictions: FPR ↓, specificity ↑, precision usually ↑, but recall (TPR) ↓ – more missed cases</td><td>more positive predictions: recall ↑, but FPR ↑ and precision ↓ – more false alarms</td></tr>
+</table></div>
+<p class="volba">by the costs of errors: screening → high sensitivity; confirmatory test → high specificity; no preference → Youden index. The threshold does not affect ROC or AUC – it only changes the point on the curve.</p></div>
+<div data-demo="roc-prah"></div>
+<div class="box definice" id="def-kalibrace"><div class="box-t">Definition: calibration and Brier score</div>
+<p>A classifier is <b>calibrated</b> if its output can be read as a probability: among samples with \(\hat p = 0.8\) about 80 % are positive (checked by bins in a reliability diagram). The <b>Brier score</b> \(\frac1n\sum_i(\hat p_i - y_i)^2\) is the MSE of the probabilities and does capture calibration.</p>
+<p class="jinak">a monotonic transformation of the score keeps the ranking, ROC and AUC – and at the same time it can destroy the probabilities. AUC does not see calibration; Brier does (in the lecture 0.133 vs. 0.153 for the same AUC).</p></div>
+<div class="box definice" id="def-r2"><div class="box-t">Definition: coefficient of determination R²</div>
+<p>The <b>coefficient of determination</b> \(R^2 = 1 - \frac{\sum_i(y_i - \hat y_i)^2}{\sum_i(y_i - \bar y)^2} = 1 - \frac{\text{SSE}}{\text{SST}}\) says how much better the model is than predicting the mean; \(R^2 \in (-\infty, 1]\).</p>
+<p class="jinak">1 = perfect fit, 0 = the model is no better than “always the mean”, negative = it is even worse. The numerator is the sum of squared residuals (SSE), the denominator the total sum of squares (SST).</p></div>
+
+<h3>More classes and more labels</h3>
+<div class="box definice" id="def-multiclass"><div class="box-t">Definition: multiclass and multilabel classification</div>
+<p><b>Multiclass</b> (one label): each sample belongs to exactly one of \(K\) classes, \(y \in \{1,\dots,K\}\) or a one-hot vector summing to 1 (tumour type on MRI, grade of diabetic retinopathy). <b>Multilabel</b>: a sample can have no label, one or several labels at once, \(\mathbf y \in \{0,1\}^K\) (multi-hot; image tags, a patient’s comorbidities).</p>
+<p class="jinak">multiclass = “pick one answer”, multilabel = “tick all that apply”.</p></div>
+<div class="box definice" id="def-prumerovani"><div class="box-t">Definition: micro, macro and weighted averaging</div>
+<p><b>Micro</b>: first TP, FP, FN are summed over all classes and one global value is computed from them (for single-label multiclass micro-F1 = accuracy). <b>Macro</b>: the metric is computed for each class separately and the results are simply averaged. <b>Weighted macro</b>: like macro, but the average is weighted by the number of samples of each class (support).</p>
+<p class="jinak">micro = “how well it does on individual samples” (frequent classes dominate); macro = “every class has the same vote” (highlights poor performance on rare classes, noisy for small classes); weighted = a compromise, a sensible default with imbalance.</p></div>
+<div class="box priklad"><div class="box-t">Example: three imbalanced classes (own calculation)</div>
+<p>Class A has 90 samples, B 8, C 2. Confusion matrix (rows = truth, columns = prediction A, B, C): A [85, 3, 2], B [2, 5, 1], C [1, 0, 1]. F1 per class: A 0.955; B 0.625; C 0.333.</p>
+<ul><li>micro-F1 = accuracy = 91/100 = <b>0.91</b>;</li><li>weighted-F1 = <b>0.916</b> (dominated by A);</li><li>macro-F1 = (0.955 + 0.625 + 0.333)/3 = <b>0.638</b> – the only number that shows the model barely works on C.</li></ul>
+<p>The model “always A” has accuracy 0.90 but macro-F1 only 0.316.</p></div>
+<p>For multilabel: <b>subset accuracy</b> (exact match – all labels must be right), <b>Hamming loss</b> (share of wrong labels, lower is better) and micro/macro F1 over labels.</p>
+
+<h2 id="nevyvazenost">Imbalanced classes</h2>
+<div class="box definice" id="def-nevyvazenost"><div class="box-t">Definition: imbalanced classes and the accuracy paradox</div>
+<p>The data have <b>imbalanced classes</b> when one class is much rarer than the others (e.g. fewer than 5 % positives). <b>Accuracy paradox</b>: a model that completely ignores the minority class still has high accuracy.</p>
+<p class="jinak">when 1 % are positive, a model that never finds anything has 99 % accuracy – and is useless.</p></div>
+<ul>
+<li><b>Evaluate correctly:</b> macro/weighted F1, normalized confusion matrix, report the prevalence.</li>
+<li><b>Train with the imbalance in mind:</b> class weights / cost-sensitive loss, or resampling.</li>
+</ul>
+<div class="tablewrap"><table>
+<tr><th></th><th>oversampling (make the minority larger)</th><th>undersampling (make the majority smaller)</th></tr>
+<tr><td>methods</td><td>random duplication; <b>SMOTE, ADASYN</b> – synthetic points between minority neighbours; augmentation (rotation, noise – “SMOTE for images and signals”)</td><td>random removal; cleaning rules Tomek links, ENN, NearMiss, ClusterCentroids</td></tr>
+<tr><td>pros</td><td>keeps all majority data, increases recall</td><td>faster, can remove noise at the boundary</td></tr>
+<tr><td>cons</td><td>overfitting (duplicates), artefacts (synthetic points)</td><td>throws away information, risk of underfitting</td></tr>
+<tr><td>when</td><td>very small minority</td><td>huge majority, expensive training</td></tr>
+</table></div>
+<div class="box pozor"><div class="box-t">Where resampling is allowed</div>
+<p>Any resampling <b>only on the training data</b>, inside each CV fold – never on validation or test data (otherwise you evaluate on artificial points). The same holds for preprocessing (scaling, PCA): fit only on the training data, the values from it are applied to validation/test.</p></div>
+<div class="box definice" id="def-stratifikace"><div class="box-t">Definition: stratified and group split</div>
+<p>A <b>stratified</b> split keeps the class proportions the same in the training, validation and test sets and in every fold. A <b>group-aware</b> split puts all data of one group (patient, device, site) into the same part.</p>
+<p class="jinak">when we have several signals from one patient, all of them must be either in training or in the test. Otherwise the model “learns the patient”, signals of the same patient are strongly correlated and the result is overly optimistic (data leakage).</p></div>
+
+<h2 id="validace">Validation approaches</h2>
+<div class="box definice" id="def-cv"><div class="box-t">Definition: k-fold cross-validation (k-fold CV)</div>
+<p><b>k-fold cross-validation</b> splits the data into \(k\) roughly equal parts (folds) and runs \(k\) rounds: in each, the model is trained on \(k-1\) folds and validated on the remaining one. The result is the mean ± standard deviation of the metric over the folds. For \(k = n\) it is <b>leave-one-out</b> (LOO).</p>
+<p class="jinak">every sample becomes a validation sample once and a training sample \(k-1\) times, so we use all the data and also get an idea of the spread of the estimate. The test set stays untouched; scaling and resampling are done inside each fold. With small data, CV can also be used instead of a test set.</p></div>
+<div class="schema">
+<svg viewBox="0 0 640 190" role="img" aria-label="Scheme of 5-fold cross-validation: in each round a different fold is used for validation">
+  <g style="font-size:13px">
+  <text x="10" y="22" class="t2">round</text>
+  <text x="80" y="22" class="t2">data split into 5 folds</text>
+  <text x="520" y="22" class="t2">result</text>
+  </g>
+  <g>
+    <text x="20" y="50">1</text><rect x="70" y="36" width="80" height="22" class="fl2"/><rect x="152" y="36" width="80" height="22" class="fl1"/><rect x="234" y="36" width="80" height="22" class="fl1"/><rect x="316" y="36" width="80" height="22" class="fl1"/><rect x="398" y="36" width="80" height="22" class="fl1"/><text x="520" y="52">score₁</text>
+    <text x="20" y="80">2</text><rect x="70" y="66" width="80" height="22" class="fl1"/><rect x="152" y="66" width="80" height="22" class="fl2"/><rect x="234" y="66" width="80" height="22" class="fl1"/><rect x="316" y="66" width="80" height="22" class="fl1"/><rect x="398" y="66" width="80" height="22" class="fl1"/><text x="520" y="82">score₂</text>
+    <text x="20" y="110">3</text><rect x="70" y="96" width="80" height="22" class="fl1"/><rect x="152" y="96" width="80" height="22" class="fl1"/><rect x="234" y="96" width="80" height="22" class="fl2"/><rect x="316" y="96" width="80" height="22" class="fl1"/><rect x="398" y="96" width="80" height="22" class="fl1"/><text x="520" y="112">score₃</text>
+    <text x="20" y="140">4</text><rect x="70" y="126" width="80" height="22" class="fl1"/><rect x="152" y="126" width="80" height="22" class="fl1"/><rect x="234" y="126" width="80" height="22" class="fl1"/><rect x="316" y="126" width="80" height="22" class="fl2"/><rect x="398" y="126" width="80" height="22" class="fl1"/><text x="520" y="142">score₄</text>
+    <text x="20" y="170">5</text><rect x="70" y="156" width="80" height="22" class="fl1"/><rect x="152" y="156" width="80" height="22" class="fl1"/><rect x="234" y="156" width="80" height="22" class="fl1"/><rect x="316" y="156" width="80" height="22" class="fl1"/><rect x="398" y="156" width="80" height="22" class="fl2"/><text x="520" y="172">score₅</text>
+  </g>
+  <text x="590" y="112" class="t2" text-anchor="middle">→ mean ± sd</text>
+</svg></div>
+<p class="muted">Blue: training folds, orange: the validation fold of that round.</p>
+<div class="box definice" id="def-holdout"><div class="box-t">Definition: hold-out validation</div>
+<p><b>Hold-out validation</b> splits the data once into a training, validation and test part (e.g. 70/15/15 or 60/20/20): training happens on the training part, hyperparameters and thresholds are tuned on the validation part and the final performance is measured once on the test part.</p>
+<p class="jinak">simple and fast (one fit per setting), good for large data and makes it easy to keep the test clean. Downside: the estimate has high variance – it depends on how “lucky” the split was – and with small data it wastes samples that would help training.</p></div>
+<figure><div class="paper"><img src="../figures/en/fig02_kfold_var.png" alt="Spread of the accuracy estimate for hold-out and for 5- and 10-fold cross-validation" loading="lazy"></div>
+<figcaption><b>Fig. 2.2</b> Logistic regression on 200 samples of breast cancer data; each point is the accuracy estimate for one of 60 random splits of the data.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>One split gives one number – and that number depends a lot on luck (hold-out varies between 0.90 and 1.00, sd 0.027). The mean over CV folds is much more stable (sd 0.006 and 0.004). The question “how much of the number is the model and how much is the luck of the split” is exactly the reason for cross-validation.</p></div>
+<div class="box parametry"><div class="box-t">Parameters: data split and cross-validation</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>what it means</th><th><span class="up">↑</span> when I increase it</th><th><span class="dn">↓</span> when I decrease it</th></tr>
+<tr><td>number of folds \(k\)</td><td>into how many parts I split the data</td><td>more fits (computation ↑), each fit has more training data (\(n(k-1)/k\)) ⇒ less pessimistic estimate; \(k = n\) is LOO</td><td>less computation, but less training data per fit (more pessimistic estimate) and fewer folds to average</td></tr>
+<tr><td>size of the test / validation part</td><td>how much data I keep aside</td><td>more exact performance estimate, but less data for training</td><td>more data for training, but a noisy estimate</td></tr>
+<tr><td>stratification / groups</td><td>keep class proportions, do not split groups</td><td colspan="2">always switch on when the classes are imbalanced or the data have groups (patients); otherwise the estimate can be biased or overly optimistic</td></tr>
+</table></div>
+<p class="volba">typically \(k = 5\) or 10; hold-out 70/15/15 for large data.</p></div>
+
+<h2 id="predzpracovani">Preprocessing without data leakage</h2>
+<div class="box definice" id="def-leakage"><div class="box-t">Definition: data leakage</div>
+<p><b>Data leakage</b> happens when the training of a model (including preprocessing, feature selection or tuning) gets information from the data on which the model is supposed to be evaluated, or information the model would not have in real use.</p>
+<p class="jinak">the model “copies from the answer key” and looks better on the test than it really is. Typical cases: the mean for standardization computed from all data, resampling before splitting, signals of one patient in both training and test, feature selection on the whole dataset. The model only sees preprocessed data – and that is exactly where most leaks happen.</p></div>
+<p>Typical steps: <b>cleaning</b> (missing values, outliers, inconsistent categories), <b>scaling</b>, <b>encoding</b> categories, <b>dimensionality reduction</b>. Implement everything inside a <code>Pipeline</code> and evaluate with cross-validation – then the preprocessing fit happens automatically only on the training folds.</p>
+<h3>Scaling</h3>
+<div class="box vzorec"><div class="box-t">Four kinds of scaling (statistics always from the training data)</div>
+\[ x' = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}}\ \ \text{(standardization)},\qquad x' = \frac{x - \text{med}_{\text{train}}}{\text{IQR}_{\text{train}}}\ \ \text{(robust)} \]
+\[ x' = \frac{x - \min_{\text{train}}}{\max_{\text{train}} - \min_{\text{train}}}\ \ \text{(min–max)},\qquad x' = \operatorname{clip}\!\left(\frac{x - P_{1}}{P_{99} - P_{1}}, 0, 1\right)\ \ \text{(percentile min–max)} \]
+<table class="vars">
+<tr><td>standardization (z-score)</td><td>mean 0, sd 1, keeps the shape of the distribution; the default for linear models, SVM, PCA, networks</td></tr>
+<tr><td>robust</td><td>median and interquartile range instead of \(\mu, \sigma\) – outliers do not shift the scale</td></tr>
+<tr><td>min–max</td><td>exactly [0, 1]; for bounded inputs (images, sigmoids); one outlier “squeezes” everything else</td></tr>
+<tr><td>percentile min–max</td><td>bounded and robust: extremes are clipped to the 1st and 99th percentile</td></tr>
+</table></div>
+<p>Trees usually do not need scaling; linear models, SVM, k-NN and logistic regression do.</p>
+<h3>Missing values (imputation)</h3>
+<div class="box definice" id="def-imputace"><div class="box-t">Definition: imputation</div>
+<p><b>Imputation</b> is replacing a missing value with an estimate – a column statistic (mean, median, most frequent value) or a value derived from the other features (kNN imputer, iterative MICE).</p>
+<p class="jinak">we patch the hole with the “most sensible guess”. But the guess is made up, not measured: one value for the whole column “flattens” it (in the lecture sd 0.96 → 0.77) and weakens relationships (correlation 0.73 → 0.59). kNN and MICE follow the trend (correlation 0.79), just a bit too smoothly.</p></div>
+<ul>
+<li><b>Missingness indicator</b> – a 0/1 column “was missing”: often the most informative feature (not examined = the doctor saw no reason).</li>
+<li><b>Dropping rows</b> – only when there are few of them and they are missing at random.</li>
+<li>All statistics are computed from the training rows; validation and test rows get the same numbers.</li>
+</ul>
+<div class="box priklad"><div class="box-t">By hand: imputation table (lecture)</div>
+<p>Height (cm) of eight students: 172, –, 165, 180, 400, 168, –, 175. The mean of the six known values is <b>210.0</b> – so the value 400 (an obvious error) gets “copied” into two more rows. The median <b>173.5</b> ignores it. For test scores (68, 74, –, 91, 55, 62, 80, –) filling in 0 means “did not take the test”, the mean 71.7 “an average student” – neither is neutral; the fact that it was missing is kept by an indicator column.</p></div>
+<h3>Outliers</h3>
+<div class="box definice" id="def-tukey"><div class="box-t">Definition: Tukey fences and winsorization</div>
+<p><b>Tukey fences</b> mark a value as an outlier if it lies outside the interval \([Q_1 - 1.5\,\text{IQR},\ Q_3 + 1.5\,\text{IQR}]\), where \(Q_1, Q_3\) are the quartiles and IQR = \(Q_3 - Q_1\). <b>Winsorization</b> clips extreme values to a chosen limit (e.g. a percentile or a fence) – the value stays in the data but loses its excessive influence.</p>
+<p class="jinak">an outlier does not move the quartiles, so the fences are robust. The rule \(|z| \gt 3\), on the other hand, fails because the outlier itself inflates \(\sigma\) (masking).</p></div>
+<div class="box priklad"><div class="box-t">By hand: why the z-score fails (lecture)</div>
+<p>Heights 172, 165, 180, 400, 168, 175, 161, 177. Mean 199.8, \(\sigma = 75.9\) (without the value 400 it would be \(\sigma = 6.3\)) ⇒ the z-score of 400 is only <b>2.64</b>, the rule \(|z| \gt 3\) does not catch it. Moreover, with eight values no \(|z|\) can even reach 3: the largest possible z-score is \(\sqrt{n-1} = \sqrt7 \approx 2.65\). Tukey: \(Q_1 = 167.25\), \(Q_3 = 177.75\), IQR = 10.5, upper fence \(Q_3 + 1.5\cdot\text{IQR} = 193.5\) ⇒ <b>400 is an outlier</b>. If it were plausible, we would winsorize it to 193.5; 400 cm is impossible, so we remove it (inside the training fold).</p></div>
+<ul>
+<li>The safest default: keep the value and use <b>robust scaling</b> – an outlier need not be an error, it may be that interesting patient.</li>
+<li>In more dimensions: isolation forest, local outlier factor.</li>
+<li>Remove only impossible values, and do it inside the training fold with a rule fitted there.</li>
+</ul>
+<h3>Encoding categories</h3>
+<div class="box definice" id="def-kodovani"><div class="box-t">Definition: one-hot, ordinal and target encoding</div>
+<p><b>One-hot</b> creates one 0/1 column for each level of the category. <b>Ordinal encoding</b> turns the levels into one integer. <b>Target encoding</b> replaces a level by the mean of the target variable \(y\) for that level.</p>
+<p class="jinak">one-hot is the default for nominal categories (for linear models drop one column – the columns sum to 1; merge rare levels into “other”). Ordinal encoding only where an order really exists (low &lt; medium &lt; high) – for a nominal category it invents an order that the model will use. Target encoding handles thousands of levels with one column, but “in-sample” it reveals the label (a level with one row is encoded by its own label) – out-of-fold means on the training data, smoothed towards the overall mean, are needed.</p></div>
+
+<div class="box zkouska"><div class="box-t">How to say it at the exam</div>
+<p>“I evaluate the model on data it has not seen: the training data are for learning the parameters, the validation data for tuning hyperparameters and choosing the model, the test data are used once at the end. With small data I use stratified k-fold cross-validation and report mean ± sd. I choose the metric by the task: with imbalanced classes not accuracy but F1 / macro-F1, ROC AUC for ranking ability and Brier for calibration; I choose the threshold on validation data by the cost of errors. All preprocessing – scaling, imputation, resampling – I fit only on the training folds to avoid data leakage.”</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Summary</h2>
+<p>The goal is not a low training error but a low population risk – we estimate it on held-out data. The training set learns the parameters (inner optimization), the validation set chooses the pipeline and hyperparameters (outer optimization), the test set is used once. The loss function (differentiable, for the optimizer) differs from the metric (for us). Classification metrics come from the confusion matrix: sensitivity, specificity, precision, F1; the ROC curve shows all thresholds, AUC the probability of correct ranking, calibration is measured by the Brier score; the threshold is a choice based on the costs of errors. With more classes we distinguish micro, macro and weighted averages. With imbalanced classes accuracy is misleading; class weights and resampling help – only on the training data. k-fold CV gives a more stable estimate than one split. Preprocessing (robust scaling, imputation with an indicator, Tukey fences, one-hot) is fitted only on the training data, otherwise data leakage occurs.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>The test is used once; tuning on the test = an overly optimistic result.</li>
+<li>The loss is for the optimizer (smooth), the metric for us (what the task needs).</li>
+<li>Precision = “am I right when I say yes?”, recall = “how many did I find?”, F1 = their harmonic mean.</li>
+<li>ROC = all thresholds; AUC = P(a positive has a higher score); AUC does not see calibration.</li>
+<li>Threshold 0.5 is not a rule – choose it on validation data by the costs of errors.</li>
+<li>Imbalanced classes: macro-F1, stratification, resampling only inside training folds.</li>
+<li>Everything that is “fitted” (scaling, imputation, feature selection) is fitted only on the training data.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Exam questions</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Expand all answers</button><button class="iconbtn" data-qall="close">Collapse</button></div>
+<details class="q"><summary>What is the difference between empirical and population risk? Which one do we care about?</summary><div>
+<p>The population risk is the expected loss on future samples from the true (unknown) data distribution. The empirical risk is the average loss on a finite sample – the training one (we minimize it during learning) or the test one (we use it to estimate the population risk). We care about the population risk, i.e. generalization; the training error is overly optimistic.</p></div></details>
+<details class="q"><summary>What roles do the training, validation and test sets have? Why may the test be used only once?</summary><div>
+<p>Training – learning the parameters; validation – tuning hyperparameters, feature selection, comparing models; test – a one-time unbiased estimate of performance. If we made decisions based on the test repeatedly, it would become another validation set and the model would “adapt” to it – the estimate would be overly optimistic.</p></div></details>
+<details class="q"><summary>When is accuracy misleading? Which metrics should be used for a rare positive class?</summary><div>
+<p>With imbalanced classes: at 1 % positives a model that finds nothing has accuracy 99 % (accuracy paradox). Better are F1 (harmonic mean of precision and recall, does not depend on TN), the precision–recall pair, macro-F1 for more classes, sensitivity at a given specificity, ROC AUC, a normalized confusion matrix with the prevalence stated.</p></div></details>
+<details class="q"><summary>How is the ROC curve built, how is AUC interpreted and why can a model with high AUC give useless probabilities?</summary><div>
+<p>For all thresholds (unique score values) I compute TPR and FPR and plot the points (FPR, TPR). AUC = area under the curve = the probability that a random positive sample has a higher score than a random negative one; 0.5 chance, 1 perfect ranking. AUC depends only on the order of the scores – a monotonic transformation does not change it but can destroy calibration. Calibration is shown by a reliability diagram or the Brier score.</p></div></details>
+<details class="q"><summary>Why is the threshold 0.5 not a rule? How, and on what data, should the operating point be chosen?</summary><div>
+<p>0.5 corresponds to equal costs of FP and FN and calibrated probabilities – this often does not hold in practice. Options: maximum accuracy, the Youden index \(J = \text{TPR} - \text{FPR}\), a required sensitivity (screening) or specificity, minimizing the expected cost of errors. The threshold is chosen on validation data (or in CV), never on the test set.</p></div></details>
+<details class="q"><summary>Explain k-fold cross-validation. What happens when we increase k?</summary><div>
+<p>I split the data into \(k\) folds; in each of \(k\) rounds I train on \(k-1\) and validate on the remaining one, and I report mean ± sd. Larger \(k\): more fits (more expensive), each fit has more training data (\(n(k-1)/k\)), the estimate is less pessimistic; \(k = n\) is leave-one-out. Smaller \(k\): cheaper, but less training data per fit. Stratified for classes, group-aware for groups; preprocessing inside the folds.</p></div></details>
+<details class="q"><summary>Give two examples of data leakage and how to prevent them.</summary><div>
+<p>(1) Standardization or imputation computed from the whole dataset including the test – fix: fit only on the training data (Pipeline + CV). (2) Signals of one patient in both training and test – fix: a group split. Others: resampling (SMOTE) before the split, feature selection on all data, target encoding without out-of-fold means.</p></div></details>
+<details class="q"><summary>Explain micro, macro and weighted averaging of metrics.</summary><div>
+<p>Micro: I sum TP, FP, FN over the classes and compute one value – it reflects performance on samples, frequent classes dominate (for single-label multiclass micro-F1 = accuracy). Macro: the metric for each class separately and a simple average – each class has the same weight, it highlights weak performance on rare classes. Weighted: an average weighted by the number of samples per class – a compromise, a sensible default with imbalance.</p></div></details>
+<details class="q"><summary>Why might the rule |z| &gt; 3 fail to find an outlier and what should be used instead?</summary><div>
+<p>The outlier itself inflates the standard deviation (masking): a height of 400 cm among seven normal ones increases \(\sigma\) from 6.3 to 75.9 and its z-score is only 2.6. A robust alternative are Tukey fences \(Q_3 + 1.5\,\text{IQR}\) (an outlier does not move the quartiles; the fence 193.5 catches it). Then either winsorization (clipping to the fence), robust scaling, or removing an impossible value – always inside the training fold.</p></div></details>
+
+<nav class="pager"><a class="prev" href="01_uvod.html"><small>← previous</small>Introduction, branches of ML and optimization</a><a class="next" href="03_redukce.html"><small>next →</small>Feature selection and dimensionality reduction</a></nav>
+</main>
+</div>
+</body>
+</html>

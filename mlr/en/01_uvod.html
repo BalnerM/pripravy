@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Introduction, branches of ML and optimization – MLR</title>
+<meta name="description" content="AI, ML and DL, supervised and unsupervised learning, optimization and gradient descent, k-NN and k-means.">
+<link rel="alternate" hreflang="cs" href="../01_uvod.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Contents">☰ Contents</button>
+  <a class="brand" href="index.html">MLR – exam notes<small>machine learning: principles, models and their parameters</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html" title="All study notes">←<span> All study notes</span></a>
+  <a class="iconbtn langbtn" href="../01_uvod.html" hreflang="cs" lang="cs" title="Česká verze">CZ</a>
+  <a class="iconbtn" href="pdf/01_uvod.pdf" download title="Download this page as PDF">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Dark mode</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigation">
+  <h4>Chapters</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Course map</span></a></li>
+    <li><a href="01_uvod.html" class="active"><span class="n">1</span><span>Introduction, branches of ML and optimization</span></a></li>
+    <li><a href="02_hodnoceni.html"><span class="n">2</span><span>Model evaluation and preprocessing</span></a></li>
+    <li><a href="03_redukce.html"><span class="n">3</span><span>Feature selection and dimensionality reduction</span></a></li>
+    <li><a href="04_linearni.html"><span class="n">4</span><span>Linear models, kernels and SVM</span></a></li>
+    <li><a href="05_vibecoding.html"><span class="n">5</span><span>Vibecoding: working with an AI agent</span></a></li>
+    <li><a href="06_stromy.html"><span class="n">6</span><span>Decision trees and ensembles</span></a></li>
+    <li><a href="07_neuronove_site.html"><span class="n">7</span><span>Artificial neural networks</span></a></li>
+    <li><a href="08_parametry.html"><span class="n">★</span><span>Cheat sheet: parameters and model comparison</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Glossary (definitions)</span></a></li>
+  </ol>
+  <h4>On this page</h4>
+  <ul class="toc">
+    <li><a href="#definice">AI, ML and DL: what belongs where</a></li>
+    <li><a href="#vetve">Branches of machine learning</a></li>
+    <li><a href="#optimalizace">Optimization: the common language of all methods</a></li>
+    <li><a href="#knn">Review: nearest neighbours (k-NN)</a></li>
+    <li><a href="#kmeans">Review: k-means and UPGMA</a></li>
+    <li><a href="#matematika">Mathematical minimum (appendix 1)</a></li>
+    <li><a href="#shrnuti-h">Summary</a></li>
+    <li><a href="#otazky">Exam questions</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – exam notes · Introduction, branches of ML and optimization – MLR · https://balnerm.github.io/pripravy/mlr/en/01_uvod.html</p>
+<p class="kicker">Lecture 1</p>
+<h1>Introduction, branches of machine learning and optimization</h1>
+<p class="lead">What the words artificial intelligence, machine learning and deep learning actually mean. What types of tasks machine learning solves and why almost every method in the course can be written as <b>finding the minimum of some function</b>. Optimization is the “language” in which all the other lectures are written. At the end of the chapter there is a review of the simplest algorithms (k-NN, k-means, UPGMA) from the bachelor course.</p>
+
+<div class="box intuice"><div class="box-t">Why learn methods in the age of AI agents</div>
+<p>Today most new code is written by AI agents (Google reports 75 % of new code, Anthropic over 80 %) and a human only gives the task and checks the result. What does not go away is <b>understanding the methods</b>: only with it can you tell the agent what to build and see that a result cannot be right. “Someone has to be able to tell <i>almost right</i> from <i>right</i>.” That is why in the course k-NN, forward selection or backpropagation are written once by hand in NumPy – to understand the principle, not to deploy it.</p></div>
+
+<h2 id="definice">AI, ML and DL: what belongs where</h2>
+<div class="box definice" id="def-ai"><div class="box-t">Definition: artificial intelligence (AI)</div>
+<p><b>Artificial intelligence</b> is an umbrella term for systems that perform tasks that would otherwise need human intelligence – understanding language, making decisions, driving a car.</p>
+<p class="jinak">an “umbrella” over everything that behaves smartly. Machine learning is just one of the ways to build AI.</p></div>
+<div class="box definice" id="def-ml"><div class="box-t">Definition: machine learning (ML)</div>
+<p><b>Machine learning</b> is an approach in which a computer learns rules (a model) from data: a human provides <b>data and correct answers</b> and the algorithm derives rules from them, which it then applies to new data.</p>
+<p class="jinak">in classic programming a human writes the rules (data + rules → answers, e.g. sorting, tax calculation, an FIR filter). In machine learning it is the other way round: data + answers → rules (spam filter, image classification, language models).</p></div>
+<div class="box definice" id="def-dl"><div class="box-t">Definition: deep learning (DL)</div>
+<p><b>Deep learning</b> is machine learning with neural networks that have many layers and learn the features <b>automatically</b> straight from raw data – at the cost of a lot of data and computing power.</p>
+<p class="jinak">classic ML needs hand-designed features but works with little data; DL finds the features itself but wants a lot of data and GPUs. Relationship: DL ⊂ ML ⊂ AI.</p></div>
+<div class="tablewrap"><table>
+<tr><th></th><th>classic machine learning</th><th>deep learning</th></tr>
+<tr><td>features</td><td>designed by hand (by a human)</td><td>learned automatically</td></tr>
+<tr><td>amount of data</td><td>little is enough</td><td>needs a lot</td></tr>
+<tr><td>algorithms</td><td>traditional (k-NN, SVM, trees…)</td><td>neural networks</td></tr>
+</table></div>
+<p>Related fields: <b>data science</b> (statistics + ML + computer science, the goal is to understand data; ML is one of its tools), <b>computer vision</b> (information from images and video – detection, segmentation, medical images; today mostly DL) and <b>robotics</b> (AI + vision + control + mechanics).</p>
+<div class="box definice" id="def-narrow-ai"><div class="box-t">Definition: narrow AI and general AI (AGI)</div>
+<p><b>Narrow (weak) AI</b> is a system built for one specific task (spam filter, recommender, image classifier). <b>Artificial general intelligence (AGI, strong AI)</b> is a hypothetical system that would learn and use knowledge across fields and could handle any intellectual task a human can do.</p>
+<p class="jinak">everything in this course is narrow AI. AGI is still a theoretical idea; today large language models come closest to it.</p></div>
+<p><b>Turing test</b> (1950): if the judge cannot tell the machine’s answers from a human’s, the machine behaves intelligently. Language models pass it today – but the test measures <i>behaviour</i>, not <i>understanding</i>. Whether machines “think” or only simulate thinking is an open question the course does not need to answer.</p>
+
+<h2 id="vetve">Branches of machine learning</h2>
+<p>The branches differ in <b>what information we give the algorithm</b>: correct answers (labels), nothing, or a reward.</p>
+<div class="box definice" id="def-supervised"><div class="box-t">Definition: supervised learning</div>
+<p><b>Supervised learning</b> is learning from labelled data: for every input \(\mathbf x\) we know the correct output \(y\). The goal is to find a mapping \(f: \mathbf x \mapsto y\) that <b>generalizes</b> to data not seen before.</p>
+<p class="jinak">a “teacher” shows many examples with their solution (image + “cat”) and the model learns from them to answer new examples too.</p></div>
+<div class="box definice" id="def-regrese-klasifikace"><div class="box-t">Definition: regression and classification</div>
+<p><b>Regression</b> is supervised learning with a <b>continuous</b> output \(y\) (house price, cholesterol level); we look for \(\hat y = f(\mathbf x)\) that minimizes the error between \(\hat y\) and \(y\). <b>Classification</b> is supervised learning with a <b>discrete</b> output – one of several classes (cat/dog, healthy/sick); we look for a decision function that separates the classes.</p>
+<p class="jinak">regression answers “how much?”, classification “what is it?”.</p></div>
+<div class="box definice" id="def-unsupervised"><div class="box-t">Definition: unsupervised learning</div>
+<p><b>Unsupervised learning</b> is learning from unlabelled data (we only have \(\mathbf x\), no \(y\)); the goal is to find hidden structure in the data. Main branches: <b>clustering</b> (group similar samples), <b>dimensionality reduction</b> (fewer features, same structure) and <b>generative models</b> (learn the data distribution and generate new samples).</p>
+<p class="jinak">nobody says what is correct – the algorithm has to find on its own how the data are organized. In clustering “similar = close”, so everything depends on the chosen distance.</p></div>
+<div class="box definice" id="def-rl"><div class="box-t">Definition: reinforcement learning</div>
+<p><b>Reinforcement learning</b> is learning in which an agent interacts with an environment: it observes a state, takes an action and gets a reward. The goal is a strategy (policy) that maximizes the total (cumulative) reward.</p>
+<p class="jinak">trial-and-error learning with “carrot and stick” (robots in a maze, AlphaGo, Atari games). It is not covered in the course – it comes back only by name in RLHF (fine-tuning chat models with human feedback).</p></div>
+<div class="box definice" id="def-ssl"><div class="box-t">Definition: self-supervised learning</div>
+<p><b>Self-supervised learning</b> is learning in which pseudo-labels are created <b>from the data themselves</b>: the model solves a helper (pretext) task to learn a useful representation for later tasks.</p>
+<p class="jinak">the data “make” the label themselves: we hide a word and the model guesses it, predicts the next word (LLM), the next video frame or missing pixels; contrastive learning pulls similar examples together and pushes different ones apart. No manual annotation is needed.</p></div>
+<div class="tablewrap"><table>
+<tr><th>branch</th><th>what the algorithm gets</th><th>typical task</th></tr>
+<tr><td>supervised – regression</td><td>\(\mathbf x\) and continuous \(y\)</td><td>price estimate, weather forecast, life expectancy</td></tr>
+<tr><td>supervised – classification</td><td>\(\mathbf x\) and class \(y\)</td><td>diagnosis, spam, fraudulent transactions</td></tr>
+<tr><td>unsupervised</td><td>only \(\mathbf x\)</td><td>customer segmentation, cell types, visualization, image generation</td></tr>
+<tr><td>reinforcement</td><td>reward for actions</td><td>robot, game, control</td></tr>
+<tr><td>self-supervised</td><td>\(\mathbf x\), label made from the data</td><td>next-word prediction (LLM), masked word</td></tr>
+</table></div>
+<p><b>Large language models (LLMs)</b> are trained on huge amounts of text to predict the next token; the label is the next word itself, so this is self-supervised learning. Generation = predict, append, repeat. A chat model answers (instead of just continuing the text) thanks to a second phase: fine-tuning on instructions and RLHF.</p>
+
+<h2 id="optimalizace">Optimization: the common language of all methods</h2>
+<div class="box intuice"><div class="box-t">Intuition</div>
+<p>Optimization = we change the inputs to get the best possible output: we minimize costs or maximize a reward. Imagine a landscape and look for the lowest valley; constraints say where you are allowed to step. Example from the lecture: <b>you are mixing hot and cold water</b>. You have two taps (inputs), the output is how pleasant the water is, and there is no formula or graph – only your hand under the stream. Hyperparameter tuning works the same way: you try a setting, measure, adjust.</p></div>
+<div class="box definice" id="def-optimalizace"><div class="box-t">Definition: optimization problem</div>
+<p>An <b>optimization problem</b> is the search for the point \(\mathbf x^\ast = \arg\min_{\mathbf x \in X} f(\mathbf x)\), i.e. the value of the variables \(\mathbf x\) for which the <b>objective function</b> \(f\) is smallest on the <b>feasible set</b> \(X\) given by the constraints. Every problem has three parts: <b>variables</b> (what we may change), the <b>objective function</b> (one number we push down) and <b>constraints</b> (they define the feasible set).</p>
+<p class="jinak">“what can I change, what do I want to be as small as possible, and what must I not break”. Convention: we always minimize – maximizing \(u(\mathbf x)\) is turned into minimizing \(-u(\mathbf x)\) (same minimizer, opposite value).</p></div>
+<div class="box vzorec"><div class="box-t">Canonical form</div>
+\[ \begin{aligned} \text{minimize}\quad & f(\mathbf x) \\ \text{subject to}\quad & g_i(\mathbf x) \le 0,\ i = 1,\dots,m \\ & h_j(\mathbf x) = 0,\ j = 1,\dots,p \end{aligned} \qquad X = \{\mathbf x \in \mathbb R^n : g_i(\mathbf x) \le 0,\ h_j(\mathbf x) = 0\} \]
+<table class="vars">
+<tr><td>\(\mathbf x\)</td><td>variables – speed of a car, flow rates of taps, <b>model weights</b></td></tr>
+<tr><td>\(f(\mathbf x)\)</td><td>objective (target, cost) function – fuel use, discomfort, <b>model loss</b></td></tr>
+<tr><td>\(g_i \le 0\)</td><td>inequality constraints (e.g. \(H \le 5\) l/min)</td></tr>
+<tr><td>\(h_j = 0\)</td><td>equality constraints (e.g. “the glass is full”)</td></tr>
+<tr><td>\(X\)</td><td>feasible set – points that satisfy all constraints</td></tr>
+</table></div>
+<div class="box definice" id="def-minimum-minimizer"><div class="box-t">Definition: minimum and minimizer</div>
+<p>The <b>minimum</b> \(p^\ast = \min f\) is a <b>number</b> – the smallest reachable value of the objective function. The <b>minimizer</b> \(\mathbf x^\ast = \arg\min f\) is a <b>point</b> (values of the variables) where the minimum is reached; there can be more than one.</p>
+<p class="jinak">the minimum says “how well it can go”, the minimizer “how to set it”. In model training the minimum is the lowest loss and the minimizer is the trained weights.</p></div>
+<div class="box definice" id="def-aktivni-omezeni"><div class="box-t">Definition: active constraint</div>
+<p>A constraint is <b>active</b> at the optimum \(\mathbf x^\ast\) if it holds there with equality (\(g_i(\mathbf x^\ast) = 0\)). If the unconstrained minimum lies outside the feasible set, the optimum is “pushed” onto its boundary and the corresponding constraint is active.</p>
+<p class="jinak">an active constraint is what “stopped” the optimum – if you relaxed it, you would get a better result. An inactive constraint does not affect the result at all.</p></div>
+<div class="box priklad"><div class="box-t">Example: mixing water (lecture)</div>
+<p>Flow rates \(H, C\) (l/min), hot water 60 °C, cold 10 °C. Temperature \(T = (60H + 10C)/(H + C)\), flow \(F = H + C\). Objective function \(J = (T - 38.5)^2 + (F - 12)^2\), feasible set \(0 \le H \le 5,\ C \ge 0\).</p>
+<ul>
+<li><b>Without constraints:</b> \(H + C = 12\) and \(T = 38.5\) ⇒ \(H = 6.84\), \(C = 5.16\), \(J = 0\).</li>
+<li><b>Boiler limited to \(H \le 5\):</b> the unconstrained optimum is infeasible, the optimum moves to the boundary \(H = 5\) and \(C = 4.08\): the water is 37.5 °C and 9.1 l/min, \(J = 9.5\) instead of 0. The constraint \(H \le 5\) is <b>active</b>.</li>
+<li>Fuel-use curve with the constraint \(50 \le v \le 130\) km/h: the optimum \(v^\ast = 89.4\) lies inside, the constraint is <b>inactive</b>.</li>
+</ul></div>
+<h3>Hard constraint or soft penalty?</h3>
+<p><b>Constraint</b> (“must not be broken”): safety limit, budget, physical law – it can make the problem unsolvable. <b>Term in the objective function</b> (“the less, the better”): \(f(\mathbf x) = \text{error} + \lambda\cdot\text{penalty}\); \(\lambda\) says how much we care about it and only shifts the optimum. Both ways are possible and give different answers – e.g. ridge regression (lecture 4) turns the budget \(\|\mathbf w\|_2^2 \le t\) into the penalty \(\lambda\|\mathbf w\|_2^2\).</p>
+<div class="box pozor"><div class="box-t">The solver optimizes what we wrote, not what we meant</div>
+<p>Minimize only the training error – and the model memorizes the data. Maximize only sensitivity – and everyone will be “sick”. Choosing the objective function is the analyst’s decision.</p></div>
+<h3>Convexity: when optimization is easy</h3>
+<div class="box definice" id="def-konvexni"><div class="box-t">Definition: convex function and convex set</div>
+<p>A function \(f\) is <b>convex</b> if for all \(\mathbf x_1, \mathbf x_2\) and \(\theta \in [0,1]\) it holds that \(f(\theta\mathbf x_1 + (1-\theta)\mathbf x_2) \le \theta f(\mathbf x_1) + (1-\theta) f(\mathbf x_2)\). A set \(C\) is <b>convex</b> if together with any two points it also contains the whole line segment between them.</p>
+<p class="jinak">the graph of a convex function lies below each of its chords (a “bowl”) and has no local minima other than the global one. A convex set has no “bays” where a minimum could hide.</p></div>
+<div class="box definice" id="def-lokalni-globalni"><div class="box-t">Definition: local and global minimum</div>
+<p>A <b>local minimum</b> is a point that is the best in its neighbourhood; a <b>global minimum</b> is the best in the whole feasible set. In a <b>convex problem</b> (convex \(f\) on a convex set) every local minimum is also global.</p>
+<p class="jinak">a local method (e.g. gradient descent) ends in the valley where it started – and cannot tell whether a deeper one exists. A convex problem has only one valley. But convexity <b>does not guarantee</b> that a minimizer exists (\(\min_x e^x\) does not exist), that it is unique, or that the model is correct.</p></div>
+<div class="tablewrap"><table>
+<tr><th>problem class / method</th><th>what it means</th><th>where in the course</th></tr>
+<tr><td>closed form</td><td>a formula, no iterations</td><td>ridge regression (matrix inverse), mean and variance, PCA (eigenvectors)</td></tr>
+<tr><td>gradient methods</td><td>the derivative says where to go</td><td>logistic regression, neural networks</td></tr>
+<tr><td>linear programming</td><td>linear \(f\) and constraints</td><td>L1 regression (least absolute deviations)</td></tr>
+<tr><td>quadratic programming</td><td>quadratic \(f\), linear constraints</td><td>soft-margin SVM</td></tr>
+<tr><td>convex</td><td>easy – local = global</td><td>LASSO, logistic regression</td></tr>
+<tr><td>non-convex</td><td>hard – heuristics without guarantees</td><td>deep networks, k-means, hyperparameter tuning</td></tr>
+<tr><td>discrete</td><td>usually NP-hard</td><td>feature selection</td></tr>
+</table></div>
+<p>The first two rows are <i>methods</i>, the others are <i>properties of the problem</i> – and the problem chooses the method.</p>
+
+<h3>Gradient descent</h3>
+<div class="box definice" id="def-gradient"><div class="box-t">Definition: gradient</div>
+<p>The <b>gradient</b> \(\nabla f(\mathbf x) = \left(\frac{\partial f}{\partial x_1}, \dots, \frac{\partial f}{\partial x_n}\right)\) is the vector of partial derivatives of the function \(f\); it points in the direction of the <b>steepest increase</b> of the function and has the same shape (number of components) as \(\mathbf x\).</p>
+<p class="jinak">an arrow pointing “uphill”. When we want to go down, we go against it. The function \(f\) returns a scalar, the gradient is a vector with as many components as there are variables.</p></div>
+<div class="box definice" id="def-gd"><div class="box-t">Definition: gradient descent</div>
+<p><b>Gradient descent</b> is an iterative method that in every step moves the variables against the direction of the gradient: \(\mathbf x^{(t+1)} = \mathbf x^{(t)} - \eta\,\nabla f(\mathbf x^{(t)})\), where \(\eta \gt 0\) is the <b>learning rate</b> (step size).</p>
+<p class="jinak">“walk downhill in small steps until the ground flattens out”. We only need to compute the derivative at the current point – we do not need a formula for the solution. This is exactly how neural networks are trained.</p></div>
+<div class="box priklad"><div class="box-t">One problem, three ways: the most fuel-efficient car speed</div>
+<p>At low speed idle losses and a short gear ratio cost fuel, at high speed it is air resistance ⇒ the optimum is somewhere in between. Model: \(\text{Fuel}(v) = A/v + Bv + C\) with \(A = 400\), \(B = 0.05\).</p>
+<ol>
+<li><b>Probing:</b> we measure fuel use at several speeds – blindly, without a formula.</li>
+<li><b>Closed form:</b> \(\text{Fuel}'(v) = -A/v^2 + B = 0\) ⇒ \(v^\ast = \sqrt{A/B} = \sqrt{8000} \approx 89.4\) km/h. Second derivative \(2A/v^3 \gt 0\) ⇒ a single minimum; \(\text{Fuel}(v^\ast) = 2\sqrt{AB} + C\). A luxury – it needs a formula.</li>
+<li><b>Gradient descent:</b> start \(v_0 = 30\) km/h, \(\eta = 200\). \(\text{Fuel}'(30) = -400/900 + 0.05 = -0.394\) ⇒ \(v_1 = 30 + 200\cdot 0.394 = 108.9\) (it overshot the optimum). Then \(\text{Fuel}'(108.9) = +0.016\) ⇒ \(v_2 = 105.6\), \(v_3 = 102.8\)… after 30 steps \(v \approx 89.5\). It only needs the derivative at a point.</li>
+</ol></div>
+<p>When to stop? Small gradient \(\|\nabla f\| \lt \varepsilon\), small change of \(f\) or \(\mathbf x\), a cap on the number of iterations; when training a model, the validation error (lecture 2). But a small gradient only means a <b>stationary point</b> – it can also be a saddle or a plateau. Only for a convex problem is it surely the global minimum.</p>
+<figure class="wide"><div class="paper"><img src="../figures/en/fig01_gd_eta.png" alt="Four gradient descent paths on an elliptic function for different learning rates" loading="lazy"></div>
+<figcaption><b>Fig. 1.1</b> The same landscape \(f(\mathbf x) = \tfrac12(x_1^2 + 5x_2^2)\), the same start, 20 steps – only the learning rate \(\eta\) changes. Star = minimum.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>The learning rate decides everything. For this function the update per component is \(x_i \leftarrow (1 - \eta q_i)\,x_i\) with \(q_1 = 1\), \(q_2 = 5\): every step multiplies the error by \(|1 - \eta q_i|\). Descent converges exactly when \(|1 - \eta q_i| \lt 1\) for all \(i\), i.e. \(\eta \lt 2/L\), where \(L = \max_i q_i = 5\) is the largest curvature ⇒ \(\eta \lt 0.4\). A small \(\eta\) (0.05) crawls, 0.2 is ideal, 0.38 oscillates in the steep direction, 0.45 diverges.</p></div>
+<div class="box parametry"><div class="box-t">Parameters: gradient descent</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>what it means</th><th><span class="up">↑</span> when I increase it</th><th><span class="dn">↓</span> when I decrease it</th></tr>
+<tr><td>learning rate \(\eta\)</td><td>how far I go against the gradient in one step</td><td>faster progress, but from \(\eta \gt 2/L\) oscillation and divergence (loss grows to ∞)</td><td>stable but very slow “crawling”; with a limited number of iterations it does not reach the minimum</td></tr>
+<tr><td>number of iterations / tolerance \(\varepsilon\)</td><td>when I stop</td><td>more iterations = more exact minimum, more computation (for a model, risk of overfitting)</td><td>earlier stop, may not converge</td></tr>
+<tr><td>starting point \(\mathbf x^{(0)}\)</td><td>where I start</td><td colspan="2">does not matter for a convex problem; for a non-convex one it decides in which local minimum I end up</td></tr>
+</table></div>
+<p class="volba">the largest \(\eta\) for which the loss still decreases steadily (in practice you try orders of magnitude 0.1, 0.01, 0.001).</p></div>
+<div data-demo="gd-eta"></div>
+<div class="box intuice"><div class="box-t">Training a model = optimization</div>
+<p>The <b>variables</b> are the parameters (weights) \(\mathbf w\), not the data: a line has 2, a small network \(10^6\), an LLM \(10^{11}\). The <b>objective function</b> is the loss averaged over the training set. <b>Constraints</b> usually do not exist – plain gradient descent is enough. There is no formula for \(\mathbf w^\ast\), but the loss and its gradient at a point are all that descent needs. Even k-means is optimization: an objective function, an ugly landscape and a heuristic.</p></div>
+<div class="box kostka"><div class="box-t">In a nutshell</div><p>Almost every ML method minimizes some function; gradient descent goes against the gradient with a step \(\eta\) that must be smaller than \(2/L\).</p></div>
+
+<h2 id="knn">Review: nearest neighbours (k-NN)</h2>
+<div class="box definice" id="def-knn"><div class="box-t">Definition: k nearest neighbours (k-NN)</div>
+<p>The <b>k-NN classifier</b> labels a new sample \(\mathbf x^\ast\) by finding the \(k\) training samples closest to it (by the chosen distance) and giving it the majority class among them; for regression it returns the mean of their values. For \(k = 1\) it is <b>1-NN</b>: it copies the label of the nearest point.</p>
+<p class="jinak">“tell me who your neighbours are and I will tell you who you are”. It has no training phase (<i>lazy learning</i>) – the whole “model” is the stored training data.</p></div>
+<p>Properties: sensitive to <b>noise, feature scale and outliers</b> (the distance is dominated by the feature with the largest numbers – hence standardization); searching for neighbours is expensive for large \(n\) (a kd-tree helps). An odd \(k\) prevents ties with two classes.</p>
+<div class="box vzorec"><div class="box-t">Distances (norms of the difference \(\mathbf x = \mathbf a - \mathbf b\))</div>
+\[ \|\mathbf x\|_2 = \sqrt{\textstyle\sum_i x_i^2}, \qquad \|\mathbf x\|_1 = \textstyle\sum_i |x_i|, \qquad \|\mathbf x\|_\infty = \max_i |x_i|, \qquad \|\mathbf x\|_p = \left(\textstyle\sum_i |x_i|^p\right)^{1/p} \]
+<table class="vars">
+<tr><td>\(\|\cdot\|_2\)</td><td>Euclidean distance (“as the crow flies”)</td></tr>
+<tr><td>\(\|\cdot\|_1\)</td><td>Manhattan distance (sum of differences along the axes)</td></tr>
+<tr><td>\(\|\cdot\|_\infty\)</td><td>Chebyshev distance (the largest difference in one axis)</td></tr>
+</table>
+<p>Example: \(\mathbf a = (1, 1)\), \(\mathbf b = (2, 3)\) ⇒ \(\mathbf x = (-1, -2)\): \(\|\mathbf x\|_2 = \sqrt5 \approx 2.24\), \(\|\mathbf x\|_1 = 3\), \(\|\mathbf x\|_\infty = 2\).</p></div>
+<div class="box priklad"><div class="box-t">By hand: k-NN voting (data from the exercise)</div>
+<p>Class A: (1, 2), (1.5, 1.8), (1, 0.6); class B: (5, 8), (8, 8), (9, 11). New sample (2, 3), Euclidean distance:</p>
+<div class="tablewrap"><table>
+<tr><th>point</th><th>class</th><th class="num">distance from (2, 3)</th></tr>
+<tr><td>(1.5, 1.8)</td><td>A</td><td class="num">1.30</td></tr>
+<tr><td>(1, 2)</td><td>A</td><td class="num">1.41</td></tr>
+<tr><td>(1, 0.6)</td><td>A</td><td class="num">2.60</td></tr>
+<tr><td>(5, 8)</td><td>B</td><td class="num">5.83</td></tr>
+<tr><td>(8, 8)</td><td>B</td><td class="num">7.81</td></tr>
+<tr><td>(9, 11)</td><td>B</td><td class="num">10.63</td></tr>
+</table></div>
+<p>\(k = 3\): the three nearest are A, A, A ⇒ <b>class A</b>. \(k = 5\): vote 3 : 2, still A.</p></div>
+<figure class="wide"><div class="paper"><img src="../figures/en/fig01_knn_k.png" alt="k-NN decision boundaries for k = 1, 15 and 101" loading="lazy"></div>
+<figcaption><b>Fig. 1.2</b> The same data (120 training points, two classes), only the number of neighbours \(k\) changes. Background colour = decision of the classifier; the title shows the accuracy on training points and on 120 test points.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>\(k\) <b>regularizes</b> the model (bias–variance trade-off). \(k = 1\): the boundary traces every point including noise, training accuracy 1.00 but test only 0.81 – overfitting. \(k = 15\): smooth boundary, best test (0.88). \(k = 101\) (almost all the data): the boundary approaches a straight line, the model ignores the shape of the classes – underfitting (test 0.81).</p></div>
+<div class="box parametry"><div class="box-t">Parameters: k-NN</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>what it means</th><th><span class="up">↑</span> when I increase it</th><th><span class="dn">↓</span> when I decrease it</th></tr>
+<tr><td>number of neighbours \(k\)</td><td>how many nearest training points vote</td><td>smoother boundary, lower variance, higher bias; for \(k \to n\) it always predicts the majority class (underfitting)</td><td>more jagged boundary, copies the noise; \(k = 1\) has training error 0 (overfitting)</td></tr>
+<tr><td>metric (L1, L2, L∞, cosine…)</td><td>how “closeness” is measured</td><td colspan="2">changes the shape of the neighbourhood and so the boundary; L1 is less sensitive to one large deviation in one axis; must always be combined with feature scaling</td></tr>
+<tr><td>vote weights (uniform / distance)</td><td>do closer neighbours have a larger weight?</td><td colspan="2">distance weighting reduces the influence of farther neighbours for large \(k\)</td></tr>
+</table></div>
+<p class="volba">\(k\) is tuned by cross-validation (lecture 2); odd for two classes to avoid a tie.</p></div>
+<div data-demo="knn-k"></div>
+
+<h2 id="kmeans">Review: k-means and UPGMA</h2>
+<div class="box definice" id="def-kmeans"><div class="box-t">Definition: k-means</div>
+<p><b>k-means</b> is a clustering algorithm that splits \(n\) points into \(k\) clusters, each represented by its mean (centroid) \(\boldsymbol\mu_j\), and minimizes the <b>inertia</b> – the sum of squared distances of the points from the centroid of their cluster: \(J = \sum_{j=1}^{k}\sum_{\mathbf x_i \in C_j}\|\mathbf x_i - \boldsymbol\mu_j\|_2^2\).</p>
+<p class="jinak">find \(k\) “centres of mass” so that every point has its centre as close as possible. The problem is non-convex – the algorithm finds only a local minimum that depends on the start.</p></div>
+<div class="box postup"><div class="box-t">Lloyd’s algorithm</div>
+<ol>
+<li>Initialize \(k\) centroids (e.g. randomly chosen samples).</li>
+<li><b>Assignment:</b> assign each point to the nearest centroid.</li>
+<li><b>Update:</b> move each centroid to the mean of its points.</li>
+<li>Repeat 2–3 until nothing changes.</li>
+</ol>
+<p>Each assignment and update step can only decrease \(J\), so the algorithm always converges – to a local minimum. That is why it is run several times from different starts.</p></div>
+<div class="box priklad"><div class="box-t">By hand: one step of k-means (lecture)</div>
+<p>The same six points, \(k = 2\), initial centroids \(\boldsymbol\mu_1 = (1, 2)\), \(\boldsymbol\mu_2 = (5, 8)\). Assignment: (1, 2), (1.5, 1.8), (1, 0.6) → cluster 1; (5, 8), (8, 8), (9, 11) → cluster 2; \(J = 36.25\). Update: \(\boldsymbol\mu_1 = (1.17,\ 1.47)\), \(\boldsymbol\mu_2 = (7.33,\ 9.00)\), \(J = 15.98\). The next assignment does not change ⇒ convergence.</p></div>
+<div data-demo="kmeans"></div>
+<div class="box parametry"><div class="box-t">Parameters: k-means</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>what it means</th><th><span class="up">↑</span> when I increase it</th><th><span class="dn">↓</span> when I decrease it</th></tr>
+<tr><td>number of clusters \(k\)</td><td>how many centroids we look for</td><td>inertia \(J\) always drops (at \(k = n\) it is 0), clusters split into artificial parts</td><td>merges groups that are really different</td></tr>
+<tr><td>initialization / number of restarts</td><td>where the centroids start and how many times we try</td><td>more restarts = better chance of a better local minimum, more computation</td><td>the result depends more on chance</td></tr>
+</table></div>
+<p class="volba">\(k\) cannot be chosen by the minimum of \(J\) (that would lead to \(k = n\)); you look for the “elbow” of the curve \(J(k)\) or another criterion.</p></div>
+<div class="box definice" id="def-upgma"><div class="box-t">Definition: UPGMA</div>
+<p><b>UPGMA</b> (Unweighted Pair Group Method with Arithmetic Mean) is hierarchical agglomerative clustering that starts with every sample as a separate cluster and repeatedly merges the two closest clusters; the distance of clusters is the <b>mean of all pairwise distances</b> between their points. The result is a tree (dendrogram).</p>
+<p class="jinak">“always glue together the two closest groups until only one is left”; after merging \(C_i\) and \(C_j\) the distance to another cluster \(C_k\) is recalculated as the weighted mean \(d(C_{ij}, C_k) = \frac{|C_i|\,d(C_i, C_k) + |C_j|\,d(C_j, C_k)}{|C_i| + |C_j|}\).</p></div>
+
+<h2 id="matematika">Mathematical minimum (appendix 1)</h2>
+<p>Concepts the later lectures take for granted. Check questions from the lecture: the minimum of \(f(x) = 3x^2 + 5x + 1\) is at \(x^\ast = -5/6\) (\(f'' = 6 \gt 0\), so it is a minimum); \(\begin{pmatrix}1 & 2\\ 3 & 4\end{pmatrix}\begin{pmatrix}1\\-1\end{pmatrix} = \begin{pmatrix}-1\\-1\end{pmatrix}\); the expected value of a die roll is \((1 + \dots + 6)/6 = 3.5\).</p>
+<div class="tablewrap"><table>
+<tr><th>concept</th><th>formula / rule</th><th>where it is used in ML</th></tr>
+<tr><td>dot product</td><td>\(\mathbf a^\top\mathbf b = \sum_i a_i b_i = \|\mathbf a\|\|\mathbf b\|\cos\theta\); cosine similarity \(\cos\theta\), cosine distance \(1 - \cos\theta\)</td><td>linear model \(\mathbf w^\top\mathbf x + b\), projection in PCA, attention</td></tr>
+<tr><td>matrix shapes</td><td>\((n\times d)(d\times k) = (n\times k)\); \(AB \ne BA\); \((AB)^\top = B^\top A^\top\)</td><td>network layer \(W\mathbf x\), \(W \in \mathbb R^{m\times d}\): d inputs → m outputs</td></tr>
+<tr><td>linear vs. affine</td><td>linear: \(f(\mathbf x) = W\mathbf x\), \(f(\mathbf 0) = \mathbf 0\); affine \(W\mathbf x + \mathbf b\); affine of affine is affine</td><td>layers without a non-linear activation merge into one ⇒ activations are needed</td></tr>
+<tr><td>eigenvalues</td><td>\(A\mathbf v = \lambda\mathbf v\); symmetric \(A\): real \(\lambda\), orthogonal vectors; PSD: \(\mathbf x^\top A\mathbf x \ge 0\)</td><td>PCA (eigenvectors of the covariance), the kernel matrix is PSD</td></tr>
+<tr><td>derivatives</td><td>chain rule \(f(g(x))' = f'(g(x))\,g'(x)\); \(\nabla_{\mathbf w}\|X\mathbf w - \mathbf y\|^2 = 2X^\top(X\mathbf w - \mathbf y)\)</td><td>gradient descent, backpropagation, derivation of OLS</td></tr>
+<tr><td>sigmoid, softmax</td><td>\(\sigma(z) = 1/(1 + e^{-z})\), \(\sigma' = \sigma(1-\sigma)\); \(\text{softmax}(\mathbf z)_k = e^{z_k}/\sum_j e^{z_j}\)</td><td>turning scores into probabilities</td></tr>
+<tr><td>logarithm</td><td>\(\ln\prod p_i = \sum\ln p_i\): \(0.1^{400}\) is zero in float64, but \(400\ln 0.1 = -921\) is an ordinary number</td><td>likelihood is maximized as a sum of logarithms</td></tr>
+<tr><td>Bayes’ theorem</td><td>\(P(A\mid B) = P(B\mid A)P(A)/P(B)\)</td><td>rare class ⇒ low precision of positive predictions</td></tr>
+<tr><td>entropy, cross-entropy</td><td>\(H(p) = -\sum p_k\log p_k\); \(H(p,q) = -\sum p_k\log q_k\); \(D_{KL} = H(p,q) - H(p) \ge 0\)</td><td>mutual information, tree impurity, classification loss</td></tr>
+<tr><td>normal distribution</td><td>\(\pm\sigma, \pm2\sigma, \pm3\sigma\) contain 68.3 %, 95.4 %, 99.7 %; \(-\ln\mathcal N(y;\hat y,\sigma^2) = (y-\hat y)^2/2\sigma^2 + \text{const.}\)</td><td>Gaussian noise ⇒ MSE</td></tr>
+<tr><td>variance of a mean</td><td>the mean of \(M\) independent copies has variance \(\sigma^2/M\)</td><td>bagging (lecture 6)</td></tr>
+</table></div>
+<div class="box priklad"><div class="box-t">Bayes and a rare disease</div>
+<p>1 in 1000 people has the disease, the test has sensitivity and specificity of 99 %. \(P(\text{sick}\mid +) = \frac{0.99\cdot0.001}{0.99\cdot0.001 + 0.01\cdot0.999} = 0.090\). Even a very good test gives only 9 % correct positive results for a rare class – a small prior probability “destroys” the precision of positive predictions. (Check question: disease 1 in 100, test 90 % / 90 % ⇒ \(P = 0.009/0.108 = 0.083\).)</p></div>
+<div class="box priklad"><div class="box-t">Cross-entropy as a loss</div>
+<p>For a one-hot target \(H(p, q) = -\ln q_{\text{correct}}\). Softmax of the scores (2, 1, 0.1) gives the probabilities 0.659, 0.242, 0.099. If the first class is correct, the loss is \(-\ln 0.659 = 0.417\); if the third, \(-\ln 0.099 = 2.31\). A probability of 0.5 for the correct class gives \(\ln 2 = 0.693\).</p></div>
+
+<div class="box zkouska"><div class="box-t">How to say it at the exam</div>
+<p>“Machine learning is a subset of AI where rules are learned from data and correct answers; deep learning is ML with many-layer networks that find the features themselves. Supervised learning has labels – regression continuous, classification discrete; unsupervised learning looks for structure, reinforcement learning maximizes a reward and self-supervised learning makes its labels from the data. Training a model is optimization: the variables are the weights, the objective function is the average loss. It is usually solved by gradient descent \(\mathbf w \leftarrow \mathbf w - \eta\nabla L\); the learning rate must be smaller than \(2/L\), otherwise descent diverges, and in a non-convex problem we only find a local minimum.”</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Summary</h2>
+<p>AI is the umbrella term, ML is the part of it that learns rules from data, and DL is ML with deep networks and automatically learned features. The branches of ML differ in the information they get: labels (regression, classification), nothing (clustering, dimensionality reduction, generative models), a reward (reinforcement learning) or labels made from the data (self-supervised, LLMs). Almost every method is an optimization problem with variables, an objective function and constraints; a constraint can be active (it moves the optimum to the boundary), and instead of a hard constraint you can use a penalty with weight \(\lambda\). In a convex problem a local minimum is global. Gradient descent goes against the gradient with step \(\eta\); a step that is too small crawls, one that is too large (\(\eta \ge 2/L\)) diverges. k-NN classifies by a vote of the \(k\) nearest neighbours, where \(k\) controls the smoothness of the boundary; k-means minimizes the inertia with Lloyd’s algorithm down to a local minimum; UPGMA builds a dendrogram by merging clusters with the average distance.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>DL ⊂ ML ⊂ AI; ML = data + answers → rules.</li>
+<li>Regression predicts a number, classification a class; unsupervised learning looks for structure without labels.</li>
+<li>Optimization problem = variables + objective function + constraints; the minimum is a number, the minimizer a point.</li>
+<li>Convex problem: every local minimum is global.</li>
+<li>Gradient descent: \(\mathbf x \leftarrow \mathbf x - \eta\nabla f\); converges only for \(\eta \lt 2/L\).</li>
+<li>In k-NN small \(k\) = overfitting, large \(k\) = underfitting; always scale the features.</li>
+<li>k-means finds only a local minimum – restart it from several starts.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Exam questions</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Expand all answers</button><button class="iconbtn" data-qall="close">Collapse</button></div>
+<details class="q"><summary>What is the difference between classic programming and machine learning? How do AI, ML and DL differ?</summary><div>
+<p>Classic programming: a human provides rules and data, the computer outputs answers. Machine learning: a human provides data and answers, the computer learns the rules (a model). AI is the umbrella term for systems performing tasks that need human intelligence; ML is one of the ways to AI; DL is ML with many-layer neural networks that learn the features automatically but need a lot of data and computing power.</p></div></details>
+<details class="q"><summary>Describe the branches of machine learning and give a typical task for each.</summary><div>
+<p>Supervised – labelled data; regression (continuous output, house price) and classification (a class, diagnosis). Unsupervised – only \(\mathbf x\); clustering (customer segmentation), dimensionality reduction (visualization), generative models (new images). Reinforcement – agent, action, reward (AlphaGo). Self-supervised – pseudo-labels from the data (next-word prediction in LLMs, masked word).</p></div></details>
+<details class="q"><summary>Define an optimization problem. What are the minimum and the minimizer, and when is a constraint active?</summary><div>
+<p>We look for \(\mathbf x^\ast = \arg\min_{\mathbf x\in X} f(\mathbf x)\): variables \(\mathbf x\), objective function \(f\), constraints \(g_i \le 0\), \(h_j = 0\) define the feasible set \(X\). The minimum is a number (the smallest value of \(f\)), the minimizer is the point where it is reached. A constraint is active when it holds with equality at the optimum – it is the constraint that “stopped” the optimum (the boiler \(H \le 5\) moved the water-mixing optimum to the boundary).</p></div></details>
+<details class="q"><summary>What does convexity guarantee and what not?</summary><div>
+<p>In a convex problem (convex function on a convex set) every local minimum is global, so a local method does not get lost. Convexity does not guarantee that a minimizer exists (\(e^x\)), that it is unique, or that the model is correct. Examples of convex problems: LASSO, logistic regression; non-convex: deep networks, k-means.</p></div></details>
+<details class="q"><summary>Write the gradient descent step. What happens with a learning rate that is too large and what sets the limit?</summary><div>
+<p>\(\mathbf x^{(t+1)} = \mathbf x^{(t)} - \eta\nabla f(\mathbf x^{(t)})\); the gradient is the vector of partial derivatives with the same number of components as \(\mathbf x\). With a large \(\eta\) descent overshoots the minimum, oscillates and from a certain value diverges. The limit is given by the largest curvature \(L\) (the largest eigenvalue of the Hessian): convergence for \(\eta \lt 2/L\). For \(f = \frac12(x_1^2 + 5x_2^2)\) we have \(L = 5\), so \(\eta \lt 0.4\).</p></div></details>
+<details class="q"><summary>How does k-NN work and how does the choice of k affect the result?</summary><div>
+<p>For a new sample I find the \(k\) nearest training points and return the majority class (for regression the mean). There is no training phase. Small \(k\) (1) copies the noise – training error 0, worse test (overfitting, high variance); large \(k\) smooths the boundary up to predicting the majority class (underfitting, high bias). \(k\) is tuned by cross-validation; the features must be scaled because k-NN computes distances.</p></div></details>
+<details class="q"><summary>What function does k-means minimize and why does it depend on initialization?</summary><div>
+<p>The inertia \(J = \sum_j\sum_{\mathbf x_i\in C_j}\|\mathbf x_i - \boldsymbol\mu_j\|^2\). Lloyd’s algorithm alternates assignment to the nearest centroid and recomputing the centroids; no step increases \(J\), so it converges, but only to a local minimum of a non-convex problem. A different start can give different clusters, so the algorithm is restarted and the solution with the smallest \(J\) is chosen.</p></div></details>
+
+<nav class="pager"><a class="prev" href="index.html"><small>← previous</small>Course map</a><a class="next" href="02_hodnoceni.html"><small>next →</small>Model evaluation and preprocessing</a></nav>
+</main>
+</div>
+</body>
+</html>

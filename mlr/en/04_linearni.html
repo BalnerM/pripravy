@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linear models, kernels and SVM – MLR</title>
+<meta name="description" content="Linear and polynomial regression, ridge and LASSO, kernels, logistic regression, perceptron and SVM.">
+<link rel="alternate" hreflang="cs" href="../04_linearni.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Contents">☰ Contents</button>
+  <a class="brand" href="index.html">MLR – exam notes<small>machine learning: principles, models and their parameters</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html" title="All study notes">←<span> All study notes</span></a>
+  <a class="iconbtn langbtn" href="../04_linearni.html" hreflang="cs" lang="cs" title="Česká verze">CZ</a>
+  <a class="iconbtn" href="pdf/04_linearni.pdf" download title="Download this page as PDF">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Dark mode</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigation">
+  <h4>Chapters</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Course map</span></a></li>
+    <li><a href="01_uvod.html"><span class="n">1</span><span>Introduction, branches of ML and optimization</span></a></li>
+    <li><a href="02_hodnoceni.html"><span class="n">2</span><span>Model evaluation and preprocessing</span></a></li>
+    <li><a href="03_redukce.html"><span class="n">3</span><span>Feature selection and dimensionality reduction</span></a></li>
+    <li><a href="04_linearni.html" class="active"><span class="n">4</span><span>Linear models, kernels and SVM</span></a></li>
+    <li><a href="05_vibecoding.html"><span class="n">5</span><span>Vibecoding: working with an AI agent</span></a></li>
+    <li><a href="06_stromy.html"><span class="n">6</span><span>Decision trees and ensembles</span></a></li>
+    <li><a href="07_neuronove_site.html"><span class="n">7</span><span>Artificial neural networks</span></a></li>
+    <li><a href="08_parametry.html"><span class="n">★</span><span>Cheat sheet: parameters and model comparison</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Glossary (definitions)</span></a></li>
+  </ol>
+  <h4>On this page</h4>
+  <ul class="toc">
+    <li><a href="#model">One equation, two tasks</a></li>
+    <li><a href="#regrese">Linear regression</a></li>
+    <li><a href="#polynom">Non-linear features: polynomial regression</a></li>
+    <li><a href="#jadra">Kernels and the dual form</a></li>
+    <li><a href="#klasifikace">Linear classification</a></li>
+    <li><a href="#svm">Support vector machines (SVM)</a></li>
+    <li><a href="#shrnuti-h">Summary</a></li>
+    <li><a href="#otazky">Exam questions</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – exam notes · Linear models, kernels and SVM – MLR · https://balnerm.github.io/pripravy/mlr/en/04_linearni.html</p>
+<p class="kicker">Lecture 4</p>
+<h1>Linear models, kernels and SVM</h1>
+<p class="lead">One dot product of weights and features can predict a number (regression) as well as a class (classification). Everything else – OLS, LAD, ridge, LASSO, logistic regression, perceptron, SVM – is just a <b>choice of loss function and regularization</b>. The chapter also shows how to teach a linear model non-linear relationships: by polynomial feature expansion and by the kernel trick in the dual form.</p>
+
+<h2 id="model">One equation, two tasks</h2>
+<div class="box definice" id="def-linearni-model"><div class="box-t">Definition: linear model</div>
+<p>A <b>linear model</b> predicts using the dot product of a weight vector and a feature vector: \(g(\mathbf x) = \mathbf w^\top\mathbf x + b = w_1x_1 + \dots + w_dx_d + b\). In <b>regression</b> the prediction is directly \(\hat y = \mathbf w^\top\mathbf x + b \in \mathbb R\), in <b>binary classification</b> its sign \(\hat y = \operatorname{sign}(\mathbf w^\top\mathbf x + b) \in \{-1, +1\}\).</p>
+<p class="jinak">each feature gets a weight (importance and direction of influence) and the results are added up. Regression asks “how much”, classification “on which side of the hyperplane”.</p></div>
+<div class="box definice" id="def-bias-trick"><div class="box-t">Definition: bias trick (extending the features with a one)</div>
+<p>The <b>bias trick</b> writes the affine function \(f(\mathbf x) = \mathbf w^\top\mathbf x + b\) as purely linear by adding a constant component 1 to the feature vector and the offset \(b\) to the weights: \(\tilde{\mathbf x} = (\mathbf x, 1)\), \(\tilde{\mathbf w} = (\mathbf w, b)\) ⇒ \(f(\mathbf x) = \tilde{\mathbf w}^\top\tilde{\mathbf x}\).</p>
+<p class="jinak">the offset stops being a special parameter – it is just another weight for a feature that is always 1. Formulas and code become simpler (the data matrix \(X\) gets a column of ones).</p></div>
+<div class="box definice" id="def-rozhodovaci-hranice"><div class="box-t">Definition: decision boundary</div>
+<p>The <b>decision boundary</b> of a linear classifier is the set of points where \(\mathbf w^\top\mathbf x + b = 0\) – in 1D a point (threshold), in 2D a line, in general a hyperplane. The vector \(\mathbf w\) is perpendicular to it.</p>
+<p class="jinak">the line that splits the space into a “plus” side and a “minus” side.</p></div>
+<div class="box vzorec"><div class="box-t">Training a linear model = minimizing average loss + regularization</div>
+\[ \min_{\mathbf w}\ \frac1n\sum_{i=1}^n L(y_i, \mathbf w^\top\mathbf x_i) + \lambda\,\Omega(\mathbf w) \]
+<table class="vars">
+<tr><td>\(L(y, z)\)</td><td>loss function – how much we punish the prediction \(z = \mathbf w^\top\mathbf x\) when the truth is \(y\)</td></tr>
+<tr><td>\(\Omega(\mathbf w)\)</td><td>regularization: \(\|\mathbf w\|_2^2\) (ridge, L2) or \(\|\mathbf w\|_1\) (LASSO, L1)</td></tr>
+<tr><td>\(\lambda \ge 0\)</td><td>weight of the regularization – trade-off between fitting the data and “simple” weights</td></tr>
+</table></div>
+<div class="tablewrap"><table>
+<tr><th>task</th><th>model / loss</th><th>\(L(y, z)\)</th><th>properties</th></tr>
+<tr><td rowspan="2">regression</td><td>OLS – MSE</td><td>\((y - z)^2\)</td><td>smooth, closed form, sensitive to outliers</td></tr>
+<tr><td>LAD – MAE</td><td>\(|y - z|\)</td><td>robust to outliers, solved by LP / IRLS (no closed form)</td></tr>
+<tr><td rowspan="4">classification \(y\in\{-1,+1\}\)</td><td>SVM – hinge</td><td>\(\max(0, 1 - yz)\)</td><td>maximum margin</td></tr>
+<tr><td>perceptron</td><td>\(\max(0, -yz)\)</td><td>punishes only misclassified points</td></tr>
+<tr><td>logistic regression – log-loss</td><td>\(\log(1 + e^{-yz})\)</td><td>probabilistic output</td></tr>
+<tr><td>LDA</td><td>Fisher criterion</td><td>see chapter 3</td></tr>
+</table></div>
+<figure><div class="paper"><img src="../figures/en/fig04_losses.png" alt="Classification loss functions as a function of the product y·z" loading="lazy"></div>
+<figcaption><b>Fig. 4.1</b> Loss functions of binary classification as a function of \(yz\) – positive \(yz\) means the correct side of the boundary, large \(yz\) a confident correct answer.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>The real error (0/1) cannot be optimized with a gradient, so we replace it with smooth or convex substitutes. <b>Hinge</b> is zero only when the point is correct <i>and with a margin</i> (\(yz \ge 1\)) – hence the SVM margin. The <b>perceptron</b> is happy with the correct side (\(yz \gt 0\)). The <b>logistic</b> loss is never exactly zero, it only decreases. <b>MSE</b> also punishes points that are “too correct” (\(yz \gt 1\)) – that is why the MSE classifier is sensitive to outliers and works poorly.</p></div>
+
+<h2 id="regrese">Linear regression</h2>
+<div class="box priklad"><div class="box-t">A line through two points (lecture)</div>
+<p>Model \(y = wx + b\), points (1, 2) and (3, 5). In matrix form \(\mathbf y = X\tilde{\mathbf w}\) with \(X = \begin{pmatrix}1 & 1\\ 1 & 3\end{pmatrix}\) (column of ones + \(x\)), \(\det X = 2\) ⇒ \(\tilde{\mathbf w} = X^{-1}\mathbf y = \frac12\begin{pmatrix}3\cdot2 - 5\\ -2 + 5\end{pmatrix} = \begin{pmatrix}0.5\\ 1.5\end{pmatrix}\), i.e. \(b = 0.5\), \(w = 1.5\). For two points the line passes exactly through both; for more points this is in general not possible – we have to make \(\mathbf y\) and \(X\tilde{\mathbf w}\) “as similar as possible”.</p></div>
+<div class="box definice" id="def-ols"><div class="box-t">Definition: ordinary least squares (OLS)</div>
+<p><b>Ordinary least squares</b> is linear regression that chooses the weights minimizing the sum of squared residuals: \(\min_{\mathbf w}\sum_i(\mathbf x_i^\top\mathbf w - y_i)^2 = \|X\mathbf w - \mathbf y\|_2^2\). It is a convex problem without constraints with a closed-form solution \(\mathbf w^\ast = (X^\top X)^{-1}X^\top\mathbf y = X^\dagger\mathbf y\) (\(X^\dagger\) is the Moore–Penrose pseudoinverse).</p>
+<p class="jinak">“fit a line (plane) through the points so that the sum of their squared vertical distances from it is smallest”. It can also be solved by gradient descent, but a formula is available.</p></div>
+<div class="box vzorec"><div class="box-t">Deriving OLS in three lines</div>
+\[ g(\mathbf w) = \|X\mathbf w - \mathbf y\|_2^2 = (X\mathbf w - \mathbf y)^\top(X\mathbf w - \mathbf y),\qquad \nabla g = 2X^\top(X\mathbf w - \mathbf y) = 0\ \Rightarrow\ X^\top X\,\mathbf w = X^\top\mathbf y \]
+<table class="vars">
+<tr><td>\(X \in \mathbb R^{n\times d}\)</td><td>data matrix (rows are samples, including the column of ones)</td></tr>
+<tr><td>\(\mathbf y \in \mathbb R^n\)</td><td>target values</td></tr>
+<tr><td>\(X^\top X\)</td><td>a \(d\times d\) matrix; shape check: \(X^\top(X\mathbf w - \mathbf y)\) is \((d\times n)(n\times1) = d\times1\) – the shape of \(\mathbf w\)</td></tr>
+</table>
+<p>In code the system is solved (<code>np.linalg.solve</code>); the inverse is not computed explicitly.</p></div>
+<div class="box priklad"><div class="box-t">OLS by hand: three points (lecture)</div>
+<p>Points (0, 1), (1, 2), (2, 2) – no line passes through all of them. \(X^\top X = \begin{pmatrix}3 & 3\\ 3 & 5\end{pmatrix}\), \(X^\top\mathbf y = \begin{pmatrix}5\\ 6\end{pmatrix}\) ⇒ \(\tilde{\mathbf w} = \frac16\begin{pmatrix}5 & -3\\ -3 & 3\end{pmatrix}\begin{pmatrix}5\\6\end{pmatrix} = \begin{pmatrix}7/6\\ 1/2\end{pmatrix}\), so \(\hat y = \frac76 + \frac12x\). Residuals \((-\frac16, \frac13, -\frac16)\), sum of squares \(\frac16\) – the smallest any line can reach.</p>
+<p><b>Ridge with \(\lambda = 1\)</b> (we penalize only the slope, the offset is usually not penalized): \(\tilde{\mathbf w} = \left(X^\top X + \begin{pmatrix}0 & 0\\ 0 & 1\end{pmatrix}\right)^{-1}X^\top\mathbf y = \frac19\begin{pmatrix}6 & -3\\ -3 & 3\end{pmatrix}\begin{pmatrix}5\\6\end{pmatrix} = \begin{pmatrix}4/3\\ 1/3\end{pmatrix}\). The slope shrinks from \(\frac12\) to \(\frac13\) and the offset moves so that the line stays close to the data. (Own recalculation for other \(\lambda\): 10 ⇒ slope 0.083; 100 ⇒ 0.010 – the line approaches a horizontal one at the level of the mean \(\bar y = 5/3\).)</p></div>
+<div class="box definice" id="def-lad"><div class="box-t">Definition: least absolute deviations regression (LAD)</div>
+<p><b>LAD</b> (least absolute deviations) minimizes the sum of absolute values of the residuals \(\|X\mathbf w - \mathbf y\|_1 = \sum_i|\mathbf x_i^\top\mathbf w - y_i|\). It has no closed-form solution; it is solved by optimization (linear programming, IRLS).</p>
+<p class="jinak">L1 is less sensitive to large values – one huge error is not squared – so LAD is <b>robust to outliers</b>. On the other hand it is more sensitive to very small errors: the square of a small error is negligible (\(0.01^2 = 0.0001\)), the absolute value is not.</p></div>
+<h3>Regularization: ridge and LASSO</h3>
+<div class="box definice" id="def-ridge"><div class="box-t">Definition: ridge regression (L2 regularization)</div>
+<p><b>Ridge regression</b> minimizes \(\|X\mathbf w - \mathbf y\|_2^2 + \lambda\|\mathbf w\|_2^2\). It has the closed-form solution \(\mathbf w^\ast = (X^\top X + \lambda I)^{-1}X^\top\mathbf y\).</p>
+<p class="jinak">we add a penalty for large weights to the error. The coefficients <b>shrink</b> smoothly towards zero, but none becomes exactly zero – the model keeps all features. Adding \(\lambda I\) also makes sure the matrix can always be inverted.</p></div>
+<div class="box definice" id="def-lasso"><div class="box-t">Definition: LASSO (L1 regularization)</div>
+<p><b>LASSO</b> (least absolute shrinkage and selection operator) minimizes \(\|X\mathbf w - \mathbf y\|_2^2 + \lambda\|\mathbf w\|_1\). It has no closed-form solution and is solved by convex optimization; some coefficients come out <b>exactly zero</b>.</p>
+<p class="jinak">a penalty on the sum of absolute values of the weights “switches off” unneeded features – so LASSO does feature selection (an embedded method) and is robust to irrelevant features. The larger \(\lambda\), the fewer selected features. The same regularization can be used with LAD and linear classifiers too.</p></div>
+<figure class="wide"><div class="paper"><img src="../figures/en/fig04_ridge_lasso.png" alt="Ridge and LASSO coefficient paths as a function of lambda" loading="lazy"></div>
+<figcaption><b>Fig. 4.2</b> The diabetes dataset (10 standardized features): the value of each coefficient as a function of the regularization strength \(\lambda\). In colour the three features with the largest coefficients, the others in grey.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>Ridge pulls all coefficients smoothly towards zero, but until \(\lambda\) is huge none of them is zero. LASSO “switches them off” one by one – the number of non-zero coefficients drops 10 → 7 → 0. Large \(\lambda\) = a simpler model (in the end a constant = the mean).</p></div>
+<div class="box parametry"><div class="box-t">Parameters: linear regression (OLS, LAD, ridge, LASSO)</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>what it means</th><th><span class="up">↑</span> when I increase it</th><th><span class="dn">↓</span> when I decrease it</th></tr>
+<tr><td>\(\lambda\) (ridge; <code>alpha</code> in sklearn)</td><td>weight of the L2 penalty on the size of the weights</td><td>coefficients shrink towards 0, smoother model, lower variance, higher bias; for \(\lambda\to\infty\) a constant prediction (underfitting)</td><td>approaches OLS: better fit of the training data, but overfitting with many features / a high polynomial degree; unstable with correlated features</td></tr>
+<tr><td>\(\lambda\) (LASSO)</td><td>weight of the L1 penalty</td><td>more coefficients exactly 0 = fewer selected features, simpler model</td><td>more features in the model, at \(\lambda = 0\) OLS</td></tr>
+<tr><td>MSE vs. MAE loss</td><td>square vs. absolute value of the residual</td><td colspan="2">MSE: smooth, closed form, outliers “pull” the line; MAE (LAD): robust to outliers, no closed form</td></tr>
+</table></div>
+<p class="volba">\(\lambda\) is tuned on validation data / in CV on a logarithmic grid (0.001, 0.01, …, 1000). The features must be standardized – otherwise the penalty punishes features according to their units.</p></div>
+
+<h2 id="polynom">Non-linear features: polynomial regression</h2>
+<div class="box definice" id="def-polynom"><div class="box-t">Definition: polynomial regression</div>
+<p><b>Polynomial regression</b> of degree \(m\) models \(y_i = \beta_0 + \beta_1x_i + \beta_2x_i^2 + \dots + \beta_mx_i^m\). It is ordinary linear regression on transformed features (the matrix columns are \(1, x, x^2, \dots, x^m\)) – the model is <b>non-linear in the input but linear in the parameters</b>.</p>
+<p class="jinak">we do not change the model, we change what we feed into it. The coefficients are estimated just as in linear regression, only \(X\) is transformed. As with PCA, the expansion can also be done implicitly with a kernel – but we need the dual form.</p></div>
+<figure class="wide"><div class="paper"><img src="../figures/en/fig04_poly.png" alt="Polynomial regression of degree 1, 3, 15 and degree 15 with different regularization" loading="lazy"></div>
+<figcaption><b>Fig. 4.3</b> Two hyperparameters: polynomial degree (top row, OLS) and regularization strength \(\lambda\) for degree 15 (bottom row). The titles give the MSE on 40 training points and on 400 new points from the same distribution (\(x\) scaled to [−1, 1]).</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure (question from the lecture: what is underfitting and what is overfitting?)</div>
+<p><b>Underfitting</b>: degree 1 (a line does not capture the shape, both training and test error are high, 19.9 / 22.3) and degree 15 with \(\lambda = 100\) (regularization “flattened” it almost to a constant, 25.1 / 33.7). <b>Overfitting</b>: degree 15 without regularization – the lowest training error (3.4), but wild oscillations and a large test error (26.4). Good: degree 3 (5.8 / 10.4) or degree 15 with small regularization \(\lambda = 0.1\) (4.7 / 9.8). Regularization lets you use a rich model and tame it at the same time.</p></div>
+<div class="box parametry"><div class="box-t">Parameters: polynomial regression</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>what it means</th><th><span class="up">↑</span> when I increase it</th><th><span class="dn">↓</span> when I decrease it</th></tr>
+<tr><td>polynomial degree \(m\)</td><td>highest power of the feature (model complexity)</td><td>more flexible curve, training error ↓; from a certain degree oscillations between points and at the edges, test error ↑ (overfitting); the number of features grows fast (\(\binom{d+m}{m}\))</td><td>simpler, smoother curve; too low a degree does not capture the shape (underfitting)</td></tr>
+<tr><td>\(\lambda\)</td><td>regularization of the coefficients</td><td>tames the oscillations, flattens the model if too large (underfitting)</td><td>more freedom, at 0 plain OLS</td></tr>
+</table></div>
+<p class="volba">the two hyperparameters are linked – a higher degree tolerates more regularization. They are tuned together in CV.</p></div>
+<div data-demo="poly-ridge"></div>
+
+<h2 id="jadra">Kernels and the dual form</h2>
+<p>Polynomial expansion grows fast: the number of monomials up to degree \(m\) in \(d\) variables is \(\binom{d+m}{m}\) – for \(d = 2, m = 3\) it is 10, for \(d = 10, m = 3\) already 286, for \(d = 100, m = 3\) 176,851; the RBF kernel even corresponds to an infinite-dimensional \(\Phi\). Key idea: many ML algorithms have a <b>dual form</b> in which the data appear only in dot products \(\Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\) – and a kernel can compute those cheaply (see chapter 3: \((\mathbf x_i^\top\mathbf x_j)^2\) for \(\mathbf x_i = (1,2)\), \(\mathbf x_j = (3,1)\) gives \(5^2 = 25 = 9 + 4 + 12\)).</p>
+<div class="box definice" id="def-jadrova-funkce"><div class="box-t">Definition: kernel function and kernel (Gram) matrix</div>
+<p>A <b>kernel function</b> is a function \(k: \mathbb R^d\times\mathbb R^d\to\mathbb R\) for which there exists a mapping \(\Phi\) into a (possibly high-dimensional) space such that \(k(\mathbf x_i, \mathbf x_j) = \Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\). The <b>kernel matrix</b> \(K\) contains the values \(K_{ij} = k(\mathbf x_i, \mathbf x_j)\) for all pairs of training samples and is positive semidefinite.</p>
+<p class="jinak">a kernel is a “measure of similarity” that behaves like a dot product in another space. The kernel function replaces \(\mathbf x_i^\top\mathbf x_j\) and the kernel matrix replaces \(XX^\top\).</p></div>
+<div class="box vzorec"><div class="box-t">Common kernels</div>
+\[ k_{\text{lin}}(\mathbf x_i, \mathbf x_j) = \mathbf x_i^\top\mathbf x_j,\qquad k_{\text{poly}}(\mathbf x_i, \mathbf x_j) = (\mathbf x_i^\top\mathbf x_j + c)^p,\qquad k_{\text{RBF}}(\mathbf x_i, \mathbf x_j) = \exp\!\left(-\frac{\|\mathbf x_i - \mathbf x_j\|^2}{2\sigma^2}\right) = \exp(-\gamma\|\mathbf x_i - \mathbf x_j\|^2) \]
+<table class="vars">
+<tr><td>\(p\)</td><td>degree of the polynomial kernel (higher = more complex model)</td></tr>
+<tr><td>\(c\)</td><td>offset – \(c \gt 0\) also adds monomials of lower degrees</td></tr>
+<tr><td>\(\sigma\), \(\gamma = 1/2\sigma^2\)</td><td>width of the RBF kernel (Gaussian) and its inverse – how fast similarity drops with distance</td></tr>
+</table></div>
+<div class="box definice" id="def-dual"><div class="box-t">Definition: primal and dual form of ridge regression</div>
+<p>The <b>primal form</b> looks for the weights \(\mathbf w = (X^\top X + \lambda I)^{-1}X^\top\mathbf y\) (a \(d\times d\) matrix); prediction \(\hat y = \mathbf x_{\text{new}}^\top\mathbf w\). The <b>dual form</b> looks for coefficients of the samples \(\boldsymbol\alpha = (XX^\top + \lambda I)^{-1}\mathbf y\) (an \(n\times n\) matrix), where \(\mathbf w = X^\top\boldsymbol\alpha = \sum_i\alpha_i\mathbf x_i\); prediction \(\hat y = \sum_i\alpha_i\mathbf x_i^\top\mathbf x_{\text{new}}\).</p>
+<p class="jinak">the weights are a linear combination of the training samples. The primal solves a system the size of the number of features, the dual one the size of the number of samples – the smaller one is faster. The dual contains the data only in dot products, and that is why it can be “kernelized”.</p></div>
+<div class="box definice" id="def-krr"><div class="box-t">Definition: kernel ridge regression (KRR)</div>
+<p><b>Kernel ridge regression</b> is dual ridge regression in which the dot products are replaced by a kernel: \(\boldsymbol\alpha^\ast = (K + \lambda I)^{-1}\mathbf y\), prediction \(\hat y_{\text{new}} = \sum_i\alpha_i k(\mathbf x_i, \mathbf x_{\text{new}})\), for more samples \(\hat{\mathbf y}_{\text{new}} = K_{\text{new}}\boldsymbol\alpha\), \((K_{\text{new}})_{ij} = k(\mathbf x_{\text{new},i}, \mathbf x_j)\).</p>
+<p class="jinak">an implicit feature transformation gives the same result as an explicit one, but the computational cost does not depend on the dimension of the expanded space – only on the number of samples.</p></div>
+
+<h2 id="klasifikace">Linear classification</h2>
+<div class="box definice" id="def-separabilita"><div class="box-t">Definition: linear separability</div>
+<p>Data are <b>linearly separable</b> if there is a line (in general a hyperplane) that separates all positive samples from all negative ones without error.</p>
+<p class="jinak">real data are noisy, overlap or have wrong labels, so exact separability almost never holds. It is a theoretical concept needed for the hard-margin SVM and for the convergence of the perceptron.</p></div>
+<p><b>LDA as a classifier</b> (review of chapter 3): \(\mathbf w = S_W^{-1}(\boldsymbol\mu_1 - \boldsymbol\mu_2)\) and threshold \(t^\ast = \frac12(\boldsymbol\mu_1 + \boldsymbol\mu_2)^\top\mathbf w - \ln\frac{\pi_1}{\pi_2}\), where \(\pi_c\) are the prior probabilities of the classes. <b>MSE classifier</b>: train a regression (MSE) on labels \(\pm1\) and take the sign – simple, with a closed form, but sensitive to outliers and performing poorly (it also punishes points that are “too correct”).</p>
+<div class="box definice" id="def-logreg"><div class="box-t">Definition: logistic regression</div>
+<p><b>Logistic regression</b> is a probabilistic linear classifier: \(p(y = 1\mid\mathbf x) = \sigma(z) = \frac{1}{1 + e^{-z}}\), \(z = \mathbf w^\top\mathbf x + b\); it predicts class 1 when \(\sigma(z) \ge 0.5\) (equivalently \(\hat y = \operatorname{sign}(z)\)). It is trained by minimizing the <b>cross-entropy</b> (log-loss): \(L = -y\log\sigma(z) - (1 - y)\log(1 - \sigma(z))\) for \(y \in \{0, 1\}\), or \(L = \log(1 + e^{-yz})\) for \(y \in \{-1, +1\}\).</p>
+<p class="jinak">the sigmoid “squeezes” the linear score into the interval (0, 1), so the output can be read as a probability. The loss is convex (solved by gradient descent), less sensitive to outliers than MSE, regularization can be added and the outputs are calibrated (if the model fits the data). The same loss is used in deep learning – the linear model is just replaced by a network.</p></div>
+<div class="box definice" id="def-perceptron"><div class="box-t">Definition: perceptron</div>
+<p>The <b>perceptron</b> is a linear classifier \(\hat y = \operatorname{sign}(\tilde{\mathbf w}^\top\tilde{\mathbf x})\) trained by an iterative rule: for every sample that is misclassified (\(y_i\tilde{\mathbf w}^\top\tilde{\mathbf x}_i \le 0\)) it moves the weights towards it: \(\tilde{\mathbf w} \leftarrow \tilde{\mathbf w} + \eta\,y_i\tilde{\mathbf x}_i\). It corresponds to the loss \(\max(0, -y\tilde{\mathbf w}^\top\tilde{\mathbf x})\).</p>
+<p class="jinak">“when you make a mistake, turn the boundary a little towards the wrong point”; multiplying by \(y = \pm1\) picks the direction automatically. It provably converges <b>only for linearly separable</b> classes – otherwise it cycles forever.</p></div>
+<div class="box postup"><div class="box-t">Perceptron in code (lecture)</div>
+<pre style="margin:0;overflow-x:auto"><code>def train_perceptron(X, y, epochs):
+    n, d = X.shape
+    w = np.zeros(d)
+    for _ in range(epochs):
+        for i in range(n):
+            y_hat = X[i] @ w
+            if y[i] * y_hat &lt;= 0:
+                w += y[i] * X[i]
+    return w</code></pre>
+<p>Each update adds \(y_i\mathbf x_i\) ⇒ the weights are always a weighted sum of the samples, \(\mathbf w = \sum_i\alpha_i\mathbf x_i\). That is exactly the definition of the weights \(\alpha\) in the dual form – an intuitive “proof” that the dual exists.</p></div>
+
+<h2 id="svm">Support vector machines (SVM)</h2>
+<div class="box intuice"><div class="box-t">Intuition: the widest safe zone</div>
+<p>For separable data there are infinitely many boundaries with zero error. Which one to choose? SVM picks the one with the <b>largest margin</b> – the largest “safe zone” between the boundary and the nearest points of both classes. A wide margin means that a small shift (noise) of a new point does not change its classification.</p></div>
+<div class="box definice" id="def-margin"><div class="box-t">Definition: margin and support vectors</div>
+<p>The <b>margin</b> is the distance of the decision hyperplane from the nearest training points; the distance of a point from the hyperplane \((\mathbf w, b)\) is \(|\mathbf w^\top\mathbf x_i + b|/\|\mathbf w\|\). With the normalization \(y_i(\mathbf w^\top\mathbf x_i + b) \ge 1\) the nearest points lie exactly at the distance \(1/\|\mathbf w\|\) (the band width is \(2/\|\mathbf w\|\)). <b>Support vectors</b> are the training points that lie on the margin or inside it; only they determine \(\mathbf w\) and \(b\).</p>
+<p class="jinak">the condition “≥ 1” only fixes the scale: instead of \(\|\mathbf w\| = 1\) with a variable margin we fix the margin to 1 and let the size of \(\mathbf w\) change. Maximizing \(1/\|\mathbf w\|\) is the same as minimizing \(\frac12\|\mathbf w\|^2\). If we deleted the other points, we would get the same boundary.</p></div>
+<div class="box definice" id="def-svm-hard"><div class="box-t">Definition: hard-margin SVM</div>
+<p><b>Hard-margin SVM</b> solves the problem \(\min_{\mathbf w, b}\frac12\|\mathbf w\|^2\) subject to \(y_i(\mathbf w^\top\mathbf x_i + b) \ge 1\) for all \(i\). The dual problem is a convex quadratic program \(\max_{\boldsymbol\alpha}\sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\mathbf x_i^\top\mathbf x_j\) s.t. \(\sum_i\alpha_iy_i = 0\), \(\boldsymbol\alpha \ge 0\); then \(\mathbf w = \sum_i\alpha_iy_i\mathbf x_i\) and \(\hat y = \operatorname{sign}\left(\sum_{i\in SV}\alpha_iy_i\mathbf x_i^\top\mathbf x + b\right)\).</p>
+<p class="jinak">QP has efficient algorithms with a guaranteed global optimum. \(\alpha_i \gt 0\) exactly for the support vectors (\(y_i(\mathbf w^\top\mathbf x_i + b) = 1\)); only they are needed for prediction – it is fast. It works only for separable data.</p></div>
+<div class="box priklad"><div class="box-t">Hard-margin SVM by hand: two points (lecture)</div>
+<p>\(\mathbf x_1 = (1, 1)\), \(y_1 = +1\); \(\mathbf x_2 = (-1, -1)\), \(y_2 = -1\). <b>Geometry:</b> the boundary is the perpendicular bisector \(x_1 + x_2 = 0\); each point is at distance \(\sqrt2\) from it ⇒ margin \(1/\|\mathbf w\| = \sqrt2\), \(\|\mathbf w\| = 1/\sqrt2\). <b>Primal:</b> \(\mathbf w = (\frac12, \frac12)\), \(b = 0\); check \(y_i(\mathbf w^\top\mathbf x_i + b) = 1\) for both points; objective \(\frac12\|\mathbf w\|^2 = \frac14\). <b>Dual:</b> \(\mathbf x_1^\top\mathbf x_1 = \mathbf x_2^\top\mathbf x_2 = 2\), \(\mathbf x_1^\top\mathbf x_2 = -2\); the condition \(\alpha_1y_1 + \alpha_2y_2 = 0\) gives \(\alpha_1 = \alpha_2 = \alpha\); objective \(\sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\mathbf x_i^\top\mathbf x_j = 2\alpha - \frac12\cdot2(2\alpha)^2 = 2\alpha - 4\alpha^2\) (all four terms of the double sum are \(2\alpha^2\)), derivative \(2 - 8\alpha = 0\) ⇒ \(\alpha = \frac14\); \(\mathbf w = \frac14(1,1) + \frac14(1,1) = (\frac12, \frac12)\) ✓. Dual optimum \(2\cdot\frac14 - 4\cdot\frac1{16} = \frac14\) = primal optimum (strong duality); both points are support vectors.</p></div>
+<div class="box definice" id="def-svm-soft"><div class="box-t">Definition: soft-margin SVM and hinge loss</div>
+<p><b>Soft-margin SVM</b> allows violations of the margin using <b>slack variables</b> \(\xi_i \ge 0\): \(\min_{\mathbf w, b, \boldsymbol\xi}\frac12\|\mathbf w\|^2 + C\sum_i\xi_i\) s.t. \(y_i(\mathbf w^\top\mathbf x_i + b) \ge 1 - \xi_i\). After plugging in the smallest allowed \(\xi_i = \max(0, 1 - y_i(\mathbf w^\top\mathbf x_i + b))\) we get an equivalent problem without constraints \(\min\frac12\|\mathbf w\|^2 + C\sum_i\max(0, 1 - y_i(\mathbf w^\top\mathbf x_i + b))\) – <b>margin regularization + hinge loss</b>.</p>
+<p class="jinak">points may enter the band and even go to the wrong side, but every violation has a price. \(\xi_i = 0\): correct and with a margin; \(0 \lt \xi_i \le 1\): correct but inside the band; \(\xi_i \gt 1\): misclassified. Every point with \(\xi_i \gt 0\) is a support vector. The hinge loss can also be used in neural networks.</p></div>
+<div class="box priklad"><div class="box-t">Slack by hand (lecture)</div>
+<p>A misclassified point with the score \(y_i(\mathbf w^\top\mathbf x_i + b) = -0.5\) has \(\xi_i = 1 - (-0.5) = 1.5\); a point inside the band with score 0.6 has \(\xi_i = 0.4\); a point beyond the margin (score ≥ 1) has 0. In the figure from the lecture (50 points): 30 points with \(\xi = 0\), 13 inside the margin, 7 wrong; 21 support vectors, \(\sum\xi_i = 15.7\).</p></div>
+<figure class="wide"><div class="paper"><img src="../figures/en/fig04_svm_c.png" alt="Linear soft-margin SVM for three values of C" loading="lazy"></div>
+<figcaption><b>Fig. 4.4</b> The same overlapping data, linear SVM with \(C\) = 0.01, 1, 100. Solid line = boundary, dashed = margins (\(\mathbf w^\top\mathbf x + b = \pm1\)), circled = support vectors.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>\(C\) is the price for violating the margin. Small \(C\) (0.01): violations are cheap ⇒ wide band (4.31), almost all points are support vectors (39), the boundary is an “average” of many points. Large \(C\) (100): violations are expensive ⇒ narrow band (0.71), few support vectors (8), the boundary follows a few points close to it. (In the lecture: \(C\) from 0.01 to 30 – margin 2.54 → 0.27, support vectors 44 → 16.)</p></div>
+<div class="box definice" id="def-nu-svm"><div class="box-t">Definition: ν-SVM</div>
+<p><b>ν-SVM</b> is an alternative parametrization of the soft-margin SVM that instead of \(C \in [0, \infty)\) uses \(\nu \in (0, 1]\) with an intuitive meaning: \(\nu\) is an <b>upper bound on the fraction of margin errors</b> (training errors) and a <b>lower bound on the fraction of support vectors</b>. Problem: \(\min\frac12\|\mathbf w\|^2 - \nu\rho + \frac1n\sum_i\xi_i\) s.t. \(y_i(\mathbf w^\top\mathbf x_i + b) \ge \rho - \xi_i\), \(\xi_i \ge 0\).</p>
+<p class="jinak">\(\nu = 0.1\) roughly says “at most 10 % margin errors are allowed and at least 10 % of the points will be support vectors” – easier to choose than an abstract \(C\).</p></div>
+<div class="box definice" id="def-kernel-svm"><div class="box-t">Definition: kernel SVM</div>
+<p>A <b>kernel SVM</b> is obtained by replacing the dot product in the dual problem of the soft-margin SVM with a kernel: \(\max_{\boldsymbol\alpha}\sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_jk(\mathbf x_i, \mathbf x_j)\) s.t. \(\sum_i\alpha_iy_i = 0\), \(0 \le \alpha_i \le C\); decision function \(f(\mathbf x) = \operatorname{sign}\left(\sum_{i\in SV}\alpha_iy_ik(\mathbf x_i, \mathbf x) + b\right)\).</p>
+<p class="jinak">a non-linear boundary in the original space, while the optimization problem stays the same size – it depends on \(n\), not on the feature dimension. An explicit \(\mathbf w\) in the original space does not exist; the \(\alpha_i\) (non-zero only for support vectors) say how much each support vector influences the boundary.</p></div>
+<figure class="wide"><div class="paper"><img src="../figures/en/fig04_svm_rbf.png" alt="RBF SVM for different values of gamma and C" loading="lazy"></div>
+<figcaption><b>Fig. 4.5</b> RBF SVM on 100 noisy “two moons” points. Top row: \(C = 1\), \(\gamma\) changes. Bottom row: \(\gamma = 1\), \(C\) changes. The titles give the number of support vectors and the accuracy on the training points and on 1000 new points.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p><b>\(\gamma\)</b> (inverse width of the Gaussian) sets the reach of the influence of one support vector. Small \(\gamma\) (0.1): each point influences a wide neighbourhood ⇒ the boundary is almost a line (underfitting, test 0.84). Large \(\gamma\) (100): influence only very close to the point ⇒ “islands” around individual points, training 0.99, test 0.78 (overfitting). <b>\(C\)</b>: small = smooth boundary with many support vectors (100), large (10,000) = the boundary bends because of individual points. Both parameters are tuned <b>together</b>.</p></div>
+<div class="box parametry"><div class="box-t">Parameters: SVM</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>what it means</th><th><span class="up">↑</span> when I increase it</th><th><span class="dn">↓</span> when I decrease it</th></tr>
+<tr><td>\(C\)</td><td>price of violating the margin (trade-off margin width × training errors)</td><td>fewer violations, narrower margin, fewer support vectors, the boundary adapts to individual points ⇒ risk of overfitting</td><td>wider margin, more tolerance to errors, more support vectors, smoother boundary ⇒ risk of underfitting</td></tr>
+<tr><td>\(\nu\) (ν-SVM)</td><td>upper bound on the fraction of margin errors, lower bound on the fraction of SVs</td><td>more tolerated errors, more support vectors (like a smaller \(C\))</td><td>fewer errors, fewer SVs (like a larger \(C\))</td></tr>
+<tr><td>kernel</td><td>linear / polynomial / RBF</td><td colspan="2">linear = a line (fast, interpretable weights \(\mathbf w\)); polynomial and RBF = non-linear boundary</td></tr>
+<tr><td>RBF \(\gamma = 1/2\sigma^2\)</td><td>inverse width of the kernel – reach of one point’s influence</td><td>more complex, “island-like” boundary, more SVs, overfitting</td><td>smoother boundary, approaches a linear model, underfitting</td></tr>
+<tr><td>polynomial degree \(p\)</td><td>degree of the polynomial kernel</td><td>more complex model (overfitting)</td><td>simpler model</td></tr>
+</table></div>
+<p class="volba">grid search on a logarithmic grid (\(C\) and \(\gamma\) by orders of magnitude) in cross-validation; standardize the features (both the kernel and the margin compute distances). Few SVs = sparser, simpler model; many SVs = more complex boundary, more memory.</p></div>
+<div data-demo="svm-c"></div>
+<p><b>Interpreting a linear SVM:</b> \(\mathbf w\) = weights (importance) of the features, \(1/\|\mathbf w\|\) = margin (half of the band width \(2/\|\mathbf w\|\)), support vectors = points on or inside the margin, only they determine \(\mathbf w, b\).</p>
+
+<div class="box zkouska"><div class="box-t">How to say it at the exam</div>
+<p>“A linear model computes \(\mathbf w^\top\mathbf x + b\); in regression that is directly the prediction, in classification the sign decides. Training is minimizing the average loss plus regularization: OLS with MSE has the closed-form solution \((X^\top X)^{-1}X^\top\mathbf y\), LAD with MAE is robust to outliers, ridge adds \(\lambda\|\mathbf w\|_2^2\) and shrinks the coefficients, LASSO adds \(\lambda\|\mathbf w\|_1\) and sets some to zero. I get non-linearity by expanding the features, e.g. with a polynomial – the model stays linear in the parameters; with the kernel trick in the dual form, without an explicit expansion. Logistic regression gives probabilities through the sigmoid and log-loss; the perceptron corrects mistakes and converges only for separable data. SVM maximizes the margin \(1/\|\mathbf w\|\); the soft margin allows violations with price \(C\), which is the hinge loss. Large \(C\) and large \(\gamma\) for RBF lead to overfitting, small ones to underfitting.”</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Summary</h2>
+<p>The linear model \(\mathbf w^\top\mathbf x + b\) (with the bias trick \(\tilde{\mathbf w}^\top\tilde{\mathbf x}\)) serves both regression and classification; the difference is only in the loss. OLS minimizes squared residuals and has a closed-form solution from the normal equations; LAD minimizes absolute deviations and is robust. Ridge (L2) shrinks the coefficients and has the closed-form solution \((X^\top X + \lambda I)^{-1}X^\top\mathbf y\), LASSO (L1) sets them to zero and so selects features. Polynomial regression is linear regression on expanded features; the degree and \(\lambda\) decide between underfitting and overfitting. The dual form expresses the weights as a combination of samples and contains the data only in dot products – a kernel replaces them (linear, polynomial, RBF), which gives kernel ridge regression and the kernel SVM. Among linear classifiers, the MSE classifier is weak, logistic regression gives calibrated probabilities, and the perceptron converges only for separable data. SVM maximizes the margin; the soft margin with parameter \(C\) (or \(\nu\)) corresponds to the hinge loss with L2 regularization; the boundary is determined only by the support vectors.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Linear models differ only in the choice of loss (MSE, MAE, hinge, log-loss, perceptron) and regularization (L2, L1).</li>
+<li>OLS: \(\mathbf w = (X^\top X)^{-1}X^\top\mathbf y\); ridge adds \(\lambda I\).</li>
+<li>Ridge shrinks the coefficients, LASSO sets them to zero (feature selection); ↑λ = simpler model.</li>
+<li>Polynomial regression is linear in the parameters; a high degree without regularization = overfitting.</li>
+<li>Kernel trick: in the dual form we replace \(\mathbf x_i^\top\mathbf x_j\) by the kernel \(k(\mathbf x_i, \mathbf x_j)\); the cost depends on \(n\), not on the dimension.</li>
+<li>SVM = max. margin \(1/\|\mathbf w\|\); the boundary is determined by the support vectors.</li>
+<li>↑C and ↑γ = more complex boundary (overfitting); ↓C and ↓γ = smoother (underfitting).</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Exam questions</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Expand all answers</button><button class="iconbtn" data-qall="close">Collapse</button></div>
+<details class="q"><summary>Explain the bias trick and the difference between linear regression and linear classification.</summary><div>
+<p>I write the affine \(f(\mathbf x) = \mathbf w^\top\mathbf x + b\) as the linear \(\tilde{\mathbf w}^\top\tilde{\mathbf x}\) with \(\tilde{\mathbf x} = (\mathbf x, 1)\), \(\tilde{\mathbf w} = (\mathbf w, b)\) – the offset is just another weight, formulas and code become simpler (a column of ones in \(X\)). Regression returns \(\mathbf w^\top\mathbf x + b\) directly (continuous), classification its sign; the decision boundary is the hyperplane \(\mathbf w^\top\mathbf x + b = 0\).</p></div></details>
+<details class="q"><summary>Derive the closed-form solution of OLS.</summary><div>
+<p>\(g(\mathbf w) = \|X\mathbf w - \mathbf y\|^2 = (X\mathbf w - \mathbf y)^\top(X\mathbf w - \mathbf y)\); gradient \(\nabla g = 2X^\top(X\mathbf w - \mathbf y)\); I set it to zero ⇒ normal equations \(X^\top X\mathbf w = X^\top\mathbf y\) ⇒ \(\mathbf w^\ast = (X^\top X)^{-1}X^\top\mathbf y = X^\dagger\mathbf y\). The problem is convex, so it is the global minimum. For the points (0,1), (1,2), (2,2): \(\hat y = 7/6 + x/2\).</p></div></details>
+<details class="q"><summary>Why is MSE sensitive to outliers and MAE not? When would you choose LAD?</summary><div>
+<p>MSE squares the residuals – an error of 10 contributes 100, so one outlier “pulls” the line. MAE contributes linearly (10), large errors do not dominate. On the other hand MSE almost ignores small errors (\(0.01^2\)). I choose LAD when the data contain outliers or measurement errors that I do not want the model to follow (e.g. occasional artefacts in a signal).</p></div></details>
+<details class="q"><summary>Compare ridge and LASSO. How does λ affect bias and variance?</summary><div>
+<p>Ridge: penalty \(\lambda\|\mathbf w\|_2^2\), shrinks the coefficients smoothly, sets none to zero, has the closed form \((X^\top X + \lambda I)^{-1}X^\top\mathbf y\). LASSO: \(\lambda\|\mathbf w\|_1\), some coefficients exactly 0 (feature selection), no closed form (convex optimization). Larger \(\lambda\) = simpler model, lower variance, higher bias (up to underfitting – a constant model); smaller \(\lambda\) = closer to OLS, lower bias, higher variance (overfitting).</p></div></details>
+<details class="q"><summary>How do you build polynomial regression and why does it stay linear? How are the degree and regularization related?</summary><div>
+<p>I extend the feature matrix with the columns \(x^2, \dots, x^m\) and solve ordinary linear regression – the model is linear in the coefficients \(\beta\), it is non-linear only in the input. A higher degree increases complexity (overfitting – oscillations between points), a low one does not capture the shape (underfitting). Regularization makes it possible to tame a high degree: degree 15 with \(\lambda = 0.1\) behaves similarly to degree 3, with \(\lambda = 100\) it flattens to a constant.</p></div></details>
+<details class="q"><summary>Explain the kernel trick and why the dual form helps when the dimension is large.</summary><div>
+<p>The dual form (ridge: \(\boldsymbol\alpha = (XX^\top + \lambda I)^{-1}\mathbf y\), SVM) contains the data only in dot products \(\mathbf x_i^\top\mathbf x_j\). I replace them by a kernel \(k(\mathbf x_i, \mathbf x_j) = \Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\) and get a model in the expanded space without computing \(\Phi\). The cost depends on the number of samples \(n\) (an \(n\times n\) matrix), not on the dimension of \(\Phi\) – which can be huge (polynomials) or infinite (RBF).</p></div></details>
+<details class="q"><summary>Compare logistic regression and the MSE classifier. What does the perceptron do and when does it converge?</summary><div>
+<p>The MSE classifier regresses the labels ±1 – simple and with a closed form, but it also punishes correctly classified distant points, is sensitive to outliers and works poorly. Logistic regression models \(p(y = 1\mid\mathbf x) = \sigma(\mathbf w^\top\mathbf x + b)\), minimizes the convex cross-entropy, is more robust and gives calibrated probabilities. The perceptron adds \(\eta y_i\mathbf x_i\) to the weights at every mistake; it converges only for linearly separable classes. Its update implies \(\mathbf w = \sum\alpha_i\mathbf x_i\) – the dual form.</p></div></details>
+<details class="q"><summary>Define the SVM margin. Why does maximizing the margin lead to minimizing ½‖w‖²? What is the role of C and the slack variables?</summary><div>
+<p>Margin = the distance of the boundary from the nearest points, \(|\mathbf w^\top\mathbf x + b|/\|\mathbf w\|\). If we fix the scale with the condition \(y_i(\mathbf w^\top\mathbf x_i + b) \ge 1\), the nearest points are at distance \(1/\|\mathbf w\|\); maximizing it is the same as minimizing \(\frac12\|\mathbf w\|^2\) (a quadratic program). The soft margin adds \(\xi_i \ge 0\) (size of the margin violation: 0 correct, (0, 1] inside the band, &gt; 1 wrong) and the price \(C\sum\xi_i\) – equivalently the hinge loss. Large \(C\) = narrow margin, fewer errors, overfitting; small \(C\) = wide margin, more tolerance.</p></div></details>
+<details class="q"><summary>Which hyperparameters do we tune for a kernel SVM and how do they affect the boundary? What do many vs. few support vectors mean?</summary><div>
+<p>\(C\) (or \(\nu\)), the kernel type and its parameters: the polynomial degree \(p\) (higher = more complex), \(\gamma = 1/2\sigma^2\) for RBF (higher = narrower Gaussians, the boundary wraps around individual points, overfitting; lower = smoother, up to linear). They are tuned together by grid search in CV. Few SVs = a sparse, simple model with fast prediction; many SVs = a more complex boundary and higher memory needs (or a very small \(C\)).</p></div></details>
+
+<nav class="pager"><a class="prev" href="03_redukce.html"><small>← previous</small>Feature selection and dimensionality reduction</a><a class="next" href="05_vibecoding.html"><small>next →</small>Vibecoding: working with an AI agent</a></nav>
+</main>
+</div>
+</body>
+</html>

@@ -1,6 +1,8 @@
 """Generuje obrázky do mlr/figures/.
 
 Spuštění (z kořene repozitáře pripravy):  uv run python mlr/_build/make_figures.py
+Anglické popisky pro anglickou verzi skript (do mlr/figures/en/):  uv run python mlr/_build/make_figures.py --lang en
+Vybrané obrázky:  … make_figures.py [--lang en] fig04_poly fig06_rf
 Data jsou syntetická s pevným random seedem (výsledek je reprodukovatelný) nebo standardní datasety ze scikit-learn
 (wine, digits, diabetes, breast cancer). Grafy dodržují paletu a pravidla skillu dataviz:
 pevné pořadí barev C1 → C2 → C3, tvar značky jako druhé rozlišení, popisky osa/jednotky, žádná dvojí osa y.
@@ -21,9 +23,21 @@ from matplotlib.colors import ListedColormap
 warnings.filterwarnings("ignore")
 logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
 
+ARGS = sys.argv[1:]
+LANG = "cs"
+if "--lang" in ARGS:
+    i = ARGS.index("--lang")
+    LANG = ARGS[i + 1]
+    del ARGS[i:i + 2]
+
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "figures"
+OUT = ROOT / "figures" if LANG == "cs" else ROOT / "figures" / LANG
 OUT.mkdir(exist_ok=True)
+
+
+def T(cs, en):
+    """Popisek podle jazyka (česká verze → figures/, anglická → figures/en/)."""
+    return cs if LANG == "cs" else en
 
 # ---- paleta (referenční paleta skillu dataviz, světlý povrch; obrázky se v tmavém režimu zobrazují na světlé kartě) ----
 SURF = "#fcfcfb"
@@ -56,8 +70,9 @@ def rng(seed):
 
 
 def cz(x, d=2):
-    """Číslo s desetinnou čárkou pro popisky."""
-    return f"{x:.{d}f}".replace(".", ",")
+    """Číslo s desetinnou čárkou pro popisky (v angličtině s tečkou)."""
+    s = f"{x:.{d}f}"
+    return s.replace(".", ",") if LANG == "cs" else s
 
 
 def save(fig, name):
@@ -96,7 +111,8 @@ def fig01_gd_eta():
     xs = np.linspace(-4.6, 4.6, 200); ys = np.linspace(-2.6, 2.6, 200)
     XX, YY = np.meshgrid(xs, ys); F = 0.5 * (XX ** 2 + 5 * YY ** 2)
     fig, axs = plt.subplots(1, 4, figsize=(12, 3.3), sharey=True)
-    labels = {0.05: "plíží se", 0.2: "dobře zvolený", 0.38: "přestřeluje, ale konverguje", 0.45: "diverguje"}
+    labels = {0.05: T("plíží se", "crawls"), 0.2: T("dobře zvolený", "well chosen"),
+              0.38: T("přestřeluje, ale konverguje", "overshoots but converges"), 0.45: T("diverguje", "diverges")}
     for ax, eta in zip(axs, [0.05, 0.2, 0.38, 0.45]):
         ax.contour(XX, YY, F, levels=[0.5, 2, 4.5, 8, 12.5], colors=[AXIS], linewidths=0.8)
         x = np.array([-4.0, 1.5]); path = [x.copy()]
@@ -109,7 +125,8 @@ def fig01_gd_eta():
         ax.plot(0, 0, marker="*", ms=12, color=C1, zorder=4)
         fval = 0.5 * (x[0] ** 2 + 5 * x[1] ** 2)
         ax.set_title(f"η = {cz(eta)}: {labels[eta]}", fontsize=10)
-        ax.text(0.04, 0.05, f"f po 20 krocích = {cz(fval) if fval < 1e3 else 'roste do ∞'}",
+        ax.text(0.04, 0.05, T("f po 20 krocích = ", "f after 20 steps = ") +
+                (cz(fval) if fval < 1e3 else T("roste do ∞", "grows to ∞")),
                 transform=ax.transAxes, fontsize=9, color=INK2, bbox=dict(fc=SURF, ec="none", pad=1.5), zorder=5)
         ax.set_xlabel("x₁"); ax.set_xlim(-4.6, 4.6); ax.set_ylim(-2.6, 2.6)
     axs[0].set_ylabel("x₂")
@@ -126,9 +143,10 @@ def fig01_knn_k():
         m = KNeighborsClassifier(n_neighbors=k).fit(Xtr, ytr)
         regions(ax, m, X)
         scatter2(ax, Xtr, ytr, s=18)
-        ax.set_title(f"k = {k}: trénink {cz(m.score(Xtr, ytr))}, test {cz(m.score(Xte, yte))}", fontsize=10)
-        ax.set_xlabel("příznak x₁")
-    axs[0].set_ylabel("příznak x₂")
+        ax.set_title(f"k = {k}: {T('trénink', 'train')} {cz(m.score(Xtr, ytr))}, test {cz(m.score(Xte, yte))}",
+                     fontsize=10)
+        ax.set_xlabel(T("příznak x₁", "feature x₁"))
+    axs[0].set_ylabel(T("příznak x₂", "feature x₂"))
     save(fig, "fig01_knn_k")
 
 
@@ -143,27 +161,32 @@ def fig02_roc():
     fig, axs = plt.subplots(1, 2, figsize=(11, 3.8), gridspec_kw={"width_ratios": [1.4, 1]})
     ax = axs[0]
     s = np.linspace(-4, 6, 400)
-    ax.plot(s, norm.pdf(s, mu0, 1), color=C1, label="negativní (zdraví)")
-    ax.plot(s, norm.pdf(s, mu1, 1), color=C2, label="pozitivní (nemocní)")
+    ax.plot(s, norm.pdf(s, mu0, 1), color=C1, label=T("negativní (zdraví)", "negative (healthy)"))
+    ax.plot(s, norm.pdf(s, mu1, 1), color=C2, label=T("pozitivní (nemocní)", "positive (sick)"))
     t = 1.2
     ax.fill_between(s[s >= t], norm.pdf(s[s >= t], mu0, 1), color=C1, alpha=0.25, lw=0)
     ax.fill_between(s[s >= t], norm.pdf(s[s >= t], mu1, 1), color=C2, alpha=0.25, lw=0)
     ax.axvline(t, color=INK, lw=1.2, ls="--")
-    ax.text(t + 0.1, 0.49, "práh t = 1,2: vše vpravo = „pozitivní“", fontsize=9, color=INK2, va="top")
+    ax.text(t + 0.1, 0.49, T("práh t = 1,2: vše vpravo = „pozitivní“", "threshold t = 1.2: all to the right = “positive”"),
+            fontsize=9, color=INK2, va="top")
     ax.set_ylim(0, 0.5)
     ax.text(2.7, 0.1, f"TPR = {cz(1 - norm.cdf(t, mu1, 1))}", color=INK, fontsize=9)
     ax.text(1.35, 0.03, f"FPR = {cz(1 - norm.cdf(t, mu0, 1))}", color=INK, fontsize=9)
-    ax.set_xlabel("skóre klasifikátoru s(x)"); ax.set_ylabel("hustota")
-    ax.set_title("Skóre obou tříd a jeden práh"); ax.legend(loc="upper left", fontsize=9)
+    ax.set_xlabel(T("skóre klasifikátoru s(x)", "classifier score s(x)")); ax.set_ylabel(T("hustota", "density"))
+    ax.set_title(T("Skóre obou tříd a jeden práh", "Scores of both classes and one threshold"))
+    ax.legend(loc="upper left", fontsize=9)
     ax = axs[1]
     ax.plot(fpr, tpr, color=C1, label=f"model (AUC = {cz(auc)})")
-    ax.plot([0, 1], [0, 1], color=MUTED, lw=1, ls="--", label="náhodný klasifikátor (AUC = 0,5)")
-    for tt, mk, txt in [(2.8, "o", "vysoký práh"), (1.2, "s", "t = 1,2"), (-0.5, "^", "nízký práh")]:
+    ax.plot([0, 1], [0, 1], color=MUTED, lw=1, ls="--",
+            label=T("náhodný klasifikátor (AUC = 0,5)", "random classifier (AUC = 0.5)"))
+    for tt, mk, txt in [(2.8, "o", T("vysoký práh", "high threshold")), (1.2, "s", f"t = {cz(1.2, 1)}"),
+                        (-0.5, "^", T("nízký práh", "low threshold"))]:
         x_, y_ = 1 - norm.cdf(tt, mu0, 1), 1 - norm.cdf(tt, mu1, 1)
         ax.plot(x_, y_, marker=mk, color=C2, ms=8, mec=SURF, zorder=4)
         ax.annotate(txt, (x_, y_), xytext=(8, 4 if tt > 2 else -12), textcoords="offset points", fontsize=9, color=INK2)
-    ax.set_xlabel("FPR = 1 − specificita"); ax.set_ylabel("TPR = senzitivita")
-    ax.set_title("ROC křivka: všechny prahy najednou"); ax.legend(loc="lower right", fontsize=8.5)
+    ax.set_xlabel(T("FPR = 1 − specificita", "FPR = 1 − specificity")); ax.set_ylabel(T("TPR = senzitivita", "TPR = sensitivity"))
+    ax.set_title(T("ROC křivka: všechny prahy najednou", "ROC curve: all thresholds at once"))
+    ax.legend(loc="lower right", fontsize=8.5)
     ax.set_xlim(-0.02, 1.02); ax.set_ylim(-0.02, 1.02); ax.set_aspect("equal")
     save(fig, "fig02_roc")
 
@@ -186,14 +209,19 @@ def fig02_kfold_var():
         cv10.append(cross_val_score(model, X, y, cv=StratifiedKFold(10, shuffle=True, random_state=s)).mean())
     fig, ax = plt.subplots(figsize=(8, 3.4))
     data = [hold, cv5, cv10]
-    names = ["hold-out\n(1 rozdělení 80/20)", "5-fold CV\n(průměr 5 foldů)", "10-fold CV\n(průměr 10 foldů)"]
+    names = [T("hold-out\n(1 rozdělení 80/20)", "hold-out\n(1 split 80/20)"),
+             T("5-fold CV\n(průměr 5 foldů)", "5-fold CV\n(mean of 5 folds)"),
+             T("10-fold CV\n(průměr 10 foldů)", "10-fold CV\n(mean of 10 folds)")]
     for i, d in enumerate(data):
         jit = rng(i).uniform(-0.12, 0.12, len(d))
         ax.scatter(np.full(len(d), i) + jit, d, s=16, c=CAT[i], marker=MARK[i], edgecolors=SURF, linewidths=0.5)
-        ax.text(i + 0.22, np.mean(d), f"sm. odch. {cz(np.std(d), 3)}", fontsize=9, color=INK2, va="center")
+        ax.text(i + 0.22, np.mean(d), f"{T('sm. odch.', 'std. dev.')} {cz(np.std(d), 3)}", fontsize=9, color=INK2,
+                va="center")
     ax.set_xticks(range(3)); ax.set_xticklabels(names)
     ax.set_xlim(-0.5, 2.9)
-    ax.set_ylabel("odhad accuracy"); ax.set_title("Stejný model, 60 různých náhodných rozdělení dat (200 vzorků)")
+    ax.set_ylabel(T("odhad accuracy", "accuracy estimate"))
+    ax.set_title(T("Stejný model, 60 různých náhodných rozdělení dat (200 vzorků)",
+                   "Same model, 60 different random splits of the data (200 samples)"))
     save(fig, "fig02_kfold_var")
 
 
@@ -220,15 +248,20 @@ def fig03_hughes():
     d = np.arange(1, D + 1); best = d[np.nanargmax(mean)]
     fig, ax = plt.subplots(figsize=(8, 3.4))
     ax.axvspan(0.5, 10.5, color=C3, alpha=0.12, lw=0)
-    ax.text(3, mean.min() - 0.005, "informativní\npříznaky", fontsize=9, color=INK2, va="bottom")
-    ax.annotate("d = n = 20: kovarianci\nuž nelze odhadnout", (19, mean[18]), xytext=(21, mean[18] - 0.03), fontsize=8.5, color=INK2, arrowprops=dict(arrowstyle="-", color=MUTED))
-    ax.text(40, mean.max() - 0.02, "přidáváme jen šum", fontsize=9, color=INK2)
+    ax.text(3, mean.min() - 0.005, T("informativní\npříznaky", "informative\nfeatures"), fontsize=9, color=INK2,
+            va="bottom")
+    ax.annotate(T("d = n = 20: kovarianci\nuž nelze odhadnout", "d = n = 20: covariance\ncan no longer be estimated"),
+                (19, mean[18]), xytext=(21, mean[18] - 0.03), fontsize=8.5, color=INK2,
+                arrowprops=dict(arrowstyle="-", color=MUTED))
+    ax.text(40, mean.max() - 0.02, T("přidáváme jen šum", "adding only noise"), fontsize=9, color=INK2)
     ax.fill_between(d, mean - se, mean + se, color=C1, alpha=0.2, lw=0)
     ax.plot(d, mean, color=C1)
     ax.axvline(best, color=C2, ls="--", lw=1.2)
     ax.text(best + 0.8, mean.max(), f"optimum d* = {best}", color=INK, fontsize=9)
-    ax.set_xlabel("počet příznaků d (přidávány postupně)"); ax.set_ylabel("přesnost na testu")
-    ax.set_title("Hughesův jev: LDA, 20 trénovacích vzorků, průměr 40 opakování")
+    ax.set_xlabel(T("počet příznaků d (přidávány postupně)", "number of features d (added one by one)"))
+    ax.set_ylabel(T("přesnost na testu", "test accuracy"))
+    ax.set_title(T("Hughesův jev: LDA, 20 trénovacích vzorků, průměr 40 opakování",
+                   "Hughes phenomenon: LDA, 20 training samples, mean of 40 runs"))
     save(fig, "fig03_hughes")
 
 
@@ -248,18 +281,19 @@ def fig03_pca_lda():
     fig, axs = plt.subplots(1, 3, figsize=(12, 3.6), gridspec_kw={"width_ratios": [1.15, 1, 1]})
     ax = axs[0]
     scatter2(ax, X, y, s=14)
-    for w, c, lab in [(w_pca, INK2, "směr PCA"), (w_lda, C3, "směr LDA")]:
+    for w, c, lab in [(w_pca, INK2, T("směr PCA", "PCA direction")), (w_lda, C3, T("směr LDA", "LDA direction"))]:
         ax.plot([-5 * w[0], 5 * w[0]], [-5 * w[1], 5 * w[1]], color=c, lw=2, label=lab)
-    ax.set_aspect("equal"); ax.legend(fontsize=9, loc="upper left"); ax.set_title("Data a dva směry projekce")
+    ax.set_aspect("equal"); ax.legend(fontsize=9, loc="upper left")
+    ax.set_title(T("Data a dva směry projekce", "Data and two projection directions"))
     ax.set_xlabel("x₁"); ax.set_ylabel("x₂")
-    for ax, w, ttl in [(axs[1], w_pca, "Projekce na PCA: třídy se překrývají"),
-                       (axs[2], w_lda, "Projekce na LDA: třídy oddělené")]:
+    for ax, w, ttl in [(axs[1], w_pca, T("Projekce na PCA: třídy se překrývají", "Projection on PCA: classes overlap")),
+                       (axs[2], w_lda, T("Projekce na LDA: třídy oddělené", "Projection on LDA: classes separated"))]:
         z = Xc @ w
         bins = np.linspace(z.min(), z.max(), 30)
         for k in [0, 1]:
-            ax.hist(z[y == k], bins=bins, color=CAT[k], alpha=0.6, label=["třída 0", "třída 1"][k])
-        ax.set_title(ttl, fontsize=10); ax.set_xlabel("souřadnice z = wᵀx"); ax.legend(fontsize=9)
-    axs[1].set_ylabel("počet vzorků")
+            ax.hist(z[y == k], bins=bins, color=CAT[k], alpha=0.6, label=f"{T('třída', 'class')} {k}")
+        ax.set_title(ttl, fontsize=10); ax.set_xlabel(T("souřadnice z = wᵀx", "coordinate z = wᵀx")); ax.legend(fontsize=9)
+    axs[1].set_ylabel(T("počet vzorků", "number of samples"))
     save(fig, "fig03_pca_lda")
 
 
@@ -320,15 +354,16 @@ def fig04_poly():
     xt, yt = _poly_data(seed=11, n=400)
     xs = np.linspace(0, 5, 300)
     fig, axs = plt.subplots(2, 3, figsize=(12, 6.2), sharey=True)
-    cfg = [(1, 0, "stupeň 1 (OLS)"), (3, 0, "stupeň 3 (OLS)"), (15, 0, "stupeň 15 (OLS)"),
-           (15, 0, "stupeň 15, λ = 0"), (15, 0.1, "stupeň 15, λ = 0,1"), (15, 100, "stupeň 15, λ = 100")]
+    deg_ = T("stupeň", "degree")
+    cfg = [(1, 0, f"{deg_} 1 (OLS)"), (3, 0, f"{deg_} 3 (OLS)"), (15, 0, f"{deg_} 15 (OLS)"),
+           (15, 0, f"{deg_} 15, λ = 0"), (15, 0.1, f"{deg_} 15, λ = {cz(0.1, 1)}"), (15, 100, f"{deg_} 15, λ = 100")]
     for ax, (deg, lam, ttl) in zip(axs.ravel(), cfg):
         f = _poly_fit(x, y, deg, lam)
         tr = np.mean((f(x) - y) ** 2); te = np.mean((f(xt) - yt) ** 2)
-        ax.scatter(x, y, s=16, c=C1, edgecolors=SURF, linewidths=0.5, zorder=3, label="trénovací data")
+        ax.scatter(x, y, s=16, c=C1, edgecolors=SURF, linewidths=0.5, zorder=3, label=T("trénovací data", "training data"))
         ax.plot(xs, np.clip(f(xs), -25, 20), color=C2, label="model")
         ax.set_ylim(-22, 16)
-        ax.set_title(f"{ttl}\nMSE trénink {cz(tr, 1)} · test {cz(te, 1)}", fontsize=10)
+        ax.set_title(f"{ttl}\nMSE {T('trénink', 'train')} {cz(tr, 1)} · test {cz(te, 1)}", fontsize=10)
         ax.set_xlabel("x")
     axs[0, 0].set_ylabel("y"); axs[1, 0].set_ylabel("y"); axs[0, 0].legend(fontsize=8.5, loc="lower left")
     save(fig, "fig04_poly")
@@ -346,17 +381,19 @@ def fig04_ridge_lasso():
     Wl = np.array([Lasso(alpha=a, max_iter=20000).fit(X, y).coef_ for a in lam_l])
     fig, axs = plt.subplots(1, 2, figsize=(11.5, 3.8), sharey=True)
     hi = np.argsort(-np.abs(Wr[0]))[:3]
-    for ax, L, W, ttl in [(axs[0], lam_r, Wr, "Ridge (L2): koeficienty se jen zmenšují"),
-                          (axs[1], lam_l, Wl, "LASSO (L1): koeficienty padají přesně na 0")]:
+    for ax, L, W, ttl in [(axs[0], lam_r, Wr, T("Ridge (L2): koeficienty se jen zmenšují", "Ridge (L2): coefficients only shrink")),
+                          (axs[1], lam_l, Wl, T("LASSO (L1): koeficienty padají přesně na 0",
+                                                "LASSO (L1): coefficients drop exactly to 0"))]:
         for j in range(W.shape[1]):
             k = list(hi).index(j) if j in hi else None
             ax.plot(L, W[:, j], color=CAT[k] if k is not None else AXIS, lw=2 if k is not None else 1.1,
-                    label=f"příznak „{names[j]}“" if k is not None else None)
+                    label=T(f"příznak „{names[j]}“", f"feature “{names[j]}”") if k is not None else None)
         ax.set_xscale("log"); ax.axhline(0, color=MUTED, lw=0.8)
-        ax.set_xlabel("síla regularizace λ (log. osa)"); ax.set_title(ttl, fontsize=10)
-    axs[0].set_ylabel("hodnota koeficientu wⱼ"); axs[0].legend(fontsize=8.5)
+        ax.set_xlabel(T("síla regularizace λ (log. osa)", "regularization strength λ (log axis)")); ax.set_title(ttl, fontsize=10)
+    axs[0].set_ylabel(T("hodnota koeficientu wⱼ", "coefficient value wⱼ")); axs[0].legend(fontsize=8.5)
     nz = [(Wl[i] != 0).sum() for i in [0, 30, 59]]
-    axs[1].text(0.97, 0.95, f"nenulových koeficientů:\n{nz[0]} → {nz[1]} → {nz[2]}", transform=axs[1].transAxes,
+    axs[1].text(0.97, 0.95, f"{T('nenulových koeficientů', 'non-zero coefficients')}:\n{nz[0]} → {nz[1]} → {nz[2]}",
+                transform=axs[1].transAxes,
                 ha="right", va="top", fontsize=9, color=INK2)
     save(fig, "fig04_ridge_lasso")
 
@@ -364,15 +401,17 @@ def fig04_ridge_lasso():
 def fig04_losses():
     m = np.linspace(-2, 3, 400)
     fig, ax = plt.subplots(figsize=(9.5, 3.6))
-    ax.plot(m, (m <= 0).astype(float), color=MUTED, lw=1.5, ls="--", label="0/1 chyba (to, co chceme)")
+    ax.plot(m, (m <= 0).astype(float), color=MUTED, lw=1.5, ls="--", label=T("0/1 chyba (to, co chceme)", "0/1 error (what we want)"))
     ax.plot(m, np.maximum(0, 1 - m), color=C1, label="hinge (SVM): max(0, 1 − yz)")
-    ax.plot(m, np.log(1 + np.exp(-m)), color=C2, label="logistická: log(1 + e^(−yz))")
+    ax.plot(m, np.log(1 + np.exp(-m)), color=C2, label=T("logistická", "logistic") + ": log(1 + e^(−yz))")
     ax.plot(m, np.maximum(0, -m), color=C3, label="perceptron: max(0, −yz)")
     ax.plot(m, (1 - m) ** 2, color=INK2, lw=1.2, ls=":", label="MSE: (1 − yz)²")
     ax.set_ylim(-0.1, 3.2); ax.axvline(0, color=AXIS, lw=0.8)
-    ax.text(-1.95, 2.95, "špatně zařazeno", fontsize=9, color=INK2); ax.text(1.6, 2.95, "správně zařazeno", fontsize=9, color=INK2)
-    ax.set_xlabel("y · z  (skóre se znaménkem správné třídy)"); ax.set_ylabel("ztráta L(y, z)")
-    ax.set_title("Ztrátové funkce lineární klasifikace"); ax.legend(fontsize=8.5, loc="upper left", bbox_to_anchor=(1.01, 1))
+    ax.text(-1.95, 2.95, T("špatně zařazeno", "misclassified"), fontsize=9, color=INK2)
+    ax.text(1.6, 2.95, T("správně zařazeno", "correctly classified"), fontsize=9, color=INK2)
+    ax.set_xlabel(T("y · z  (skóre se znaménkem správné třídy)", "y · z  (score with the sign of the true class)"))
+    ax.set_ylabel(T("ztráta L(y, z)", "loss L(y, z)"))
+    ax.set_title(T("Ztrátové funkce lineární klasifikace", "Loss functions of linear classification")); ax.legend(fontsize=8.5, loc="upper left", bbox_to_anchor=(1.01, 1))
     save(fig, "fig04_losses")
 
 
@@ -391,7 +430,8 @@ def fig04_svm_c():
         ax.scatter(*m.support_vectors_.T, s=110, facecolors="none", edgecolors=INK, linewidths=1, zorder=4)
         scatter2(ax, X, y, s=20)
         ax.set_xlim(-3.5, 3.5); ax.set_ylim(-3.5, 3.5)
-        ax.set_title(f"C = {cz(C) if C < 1 else C}: šířka pásu 2/‖w‖ = {cz(2 / np.linalg.norm(w))}, SV = {len(m.support_)}",
+        ax.set_title(f"C = {cz(C) if C < 1 else C}: {T('šířka pásu', 'band width')} 2/‖w‖ = {cz(2 / np.linalg.norm(w))}, "
+                     f"SV = {len(m.support_)}",
                      fontsize=10)
         ax.set_xlabel("x₁")
     axs[0].set_ylabel("x₂")
@@ -411,7 +451,8 @@ def fig04_svm_rbf():
             regions(ax, m, X, h=180)
             scatter2(ax, X, y, s=14)
             ax.set_title(f"C = {cz(C) if C < 1 else C}, γ = {cz(g, 1) if g < 1 else g}\n"
-                         f"SV = {len(m.support_)} · trénink {cz(m.score(X, y))} · test {cz(m.score(Xt, yt))}", fontsize=10)
+                         f"SV = {len(m.support_)} · {T('trénink', 'train')} {cz(m.score(X, y))} · test {cz(m.score(Xt, yt))}",
+                         fontsize=10)
     for ax in axs[1]:
         ax.set_xlabel("x₁")
     for ax in axs[:, 0]:
@@ -426,8 +467,10 @@ def fig06_terce():
     fig = plt.figure(figsize=(12, 5.2))
     gs = fig.add_gridspec(2, 3, width_ratios=[1, 1, 2.1], wspace=0.15, hspace=0.12)
     R = rng(6)
-    cfg = [(0, 0, 0.0, 0.13, "nízký bias, nízký rozptyl"), (0, 1, 0.0, 0.42, "nízký bias, vysoký rozptyl"),
-           (1, 0, 0.62, 0.13, "vysoký bias, nízký rozptyl"), (1, 1, 0.62, 0.42, "vysoký bias, vysoký rozptyl")]
+    lo, hi = T("nízký", "low"), T("vysoký", "high")
+    var_ = T("rozptyl", "variance")
+    cfg = [(0, 0, 0.0, 0.13, f"{lo} bias, {lo} {var_}"), (0, 1, 0.0, 0.42, f"{lo} bias, {hi} {var_}"),
+           (1, 0, 0.62, 0.13, f"{hi} bias, {lo} {var_}"), (1, 1, 0.62, 0.42, f"{hi} bias, {hi} {var_}")]
     for r, c, bias, sd, ttl in cfg:
         ax = fig.add_subplot(gs[r, c])
         for rad, fc in [(1.0, SURF), (0.75, "#d6e5f7"), (0.42, SURF)]:
@@ -445,20 +488,20 @@ def fig06_terce():
     noise = 0.12
     tot = bias2 + var + noise
     ax.plot(c, bias2, color=C2, label="bias²")
-    ax.plot(c, var, color=C3, label="rozptyl")
-    ax.axhline(noise, color=MUTED, ls=":", lw=1.3, label="šum (neodstranitelný)")
-    ax.plot(c, tot, color=INK, lw=2.4, label="celková testová chyba")
+    ax.plot(c, var, color=C3, label=var_)
+    ax.axhline(noise, color=MUTED, ls=":", lw=1.3, label=T("šum (neodstranitelný)", "noise (irreducible)"))
+    ax.plot(c, tot, color=INK, lw=2.4, label=T("celková testová chyba", "total test error"))
     i = int(np.argmin(tot))
     ax.axvline(c[i], color=INK2, ls="--", lw=1)
     ax.plot(c[i], tot[i], "o", color=C3, ms=8, mec=SURF, zorder=5)
-    ax.annotate("optimum\n(„sweet spot“)", (c[i], tot[i]), xytext=(c[i] - 0.2, tot[i] - 0.14), fontsize=9.5,
-                color=INK, arrowprops=dict(arrowstyle="->", color=INK2))
-    ax.text(0.07, 1.08, "podučení", color=C2, fontsize=10, fontweight="semibold")
-    ax.text(0.97, 1.08, "přeučení", color=C3, fontsize=10, fontweight="semibold", ha="right")
+    ax.annotate(T("optimum\n(„sweet spot“)", "optimum\n(“sweet spot”)"), (c[i], tot[i]), xytext=(c[i] - 0.2, tot[i] - 0.14),
+                fontsize=9.5, color=INK, arrowprops=dict(arrowstyle="->", color=INK2))
+    ax.text(0.07, 1.08, T("podučení", "underfitting"), color=C2, fontsize=10, fontweight="semibold")
+    ax.text(0.97, 1.08, T("přeučení", "overfitting"), color=C3, fontsize=10, fontweight="semibold", ha="right")
     ax.set_ylim(0, 1.15); ax.set_xlim(0.05, 1)
     ax.set_xticks([]); ax.set_yticks([])
-    ax.set_xlabel("složitost modelu →"); ax.set_ylabel("chyba")
-    ax.set_title("Rozklad testové chyby podle složitosti modelu")
+    ax.set_xlabel(T("složitost modelu →", "model complexity →")); ax.set_ylabel(T("chyba", "error"))
+    ax.set_title(T("Rozklad testové chyby podle složitosti modelu", "Decomposition of test error by model complexity"))
     ax.legend(fontsize=9, loc="upper center", bbox_to_anchor=(0.52, 0.93))
     fig.savefig(OUT / "fig06_terce.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
@@ -473,20 +516,21 @@ def fig06_regimy():
     train = 0.30 - 0.30 * np.exp(-n / 22)
     eps = 0.25
     fig, ax = plt.subplots(figsize=(8.5, 4.2))
-    ax.plot(n, test, color=C2, label="testovací chyba")
-    ax.plot(n, train, color=C1, label="trénovací chyba")
+    ax.plot(n, test, color=C2, label=T("testovací chyba", "test error"))
+    ax.plot(n, train, color=C1, label=T("trénovací chyba", "training error"))
     ax.axhline(eps, color=INK2, ls="--", lw=1.2)
-    ax.text(99, eps - 0.035, "přijatelná testová chyba ε", ha="right", fontsize=9.5, color=INK2)
+    ax.text(99, eps - 0.035, T("přijatelná testová chyba ε", "acceptable test error ε"), ha="right", fontsize=9.5, color=INK2)
     ax.add_patch(Ellipse((9, 0.37), 15, 0.62, fill=False, ec=MUTED, lw=1.3))
-    ax.text(3, 0.71, "Režim 1:\nvysoký rozptyl", fontsize=9.5, color=INK, va="bottom")
+    ax.text(3, 0.71, T("Režim 1:\nvysoký rozptyl", "Regime 1:\nhigh variance"), fontsize=9.5, color=INK, va="bottom")
     ax.add_patch(Ellipse((72, 0.33), 40, 0.14, fill=False, ec=MUTED, lw=1.3))
-    ax.text(72, 0.415, "Režim 2: vysoký bias\n(obě křivky splynuly nad ε)", fontsize=9.5, color=INK, ha="center")
-    ax.annotate("velká mezera\n= rozptyl", (12, 0.27), xytext=(22, 0.52), fontsize=9, color=INK2,
+    ax.text(72, 0.415, T("Režim 2: vysoký bias\n(obě křivky splynuly nad ε)", "Regime 2: high bias\n(both curves meet above ε)"),
+            fontsize=9.5, color=INK, ha="center")
+    ax.annotate(T("velká mezera\n= rozptyl", "large gap\n= variance"), (12, 0.27), xytext=(22, 0.52), fontsize=9, color=INK2,
                 arrowprops=dict(arrowstyle="-", color=MUTED))
     ax.set_ylim(0, 0.95); ax.set_xlim(0, 100)
     ax.set_xticks([]); ax.set_yticks([])
-    ax.set_xlabel("počet trénovacích vzorků n →"); ax.set_ylabel("chyba")
-    ax.set_title("Učicí křivky: ve kterém režimu jsem?")
+    ax.set_xlabel(T("počet trénovacích vzorků n →", "number of training samples n →")); ax.set_ylabel(T("chyba", "error"))
+    ax.set_title(T("Učicí křivky: ve kterém režimu jsem?", "Learning curves: which regime am I in?"))
     ax.legend(fontsize=9.5, loc="upper right")
     save(fig, "fig06_regimy")
 
@@ -510,18 +554,20 @@ def fig06_bias_variance():
         tr.append(np.mean(a)); te.append(np.mean(b))
     fig, axs = plt.subplots(1, 3, figsize=(12.5, 3.7))
     ax = axs[0]
-    ax.plot(list(depths), tr, "-o", color=C1, ms=5, label="trénovací chyba")
-    ax.plot(list(depths), te, "-s", color=C2, ms=5, label="testovací chyba")
-    ax.axhline(0.45 ** 2, color=MUTED, ls=":", lw=1.2); ax.text(8.3, 0.45 ** 2 - 0.03, "šum σ² = 0,20", fontsize=9, color=INK2)
+    ax.plot(list(depths), tr, "-o", color=C1, ms=5, label=T("trénovací chyba", "training error"))
+    ax.plot(list(depths), te, "-s", color=C2, ms=5, label=T("testovací chyba", "test error"))
+    ax.axhline(0.45 ** 2, color=MUTED, ls=":", lw=1.2)
+    ax.text(8.3, 0.45 ** 2 - 0.03, f"{T('šum', 'noise')} σ² = {cz(0.2)}", fontsize=9, color=INK2)
     best = list(depths)[int(np.argmin(te))]
     ax.axvline(best, color=INK2, ls="--", lw=1)
-    ax.text(1.1, 0.01, "podučení\n(vysoký bias)", fontsize=9, color=INK2, va="bottom")
-    ax.text(8.3, 0.3, "přeučení\n(vysoký rozptyl)", fontsize=9, color=INK2, va="center")
-    ax.set_xlabel("složitost modelu (max_depth stromu)"); ax.set_ylabel("MSE"); ax.legend(fontsize=8.5, loc="center", bbox_to_anchor=(0.5, 0.55))
-    ax.set_title("Chyba vs. složitost (60 vzorků)", fontsize=10)
+    ax.text(1.1, 0.01, T("podučení\n(vysoký bias)", "underfitting\n(high bias)"), fontsize=9, color=INK2, va="bottom")
+    ax.text(8.3, 0.3, T("přeučení\n(vysoký rozptyl)", "overfitting\n(high variance)"), fontsize=9, color=INK2, va="center")
+    ax.set_xlabel(T("složitost modelu (max_depth stromu)", "model complexity (tree max_depth)")); ax.set_ylabel("MSE")
+    ax.legend(fontsize=8.5, loc="center", bbox_to_anchor=(0.5, 0.55))
+    ax.set_title(T("Chyba vs. složitost (60 vzorků)", "Error vs. complexity (60 samples)"), fontsize=10)
     ns = np.unique(np.logspace(1.1, 3, 14).astype(int))
-    for ax, d, ttl in [(axs[1], 8, "Režim 1: vysoký rozptyl (strom hloubky 8)"),
-                       (axs[2], 1, "Režim 2: vysoký bias (pahýl, hloubka 1)")]:
+    for ax, d, ttl in [(axs[1], 8, T("Režim 1: vysoký rozptyl (strom hloubky 8)", "Regime 1: high variance (tree of depth 8)")),
+                       (axs[2], 1, T("Režim 2: vysoký bias (pahýl, hloubka 1)", "Regime 2: high bias (stump, depth 1)"))]:
         a, b = [], []
         for n in ns:
             aa, bb = [], []
@@ -530,10 +576,12 @@ def fig06_bias_variance():
                 m = DecisionTreeRegressor(max_depth=d, random_state=0).fit(X, y)
                 aa.append(np.mean((m.predict(X) - y) ** 2)); bb.append(np.mean((m.predict(Xte) - yte) ** 2))
             a.append(np.mean(aa)); b.append(np.mean(bb))
-        ax.plot(ns, a, "-o", color=C1, ms=4, label="trénovací chyba")
-        ax.plot(ns, b, "-s", color=C2, ms=4, label="testovací chyba")
-        ax.axhline(0.3, color=INK2, ls="--", lw=1); ax.text(ns[-1], 0.27, "přijatelná chyba ε", fontsize=8.5, color=INK2, ha="right", va="top")
-        ax.set_xscale("log"); ax.set_xlabel("počet trénovacích vzorků n"); ax.set_title(ttl, fontsize=10)
+        ax.plot(ns, a, "-o", color=C1, ms=4, label=T("trénovací chyba", "training error"))
+        ax.plot(ns, b, "-s", color=C2, ms=4, label=T("testovací chyba", "test error"))
+        ax.axhline(0.3, color=INK2, ls="--", lw=1)
+        ax.text(ns[-1], 0.27, T("přijatelná chyba ε", "acceptable error ε"), fontsize=8.5, color=INK2, ha="right", va="top")
+        ax.set_xscale("log"); ax.set_xlabel(T("počet trénovacích vzorků n", "number of training samples n"))
+        ax.set_title(ttl, fontsize=10)
         ax.set_ylim(-0.02, 1.0); ax.legend(fontsize=8.5, loc="upper right")
     axs[1].set_ylabel("MSE")
     save(fig, "fig06_bias_variance")
@@ -558,30 +606,31 @@ def fig06_tree_depth():
         for k in range(3):
             mm = ytr == k
             ax.scatter(Xtr[mm, 0], Xtr[mm, 1], s=16, c=CAT[k], marker=MARK[k], edgecolors=SURF, linewidths=.5)
-        ax.set_title(f"max_depth = {d}: {m.get_n_leaves()} listů\ntrénink {cz(m.score(Xtr, ytr))} · test {cz(m.score(Xte, yte))}",
-                     fontsize=10)
-        ax.set_xlabel("alkohol [%]")
-    axs[0].set_ylabel("flavonoidy")
+        ax.set_title(f"max_depth = {d}: {m.get_n_leaves()} {T('listů', 'leaves')}\n"
+                     f"{T('trénink', 'train')} {cz(m.score(Xtr, ytr))} · test {cz(m.score(Xte, yte))}", fontsize=10)
+        ax.set_xlabel(T("alkohol [%]", "alcohol [%]"))
+    axs[0].set_ylabel(T("flavonoidy", "flavanoids"))
     ds = range(1, 11)
     tr = [DecisionTreeClassifier(max_depth=d, random_state=0).fit(Xtr, ytr).score(Xtr, ytr) for d in ds]
     te = [DecisionTreeClassifier(max_depth=d, random_state=0).fit(Xtr, ytr).score(Xte, yte) for d in ds]
     ax = axs[3]
-    ax.plot(list(ds), tr, "-o", color=C1, ms=5, label="trénink"); ax.plot(list(ds), te, "-s", color=C2, ms=5, label="test")
-    ax.set_xlabel("max_depth"); ax.set_ylabel("accuracy"); ax.legend(fontsize=9); ax.set_title("Přesnost vs. hloubka", fontsize=10)
+    ax.plot(list(ds), tr, "-o", color=C1, ms=5, label=T("trénink", "train")); ax.plot(list(ds), te, "-s", color=C2, ms=5, label="test")
+    ax.set_xlabel("max_depth"); ax.set_ylabel("accuracy"); ax.legend(fontsize=9)
+    ax.set_title(T("Přesnost vs. hloubka", "Accuracy vs. depth"), fontsize=10)
     save(fig, "fig06_tree_depth")
 
 
 def fig06_impurity():
     p = np.linspace(1e-6, 1 - 1e-6, 400)
     fig, ax = plt.subplots(figsize=(6.5, 3.4))
-    ax.plot(p, 1 - np.maximum(p, 1 - p), color=C1, label="chybovost 1 − max p")
-    ax.plot(p, -(p * np.log2(p) + (1 - p) * np.log2(1 - p)), color=C2, label="entropie [bit]")
+    ax.plot(p, 1 - np.maximum(p, 1 - p), color=C1, label=T("chybovost 1 − max p", "error rate 1 − max p"))
+    ax.plot(p, -(p * np.log2(p) + (1 - p) * np.log2(1 - p)), color=C2, label=T("entropie [bit]", "entropy [bit]"))
     ax.plot(p, 2 * p * (1 - p), color=C3, label="Gini 1 − Σp² = 2p(1 − p)")
     ax.plot([0.8], [0.32], "^", color=C3, ms=8, mec=SURF); ax.plot([0.8], [0.722], "s", color=C2, ms=7, mec=SURF)
     ax.plot([0.8], [0.2], "o", color=C1, ms=7, mec=SURF)
-    ax.annotate("list 4 : 1 (p = 0,8)", (0.8, 0.722), xytext=(0.83, 0.88), fontsize=9, color=INK2)
-    ax.set_xlabel("podíl třídy 1 v uzlu p"); ax.set_ylabel("nečistota uzlu")
-    ax.set_title("Míry nečistoty pro dvě třídy"); ax.legend(fontsize=8.5, loc="upper left")
+    ax.annotate(f"{T('list', 'leaf')} 4 : 1 (p = {cz(0.8, 1)})", (0.8, 0.722), xytext=(0.83, 0.88), fontsize=9, color=INK2)
+    ax.set_xlabel(T("podíl třídy 1 v uzlu p", "share of class 1 in the node p")); ax.set_ylabel(T("nečistota uzlu", "node impurity"))
+    ax.set_title(T("Míry nečistoty pro dvě třídy", "Impurity measures for two classes")); ax.legend(fontsize=8.5, loc="upper left")
     save(fig, "fig06_impurity")
 
 
@@ -605,14 +654,15 @@ def fig06_bagging():
     for _ in range(20):
         X, y = sample()
         single.append(DecisionTreeRegressor(max_depth=4).fit(X, y).predict(xs)); bagged.append(bag(X, y, 50))
-    for ax, P, ttl in [(axs[0], single, "1 strom (max_depth = 4), 20 trénovacích sad"),
-                       (axs[1], bagged, "bagging M = 50, stejných 20 sad")]:
+    for ax, P, ttl in [(axs[0], single, T("1 strom (max_depth = 4), 20 trénovacích sad", "1 tree (max_depth = 4), 20 training sets")),
+                       (axs[1], bagged, T("bagging M = 50, stejných 20 sad", "bagging M = 50, the same 20 sets"))]:
         for pr in P:
             ax.plot(xs[:, 0], pr, color=C1, lw=0.8, alpha=0.45)
-        ax.plot(xs[:, 0], f(xs[:, 0]), color=INK, lw=1.6, label="skutečná funkce")
-        ax.plot(xs[:, 0], np.mean(P, 0), color=C2, lw=1.8, ls="--", label="průměr přes sady ≈ h̄")
+        ax.plot(xs[:, 0], f(xs[:, 0]), color=INK, lw=1.6, label=T("skutečná funkce", "true function"))
+        ax.plot(xs[:, 0], np.mean(P, 0), color=C2, lw=1.8, ls="--", label=T("průměr přes sady ≈ h̄", "mean over sets ≈ h̄"))
         ax.set_title(ttl, fontsize=10); ax.set_xlabel("x"); ax.set_ylim(-2.2, 3)
-        v = np.mean(np.var(P, 0)); ax.text(0.03, 0.04, f"průměrný rozptyl predikce {cz(v, 3)}", transform=ax.transAxes,
+        v = np.mean(np.var(P, 0))
+        ax.text(0.03, 0.04, f"{T('průměrný rozptyl predikce', 'mean prediction variance')} {cz(v, 3)}", transform=ax.transAxes,
                                            fontsize=9, color=INK2)
     axs[0].set_ylabel("y"); axs[0].legend(fontsize=8.5, loc="upper left")
     # rozptyl vs. M: teorie s korelací ρ
@@ -622,7 +672,7 @@ def fig06_bagging():
     for k, rho in enumerate([0.0, 0.36, 0.7]):
         ax.plot(Ms, rho * s2 + (1 - rho) * s2 / Ms, color=CAT[k], marker=MARK[k], markevery=12, ms=6,
                 label=f"ρ = {cz(rho)}")
-    ax.set_xlabel("počet stromů M"); ax.set_ylabel("rozptyl průměru / σ²")
+    ax.set_xlabel(T("počet stromů M", "number of trees M")); ax.set_ylabel(T("rozptyl průměru / σ²", "variance of the mean / σ²"))
     ax.set_title("Var = ρσ² + (1 − ρ)σ²/M", fontsize=10); ax.legend(fontsize=9)
     save(fig, "fig06_bagging")
 
@@ -634,15 +684,16 @@ def fig06_rf():
                                random_state=3)
     trees = [10, 20, 40, 70, 100, 150, 200, 300]
     fig, ax = plt.subplots(figsize=(7.5, 3.6))
-    for k, (mf, lab) in enumerate([(None, "max_features = všech 20 (= bagging)"), ("sqrt", "max_features = √20 ≈ 4"),
-                                   (1, "max_features = 1")]):
+    for k, (mf, lab) in enumerate([(None, T("max_features = všech 20 (= bagging)", "max_features = all 20 (= bagging)")),
+                                   ("sqrt", "max_features = √20 ≈ 4"), (1, "max_features = 1")]):
         err = []
         for t in trees:
             m = RandomForestClassifier(n_estimators=t, max_features=mf, oob_score=True, random_state=0, n_jobs=-1).fit(X, y)
             err.append(1 - m.oob_score_)
         ax.plot(trees, err, color=CAT[k], marker=MARK[k], ms=6, label=lab)
-    ax.set_xlabel("počet stromů (n_estimators)"); ax.set_ylabel("OOB chyba")
-    ax.set_title("Random forest: počet stromů a počet příznaků na split"); ax.legend(fontsize=9)
+    ax.set_xlabel(T("počet stromů (n_estimators)", "number of trees (n_estimators)")); ax.set_ylabel(T("OOB chyba", "OOB error"))
+    ax.set_title(T("Random forest: počet stromů a počet příznaků na split", "Random forest: number of trees and features per split"))
+    ax.legend(fontsize=9)
     save(fig, "fig06_rf")
 
 
@@ -656,7 +707,8 @@ def fig06_adaboost():
         m = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1), n_estimators=M, random_state=0).fit(X, y)
         regions(ax, m, X, h=200)
         scatter2(ax, X, y, s=12)
-        ax.set_title(f"M = {M} pahýlů\ntrénink {cz(m.score(X, y))} · test {cz(m.score(Xt, yt))}", fontsize=10)
+        ax.set_title(f"M = {M} {T('pahýlů', 'stumps')}\n{T('trénink', 'train')} {cz(m.score(X, y))} · test {cz(m.score(Xt, yt))}",
+                     fontsize=10)
         ax.set_xlabel("x₁")
     axs[0].set_ylabel("x₂")
     save(fig, "fig06_adaboost")
@@ -667,13 +719,14 @@ def fig07_activations():
     z = np.linspace(-5, 5, 400)
     sig = 1 / (1 + np.exp(-z))
     fig, axs = plt.subplots(1, 2, figsize=(11, 3.5))
-    for ax, fs, ttl in [(axs[0], [sig, np.tanh(z), np.maximum(0, z)], "Aktivační funkce f(z)"),
-                        (axs[1], [sig * (1 - sig), 1 - np.tanh(z) ** 2, (z > 0).astype(float)], "Jejich derivace f′(z)")]:
-        for k, (fv, lab) in enumerate(zip(fs, ["sigmoida", "tanh", "ReLU"])):
+    for ax, fs, ttl in [(axs[0], [sig, np.tanh(z), np.maximum(0, z)], T("Aktivační funkce f(z)", "Activation functions f(z)")),
+                        (axs[1], [sig * (1 - sig), 1 - np.tanh(z) ** 2, (z > 0).astype(float)],
+                         T("Jejich derivace f′(z)", "Their derivatives f′(z)"))]:
+        for k, (fv, lab) in enumerate(zip(fs, [T("sigmoida", "sigmoid"), "tanh", "ReLU"])):
             ax.plot(z, fv, color=CAT[k], marker=MARK[k], markevery=50, ms=6, label=lab)
-        ax.set_xlabel("vnitřní potenciál z"); ax.set_title(ttl, fontsize=10); ax.legend(fontsize=9)
+        ax.set_xlabel(T("vnitřní potenciál z", "inner potential z")); ax.set_title(ttl, fontsize=10); ax.legend(fontsize=9)
     axs[0].set_ylim(-1.2, 2.5)
-    axs[1].text(2.2, 0.32, "max σ′ = 0,25", fontsize=9, color=INK2)
+    axs[1].text(2.2, 0.32, f"max σ′ = {cz(0.25)}", fontsize=9, color=INK2)
     save(fig, "fig07_activations")
 
 
@@ -708,7 +761,7 @@ def run_opt(name, start, steps=3000):
     return np.array(path)
 
 
-ETA = {"SGD": "10⁻⁵", "momentum": "10⁻⁵", "RMSprop": "0,03", "Adam": "0,2"}
+ETA = {"SGD": "10⁻⁵", "momentum": "10⁻⁵", "RMSprop": cz(0.03), "Adam": cz(0.2, 1)}
 
 
 def fig07_optimizers():
@@ -721,11 +774,13 @@ def fig07_optimizers():
     for (c, mk), name in zip(cols, ["SGD", "momentum", "RMSprop", "Adam"]):
         P = run_opt(name, start)
         d = np.linalg.norm(P[-1] - [3, 0.5])
-        ax.plot(P[:, 0], P[:, 1], color=c, lw=1.6, marker=mk, markevery=300, ms=5, label=f"{name} (η = {ETA[name]}): vzdálenost od min. {cz(d, 3)}")
+        ax.plot(P[:, 0], P[:, 1], color=c, lw=1.6, marker=mk, markevery=300, ms=5,
+                label=f"{name} (η = {ETA[name]}): {T('vzdálenost od min.', 'distance from min.')} {cz(d, 3)}")
     ax.plot(3, 0.5, marker="*", ms=14, color=INK); ax.plot(*start, marker="o", ms=7, color=INK, mfc=SURF)
-    ax.text(3.05, 0.6, "minimum (3; 0,5)", fontsize=9); ax.text(2.45, -2.95, "start", fontsize=9)
+    ax.text(3.05, 0.6, T("minimum (3; 0,5)", "minimum (3, 0.5)"), fontsize=9); ax.text(2.45, -2.95, "start", fontsize=9)
     ax.set_xlim(-0.5, 4.5); ax.set_ylim(-3.2, 1.6)
-    ax.set_xlabel("θ₁"); ax.set_ylabel("θ₂"); ax.set_title("Beale funkce, 3000 kroků ze stejného startu")
+    ax.set_xlabel("θ₁"); ax.set_ylabel("θ₂")
+    ax.set_title(T("Beale funkce, 3000 kroků ze stejného startu", "Beale function, 3000 steps from the same start"))
     ax.legend(fontsize=8.5, loc="upper left")
     save(fig, "fig07_optimizers")
 
@@ -737,7 +792,8 @@ def fig07_early_stopping():
     X, y = moons(80, 0.35, 21)
     Xv, yv = moons(1000, 0.35, 22)
     fig, axs = plt.subplots(1, 2, figsize=(11.5, 3.6))
-    for ax, alpha, ttl in [(axs[0], 1e-5, "bez regularizace (λ ≈ 0)"), (axs[1], 0.3, "weight decay λ = 0,3")]:
+    for ax, alpha, ttl in [(axs[0], 1e-5, T("bez regularizace (λ ≈ 0)", "no regularization (λ ≈ 0)")),
+                           (axs[1], 0.3, f"weight decay λ = {cz(0.3, 1)}")]:
         m = MLPClassifier(hidden_layer_sizes=(200, 200), alpha=alpha, learning_rate_init=0.005, random_state=0,
                           batch_size=16)
         tr, va = [], []
@@ -745,12 +801,12 @@ def fig07_early_stopping():
             m.partial_fit(X, y, classes=[0, 1])
             tr.append(log_loss(y, m.predict_proba(X))); va.append(log_loss(yv, m.predict_proba(Xv)))
         e = np.arange(1, 501)
-        ax.plot(e, tr, color=C1, label="trénovací ztráta")
-        ax.plot(e, va, color=C2, label="validační ztráta")
+        ax.plot(e, tr, color=C1, label=T("trénovací ztráta", "training loss"))
+        ax.plot(e, va, color=C2, label=T("validační ztráta", "validation loss"))
         b = int(np.argmin(va))
         ax.axvline(b + 1, color=INK2, ls="--", lw=1)
-        ax.text(b + 8, max(va) * 0.9, f"early stopping\n(epocha {b + 1})", fontsize=9, color=INK2, va="top")
-        ax.set_xlabel("epocha"); ax.set_ylabel("křížová entropie"); ax.set_title(ttl, fontsize=10)
+        ax.text(b + 8, max(va) * 0.9, f"early stopping\n({T('epocha', 'epoch')} {b + 1})", fontsize=9, color=INK2, va="top")
+        ax.set_xlabel(T("epocha", "epoch")); ax.set_ylabel(T("křížová entropie", "cross-entropy")); ax.set_title(ttl, fontsize=10)
         ax.set_ylim(0, max(1.0, min(max(va), 2.5))); ax.legend(fontsize=9, loc="upper right")
     save(fig, "fig07_early_stopping")
 
@@ -765,7 +821,7 @@ def fig07_alpha():
         regions(ax, m, X, h=180)
         scatter2(ax, X, y, s=14)
         ax.set_title(f"λ (alpha) = {a if a >= 1 else cz(a, 4) if a < 0.01 else cz(a, 1)}\n"
-                     f"trénink {cz(m.score(X, y))} · test {cz(m.score(Xt, yt))}", fontsize=10)
+                     f"{T('trénink', 'train')} {cz(m.score(X, y))} · test {cz(m.score(Xt, yt))}", fontsize=10)
         ax.set_xlabel("x₁")
     axs[0].set_ylabel("x₂")
     save(fig, "fig07_alpha")
@@ -777,7 +833,7 @@ ALL = [fig01_gd_eta, fig01_knn_k, fig02_roc, fig02_kfold_var, fig03_hughes, fig0
        fig07_activations, fig07_optimizers, fig07_early_stopping, fig07_alpha]
 
 if __name__ == "__main__":
-    only = sys.argv[1:]
+    only = ARGS
     for f in ALL:
         if not only or f.__name__ in only:
             f()

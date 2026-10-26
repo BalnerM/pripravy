@@ -23,11 +23,18 @@ když ho zvětším / zmenším; vše pohromadě na stránce `08_parametry.html`
   regresní strom + bagging, optimalizátory)
 - `figures/` – grafy z `_build/make_figures.py` (syntetická data s pevným seedem a datasety ze scikit-learn)
 
+## Anglická verze
+Na `https://balnerm.github.io/pripravy/mlr/en/`; tlačítko **EN / CZ** v horní liště přepne na totéž místo ve
+druhém jazyce. Zdroje jsou v `_build/obsah_en/` (stejné názvy souborů a stejná id jako v `obsah/` – `build.py`
+to kontroluje), grafy s anglickými popisky v `figures/en/` (`make_figures.py --lang en`), texty interaktivních
+ukázek v `assets/app.js` (funkce `i18n`). Při úpravě české kapitoly je potřeba upravit i anglickou.
+
 ## Jak skripta upravit
 HTML stránky v této složce se **generují** – edituj zdroje v `_build/obsah/*.html` a seznam stránek
 v `_build/build.py`. Z kořene repozitáře `pripravy`:
 ```
 uv run python mlr/_build/make_figures.py      # přegeneruje obrázky (jen vybrané: … make_figures.py fig04_poly)
+uv run python mlr/_build/make_figures.py --lang en   # totéž s anglickými popisky do figures/en/
 python mlr/_build/build.py                     # sestaví stránky a zkontroluje odkazy, obrázky, sekce
 python mlr/_build/make_pdf.py                  # volitelně PDF lokálně
 ```

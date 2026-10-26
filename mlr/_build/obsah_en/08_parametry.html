@@ -1,0 +1,163 @@
+<h1>Cheat sheet: parameters and model comparison</h1>
+<p class="lead">A page for final revision. For each model: <b>what each hyperparameter means</b> and <b>what happens when I increase or decrease it</b>. Then a comparison of models, the “complexity knobs” and the most common traps. The detailed explanation is always in the linked chapter.</p>
+
+<h2 id="princip">One principle for all parameters</h2>
+<div class="box intuice"><div class="box-t">Every hyperparameter moves the model along the bias ↔ variance axis</div>
+<p>Almost every hyperparameter either makes the model <b>more complex</b> (lower bias, higher variance → risk of <b>overfitting</b>: low training error, high test error) or <b>simpler</b> (higher bias, lower variance → risk of <b>underfitting</b>: high error already in training). The optimum is in the middle and is found on validation data / in cross-validation (<a href="02_hodnoceni.html#validace">ch. 2</a>), never on the test set. A second group of parameters only affects the <b>speed and stability of learning</b> (learning rate, batch size, momentum) – those are tuned by watching the loss.</p></div>
+<div class="tablewrap"><table>
+<tr><th>model</th><th>more complex (→ overfitting) when…</th><th>simpler (→ underfitting) when…</th></tr>
+<tr><td>k-NN</td><td>↓ \(k\)</td><td>↑ \(k\)</td></tr>
+<tr><td>ridge / LASSO</td><td>↓ \(\lambda\)</td><td>↑ \(\lambda\)</td></tr>
+<tr><td>polynomial regression</td><td>↑ degree</td><td>↓ degree</td></tr>
+<tr><td>SVM</td><td>↑ \(C\), ↑ \(\gamma\) (RBF), ↑ \(p\) (poly), ↓ \(\nu\)</td><td>↓ \(C\), ↓ \(\gamma\), ↓ \(p\), ↑ \(\nu\)</td></tr>
+<tr><td>decision tree</td><td>↑ max_depth, ↓ min_samples_leaf, ↓ min_samples_split, ↓ ccp_alpha</td><td>the opposite</td></tr>
+<tr><td>random forest</td><td>↑ tree depth (but averaging knocks the variance down), ↑ max_features (correlation)</td><td>↓ depth, ↓ max_features (each tree weaker)</td></tr>
+<tr><td>AdaBoost</td><td>↑ number of rounds \(M\), stronger weak classifier</td><td>↓ \(M\), stumps</td></tr>
+<tr><td>neural network</td><td>↑ layers/neurons, ↓ \(\lambda\), ↑ dropout \(p\) (= less switching off), ↑ epochs</td><td>the opposite; early stopping</td></tr>
+<tr><td>feature selection / PCA</td><td>↑ number of features / components</td><td>↓ the number</td></tr>
+</table></div>
+<div class="box pozor"><div class="box-t">Exception: the number of trees</div>
+<p>The number of trees in a <b>random forest / bagging</b> does not overfit the model – more trees only lower the variance (down to the limit \(\rho\sigma^2\)) and increase computation. The number of rounds in <b>AdaBoost</b>, on the other hand, makes the model more complex and overfits on label noise.</p></div>
+
+<h2 id="modely">Parameters of individual models</h2>
+<h3 id="p-gd">Gradient descent (<a href="01_uvod.html#optimalizace">ch. 1</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>meaning</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>learning rate \(\eta\)</td><td>length of the step against the gradient</td><td>faster, from \(\eta \gt 2/L\) oscillation and divergence</td><td>slow “crawling”, may not reach the minimum</td></tr>
+<tr><td>number of iterations / tolerance</td><td>when to stop</td><td>more exact minimum, more computation</td><td>a solution that has not converged</td></tr>
+<tr><td>start</td><td>initial point</td><td colspan="2">for non-convex problems it decides in which local minimum I end up</td></tr>
+</table></div>
+<h3 id="p-knn">k-NN and k-means (<a href="01_uvod.html#knn">ch. 1</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>meaning</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>k-NN: \(k\)</td><td>number of voting neighbours</td><td>smoother boundary, ↑ bias; \(k\to n\) = always the majority class</td><td>copies the noise; \(k = 1\) has training error 0</td></tr>
+<tr><td>k-NN: metric</td><td>L1, L2, L∞, cosine…</td><td colspan="2">changes the shape of the neighbourhood; always scale the features</td></tr>
+<tr><td>k-means: \(k\)</td><td>number of clusters</td><td>inertia ↓ always (down to 0 for \(k = n\)), splits real groups</td><td>merges different groups</td></tr>
+<tr><td>k-means: restarts</td><td>number of initializations</td><td>better local minimum, more computation</td><td>the result depends more on chance</td></tr>
+</table></div>
+<h3 id="p-hodnoceni">Evaluation and validation (<a href="02_hodnoceni.html#metriky">ch. 2</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>meaning</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>decision threshold \(t\)</td><td>from what score “positive”</td><td>FPR ↓, specificity ↑, precision ↑, recall ↓</td><td>recall ↑, FPR ↑, precision ↓</td></tr>
+<tr><td>number of folds \(k\)</td><td>into how many parts I split the data in CV</td><td>more fits, more training data per fit (less pessimistic estimate); \(k = n\) = LOO</td><td>cheaper, less data per fit</td></tr>
+<tr><td>share of test / validation</td><td>how much data I keep aside</td><td>more exact estimate, less data for training</td><td>more data for training, noisy estimate</td></tr>
+</table></div>
+<h3 id="p-redukce">Feature selection and dimensionality reduction (<a href="03_redukce.html#linearni-redukce">ch. 3</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>meaning</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>number of features \(k\) (filter, wrapper)</td><td>how many features I keep</td><td>more information and more noise; beyond \(d^\ast\) performance gets worse (Hughes)</td><td>simpler model, risk of losing information</td></tr>
+<tr><td>PCA: number of components</td><td>how many new axes</td><td>more explained variance, less compression, noise too</td><td>stronger compression and denoising, loss of information</td></tr>
+<tr><td>PCA: standardization</td><td>same variance of the features</td><td colspan="2">without it, features with large numbers dominate</td></tr>
+<tr><td>t-SNE: perplexity</td><td>effective number of neighbours</td><td>more global, clusters merge</td><td>local detail, breaks into false fragments</td></tr>
+<tr><td>t-SNE: learning_rate</td><td>optimization step of the map</td><td>faster, unstable if too large</td><td>slow convergence</td></tr>
+<tr><td>UMAP: n_neighbors</td><td>scale of the graph neighbourhood</td><td>global structure, smoother map</td><td>local detail, isolated islands</td></tr>
+<tr><td>UMAP: min_dist</td><td>how tightly points may pack</td><td>even, blurred map</td><td>compact, sharply separated clusters</td></tr>
+<tr><td>kernel PCA: RBF \(\gamma\)</td><td>inverse width of the kernel</td><td>very local, captures noise too</td><td>approaches linear PCA</td></tr>
+</table></div>
+<h3 id="p-linearni">Linear models and SVM (<a href="04_linearni.html#regrese">ch. 4</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>meaning</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>ridge \(\lambda\)</td><td>L2 penalty on the weights</td><td>coefficients → 0 (not exactly), smoother model, ↑ bias</td><td>closer to OLS, overfitting with many features</td></tr>
+<tr><td>LASSO \(\lambda\)</td><td>L1 penalty on the weights</td><td>more coefficients exactly 0 (fewer features)</td><td>more features, at 0 OLS</td></tr>
+<tr><td>MSE vs. MAE</td><td>choice of regression loss</td><td colspan="2">MSE: closed form, sensitive to outliers; MAE (LAD): robust, no closed form</td></tr>
+<tr><td>polynomial degree \(m\)</td><td>highest power of the feature</td><td>more flexible, oscillations, overfitting</td><td>smoother, underfitting</td></tr>
+<tr><td>SVM \(C\)</td><td>price of violating the margin</td><td>narrower margin, fewer SVs, boundary follows individual points (overfitting)</td><td>wider margin, more SVs, smoother boundary (underfitting)</td></tr>
+<tr><td>SVM \(\nu\)</td><td>upper bound on the share of errors, lower bound on the share of SVs</td><td>more tolerance, more SVs (like ↓C)</td><td>fewer errors (like ↑C)</td></tr>
+<tr><td>RBF \(\gamma = 1/2\sigma^2\)</td><td>inverse width of the Gaussian – reach of a point’s influence</td><td>“islands” around points, overfitting</td><td>almost linear boundary, underfitting</td></tr>
+<tr><td>polynomial kernel \(p\), \(c\)</td><td>degree, offset</td><td>more complex boundary</td><td>simpler</td></tr>
+<tr><td>perceptron \(\eta\), epochs</td><td>step and number of passes</td><td colspan="2">converges only for separable data; otherwise it cycles whatever the \(\eta\)</td></tr>
+</table></div>
+<h3 id="p-stromy">Trees and ensembles (<a href="06_stromy.html#cart">ch. 6</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>meaning</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>max_depth</td><td>max. number of questions on a path</td><td>finer rectangles, training error → 0, overfitting</td><td>simpler, a stump = underfitting</td></tr>
+<tr><td>min_samples_leaf</td><td>min. samples in a leaf</td><td>smoother, less overfitting</td><td>leaves with one point – copies the noise</td></tr>
+<tr><td>min_samples_split, max_leaf_nodes</td><td>when a node may be split, size of the tree</td><td colspan="2">↑ min_samples_split / ↓ max_leaf_nodes = smaller tree</td></tr>
+<tr><td>criterion</td><td>Gini / entropy / MSE</td><td colspan="2">Gini and entropy give similar trees</td></tr>
+<tr><td>ccp_alpha</td><td>strength of pruning</td><td>smaller tree</td><td>almost the whole tree</td></tr>
+<tr><td>RF/bagging: n_estimators \(M\)</td><td>number of trees</td><td>variance ↓ (down to \(\rho\sigma^2\)), does not overfit, more computation</td><td>noisier prediction</td></tr>
+<tr><td>RF: max_features</td><td>features per split</td><td>stronger but correlated trees (all = bagging)</td><td>diverse, weaker trees; typically √d</td></tr>
+<tr><td>AdaBoost: number of rounds \(M\)</td><td>number of weak classifiers</td><td>bias ↓, more complex boundary, overfitting on noise</td><td>underfitting</td></tr>
+<tr><td>AdaBoost: weak classifier</td><td>stump / shallow tree</td><td>faster drop of the error, easier overfitting</td><td>slow, safe</td></tr>
+<tr><td>AdaBoost: learning_rate</td><td>shrinking of \(\alpha_m\)</td><td>faster learning</td><td>more rounds needed, better generalization</td></tr>
+</table></div>
+<h3 id="p-nn">Neural networks (<a href="07_neuronove_site.html#optimalizatory">ch. 7</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parameter</th><th>meaning</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>learning rate \(\eta\)</td><td>length of the step</td><td>oscillation, divergence (NaN)</td><td>slow learning, getting stuck</td></tr>
+<tr><td>batch size \(b\)</td><td>samples per update</td><td>less noisy gradient, more memory, fewer updates</td><td>noisy updates (noise helps), slower; \(b = 1\) = SGD</td></tr>
+<tr><td>epochs</td><td>passes through the data</td><td>overfitting</td><td>underfitting</td></tr>
+<tr><td>momentum \(\gamma\) / Adam \(\beta_1\)</td><td>memory of the inertia</td><td>smoother movement, rolls over shallow minima, can circle</td><td>behaves like SGD</td></tr>
+<tr><td>RMSprop \(\rho\) / Adam \(\beta_2\)</td><td>memory of the average of squared gradients</td><td>more stable step normalization</td><td>noisy adaptation</td></tr>
+<tr><td>weight decay \(\lambda\)</td><td>L2 penalty on the weights</td><td>smoother function, underfitting if too large</td><td>overfitting</td></tr>
+<tr><td>dropout \(p\) (keeping)</td><td>share of active neurons</td><td>weaker regularization (\(p = 1\) = no dropout)</td><td>stronger regularization, slower learning</td></tr>
+<tr><td>BN: batch size</td><td>what the statistics are computed from</td><td>more stable</td><td>fails with a very small batch</td></tr>
+<tr><td>early stopping: patience</td><td>checks without improvement</td><td>longer training, risk of overfitting</td><td>stops too early</td></tr>
+<tr><td>layers, neurons</td><td>capacity</td><td>lower bias, higher variance</td><td>underfitting</td></tr>
+<tr><td>WCE \(\omega_c\)</td><td>price of a mistake on a class</td><td>recall of the class ↑</td><td>the class is ignored</td></tr>
+<tr><td>Tversky \(\alpha\), \(\beta\)</td><td>price of FP, price of FN</td><td>↑β: recall ↑; ↑α: precision ↑</td><td>the opposite</td></tr>
+</table></div>
+
+<h2 id="srovnani">Model comparison</h2>
+<div class="tablewrap"><table>
+<tr><th></th><th>k-NN</th><th>linear / logistic regression</th><th>SVM (RBF)</th><th>tree</th><th>random forest</th><th>AdaBoost</th><th>neural network</th></tr>
+<tr><td>shape of the boundary</td><td>any (local)</td><td>line / hyperplane</td><td>any smooth</td><td>axis-parallel rectangles</td><td>average of rectangles</td><td>weighted rectangles</td><td>any</td></tr>
+<tr><td>needs scaling</td><td>yes</td><td>yes (regularization, convergence)</td><td>yes</td><td>no</td><td>no</td><td>no (with trees)</td><td>yes</td></tr>
+<tr><td>interpretability</td><td>medium (neighbours)</td><td>high (weights)</td><td>low (SVs, \(\alpha\))</td><td>high</td><td>low (feature importance)</td><td>low</td><td>low</td></tr>
+<tr><td>training</td><td>none (lazy)</td><td>fast (closed form / convex)</td><td>QP, grows with \(n^2\)</td><td>fast</td><td>parallelizable</td><td>sequential</td><td>expensive, GPU</td></tr>
+<tr><td>prediction</td><td>slow (searching for neighbours)</td><td>instant</td><td>depends on the number of SVs</td><td>tree depth</td><td>number of trees × depth</td><td>number of rounds</td><td>a pass through the network</td></tr>
+<tr><td>probability output</td><td>share of neighbours</td><td>yes (log. regression, calibrated)</td><td>distance from the boundary</td><td>share of classes in the leaf</td><td>share of trees</td><td>weighted vote</td><td>softmax</td></tr>
+<tr><td>main hyperparameters</td><td>\(k\), metric</td><td>\(\lambda\), L1/L2</td><td>\(C\), \(\gamma\)</td><td>max_depth, min_samples_leaf</td><td>n_estimators, max_features</td><td>\(M\), weak classifier</td><td>architecture, \(\eta\), \(\lambda\), dropout</td></tr>
+<tr><td>weakness</td><td>curse of dimensionality, noise</td><td>non-linear relationships (without expansion)</td><td>large data, choice of \(\gamma\)</td><td>instability, overfitting</td><td>memory, interpretation</td><td>label noise</td><td>needs data and computation</td></tr>
+</table></div>
+<div class="tablewrap"><table>
+<tr><th>loss</th><th>formula</th><th>model</th><th>property</th></tr>
+<tr><td>MSE</td><td>\((y - z)^2\)</td><td>OLS, regression networks</td><td>smooth, sensitive to outliers</td></tr>
+<tr><td>MAE</td><td>\(|y - z|\)</td><td>LAD</td><td>robust, not differentiable at zero</td></tr>
+<tr><td>hinge</td><td>\(\max(0, 1 - yz)\)</td><td>SVM</td><td>zero only beyond the margin</td></tr>
+<tr><td>perceptron</td><td>\(\max(0, -yz)\)</td><td>perceptron</td><td>punishes only mistakes</td></tr>
+<tr><td>log-loss / cross-entropy</td><td>\(\log(1 + e^{-yz})\); \(-\sum y_c\log\hat y_c\)</td><td>logistic regression, networks</td><td>probabilistic output</td></tr>
+<tr><td>Tversky / Dice</td><td>\(1 - \frac{TP}{TP + \beta FN + \alpha FP}\)</td><td>segmentation</td><td>weights FP vs. FN</td></tr>
+</table></div>
+
+<h2 id="metriky">Metrics on one page</h2>
+<div class="tablewrap"><table>
+<tr><th>metric</th><th>formula</th><th>question it answers</th><th>watch out</th></tr>
+<tr><td>accuracy</td><td>(TP+TN)/all</td><td>how many are correct?</td><td>paradox with imbalanced classes</td></tr>
+<tr><td>sensitivity = recall = TPR</td><td>TP/(TP+FN)</td><td>how many positives did I find?</td><td>“always positive” has 1</td></tr>
+<tr><td>specificity</td><td>TN/(TN+FP)</td><td>how many negatives did I leave alone?</td><td>1 − FPR</td></tr>
+<tr><td>precision = PPV</td><td>TP/(TP+FP)</td><td>when I say yes, am I right?</td><td>depends on the prevalence (Bayes)</td></tr>
+<tr><td>F1 = Dice</td><td>2TP/(2TP+FP+FN)</td><td>compromise between precision and recall</td><td>does not depend on TN</td></tr>
+<tr><td>ROC AUC</td><td>\(P(s^+ \gt s^-)\)</td><td>how well does the model rank?</td><td>does not see calibration or the threshold</td></tr>
+<tr><td>Brier</td><td>\(\frac1n\sum(\hat p - y)^2\)</td><td>are the probabilities right?</td><td>—</td></tr>
+<tr><td>MSE / RMSE / MAE</td><td>mean of \(e^2\) / \(\sqrt{\text{MSE}}\) / \(|e|\)</td><td>how large is the regression error?</td><td>MSE is sensitive to outliers</td></tr>
+<tr><td>\(R^2\)</td><td>1 − SSE/SST</td><td>how much better than the mean?</td><td>can be negative</td></tr>
+<tr><td>macro / micro / weighted</td><td>mean over classes / pooled counts / weighted mean</td><td>more classes</td><td>micro-F1 = accuracy</td></tr>
+</table></div>
+
+<h2 id="chytaky">The most common traps</h2>
+<div class="box pozor"><div class="box-t">Easily mixed up</div>
+<ul>
+<li><b>Parameter vs. hyperparameter:</b> parameters (weights \(\mathbf w\)) are learned from the training data; hyperparameters (\(k\), \(\lambda\), \(C\), \(\gamma\), depth, \(\eta\)) are chosen on validation data.</li>
+<li><b>Loss vs. metric:</b> the loss is for the optimizer (differentiable), the metric for evaluation.</li>
+<li><b>Validation vs. test:</b> you tune on validation, the test is used once.</li>
+<li><b>Dropout \(p\):</b> in the lecture \(p\) is the probability of <i>keeping</i> (0.5 for hidden layers); in PyTorch <code>p</code> is the probability of <i>dropping</i>.</li>
+<li><b>Three different \(\gamma\)s:</b> RBF \(\gamma = 1/2\sigma^2\) (kernel width) vs. the momentum \(\gamma\) (inertia) vs. \(\gamma_j\) in batch normalization (scale).</li>
+<li><b>\(\lambda\) in ridge vs. in sklearn:</b> scikit-learn calls it <code>alpha</code> for Ridge/Lasso and for MLP; for SVM, on the other hand, the regularization is <i>inversely</i> proportional to \(C\).</li>
+<li><b>PCA vs. LDA:</b> PCA without labels (variance), LDA with labels (class separation, at most \(C - 1\) directions).</li>
+<li><b>Bagging vs. boosting:</b> bagging ↓ variance, in parallel; boosting ↓ bias, sequentially.</li>
+<li><b>Trees and scaling:</b> trees, RF and AdaBoost with trees do not need scaling; k-NN, SVM, linear models, PCA and networks do.</li>
+<li><b>Data leakage:</b> everything that is “fitted” (scaling, imputation, PCA, feature selection, resampling) only on the training folds.</li>
+</ul></div>
+
+<h2 id="postup">Steps of a typical ML experiment</h2>
+<div class="box postup"><div class="box-t">From data to result (linking chapters 2–7)</div>
+<ol>
+<li>Define the goal and the metric (by the costs of errors, prevalence).</li>
+<li>Split the data: keep the test aside (stratified, grouped by patients).</li>
+<li>Pipeline: imputation (+ indicator) → encoding categories → scaling → possibly feature selection / reduction → model.</li>
+<li>Tune the hyperparameters in CV on the training data (random search or a grid on a logarithmic scale).</li>
+<li>Check the regime (learning curves): variance → more data, regularization, bagging; bias → more complex model, features, boosting.</li>
+<li>Choose the threshold on validation data, check calibration.</li>
+<li>Train the final model, evaluate it once on the test set, report the metric with its uncertainty.</li>
+</ol></div>
