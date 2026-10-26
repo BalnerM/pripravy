@@ -1222,16 +1222,27 @@
 <div class="box definice" id="k06-def-bias-variance"><div class="box-t">Definice: kompromis bias–rozptyl, podučení a přeučení</div>
 <p><b>Kompromis bias–rozptyl</b> je jev, že zvyšováním složitosti modelu obvykle klesá bias a roste rozptyl. <b>Podučení</b> (underfitting) = model je příliš jednoduchý, má vysoký bias (velká chyba už na trénovacích datech). <b>Přeučení</b> (overfitting) = model je příliš složitý, má vysoký rozptyl (nízká trénovací, ale vysoká testová chyba – naučil se šum).</p>
 <p class="jinak">jednoduchý model „netrefí tvar“, ale je stabilní; složitý model tvar trefí, ale „poskakuje“ podle toho, jaká data zrovna dostal. Optimum je uprostřed. Šum je podlaha, pod kterou se nedostaneme.</p></div>
-<figure class="wide"><div class="paper"><img src="figures/fig06_bias_variance.png" alt="Chyba vs. složitost stromu a učicí křivky ve dvou režimech" loading="lazy"></div>
-<figcaption><b>Obr. 6.1</b> Regresní stromy na 1D datech se šumem \(\sigma^2 = 0{,}20\). Vlevo: průměrná trénovací a testovací chyba (30 trénovacích sad po 60 bodech) v závislosti na hloubce stromu. Uprostřed a vpravo: učicí křivky – chyba v závislosti na počtu trénovacích vzorků pro strom hloubky 8 a pro pahýl (hloubka 1); čárkovaně přijatelná chyba \(\varepsilon\).</figcaption></figure>
+<h3 id="k06-bv-vizualne">Bias a rozptyl vizuálně</h3>
+<figure class="wide"><div class="paper"><img src="figures/fig06_terce.png" alt="Čtyři terče pro kombinace nízkého a vysokého biasu a rozptylu a graf bias², rozptylu a celkové chyby v závislosti na složitosti modelu" loading="lazy"></div>
+<figcaption><b>Obr. 6.1</b> Vlevo: každý terč odpovídá jednomu algoritmu, každá tečka jednomu modelu natrénovanému na <i>jiné</i> trénovací množině; střed terče je nejlepší možná predikce \(\bar y(\mathbf x)\). Vpravo: jak se členy rozkladu chyby mění se složitostí modelu (schéma, překresleno podle slidu 7 přednášky; původní zdroj S. Fortmann-Roe).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
-<p>Vlevo: trénovací chyba s hloubkou klesá k nule, testovací má minimum (hloubka 3) – nalevo podučení, napravo přeučení. Učicí křivky prozradí režim: <b>režim 1 (vysoký rozptyl)</b> – velká mezera mezi trénovací a testovací chybou, trénovací je pod \(\varepsilon\), testovací nad; víc dat pomáhá (testovací chyba klesá). <b>Režim 2 (vysoký bias)</b> – obě křivky splynuly <i>nad</i> \(\varepsilon\); víc dat nepomůže, křivky už zkonvergovaly na špatné místo.</p></div>
+<p><b>Terče.</b> <b>Bias</b> = jak daleko je <i>střed shluku</i> teček (průměrný model \(\bar h\)) od středu terče – je to systematická chyba, která nezmizí, ani když modelů zprůměrujeme nekonečně mnoho. <b>Rozptyl</b> = jak moc jsou tečky <i>rozházené</i> kolem svého středu – jak citlivě model reaguje na to, jaká data zrovna dostal. Nízký bias i rozptyl (vlevo nahoře) je cíl. Vysoký bias s nízkým rozptylem (vlevo dole) je typický <b>podučený</b> model – např. přímka na zakřivená data: pokaždé skoro stejná, pokaždé stejně vedle. Nízký bias s vysokým rozptylem (vpravo nahoře) je typický <b>přeučený</b> model – např. hluboký strom: v průměru trefí, ale každá trénovací množina dá úplně jiný model. Šum v obrázku není – ten by „rozmazal“ i samotný střed terče.</p>
+<p><b>Křivky.</b> Se složitostí modelu (hloubka stromu, stupeň polynomu, malé \(k\) u k-NN, velké \(C\) u SVM…) <b>bias² klesá</b> (model umí vyjádřit složitější tvar) a <b>rozptyl roste</b> (model má víc volnosti přizpůsobit se šumu). Celková testová chyba je jejich součet plus šum, a proto má tvar „U“: nalevo dominuje bias (podučení), napravo rozptyl (přeučení). Minimum („sweet spot“) je tam, kde se zlepšení biasu vyrovná zhoršení rozptylu – hledáme ho validací. Šum je vodorovná podlaha, pod kterou se celková chyba nedostane žádným modelem.</p></div>
+<figure><div class="paper"><img src="figures/fig06_regimy.png" alt="Schéma učicích křivek: trénovací a testovací chyba v závislosti na počtu vzorků se dvěma vyznačenými režimy" loading="lazy"></div>
+<figcaption><b>Obr. 6.2</b> Učicí křivky: trénovací a testovací chyba v závislosti na velikosti trénovací množiny a přijatelná chyba \(\varepsilon\) (schéma, překresleno podle slidu 8 přednášky; původní zdroj Cornell CS4780, lecture note 12).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>S rostoucím počtem vzorků <b>trénovací chyba roste</b> (víc bodů se hůř „zapamatuje“) a <b>testovací klesá</b> (víc dat = lepší odhad); obě se blíží ke stejné hodnotě. <b>Režim 1 – vysoký rozptyl</b> (vlevo): trénovací chyba je pod \(\varepsilon\), testovací nad ním a mezi nimi je velká mezera; mezera je právě rozptyl. Testovací křivka ještě klesá, takže <b>víc dat pomůže</b>, stejně jako jednodušší model nebo bagging. <b>Režim 2 – vysoký bias</b> (vpravo): obě křivky už splynuly, ale <i>nad</i> \(\varepsilon\). Další data nepomohou – křivky zkonvergovaly na špatné místo; je potřeba složitější model, víc příznaků nebo boosting. U zkoušky: „nejdřív se podívám na učicí křivky, abych věděl, kterým směrem model měnit.“</p></div>
 <div class="tablewrap"><table>
 <tr><th></th><th>režim 1: vysoký rozptyl</th><th>režim 2: vysoký bias</th></tr>
 <tr><td>jak poznat</td><td>trénovací chyba ≪ testovací; trénovací &lt; \(\varepsilon\), testovací &gt; \(\varepsilon\)</td><td>trénovací chyba &gt; \(\varepsilon\) a testovací je blízko ní</td></tr>
 <tr><td>co pomůže</td><td>víc trénovacích dat; jednodušší model; <b>bagging</b></td><td>složitější model; víc příznaků; <b>boosting</b></td></tr>
 </table></div>
 <p>Přijatelná chyba \(\varepsilon\) je daná aplikací, ne daty. Oba režimy potřebují opačnou léčbu, proto nejdřív zjisti, ve kterém jsi.</p>
+<h3 id="k06-bv-data">Totéž na skutečně spočítaných datech</h3>
+<figure class="wide"><div class="paper"><img src="figures/fig06_bias_variance.png" alt="Chyba vs. složitost stromu a učicí křivky ve dvou režimech" loading="lazy"></div>
+<figcaption><b>Obr. 6.3</b> Regresní stromy na 1D datech se šumem \(\sigma^2 = 0{,}20\). Vlevo: průměrná trénovací a testovací chyba (30 trénovacích sad po 60 bodech) v závislosti na hloubce stromu. Uprostřed a vpravo: učicí křivky – chyba v závislosti na počtu trénovacích vzorků pro strom hloubky 8 a pro pahýl (hloubka 1); čárkovaně přijatelná chyba \(\varepsilon\).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Schémata z obr. 6.1 a 6.2 platí i na skutečném výpočtu. Vlevo: trénovací chyba s hloubkou klesá k nule, testovací má minimum (hloubka 3) a nikdy neklesne pod šum 0,20. Uprostřed (strom hloubky 8): velká mezera, testovací chyba s daty klesá pod \(\varepsilon\) – režim 1, víc dat pomohlo. Vpravo (pahýl): obě křivky splynou kolem 0,40 nad \(\varepsilon\) – režim 2, ani 1000 vzorků nepomůže.</p></div>
 
 <h2 id="k06-stromy">Rozhodovací stromy</h2>
 <div class="box definice" id="k06-def-strom"><div class="box-t">Definice: rozhodovací strom a jeho části</div>
@@ -1278,7 +1289,7 @@
 <div class="box priklad"><div class="box-t">Ručně (přednáška, dvě třídy, log₂)</div>
 <p>List 4 : 1 (\(p = 0{,}8\)): chyba 1 (chybovost 0,2); \(H = -0{,}8\log_20{,}8 - 0{,}2\log_20{,}2 = 0{,}72\) bitu; \(G = 0{,}8\cdot0{,}2 + 0{,}2\cdot0{,}8 = 0{,}32\). Kořen 10 : 9: \(H = 1{,}00\) bit, \(G = 0{,}50\). Čistý list: všechny tři nulové.</p></div>
 <figure><div class="paper"><img src="figures/fig06_impurity.png" alt="Chybovost, entropie a Gini v závislosti na podílu třídy" loading="lazy"></div>
-<figcaption><b>Obr. 6.2</b> Tři míry nečistoty pro dvě třídy jako funkce podílu \(p\) třídy 1; vyznačen list 4 : 1.</figcaption></figure>
+<figcaption><b>Obr. 6.4</b> Tři míry nečistoty pro dvě třídy jako funkce podílu \(p\) třídy 1; vyznačen list 4 : 1.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>Všechny tři míry jsou nulové na krajích (čistý uzel) a maximální při \(p = 0{,}5\). Chybovost je po částech lineární – mnoho dělení má stejné skóre. Entropie a Gini jsou zakřivené, takže rozliší „čistší“ dělení i při stejném počtu chyb.</p></div>
 <h3>Kdy přestat dělit</h3>
@@ -1289,7 +1300,7 @@
 </ul>
 <p>Bez pravidel roste strom, dokud není každý list čistý – na datech vína (115 trénovacích, 63 testovacích bodů) roste trénovací přesnost do 1,00, testovací má vrchol v hloubce 2 (0,87) a končí na 0,83 (přednáška). Alternativou zastavování je <b>prořezávání</b> (pruning): nechat strom vyrůst celý a pak odříznout větve, které nezlepší validační chybu.</p>
 <figure class="wide"><div class="paper"><img src="figures/fig06_tree_depth.png" alt="Hranice rozhodnutí stromu pro hloubky 1, 3 a 10 a přesnost vs. hloubka" loading="lazy"></div>
-<figcaption><b>Obr. 6.3</b> Data vína (3 odrůdy), dva příznaky: alkohol a flavonoidy (vlastní volba, 115 trénovacích a 63 testovacích vzorků jako v přednášce). Barva pozadí = rozhodnutí stromu.</figcaption></figure>
+<figcaption><b>Obr. 6.5</b> Data vína (3 odrůdy), dva příznaky: alkohol a flavonoidy (vlastní volba, 115 trénovacích a 63 testovacích vzorků jako v přednášce). Barva pozadí = rozhodnutí stromu.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>Strom dělí prostor <b>osově rovnoběžnými obdélníky</b>. Hloubka 1 (pahýl) umí jen jeden řez – dvě třídy z tří (podučení). Hloubka 3 zachytí strukturu. Hloubka 10 vyrobí úzké pruhy kolem jednotlivých bodů: trénovací přesnost 1,00, testovací už neroste. Trénovací přesnost s hloubkou roste vždy, testovací se zastaví a může klesnout.</p></div>
 <div class="box parametry"><div class="box-t">Parametry: rozhodovací strom (CART)</div>
@@ -1324,7 +1335,7 @@
 </table>
 <p>S rostoucím \(M\) druhý člen mizí, ale první \(\rho\sigma_1^2\) zůstává – rozptyl neklesne pod \(\rho\sigma_1^2\). V přednášce: z jednoho bootstrap stromu na \(M = 50\) klesl rozptyl predikce z 0,00465 na 0,00175 – <b>2,7×, ne 50×</b>. (Dosazením vychází \(\rho \approx 0{,}36\).) Proto random forest stromy navíc „dekoreluje“.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig06_bagging.png" alt="Predikce jednoho stromu a baggingu přes 20 trénovacích sad a teoretický rozptyl v závislosti na M" loading="lazy"></div>
-<figcaption><b>Obr. 6.4</b> Vlevo a uprostřed: predikce regresního stromu (max_depth = 4) a baggingu (M = 50) natrénovaných na 20 různých trénovacích sadách po 45 bodech (tenké modré čáry). Vpravo: rozptyl průměru \(M\) stromů podle vzorce pro tři korelace \(\rho\).</figcaption></figure>
+<figcaption><b>Obr. 6.6</b> Vlevo a uprostřed: predikce regresního stromu (max_depth = 4) a baggingu (M = 50) natrénovaných na 20 různých trénovacích sadách po 45 bodech (tenké modré čáry). Vpravo: rozptyl průměru \(M\) stromů podle vzorce pro tři korelace \(\rho\).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>Jeden strom „skáče“ podle toho, jaká data dostal (průměrný rozptyl predikce 0,165); bagged predikce stejných 20 sad jsou mnohem těsněji u sebe (0,095) a hladší. Průměr přes sady (\(\approx\bar h\)) je u obou podobný – bagging bias nemění. Vpravo: čím víc jsou stromy korelované, tím dřív se pokles rozptylu zastaví.</p></div>
 <div data-demo="strom-bagging"></div>
@@ -1337,7 +1348,7 @@
 <p><b>Out-of-bag vzorky</b> stromu jsou trénovací vzorky, které se do jeho bootstrap výběru nedostaly (ostatní jsou in-bag); slouží jako validační data. OOB skóre vzorku se počítá jen ze stromů, pro které je tento vzorek OOB.</p>
 <p class="jinak">bootstrap velikosti \(n\) vynechá každý vzorek s pravděpodobností \((1 - 1/n)^n \to e^{-1} \approx 37\,\%\) (pro \(n = 10\): 0,35; \(n = 100\): 0,366) – odtud pravidlo „2/3 in-bag, 1/3 OOB“. Dostaneme tak odhad testové chyby bez křížové validace – užitečné u malých dat. Každý vzorek ale hodnotí jen ≈ 1/3 stromů, takže OOB skóre bývá mírně pesimistické; nemíchat OOB a validační skóre při porovnání modelů.</p></div>
 <figure><div class="paper"><img src="figures/fig06_rf.png" alt="OOB chyba random forestu v závislosti na počtu stromů pro tři hodnoty max_features" loading="lazy"></div>
-<figcaption><b>Obr. 6.5</b> Syntetická data (500 vzorků, 20 příznaků, z nich 6 informativních a 4 redundantní, 5 % zašuměných labelů): OOB chyba v závislosti na počtu stromů pro tři hodnoty <code>max_features</code>.</figcaption></figure>
+<figcaption><b>Obr. 6.7</b> Syntetická data (500 vzorků, 20 příznaků, z nich 6 informativních a 4 redundantní, 5 % zašuměných labelů): OOB chyba v závislosti na počtu stromů pro tři hodnoty <code>max_features</code>.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>S počtem stromů chyba klesá a pak se ustálí – víc stromů už nepřeučí, jen stojí víc výpočtu. <code>max_features</code> = všechny příznaky je obyčejný bagging (korelované stromy); √d (≈ 4) dává nejnižší chybu; 1 příznak na dělení stromy příliš oslabí (každé dělení je skoro náhodné, vyšší bias).</p></div>
 <div class="box parametry"><div class="box-t">Parametry: bagging a random forest</div>
@@ -1375,7 +1386,7 @@
 <li>\(H(\mathbf x) = \operatorname{sign}(0{,}42h_1 + 0{,}65h_2 + 0{,}92h_3)\) – tři osově rovnoběžné pahýly dají netriviální oblast, která správně zařadí všech 10 vzorků.</li>
 </ol></div>
 <figure class="wide"><div class="paper"><img src="figures/fig06_adaboost.png" alt="Hranice AdaBoostu pro 1, 3, 20 a 300 pahýlů" loading="lazy"></div>
-<figcaption><b>Obr. 6.6</b> AdaBoost s pahýly na zašuměných „dvou měsících“ (200 trénovacích bodů); v titulcích přesnost na trénovacích a na 2000 nových bodech.</figcaption></figure>
+<figcaption><b>Obr. 6.8</b> AdaBoost s pahýly na zašuměných „dvou měsících“ (200 trénovacích bodů); v titulcích přesnost na trénovacích a na 2000 nových bodech.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>Jeden pahýl = jeden řez (vysoký bias). Každé kolo přidá řez tam, kde se dosud chybovalo – hranice je postupně složitější a bias klesá (test 0,82 → 0,90). Při 300 kolech trénovací přesnost dosáhne 1,00 díky úzkým „výběžkům“ kolem jednotlivých bodů. <b>Šum v labelech</b> (přednáška): tři chybně označené vzorky ze 80 začínají s 3,75 % celkové váhy a po 40 kolech drží 37 %; trénovací chyba je 0 díky proužkům užším než 0,01 kolem nich – AdaBoost je na chybné labely citlivý.</p></div>
 <div class="box parametry"><div class="box-t">Parametry: AdaBoost</div>

@@ -420,6 +420,77 @@ def fig04_svm_rbf():
 
 
 # =====================================================================  přednáška 6
+def fig06_terce():
+    """Bias a rozptyl vizuálně (podle slidu 7, překresleno): terče a rozklad chyby podle složitosti."""
+    from matplotlib.patches import Circle
+    fig = plt.figure(figsize=(12, 5.2))
+    gs = fig.add_gridspec(2, 3, width_ratios=[1, 1, 2.1], wspace=0.15, hspace=0.12)
+    R = rng(6)
+    cfg = [(0, 0, 0.0, 0.13, "nízký bias, nízký rozptyl"), (0, 1, 0.0, 0.42, "nízký bias, vysoký rozptyl"),
+           (1, 0, 0.62, 0.13, "vysoký bias, nízký rozptyl"), (1, 1, 0.62, 0.42, "vysoký bias, vysoký rozptyl")]
+    for r, c, bias, sd, ttl in cfg:
+        ax = fig.add_subplot(gs[r, c])
+        for rad, fc in [(1.0, SURF), (0.75, "#d6e5f7"), (0.42, SURF)]:
+            ax.add_patch(Circle((0, 0), rad, facecolor=fc, edgecolor=INK2, lw=1.1))
+        ax.add_patch(Circle((0, 0), 0.11, facecolor=C2, edgecolor="none", zorder=3))
+        ang = np.deg2rad(135)
+        P = np.array([bias * np.cos(ang), bias * np.sin(ang)]) + R.normal(0, sd, (16, 2))
+        ax.scatter(P[:, 0], P[:, 1], s=14, c=C1, marker="o", edgecolors=SURF, linewidths=0.5, zorder=4)
+        ax.set_xlim(-1.08, 1.08); ax.set_ylim(-1.08, 1.08); ax.set_aspect("equal"); ax.axis("off")
+        ax.set_title(ttl, fontsize=9.5)
+    ax = fig.add_subplot(gs[:, 2])
+    c = np.linspace(0.05, 1, 300)
+    bias2 = 0.9 * np.exp(-4.5 * c) + 0.04
+    var = 0.03 + 0.9 * c ** 3.2
+    noise = 0.12
+    tot = bias2 + var + noise
+    ax.plot(c, bias2, color=C2, label="bias²")
+    ax.plot(c, var, color=C3, label="rozptyl")
+    ax.axhline(noise, color=MUTED, ls=":", lw=1.3, label="šum (neodstranitelný)")
+    ax.plot(c, tot, color=INK, lw=2.4, label="celková testová chyba")
+    i = int(np.argmin(tot))
+    ax.axvline(c[i], color=INK2, ls="--", lw=1)
+    ax.plot(c[i], tot[i], "o", color=C3, ms=8, mec=SURF, zorder=5)
+    ax.annotate("optimum\n(„sweet spot“)", (c[i], tot[i]), xytext=(c[i] - 0.2, tot[i] - 0.14), fontsize=9.5,
+                color=INK, arrowprops=dict(arrowstyle="->", color=INK2))
+    ax.text(0.07, 1.08, "podučení", color=C2, fontsize=10, fontweight="semibold")
+    ax.text(0.97, 1.08, "přeučení", color=C3, fontsize=10, fontweight="semibold", ha="right")
+    ax.set_ylim(0, 1.15); ax.set_xlim(0.05, 1)
+    ax.set_xticks([]); ax.set_yticks([])
+    ax.set_xlabel("složitost modelu →"); ax.set_ylabel("chyba")
+    ax.set_title("Rozklad testové chyby podle složitosti modelu")
+    ax.legend(fontsize=9, loc="upper center", bbox_to_anchor=(0.52, 0.93))
+    fig.savefig(OUT / "fig06_terce.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print("ok fig06_terce")
+
+
+def fig06_regimy():
+    """Učicí křivky a dva režimy (podle slidu 8, překresleno, schematicky)."""
+    from matplotlib.patches import Ellipse
+    n = np.linspace(1, 100, 400)
+    test = 0.30 + 2.2 / (n + 2.5) ** 0.95
+    train = 0.30 - 0.30 * np.exp(-n / 22)
+    eps = 0.25
+    fig, ax = plt.subplots(figsize=(8.5, 4.2))
+    ax.plot(n, test, color=C2, label="testovací chyba")
+    ax.plot(n, train, color=C1, label="trénovací chyba")
+    ax.axhline(eps, color=INK2, ls="--", lw=1.2)
+    ax.text(99, eps - 0.035, "přijatelná testová chyba ε", ha="right", fontsize=9.5, color=INK2)
+    ax.add_patch(Ellipse((9, 0.37), 15, 0.62, fill=False, ec=MUTED, lw=1.3))
+    ax.text(3, 0.71, "Režim 1:\nvysoký rozptyl", fontsize=9.5, color=INK, va="bottom")
+    ax.add_patch(Ellipse((72, 0.33), 40, 0.14, fill=False, ec=MUTED, lw=1.3))
+    ax.text(72, 0.415, "Režim 2: vysoký bias\n(obě křivky splynuly nad ε)", fontsize=9.5, color=INK, ha="center")
+    ax.annotate("velká mezera\n= rozptyl", (12, 0.27), xytext=(22, 0.52), fontsize=9, color=INK2,
+                arrowprops=dict(arrowstyle="-", color=MUTED))
+    ax.set_ylim(0, 0.95); ax.set_xlim(0, 100)
+    ax.set_xticks([]); ax.set_yticks([])
+    ax.set_xlabel("počet trénovacích vzorků n →"); ax.set_ylabel("chyba")
+    ax.set_title("Učicí křivky: ve kterém režimu jsem?")
+    ax.legend(fontsize=9.5, loc="upper right")
+    save(fig, "fig06_regimy")
+
+
 def fig06_bias_variance():
     from sklearn.tree import DecisionTreeRegressor
     R = rng(8)
@@ -702,7 +773,7 @@ def fig07_alpha():
 
 ALL = [fig01_gd_eta, fig01_knn_k, fig02_roc, fig02_kfold_var, fig03_hughes, fig03_pca_lda, fig03_tsne_perp,
        fig03_umap_params, fig04_poly, fig04_ridge_lasso, fig04_losses, fig04_svm_c, fig04_svm_rbf,
-       fig06_bias_variance, fig06_tree_depth, fig06_impurity, fig06_bagging, fig06_rf, fig06_adaboost,
+       fig06_terce, fig06_regimy, fig06_bias_variance, fig06_tree_depth, fig06_impurity, fig06_bagging, fig06_rf, fig06_adaboost,
        fig07_activations, fig07_optimizers, fig07_early_stopping, fig07_alpha]
 
 if __name__ == "__main__":
