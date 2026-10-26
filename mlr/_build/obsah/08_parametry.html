@@ -1,0 +1,163 @@
+<h1>Tahák: parametry a srovnání modelů</h1>
+<p class="lead">Stránka na závěrečné opakování. Pro každý model: <b>co který hyperparametr znamená</b> a <b>co se stane, když ho zvětším nebo zmenším</b>. Pak srovnání modelů, „knoflíky složitosti“ a nejčastější chytáky. Podrobný výklad je vždy v odkazované kapitole.</p>
+
+<h2 id="princip">Jeden princip pro všechny parametry</h2>
+<div class="box intuice"><div class="box-t">Každý hyperparametr posouvá model po ose bias ↔ rozptyl</div>
+<p>Skoro každý hyperparametr buď model <b>zesložiťuje</b> (nižší bias, vyšší rozptyl → hrozí <b>přeučení</b>: trénovací chyba nízká, testová vysoká), nebo <b>zjednodušuje</b> (vyšší bias, nižší rozptyl → hrozí <b>podučení</b>: chyba vysoká už na tréninku). Optimum je uprostřed a hledá se na validačních datech / v křížové validaci (<a href="02_hodnoceni.html#validace">kap. 2</a>), nikdy na testu. Druhá skupina parametrů ovlivňuje jen <b>rychlost a stabilitu učení</b> (krok učení, velikost dávky, momentum) – ty se ladí podle průběhu ztráty.</p></div>
+<div class="tablewrap"><table>
+<tr><th>model</th><th>složitější (→ přeučení) když…</th><th>jednodušší (→ podučení) když…</th></tr>
+<tr><td>k-NN</td><td>↓ \(k\)</td><td>↑ \(k\)</td></tr>
+<tr><td>ridge / LASSO</td><td>↓ \(\lambda\)</td><td>↑ \(\lambda\)</td></tr>
+<tr><td>polynomiální regrese</td><td>↑ stupeň</td><td>↓ stupeň</td></tr>
+<tr><td>SVM</td><td>↑ \(C\), ↑ \(\gamma\) (RBF), ↑ \(p\) (poly), ↓ \(\nu\)</td><td>↓ \(C\), ↓ \(\gamma\), ↓ \(p\), ↑ \(\nu\)</td></tr>
+<tr><td>rozhodovací strom</td><td>↑ max_depth, ↓ min_samples_leaf, ↓ min_samples_split, ↓ ccp_alpha</td><td>opak</td></tr>
+<tr><td>random forest</td><td>↑ hloubka stromů (rozptyl ale srazí průměr), ↑ max_features (korelace)</td><td>↓ hloubka, ↓ max_features (každý strom slabší)</td></tr>
+<tr><td>AdaBoost</td><td>↑ počet kol \(M\), silnější slabý klasifikátor</td><td>↓ \(M\), pahýly</td></tr>
+<tr><td>neuronová síť</td><td>↑ vrstvy/neurony, ↓ \(\lambda\), ↑ \(p\) dropoutu (= méně vypínání), ↑ epoch</td><td>opak; early stopping</td></tr>
+<tr><td>výběr příznaků / PCA</td><td>↑ počet příznaků / komponent</td><td>↓ počet</td></tr>
+</table></div>
+<div class="box pozor"><div class="box-t">Výjimka: počet stromů</div>
+<p>Počet stromů v <b>random forestu / baggingu</b> model nepřeučí – víc stromů jen sníží rozptyl (až k hranici \(\rho\sigma^2\)) a zvýší výpočet. Počet kol v <b>AdaBoostu</b> naopak model zesložiťuje a na šumu v labelech přeučí.</p></div>
+
+<h2 id="modely">Parametry jednotlivých modelů</h2>
+<h3 id="p-gd">Gradientní sestup (<a href="01_uvod.html#optimalizace">kap. 1</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parametr</th><th>význam</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>krok učení \(\eta\)</td><td>délka kroku proti gradientu</td><td>rychlejší, od \(\eta \gt 2/L\) kmitání a divergence</td><td>pomalé „plížení“, nemusí dojít do minima</td></tr>
+<tr><td>počet iterací / tolerance</td><td>kdy skončit</td><td>přesnější minimum, víc výpočtu</td><td>nedokonvergované řešení</td></tr>
+<tr><td>start</td><td>počáteční bod</td><td colspan="2">u nekonvexních úloh určuje, ve kterém lokálním minimu skončím</td></tr>
+</table></div>
+<h3 id="p-knn">k-NN a k-means (<a href="01_uvod.html#knn">kap. 1</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parametr</th><th>význam</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>k-NN: \(k\)</td><td>počet hlasujících sousedů</td><td>hladší hranice, ↑ bias; \(k\to n\) = vždy většinová třída</td><td>kopíruje šum; \(k = 1\) má trénovací chybu 0</td></tr>
+<tr><td>k-NN: metrika</td><td>L1, L2, L∞, kosinová…</td><td colspan="2">mění tvar okolí; vždy škálovat příznaky</td></tr>
+<tr><td>k-means: \(k\)</td><td>počet shluků</td><td>inercie ↓ vždy (až 0 pro \(k = n\)), dělí skutečné skupiny</td><td>slučuje odlišné skupiny</td></tr>
+<tr><td>k-means: restarty</td><td>počet inicializací</td><td>lepší lokální minimum, víc výpočtu</td><td>výsledek víc závisí na náhodě</td></tr>
+</table></div>
+<h3 id="p-hodnoceni">Hodnocení a validace (<a href="02_hodnoceni.html#metriky">kap. 2</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parametr</th><th>význam</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>rozhodovací práh \(t\)</td><td>od jakého skóre „pozitivní“</td><td>FPR ↓, specificita ↑, precision ↑, recall ↓</td><td>recall ↑, FPR ↑, precision ↓</td></tr>
+<tr><td>počet foldů \(k\)</td><td>na kolik částí dělím data v CV</td><td>víc fitů, víc trénovacích dat na fit (méně pesimistický odhad); \(k = n\) = LOO</td><td>levnější, méně dat na fit</td></tr>
+<tr><td>podíl testu / validace</td><td>kolik dat odložím</td><td>přesnější odhad, méně dat na trénink</td><td>víc dat na trénink, hlučný odhad</td></tr>
+</table></div>
+<h3 id="p-redukce">Výběr příznaků a redukce dimenze (<a href="03_redukce.html#linearni-redukce">kap. 3</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parametr</th><th>význam</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>počet příznaků \(k\) (filtr, wrapper)</td><td>kolik příznaků ponechám</td><td>víc informace i šumu; za \(d^\ast\) se výkon zhoršuje (Hughes)</td><td>jednodušší model, riziko ztráty informace</td></tr>
+<tr><td>PCA: počet komponent</td><td>kolik nových os</td><td>víc vysvětleného rozptylu, menší komprese, i šum</td><td>silnější komprese a odšumění, ztráta informace</td></tr>
+<tr><td>PCA: standardizace</td><td>stejný rozptyl příznaků</td><td colspan="2">bez ní dominují příznaky s velkými čísly</td></tr>
+<tr><td>t-SNE: perplexity</td><td>efektivní počet sousedů</td><td>globálnější, shluky se slévají</td><td>lokální detail, rozpad na falešné úlomky</td></tr>
+<tr><td>t-SNE: learning_rate</td><td>krok optimalizace mapy</td><td>rychlejší, při přehnání nestabilní</td><td>pomalá konvergence</td></tr>
+<tr><td>UMAP: n_neighbors</td><td>měřítko okolí grafu</td><td>globální struktura, hladší mapa</td><td>lokální detail, izolované ostrovy</td></tr>
+<tr><td>UMAP: min_dist</td><td>jak těsně se body smějí nahustit</td><td>rovnoměrná, rozmazaná mapa</td><td>kompaktní, ostře oddělené shluky</td></tr>
+<tr><td>kernel PCA: RBF \(\gamma\)</td><td>inverzní šířka jádra</td><td>velmi lokální, zachytí i šum</td><td>blíží se lineární PCA</td></tr>
+</table></div>
+<h3 id="p-linearni">Lineární modely a SVM (<a href="04_linearni.html#regrese">kap. 4</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parametr</th><th>význam</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>ridge \(\lambda\)</td><td>L2 penalizace vah</td><td>koeficienty → 0 (ne přesně), hladší model, ↑ bias</td><td>blíž OLS, přeučení u mnoha příznaků</td></tr>
+<tr><td>LASSO \(\lambda\)</td><td>L1 penalizace vah</td><td>víc koeficientů přesně 0 (méně příznaků)</td><td>víc příznaků, při 0 OLS</td></tr>
+<tr><td>MSE vs. MAE</td><td>volba ztráty regrese</td><td colspan="2">MSE: uzavřený tvar, citlivá na odlehlé hodnoty; MAE (LAD): robustní, bez uzavřeného tvaru</td></tr>
+<tr><td>stupeň polynomu \(m\)</td><td>nejvyšší mocnina příznaku</td><td>pružnější, kmity, přeučení</td><td>hladší, podučení</td></tr>
+<tr><td>SVM \(C\)</td><td>cena porušení okraje</td><td>užší okraj, méně SV, hranice podle jednotlivých bodů (přeučení)</td><td>širší okraj, víc SV, hladší hranice (podučení)</td></tr>
+<tr><td>SVM \(\nu\)</td><td>horní mez podílu chyb, dolní mez podílu SV</td><td>víc tolerance, víc SV (jako ↓C)</td><td>méně chyb (jako ↑C)</td></tr>
+<tr><td>RBF \(\gamma = 1/2\sigma^2\)</td><td>inverzní šířka gaussovky – dosah vlivu bodu</td><td>„ostrůvky“ kolem bodů, přeučení</td><td>skoro lineární hranice, podučení</td></tr>
+<tr><td>polynomiální jádro \(p\), \(c\)</td><td>stupeň, posun</td><td>složitější hranice</td><td>jednodušší</td></tr>
+<tr><td>perceptron \(\eta\), epochy</td><td>krok a počet průchodů</td><td colspan="2">konverguje jen pro separabilní data; jinak cyklí bez ohledu na \(\eta\)</td></tr>
+</table></div>
+<h3 id="p-stromy">Stromy a ansámbly (<a href="06_stromy.html#cart">kap. 6</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parametr</th><th>význam</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>max_depth</td><td>max. počet otázek na cestě</td><td>jemnější obdélníky, trénovací chyba → 0, přeučení</td><td>jednodušší, pahýl = podučení</td></tr>
+<tr><td>min_samples_leaf</td><td>min. vzorků v listu</td><td>hladší, méně přeučení</td><td>listy s jedním bodem – kopíruje šum</td></tr>
+<tr><td>min_samples_split, max_leaf_nodes</td><td>kdy se smí dělit, velikost stromu</td><td colspan="2">↑ min_samples_split / ↓ max_leaf_nodes = menší strom</td></tr>
+<tr><td>criterion</td><td>Gini / entropie / MSE</td><td colspan="2">Gini a entropie dávají podobné stromy</td></tr>
+<tr><td>ccp_alpha</td><td>síla prořezání</td><td>menší strom</td><td>skoro celý strom</td></tr>
+<tr><td>RF/bagging: n_estimators \(M\)</td><td>počet stromů</td><td>rozptyl ↓ (do \(\rho\sigma^2\)), nepřeučí, víc výpočtu</td><td>hlučnější predikce</td></tr>
+<tr><td>RF: max_features</td><td>příznaků na jedno dělení</td><td>silnější, ale korelované stromy (všechny = bagging)</td><td>různorodé, slabší stromy; typicky √d</td></tr>
+<tr><td>AdaBoost: počet kol \(M\)</td><td>počet slabých klasifikátorů</td><td>bias ↓, složitější hranice, přeučení na šumu</td><td>podučení</td></tr>
+<tr><td>AdaBoost: slabý klasifikátor</td><td>pahýl / mělký strom</td><td>rychlejší pokles chyby, snazší přeučení</td><td>pomalý, bezpečný</td></tr>
+<tr><td>AdaBoost: learning_rate</td><td>zmenšení \(\alpha_m\)</td><td>rychlejší učení</td><td>potřeba víc kol, lepší zobecnění</td></tr>
+</table></div>
+<h3 id="p-nn">Neuronové sítě (<a href="07_neuronove_site.html#optimalizatory">kap. 7</a>)</h3>
+<div class="tablewrap"><table class="params">
+<tr><th>parametr</th><th>význam</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
+<tr><td>krok učení \(\eta\)</td><td>délka kroku</td><td>kmitání, divergence (NaN)</td><td>pomalé učení, uvíznutí</td></tr>
+<tr><td>velikost dávky \(b\)</td><td>vzorků na update</td><td>méně hlučný gradient, víc paměti, méně updatů</td><td>hlučné updaty (šum pomáhá), pomalejší; \(b = 1\) = SGD</td></tr>
+<tr><td>epochy</td><td>průchody daty</td><td>přeučení</td><td>podučení</td></tr>
+<tr><td>momentum \(\gamma\) / Adam \(\beta_1\)</td><td>paměť setrvačnosti</td><td>hladší pohyb, přejede mělká minima, může kroužit</td><td>chování jako SGD</td></tr>
+<tr><td>RMSprop \(\rho\) / Adam \(\beta_2\)</td><td>paměť průměru čtverců gradientu</td><td>stabilnější normalizace kroku</td><td>hlučná adaptace</td></tr>
+<tr><td>weight decay \(\lambda\)</td><td>L2 penalizace vah</td><td>hladší funkce, při přehnání podučení</td><td>přeučení</td></tr>
+<tr><td>dropout \(p\) (ponechání)</td><td>podíl aktivních neuronů</td><td>slabší regularizace (\(p = 1\) = bez dropoutu)</td><td>silnější regularizace, pomalejší učení</td></tr>
+<tr><td>BN: velikost dávky</td><td>z čeho se počítají statistiky</td><td>stabilnější</td><td>při velmi malé dávce selhává</td></tr>
+<tr><td>early stopping: trpělivost</td><td>kontroly bez zlepšení</td><td>delší učení, riziko přeučení</td><td>předčasný konec</td></tr>
+<tr><td>vrstvy, neurony</td><td>kapacita</td><td>nižší bias, vyšší rozptyl</td><td>podučení</td></tr>
+<tr><td>WCE \(\omega_c\)</td><td>cena chyby na třídě</td><td>recall třídy ↑</td><td>třída ignorována</td></tr>
+<tr><td>Tversky \(\alpha\), \(\beta\)</td><td>cena FP, cena FN</td><td>↑β: recall ↑; ↑α: precision ↑</td><td>opak</td></tr>
+</table></div>
+
+<h2 id="srovnani">Srovnání modelů</h2>
+<div class="tablewrap"><table>
+<tr><th></th><th>k-NN</th><th>lineární / logistická regrese</th><th>SVM (RBF)</th><th>strom</th><th>random forest</th><th>AdaBoost</th><th>neuronová síť</th></tr>
+<tr><td>tvar hranice</td><td>libovolný (lokální)</td><td>přímka / nadrovina</td><td>libovolná hladká</td><td>osově rovnoběžné obdélníky</td><td>průměr obdélníků</td><td>vážené obdélníky</td><td>libovolná</td></tr>
+<tr><td>potřebuje škálování</td><td>ano</td><td>ano (regularizace, konvergence)</td><td>ano</td><td>ne</td><td>ne</td><td>ne (se stromy)</td><td>ano</td></tr>
+<tr><td>interpretovatelnost</td><td>střední (sousedé)</td><td>vysoká (váhy)</td><td>nízká (SV, \(\alpha\))</td><td>vysoká</td><td>nízká (důležitost příznaků)</td><td>nízká</td><td>nízká</td></tr>
+<tr><td>trénování</td><td>žádné (lazy)</td><td>rychlé (uzavřený tvar / konvexní)</td><td>QP, roste s \(n^2\)</td><td>rychlé</td><td>paralelizovatelné</td><td>sekvenční</td><td>drahé, GPU</td></tr>
+<tr><td>predikce</td><td>pomalá (hledání sousedů)</td><td>okamžitá</td><td>podle počtu SV</td><td>hloubka stromu</td><td>počet stromů × hloubka</td><td>počet kol</td><td>průchod sítí</td></tr>
+<tr><td>výstup pravděpodobnosti</td><td>podíl sousedů</td><td>ano (log. regrese, kalibrované)</td><td>vzdálenost od hranice</td><td>podíl tříd v listu</td><td>podíl stromů</td><td>vážené hlasování</td><td>softmax</td></tr>
+<tr><td>hlavní hyperparametry</td><td>\(k\), metrika</td><td>\(\lambda\), L1/L2</td><td>\(C\), \(\gamma\)</td><td>max_depth, min_samples_leaf</td><td>n_estimators, max_features</td><td>\(M\), slabý klasifikátor</td><td>architektura, \(\eta\), \(\lambda\), dropout</td></tr>
+<tr><td>slabina</td><td>prokletí dimenze, šum</td><td>nelineární vztahy (bez rozšíření)</td><td>velká data, volba \(\gamma\)</td><td>nestabilita, přeučení</td><td>paměť, interpretace</td><td>šum v labelech</td><td>potřeba dat a výpočtu</td></tr>
+</table></div>
+<div class="tablewrap"><table>
+<tr><th>ztráta</th><th>vzorec</th><th>model</th><th>vlastnost</th></tr>
+<tr><td>MSE</td><td>\((y - z)^2\)</td><td>OLS, regresní sítě</td><td>hladká, citlivá na odlehlé hodnoty</td></tr>
+<tr><td>MAE</td><td>\(|y - z|\)</td><td>LAD</td><td>robustní, v nule nediferencovatelná</td></tr>
+<tr><td>hinge</td><td>\(\max(0, 1 - yz)\)</td><td>SVM</td><td>nula až za okrajem</td></tr>
+<tr><td>perceptron</td><td>\(\max(0, -yz)\)</td><td>perceptron</td><td>trestá jen chyby</td></tr>
+<tr><td>log-loss / křížová entropie</td><td>\(\log(1 + e^{-yz})\); \(-\sum y_c\log\hat y_c\)</td><td>logistická regrese, sítě</td><td>pravděpodobnostní výstup</td></tr>
+<tr><td>Tversky / Dice</td><td>\(1 - \frac{TP}{TP + \beta FN + \alpha FP}\)</td><td>segmentace</td><td>váží FP vs. FN</td></tr>
+</table></div>
+
+<h2 id="metriky">Metriky na jedné stránce</h2>
+<div class="tablewrap"><table>
+<tr><th>metrika</th><th>vzorec</th><th>otázka, na kterou odpovídá</th><th>pozor</th></tr>
+<tr><td>accuracy</td><td>(TP+TN)/vše</td><td>kolik je správně?</td><td>paradox u nevyvážených tříd</td></tr>
+<tr><td>senzitivita = recall = TPR</td><td>TP/(TP+FN)</td><td>kolik pozitivních jsem našel?</td><td>„vždy pozitivní“ má 1</td></tr>
+<tr><td>specificita</td><td>TN/(TN+FP)</td><td>kolik negativních jsem nechal?</td><td>1 − FPR</td></tr>
+<tr><td>precision = PPV</td><td>TP/(TP+FP)</td><td>když řeknu ano, mám pravdu?</td><td>závisí na prevalenci (Bayes)</td></tr>
+<tr><td>F1 = Dice</td><td>2TP/(2TP+FP+FN)</td><td>kompromis precision a recall</td><td>nezávisí na TN</td></tr>
+<tr><td>ROC AUC</td><td>\(P(s^+ \gt s^-)\)</td><td>jak dobře model seřadí?</td><td>nevidí kalibraci ani práh</td></tr>
+<tr><td>Brier</td><td>\(\frac1n\sum(\hat p - y)^2\)</td><td>jsou pravděpodobnosti správné?</td><td>—</td></tr>
+<tr><td>MSE / RMSE / MAE</td><td>průměr \(e^2\) / \(\sqrt{\text{MSE}}\) / \(|e|\)</td><td>jak velká je chyba regrese?</td><td>MSE citlivé na odlehlé hodnoty</td></tr>
+<tr><td>\(R^2\)</td><td>1 − SSE/SST</td><td>o kolik lepší než průměr?</td><td>může být záporné</td></tr>
+<tr><td>macro / micro / weighted</td><td>průměr tříd / sloučené počty / vážený průměr</td><td>více tříd</td><td>micro-F1 = accuracy</td></tr>
+</table></div>
+
+<h2 id="chytaky">Nejčastější chytáky</h2>
+<div class="box pozor"><div class="box-t">Pletou se</div>
+<ul>
+<li><b>Parametr vs. hyperparametr:</b> parametry (váhy \(\mathbf w\)) se učí z trénovacích dat; hyperparametry (\(k\), \(\lambda\), \(C\), \(\gamma\), hloubka, \(\eta\)) se volí na validaci.</li>
+<li><b>Loss vs. metrika:</b> loss je pro optimalizátor (diferencovatelný), metrika pro hodnocení.</li>
+<li><b>Validace vs. test:</b> na validaci se ladí, test se použije jednou.</li>
+<li><b>Dropout \(p\):</b> v přednášce je \(p\) pravděpodobnost <i>ponechání</i> (0,5 pro skryté vrstvy); v PyTorchi je <code>p</code> pravděpodobnost <i>vypnutí</i>.</li>
+<li><b>Tři různá \(\gamma\):</b> RBF \(\gamma = 1/2\sigma^2\) (šířka jádra) vs. \(\gamma\) momenta (setrvačnost) vs. \(\gamma_j\) v batch normalization (měřítko).</li>
+<li><b>\(\lambda\) v ridge vs. v sklearn:</b> scikit-learn ji u Ridge/Lasso a u MLP nazývá <code>alpha</code>; u SVM je regularizace naopak <i>nepřímo</i> úměrná \(C\).</li>
+<li><b>PCA vs. LDA:</b> PCA bez labelů (rozptyl), LDA s labely (oddělení tříd, max. \(C - 1\) směrů).</li>
+<li><b>Bagging vs. boosting:</b> bagging ↓ rozptyl, paralelně; boosting ↓ bias, sekvenčně.</li>
+<li><b>Stromy a škálování:</b> stromy, RF a AdaBoost se stromy škálování nepotřebují; k-NN, SVM, lineární modely, PCA a sítě ano.</li>
+<li><b>Únik informace:</b> vše, co se „fituje“ (škálování, imputace, PCA, výběr příznaků, převzorkování), jen na trénovacích foldech.</li>
+</ul></div>
+
+<h2 id="postup">Postup typického ML experimentu</h2>
+<div class="box postup"><div class="box-t">Od dat k výsledku (spojení kapitol 2–7)</div>
+<ol>
+<li>Definuj cíl a metriku (podle cen chyb, prevalence).</li>
+<li>Rozděl data: odlož test (stratifikovaně, skupinově podle pacientů).</li>
+<li>Pipeline: imputace (+ indikátor) → kódování kategorií → škálování → případně výběr / redukce příznaků → model.</li>
+<li>Hyperparametry laď v CV na trénovacích datech (random search nebo grid na logaritmické mřížce).</li>
+<li>Zkontroluj režim (učicí křivky): rozptyl → víc dat, regularizace, bagging; bias → složitější model, příznaky, boosting.</li>
+<li>Zvol práh na validaci, zkontroluj kalibraci.</li>
+<li>Finální model natrénuj, jednou vyhodnoť na testu, uveď metriku s nejistotou.</li>
+</ol></div>

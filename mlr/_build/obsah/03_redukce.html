@@ -1,0 +1,245 @@
+<h1>Výběr příznaků a redukce dimenze</h1>
+<p class="lead">Víc příznaků neznamená lepší model. S rostoucí dimenzí prostor „řídne“ a při omezeném počtu vzorků začnou přidávané příznaky výkon zhoršovat. Kapitola ukazuje dvě cesty, jak dimenzi snížit: <b>vybrat</b> část původních příznaků (filtry, wrappery, embedded metody), nebo <b>vytvořit</b> menší počet nových (PCA, LDA, t-SNE, UMAP). Na konci je jádrový trik – implicitní rozšíření příznaků, na které navazuje 4. přednáška.</p>
+
+<h2 id="prokleti">Prokletí dimenzionality a Hughesův jev</h2>
+<div class="box definice" id="def-prokleti"><div class="box-t">Definice: prokletí dimenzionality</div>
+<p><b>Prokletí dimenzionality</b> je jev, kdy s rostoucím počtem příznaků \(d\) objem prostoru roste exponenciálně, takže pevný počet vzorků ho pokrývá stále řidčeji a pro stejnou kvalitu odhadu je potřeba exponenciálně víc dat.</p>
+<p class="jinak">rozdělíme-li každý příznak na 4 intervaly, má \(d\) příznaků \(4^d\) buněk; průměrné obsazení buňky je \(n/4^d\). Pro \(d = 10\) je to přes milion buněk – i velký dataset je pak téměř prázdný prostor.</p></div>
+<div class="box definice" id="def-hughes"><div class="box-t">Definice: Hughesův jev</div>
+<p><b>Hughesův jev</b> je pozorování, že při omezeném počtu trénovacích vzorků přidávání příznaků nejprve zlepšuje a od určitého počtu zhoršuje predikci: informace z nového příznaku už nevyváží těžší odhad parametrů modelu.</p>
+<p class="jinak">existuje optimální počet příznaků \(d^\ast\); za ním každý další příznak víc škodí (model má víc parametrů k odhadu ze stejných dat), než pomáhá. Kde je optimum, závisí na datech i modelu – vnitřní optimum je možné, ne nevyhnutelné.</p></div>
+<figure><div class="paper"><img src="figures/fig03_hughes.png" alt="Přesnost LDA na testu v závislosti na počtu příznaků" loading="lazy"></div>
+<figcaption><b>Obr. 3.1</b> Syntetická data jako v přednášce: 2 třídy, 20 trénovacích vzorků, příznaky přidávány po jednom – prvních 10 informativních, zbytek čistý šum. Průměr 40 opakování ± střední chyba.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Dokud přibývají informativní příznaky, přesnost roste (optimum \(d^\ast = 10\)). Pak už přidáváme jen šum a přesnost padá, přestože model dostává „víc informací“. Propad kolem \(d = 20\) nastává, když počet příznaků dosáhne počtu vzorků a kovarianční matici LDA nelze spolehlivě odhadnout. Závěr: <b>snížení počtu příznaků může model zlepšit</b> – otázka je, které vybrat.</p></div>
+
+<h2 id="vyber-vs-redukce">Výběr vs. redukce příznaků</h2>
+<div class="box definice" id="def-vyber-redukce"><div class="box-t">Definice: výběr příznaků a redukce (extrakce) příznaků</div>
+<p><b>Výběr příznaků</b> (feature selection) ponechá podmnožinu původních příznaků. <b>Redukce (extrakce) příznaků</b> vytvoří menší počet nových příznaků jako kombinace (lineární či nelineární) původních.</p>
+<p class="jinak">výběr = „škrtám sloupce“ (zbylé příznaky mají pořád svůj význam, např. „věk“); redukce = „míchám nové sloupce“ (např. 0,7·věk − 0,2·BMI + …), které jsou kompaktnější, ale hůř se interpretují.</p></div>
+<div class="tablewrap"><table>
+<tr><th>skupina</th><th>princip</th><th>příklady</th></tr>
+<tr><td><b>filtry</b></td><td>statistická vazba příznaku na cíl, bez modelu</td><td>vzájemná informace, korelace, mRMR</td></tr>
+<tr><td><b>wrappery</b></td><td>podmnožinu hodnotí výkon modelu (CV)</td><td>dopředný výběr, zpětná eliminace</td></tr>
+<tr><td><b>embedded</b></td><td>výběr je součástí trénování modelu</td><td>LASSO / Elastic Net, rozhodovací stromy, random forest</td></tr>
+<tr><td>lineární redukce</td><td>nové příznaky = vážené součty</td><td>PCA, LDA (ICA)</td></tr>
+<tr><td>nelineární redukce</td><td>obecná nelineární funkce</td><td>t-SNE, UMAP, kernel PCA, autoenkodéry</td></tr>
+</table></div>
+
+<h2 id="filtry">Filtry: vazba příznaku na cíl</h2>
+<h3>Korelace</h3>
+<div class="box definice" id="def-pearson-spearman"><div class="box-t">Definice: Pearsonův a Spearmanův korelační koeficient</div>
+<p><b>Pearsonův koeficient</b> \(\rho_P = \frac{\operatorname{cov}(x, y)}{\sigma_x\sigma_y} = \frac{\sum_i(x_i - \bar x)(y_i - \bar y)}{\sqrt{\sum_i(x_i - \bar x)^2\sum_i(y_i - \bar y)^2}} \in [-1, 1]\) měří sílu <b>lineární</b> závislosti. <b>Spearmanův koeficient</b> je Pearsonův koeficient spočítaný na pořadích: \(\rho_S = \rho_P(\text{rank}(x), \text{rank}(y))\); měří <b>monotónní</b> závislost.</p>
+<p class="jinak">Pearson: „jak dobře body leží na přímce“ – citlivý na odlehlé hodnoty, pro číselné proměnné. Spearman: „roste-li jedna, roste (klesá) i druhá?“ – na tvaru nezáleží, méně citlivý na extrémy, použitelný i pro ordinální proměnné. \(\rho = 0\) neznamená nezávislost (jen chybí lineární / monotónní vztah).</p></div>
+<div class="box priklad"><div class="box-t">Ručně (přednáška): \(y = 2^{x-1}\)</div>
+<p>\(x = 1,\dots,5\), \(y = 1, 2, 4, 8, 16\); \(\bar x = 3\), \(\bar y = 6{,}2\). \(\sum(x_i - \bar x)(y_i - \bar y) = 36\), \(\sum(x_i - \bar x)^2 = 10\), \(\sum(y_i - \bar y)^2 = 148{,}8\) ⇒ \(\rho_P = 36/\sqrt{10\cdot148{,}8} = 36/38{,}57 = 0{,}933\). Pořadí jsou totožná ⇒ \(\rho_S = 1\). Dokonale monotónní, ale ne lineární vztah: Spearman 1, Pearson jen 0,93. Prohodíme-li poslední dvě hodnoty \(y\), klesne \(\rho_S\) na 0,9 a \(\rho_P\) na 0,73.</p></div>
+<h3>Entropie a vzájemná informace</h3>
+<div class="box definice" id="def-entropie"><div class="box-t">Definice: entropie</div>
+<p><b>Entropie</b> diskrétní náhodné veličiny \(X\) je \(H(X) = -\sum_x p(x)\log_2 p(x)\) – průměrná nejistota výsledku v bitech. Sdružená entropie \(H(X, Y) = -\sum_{x,y}p(x,y)\log_2 p(x,y)\), podmíněná entropie \(H(X\mid Y) = -\sum_y p(y)\sum_x p(x\mid y)\log_2 p(x\mid y)\) je nejistota \(X\), která zbude po pozorování \(Y\).</p>
+<p class="jinak">„kolik ano/ne otázek v průměru potřebuju, abych výsledek uhodl“. Férová mince 1 bit, mince s \(p = 0{,}9\) 0,469 bitu, férová kostka \(\log_2 6 = 2{,}585\) bitu, jistý výsledek 0. Hodně rovnoměrně obsazených výsledků = vysoká entropie.</p></div>
+<div class="box definice" id="def-mi"><div class="box-t">Definice: vzájemná informace</div>
+<p><b>Vzájemná informace</b> \(I(X; Y) = H(Y) - H(Y\mid X) = H(X) + H(Y) - H(X, Y) = \sum_{x,y}p(x,y)\log_2\frac{p(x,y)}{p(x)p(y)}\) je množství informace, které pozorování jedné veličiny přinese o druhé (snížení nejistoty).</p>
+<p class="jinak">„o kolik méně nejistý jsem o cíli, když znám příznak“. Na rozdíl od korelace zachytí i <b>nelineární</b> závislost a funguje i pro kategorické proměnné; \(I = 0\) právě pro nezávislé veličiny.</p></div>
+<p>V praxi: pro diskrétní dvojici spočítám tabulku četností \(n_{xy}\), vydělím \(n\) (\(\hat p(x,y) = n_{xy}/n\)), marginály sečtu po řádcích/sloupcích a dosadím (nulové buňky vynechám). Pro spojitá data se hustota odhaduje: <b>kNN</b> (vzdálenosti k sousedům; volí se \(k\)), <b>KDE</b> (hladké „hrbolky“; volí se šířka pásma) nebo <b>binning</b> (diskretizace; záleží na hranicích a šířce binů). scikit-learn: <code>mutual_info_classif</code> pro třídy, <code>mutual_info_regression</code> pro spojitý cíl; vrací naty (pro bity vyděl \(\ln 2\)).</p>
+<h3>Relevance, redundance a mRMR</h3>
+<div class="box intuice"><div class="box-t">Korelační matice s labelem</div>
+<p>Přidáme-li cíl \(Y\) do korelační matice, vidíme <b>relevanci</b> (vazba příznak–cíl: F1–Y 0,65, F2–Y 0,60) i <b>redundanci</b> (vazba příznak–příznak: F1–F2 0,92 – překrývají se). Pravidlo výběru: užitečná informace bez duplicit. F1 a F2 jsou každý zvlášť relevantní, ale společně skoro zbyteční – stačí jeden z nich.</p></div>
+<div class="box definice" id="def-mrmr"><div class="box-t">Definice: mRMR (minimum redundancy, maximum relevance)</div>
+<p><b>mRMR</b> je hladový filtr, který začne příznakem s největší vzájemnou informací s cílem \(I(X_j; Y)\) a pak opakovaně přidá příznak, který maximalizuje <b>relevanci minus průměrnou redundanci</b> vůči již vybrané množině \(S\): \(j^\ast = \arg\max_{j\notin S}\left[I(X_j; Y) - \frac{1}{|S|}\sum_{i\in S}I(X_j; X_i)\right]\), dokud nemá zvolený počet \(k\) příznaků.</p>
+<p class="jinak">„přidej příznak, který o cíli hodně říká a zároveň neopakuje, co už víme“. Nefituje se žádný prediktor – je to rychlé a nezávislé na modelu.</p></div>
+
+<h2 id="wrappery">Wrappery: model sám řekne, co funguje</h2>
+<div class="box definice" id="def-wrapper"><div class="box-t">Definice: wrapper metoda výběru příznaků</div>
+<p><b>Wrapper</b> řeší diskrétní optimalizační úlohu \(S^\ast = \arg\min_{S\subseteq F,\ |S| = k}\hat R_{CV}(P_S)\): hledá podmnožinu \(S\) indexů příznaků, pro kterou je validační (CV) ztráta modelu natrénovaného jen na \(S\) nejmenší. Jedno vyhodnocení = fit předzpracování a modelu uvnitř každého trénovacího foldu.</p>
+<p class="jinak">model se natrénuje znovu a znovu na různých kombinacích příznaků a vybere se ta, která vychází nejlépe. Přesné, ale drahé – a prostor podmnožin je obrovský (\(2^d\)).</p></div>
+<div class="tablewrap"><table>
+<tr><th>strategie</th><th>které podmnožiny hodnotí</th><th>kompromis</th></tr>
+<tr><td>hrubá síla (brute force)</td><td>všechny přípustné</td><td>nejlepší CV skóre zaručeno; kombinatorická cena</td></tr>
+<tr><td>náhodné prohledávání</td><td>rozpočet náhodně vybraných podmnožin</td><td>široký průzkum; bez záruky optima</td></tr>
+<tr><td>hladová heuristika</td><td>všechny „o jeden příznak“ sousední</td><td>levné lokální kroky; rozhodnutí se nevracejí</td></tr>
+</table></div>
+<div class="box definice" id="def-forward"><div class="box-t">Definice: dopředný výběr a zpětná eliminace</div>
+<p><b>Dopředný výběr</b> (forward selection) začne s prázdnou množinou a v každém kroku přidá příznak, se kterým je CV skóre největší: \(j^\ast = \arg\max_{j\notin S}\text{CVAcc}(S\cup\{j\})\). <b>Zpětná eliminace</b> (backward elimination) začne se všemi příznaky a v každém kroku odebere ten, bez kterého je skóre zbylé množiny největší. Končí se po dosažení zvoleného počtu \(k\) nebo když zlepšení klesne pod práh (srovnání s „dummy“ prediktorem).</p>
+<p class="jinak">stejná účelová funkce, jiná cesta prostorem. Přidaný příznak už zůstane, odebraný se nevrátí – ani jeden směr nezaručuje nejlepší podmnožinu.</p></div>
+<div class="box priklad"><div class="box-t">Dopředný výběr (přednáška: breast cancer, logistická regrese + škálování v 5-fold CV)</div>
+<p><b>Iterace 1</b> (aktuálně ∅): +A (mean radius) 0,877; +B (mean texture) 0,694; +C (texture error) 0,627; +D (fractal dimension error) 0,617 ⇒ vybrán A. <b>Iterace 2</b> (aktuálně {A}): {A, B} 0,88578; {A, C} 0,88581; {A, D} 0,87879 ⇒ vybrán C, konec při \(|S| = 2\). (Čísla jsou skóre prohledávání v CV, ne výsledky na testu.) Všimni si, že C sám byl slabý, ale s A se doplňuje.</p></div>
+<div class="box pozor"><div class="box-t">Hladový postup může minout nejlepší dvojici</div>
+<p>Úloha: vybrat přesně 2 příznaky (nižší ztráta je lepší). Hladově: nejlepší jednotlivý příznak je A → nejlepší dvojice s ním AB, ztráta 0,18. Hrubá síla zkontroluje všechny tři dvojice → <b>BC, ztráta 0,10</b>. Náhodné prohledávání BC najde, pokud ji vylosuje. Lokální prohledávání (výměna jednoho příznaku AB → BC) nebo náhodné restarty mohou hladovou volbu opravit. Malý prostor → hrubá síla; omezený rozpočet → porovnat hladový, náhodný a lokální postup se stejným rozpočtem. <b>Grid search</b> je hrubá síla nad zvolenou mřížkou parametrů (3 hodnoty C × 2 hodnoty γ = 6 kombinací).</p></div>
+<div class="box parametry"><div class="box-t">Parametry: výběr příznaků (filtry i wrappery)</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parametr</th><th>co znamená</th><th><span class="up">↑</span> když ho zvětším</th><th><span class="dn">↓</span> když ho zmenším</th></tr>
+<tr><td>počet vybraných příznaků \(k\)</td><td>rozpočet – kolik příznaků nechám</td><td>víc informace, ale (Hughes) víc šumu a parametrů; riziko přeučení</td><td>jednodušší a stabilnější model, ale může vypadnout užitečná informace (podučení)</td></tr>
+<tr><td>práh zlepšení (stop)</td><td>o kolik se musí skóre zlepšit, abych přidal příznak</td><td>dřívější zastavení, méně příznaků</td><td>přidává i příznaky s nepatrným (možná náhodným) přínosem</td></tr>
+<tr><td>strategie hledání</td><td>brute force / hladová / náhodná / lokální</td><td colspan="2">čím důkladnější, tím víc fitů modelu; hladová je nejlevnější, ale bez záruky optima</td></tr>
+<tr><td>počet foldů CV ve wrapperu</td><td>jak spolehlivě hodnotím podmnožinu</td><td colspan="2">viz 2. kapitola: víc foldů = stabilnější skóre, víc výpočtu (a s mnoha porovnáními hrozí „přeučení na validaci“)</td></tr>
+</table></div></div>
+
+<h2 id="embedded">Embedded metody</h2>
+<div class="box definice" id="def-embedded"><div class="box-t">Definice: embedded výběr příznaků</div>
+<p><b>Embedded metoda</b> vybírá příznaky přímo během trénování modelu – model sám rozhodne, které příznaky použije.</p>
+<p class="jinak">LASSO a Elastic Net (L1 penalizace) nastaví některé koeficienty přesně na nulu; rozhodovací stromy, random forest a gradient boosting vybírají příznaky při dělení uzlů (vybrat mohou i šum); SVM nebo logistická regrese s L1 penalizací. Výhoda: žádná samostatná smyčka hledání podmnožin. Nevýhoda: výběr je specifický pro model a závisí na jeho hyperparametrech. Podrobněji u jednotlivých modelů (kapitoly 4 a 6).</p></div>
+
+<h2 id="linearni-redukce">Lineární redukce a PCA</h2>
+<div class="box definice" id="def-redukce"><div class="box-t">Definice: lineární a nelineární redukce dimenze</div>
+<p><b>Redukce dimenze</b> nahradí \(d\) původních příznaků \(k \ll d\) novými a zachová přitom co nejvíc informace: \(\mathbf x \in \mathbb R^d \mapsto \mathbf z \in \mathbb R^k\). <b>Lineární</b> redukce: \(\mathbf z = W^\top\mathbf x\), \(W \in \mathbb R^{d\times k}\) – každá nová složka \(z_j = \mathbf w_j^\top\mathbf x\) je projekce (skalární součin) na sloupec \(\mathbf w_j\), tj. vážený součet původních příznaků. <b>Nelineární</b>: \(\mathbf z = f(\mathbf x)\) s nelineární \(f\).</p>
+<p class="jinak">nové příznaky jsou „směsi“ starých, např. \(z_1 = 0{,}7x_1 - 0{,}2x_2 + 0{,}5x_3\). Lineární = jednoduché, interpretovatelné (čitelné váhy, rotace a projekce, rychlé maticové operace); nelineární = pružnější (zakřivené variety, lokální okolí), ale méně průhledné. Dobrá rada: nejdřív zkus lineární reprezentaci.</p></div>
+<div class="box definice" id="def-pca"><div class="box-t">Definice: analýza hlavních komponent (PCA)</div>
+<p><b>PCA</b> je metoda bez učitele, která promítne vycentrovaná data do nového souřadného systému z ortogonálních směrů (hlavních komponent) seřazených podle rozptylu: první komponenta je směr <b>největšího rozptylu</b>, druhá je na ni kolmá s druhým největším rozptylem atd. Směry jsou vlastní vektory kovarianční matice \(S = \frac1n X^\top X\) a rozptyly jejich vlastní čísla.</p>
+<p class="jinak">PCA otočí osy tak, aby první osa vedla podél „nejdelšího“ protažení mraku bodů. Ponecháme-li jen několik prvních os, ztratíme nejmenší možnou část informace (měřeno čtvercovou chybou rekonstrukce). Nové složky (skóre) jsou nekorelované. Labely nepotřebuje.</p></div>
+<div class="box intuice"><div class="box-t">Proč maximalizovat rozptyl = minimalizovat chybu rekonstrukce</div>
+<p>Pro vycentrovaný bod \(\mathbf x_i\) a jednotkový směr \(\mathbf w\) je projekce \(z_i = \mathbf w^\top\mathbf x_i\), rekonstrukce \(\hat{\mathbf x}_i = z_i\mathbf w\) a chyba \(\mathbf e_i = \mathbf x_i - \hat{\mathbf x}_i\). Podle Pythagorovy věty \(\|\mathbf x_i\|^2 = z_i^2 + \|\mathbf e_i\|^2\). Zprůměrováno: \(\frac1n\sum\|\mathbf e_i\|^2 = \operatorname{trace}(S) - \mathbf w^\top S\mathbf w\). Celkový rozptyl je pevný, takže <b>čím víc rozptylu projekce zachytí, tím menší je chyba</b>. Přímka, na které jsou průměty „nejroztaženější“, je zároveň přímka nejbližší bodům.</p></div>
+<div class="box vzorec"><div class="box-t">PCA jako optimalizace a její řešení</div>
+\[ \max_{\mathbf w_1}\ \mathbf w_1^\top S\,\mathbf w_1\ \ \text{s.t.}\ \|\mathbf w_1\|_2 = 1,\qquad \mathcal L(\mathbf w, \lambda) = \mathbf w^\top S\mathbf w - \lambda(\mathbf w^\top\mathbf w - 1),\qquad \nabla_{\mathbf w}\mathcal L = 2S\mathbf w - 2\lambda\mathbf w = 0 \ \Rightarrow\ S\mathbf w = \lambda\mathbf w \]
+<table class="vars">
+<tr><td>\(S = \frac1n X^\top X\)</td><td>empirická kovarianční matice vycentrovaných dat (\(X\) má sloupcové průměry 0)</td></tr>
+<tr><td>\(\mathbf w\)</td><td>jednotkový směr projekce (zátěže, loadings)</td></tr>
+<tr><td>\(\lambda\)</td><td>Lagrangeův multiplikátor = vlastní číslo; \(\mathbf w^\top S\mathbf w = \lambda\) je zachycený rozptyl ⇒ volíme největší \(\lambda\)</td></tr>
+<tr><td>top-\(k\)</td><td>\(\max\operatorname{trace}(W^\top SW)\) s \(W^\top W = I_k\): \(k\) vlastních vektorů s největšími vlastními čísly</td></tr>
+</table>
+<p>Ortonormalita brání opakování stejného směru; centrování je nutné – jinak \(S\) míchá efekt průměru s rozptylem.</p></div>
+<div class="box priklad"><div class="box-t">PCA ručně: čtyři body (přednáška)</div>
+<p>\(X\) = (2, 1), (−2, −1), (1, 2), (−1, −2); sloupcové průměry jsou 0.</p>
+<ol>
+<li>\(S = \frac14X^\top X = \frac14\begin{pmatrix}10 & 8\\ 8 & 10\end{pmatrix} = \begin{pmatrix}2{,}5 & 2\\ 2 & 2{,}5\end{pmatrix}\).</li>
+<li>\(\det(S - \lambda I) = (2{,}5 - \lambda)^2 - 4 = 0\) ⇒ \(\lambda_1 = 4{,}5\), \(\mathbf w_1 = \frac{1}{\sqrt2}(1, 1)\); \(\lambda_2 = 0{,}5\), \(\mathbf w_2 = \frac1{\sqrt2}(1, -1)\).</li>
+<li>Projekce: \(\mathbf z_1 = X\mathbf w_1 = \frac1{\sqrt2}(3, -3, 3, -3) = (2{,}12;\ -2{,}12;\ 2{,}12;\ -2{,}12)\).</li>
+<li>Kontrola: \(\operatorname{Var}(z_1) = \frac14\cdot18 = 4{,}5 = \lambda_1\); vysvětlený rozptyl \(\lambda_1/(\lambda_1 + \lambda_2) = 90\,\%\).</li>
+</ol></div>
+<div data-demo="pca-rotace"></div>
+<p><b>Použití PCA.</b> (1) <i>Průzkum</i>: graf vzorků ve 2D/3D, hledání trendů, skupin a neobvyklých vzorků, <b>scree plot</b> (vysvětlený rozptyl jednotlivých komponent) a <b>biplot</b> (vzorky + šipky příznaků) pro interpretaci os – žádný prediktivní model není potřeba. (2) <i>Vstup pro predikci</i>: rozdělit data / nastavit CV → fit škálování + PCA jen na trénovacích datech → transformovat odložená data stejným fitem → natrénovat prediktor; počet komponent \(k\) ladit v CV. Vysvětlený rozptyl popisuje data, validační skóre hodnotí predikci – to jsou dva různé cíle.</p>
+<div class="box parametry"><div class="box-t">Parametry: PCA</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parametr</th><th>co znamená</th><th><span class="up">↑</span> když ho zvětším</th><th><span class="dn">↓</span> když ho zmenším</th></tr>
+<tr><td>počet komponent \(k\)</td><td>kolik nových os ponechám</td><td>zachycený rozptyl ↑, chyba rekonstrukce ↓, ale ponecháváš i směry se šumem; komprese menší</td><td>silnější komprese a odšumění, ale ztráta informace (i té, která může být důležitá pro predikci)</td></tr>
+<tr><td>škálování (standardizace ano/ne)</td><td>zda mají příznaky stejný rozptyl</td><td colspan="2">bez standardizace dominují komponentám příznaky s největšími čísly (jednotkami); se standardizací PCA pracuje s korelační maticí – škálování volit vědomě</td></tr>
+</table></div>
+<p class="volba">podle scree plotu (koleno), podle požadovaného podílu vysvětleného rozptylu (např. 90–95 %), nebo – pro predikci – laděním v CV.</p></div>
+
+<h2 id="lda">Lineární diskriminační analýza (LDA)</h2>
+<div class="box definice" id="def-lda"><div class="box-t">Definice: lineární diskriminační analýza (LDA)</div>
+<p><b>LDA</b> je metoda s učitelem, která hledá směr \(\mathbf w\) maximalizující <b>Fisherovo kritérium</b> – poměr vzdálenosti průměrů tříd po projekci ku rozptylu uvnitř tříd: \(J(\mathbf w) = \frac{(\mathbf w^\top(\boldsymbol\mu_1 - \boldsymbol\mu_2))^2}{\mathbf w^\top S_W\mathbf w}\), kde \(S_W = S_1 + S_2\) je matice rozptylu uvnitř tříd (within-class scatter).</p>
+<p class="jinak">PCA hledá směr, kde jsou data nejroztaženější; LDA směr, kde jsou <b>třídy nejlépe oddělené</b>: průměry tříd daleko od sebe, každá třída „úzká“. Potřebuje labely.</p></div>
+<div class="box vzorec"><div class="box-t">Řešení LDA (dvě třídy)</div>
+\[ S_W\,\mathbf w = \boldsymbol\mu_1 - \boldsymbol\mu_2\ \ \Rightarrow\ \ \mathbf w \propto S_W^{-1}(\boldsymbol\mu_1 - \boldsymbol\mu_2),\qquad z = \mathbf w^\top\mathbf x,\qquad S_c = \sum_{i: y_i = c}(\mathbf x_i - \boldsymbol\mu_c)(\mathbf x_i - \boldsymbol\mu_c)^\top \]
+<table class="vars">
+<tr><td>\(\boldsymbol\mu_c\)</td><td>průměr třídy \(c\)</td></tr>
+<tr><td>\(S_W\)</td><td>rozptyl uvnitř tříd (součet čtverců odchylek od průměru vlastní třídy)</td></tr>
+<tr><td>\(z\)</td><td>skóre – jedno číslo; s prahem dává lineární klasifikátor</td></tr>
+</table>
+<p>Pro \(C\) tříd vede na vlastní problém \(S_W^{-1}S_B\mathbf w = \lambda\mathbf w\) a dává nejvýše \(\min(d, C-1)\) směrů – není to obecná náhrada PCA. Singulární \(S_W\) (víc příznaků než vzorků): regularizace nebo solver ohleduplný k hodnosti. Prakticky: regularizovaná LDA jako klasifikátor EEG signálů.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig03_pca_lda.png" alt="Srovnání projekce PCA a LDA na dvou protáhlých třídách" loading="lazy"></div>
+<figcaption><b>Obr. 3.2</b> Dvě protáhlé třídy leží rovnoběžně vedle sebe. Vlevo směry PCA a LDA, uprostřed a vpravo histogramy projekcí na každý z nich.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>PCA labely nevidí a zvolí směr největšího rozptylu – podél protažení tříd, kde se obě třídy úplně překrývají. LDA zvolí směr, ve kterém je rozptyl <i>malý</i>, ale průměry tříd jsou daleko od sebe – třídy se oddělí. <b>Směr s největším rozptylem nemusí být směr, který odděluje třídy.</b></p></div>
+
+<h2 id="nelinearni">Nelineární redukce: t-SNE a UMAP</h2>
+<div class="box definice" id="def-tsne"><div class="box-t">Definice: t-SNE</div>
+<p><b>t-SNE</b> (t-distributed stochastic neighbor embedding) je nelineární metoda vizualizace, která vzdálenosti v původním prostoru převede na pravděpodobnosti sousedství (Gaussovo jádro s lokální šířkou \(\sigma_i\)), v mapě (obvykle 2D) definuje podobné pravděpodobnosti s těžkým chvostem (Studentovo t) a polohy bodů v mapě optimalizuje tak, aby se obě rozdělení co nejvíc shodovala (minimalizace KL divergence).</p>
+<p class="jinak">„sousedé zůstanou sousedy“: blízké body se přitahují, všechny ostatní se slabě odpuzují, aby se mapa nezhroutila do bodu. Těžký chvost dovolí umístit středně podobné body dál od sebe. Čte se jen <b>lokální</b> okolí – mezery, velikosti ostrovů a vzdálenosti mezi ostrovy nejsou kalibrované míry.</p></div>
+<div class="box vzorec"><div class="box-t">Vzorce t-SNE (příloha přednášky)</div>
+\[ p_{j\mid i} = \frac{\exp(-\|\mathbf x_i - \mathbf x_j\|^2/2\sigma_i^2)}{\sum_{\ell\ne i}\exp(-\|\mathbf x_i - \mathbf x_\ell\|^2/2\sigma_i^2)},\quad \text{Perp}(P_i) = 2^{H(P_i)},\quad q_{ij} = \frac{(1 + \|\mathbf z_i - \mathbf z_j\|^2)^{-1}}{\sum_{a\ne b}(1 + \|\mathbf z_a - \mathbf z_b\|^2)^{-1}},\quad \min_{\mathbf z} \mathrm{KL}(P\|Q) = \sum_{i\ne j}p_{ij}\log\frac{p_{ij}}{q_{ij}} \]
+<table class="vars">
+<tr><td>\(\sigma_i\)</td><td>lokální šířka – pro každý bod se volí tak, aby perplexita \(P_i\) odpovídala zadané hodnotě (husté oblasti malé \(\sigma\), řídké velké)</td></tr>
+<tr><td>perplexita</td><td>\(2^{H}\) = efektivní počet sousedů; 4 stejně pravděpodobní sousedé = 2 bity = perplexita 4</td></tr>
+<tr><td>\(p_{ij} = (p_{j|i} + p_{i|j})/2n\)</td><td>symetrizované pravděpodobnosti, sčítají se do 1</td></tr>
+<tr><td>\(q_{ij}\)</td><td>podobnost v mapě s těžkým chvostem</td></tr>
+<tr><td>gradient</td><td>\(\nabla_{\mathbf z_i}L = 4\sum_j(p_{ij} - q_{ij})\frac{\mathbf z_i - \mathbf z_j}{1 + \|\mathbf z_i - \mathbf z_j\|^2}\): \(p \gt q\) přitahuje, \(p \lt q\) odpuzuje; úloha je nekonvexní</td></tr>
+</table></div>
+<div data-demo="perplexita"></div>
+<figure class="wide"><div class="paper"><img src="figures/fig03_tsne_perp.png" alt="t-SNE číslic pro čtyři hodnoty perplexity" loading="lazy"></div>
+<figcaption><b>Obr. 3.3</b> Stejných 600 ručně psaných číslic (standardizovaných), t-SNE se čtyřmi perplexitami. Barva = číslice (jen obarvení, metoda labely nevidí).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Malá perplexita (2) se dívá jen na pár nejbližších sousedů – mapa se rozpadne na drobné úlomky. Střední hodnoty (10–30) dají čitelné shluky číslic. Velká perplexita (100) propojí širší okolí, ostrovy se přibližují a slévají. Rozložení <b>není vlastnost dat samotných</b> – ke každému obrázku t-SNE vždy uváděj hyperparametry.</p></div>
+<div class="box definice" id="def-umap"><div class="box-t">Definice: UMAP</div>
+<p><b>UMAP</b> (uniform manifold approximation and projection) najde v původním prostoru \(k\) nejbližších sousedů každého bodu, sestaví z nich vážený graf sousedství s lokálně škálovanými váhami a pak hledá rozmístění bodů v menší dimenzi, které silná spojení zachová (minimalizace grafové křížové entropie: silné hrany přitahují, slabé a chybějící odpuzují).</p>
+<p class="jinak">„postav síť přátelství a rozlož ji na stůl tak, aby kamarádi stáli blízko“. Na rozdíl od t-SNE má UMAP metodu <code>transform</code> – umí zařadit <b>nové vzorky</b> do natrénované mapy, takže se dá použít i jako předzpracování před klasifikátorem (fit_transform na trénovacích, transform na nových datech).</p></div>
+<div class="box vzorec"><div class="box-t">Vzorce UMAP (příloha přednášky)</div>
+\[ a_{j\mid i} = \exp\!\left(-\frac{\max(0, d_{ij} - \rho_i)}{\sigma_i}\right),\qquad v_{ij} = a_{j\mid i} + a_{i\mid j} - a_{j\mid i}a_{i\mid j},\qquad q_{ij} = \frac{1}{1 + a\|\mathbf z_i - \mathbf z_j\|^{2b}} \]
+\[ L_{\text{graph}} = -\sum_{i\lt j}\left[v_{ij}\log q_{ij} + (1 - v_{ij})\log(1 - q_{ij})\right] \]
+<table class="vars">
+<tr><td>\(\rho_i\)</td><td>vzdálenost k nejbližšímu sousedovi – nejbližší spojení dostanou plnou sílu 1</td></tr>
+<tr><td>\(\sigma_i\)</td><td>lokální měřítko nastavené podle velikosti okolí (<code>n_neighbors</code>)</td></tr>
+<tr><td>\(v_{ij}\)</td><td>fuzzy sjednocení směrovaných vah (0,8 a 0,5 dá 0,8 + 0,5 − 0,4 = 0,9); na rozdíl od \(p_{ij}\) se nesčítají do 1</td></tr>
+<tr><td>\(a, b\)</td><td>tvar křivky podobnosti v mapě, určený parametry <code>min_dist</code> a <code>spread</code></td></tr>
+</table>
+<p>Nový vzorek: mapa trénovacích bodů zůstane pevná; najdou se jeho sousedé mezi trénovacími vzorky, spočítají se síly spojení, poloha se inicializuje váženým průměrem jejich souřadnic a doladí optimalizací.</p></div>
+<div data-demo="umap-graf"></div>
+<figure class="wide"><div class="paper"><img src="figures/fig03_umap_params.png" alt="UMAP číslic pro tři hodnoty n_neighbors a dvě hodnoty min_dist" loading="lazy"></div>
+<figcaption><b>Obr. 3.4</b> Stejné číslice, UMAP s \(n\_neighbors \in \{3, 15, 100\}\) (sloupce) a \(min\_dist \in \{0{,}0;\ 0{,}8\}\) (řádky).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p><b>n_neighbors</b> řídí měřítko: 3 sousedé = graf se rozpadne na malé izolované kousky (vidíme jen detaily); 100 sousedů = zachová se globální uspořádání, shluky se dotýkají. <b>min_dist</b> řídí, jak těsně se body smějí „nahustit“: 0,0 = kompaktní, ostře oddělené shluky; 0,8 = body rozprostřené rovnoměrně, struktura rozmazaná.</p></div>
+<div class="box parametry"><div class="box-t">Parametry: t-SNE a UMAP</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parametr</th><th>co znamená</th><th><span class="up">↑</span> když ho zvětším</th><th><span class="dn">↓</span> když ho zmenším</th></tr>
+<tr><td>t-SNE: <code>perplexity</code></td><td>efektivní velikost okolí (počet sousedů, na kterých bodu „záleží“)</td><td>propojí širší okolí, víc globální struktury, shluky se slévají; pomalejší</td><td>víc lokálního detailu, mapa se rozpadá na malé falešné shluky</td></tr>
+<tr><td>t-SNE: <code>learning_rate</code></td><td>velikost kroku optimalizace polohy bodů</td><td>rychlejší, ale při přehnané hodnotě nestabilní („koule“ bodů)</td><td>pomalá konvergence, body zůstanou namačkané</td></tr>
+<tr><td>t-SNE / UMAP: <code>init</code>, <code>random_state</code></td><td>počáteční rozložení, náhoda</td><td colspan="2">úloha je nekonvexní – jiný start dá jinou mapu; PCA inicializace je stabilnější</td></tr>
+<tr><td>UMAP: <code>n_neighbors</code></td><td>měřítko okolí při stavbě grafu</td><td>globálnější struktura, hladší mapa</td><td>lokální detail, graf se rozpadá na izolované ostrovy</td></tr>
+<tr><td>UMAP: <code>min_dist</code></td><td>jak blízko se body smějí v mapě nahustit</td><td>rovnoměrnější, „nafouknutá“ mapa, méně ostré shluky</td><td>kompaktní, ostře oddělené shluky</td></tr>
+<tr><td>UMAP: <code>metric</code></td><td>vzdálenost ve vstupním prostoru</td><td colspan="2">mění, kdo je soused (eukleidovská, kosinová…)</td></tr>
+<tr><td>UMAP: <code>n_components</code></td><td>výstupní dimenze</td><td colspan="2">nemusí být 2 – pro předzpracování před klasifikátorem se volí podle úlohy</td></tr>
+</table></div>
+<p class="volba">perplexita se typicky zkouší v rozsahu 5–50; <code>n_neighbors</code> kolem 15 je rozumný start. Vždy porovnej víc nastavení – izolované ostrovy samy o sobě nedokazují existenci tříd, hustotu shluků ani prediktivní přesnost.</p></div>
+<p><b>Další metody</b> (stručně v příloze přednášky): <b>Kernel PCA</b> (PCA v nelineárním prostoru příznaků, viz níže), <b>Isomap</b> (vzdálenosti podél povrchu: graf sousedů → nejkratší cesty → souřadnice, které je reprodukují, \(\|\mathbf z_i - \mathbf z_j\| \approx d_{\text{graph}}(i,j)\) – na srolovaném listu se cestuje po listu, ne napříč), <b>NMF</b> (nezáporná data \(X \approx ZH\), \(Z, H \ge 0\): vzorky jako součet nezáporných „částí“ bez odečítání), <b>faktorová analýza</b> (\(\mathbf x = \boldsymbol\mu + W\mathbf z + \boldsymbol\epsilon\): sdílené latentní faktory + šum vlastní každému příznaku) a <b>autoenkodéry</b> (síť enkodér → \(\mathbf z\in\mathbb R^k\) → dekodér, trénovaná na minimalizaci chyby rekonstrukce).</p>
+
+<h2 id="jadra">Rozšíření příznaků a jádrový trik</h2>
+<div class="box definice" id="def-rozsireni"><div class="box-t">Definice: rozšíření příznaků (feature expansion)</div>
+<p><b>Rozšíření příznaků</b> je zobrazení \(\Phi: \mathbb R^d \to \mathbb R^D\), \(D \gt d\), které k původním příznakům přidá nové nelineární (např. polynomy \(x_1^2, x_1x_2, \dots\) nebo kvadrát poloměru \(x_1^2 + x_2^2\)), aby se data stala lineárně separovatelnými.</p>
+<p class="jinak">zvýšíme dimenzi, aby lineární metoda zvládla nelineární úlohu. Soustředné kruhy v 2D nejde oddělit přímkou; po přidání \(x_1^2 + x_2^2\) je oddělí rovina – logistická regrese: přesnost 0,55 ve 2D, 1,00 po rozšíření.</p></div>
+<div class="box definice" id="def-jadro"><div class="box-t">Definice: jádro a jádrový trik</div>
+<p><b>Jádro</b> je funkce \(k(\mathbf x, \mathbf z) = \Phi(\mathbf x)^\top\Phi(\mathbf z)\), která vrací skalární součin obrazů dvou vektorů v rozšířeném prostoru. <b>Jádrový trik</b> spočívá v tom, že metodu, která potřebuje jen skalární součiny vzorků, počítáme s \(k(\mathbf x, \mathbf z)\) přímo – bez sestrojení \(\Phi(\mathbf x)\). Párové hodnoty jádra pro \(n\) vzorků tvoří <b>Gramovu matici</b> \(K\), \(K_{ij} = k(\mathbf x_i, \mathbf x_j)\).</p>
+<p class="jinak">„porovnej body, jako bychom je rozšířili, ale nerozšiřuj je“. Výhoda vysokodimenzionálních příznaků za cenu výpočtu v původní dimenzi.</p></div>
+<div class="box priklad"><div class="box-t">Jádrový trik ručně (přednáška)</div>
+<p>\(\Phi(\mathbf x) = (x_1^2,\ x_2^2,\ \sqrt2x_1x_2)\), \(\mathbf x = (1, 2)\), \(\mathbf u = (3, 4)\).</p>
+<ul><li><b>Explicitně (2D → 3D):</b> \(\Phi(\mathbf x) = (1, 4, 2\sqrt2)\), \(\Phi(\mathbf u) = (9, 16, 12\sqrt2)\), \(\Phi(\mathbf x)^\top\Phi(\mathbf u) = 9 + 64 + 48 = 121\).</li>
+<li><b>Jádrem (zůstaneme ve 2D):</b> \(k(\mathbf x, \mathbf u) = (\mathbf x^\top\mathbf u)^2 = (1\cdot3 + 2\cdot4)^2 = 11^2 = 121\).</li></ul>
+<p>Stejný výsledek bez sestrojení rozšířených vektorů; faktor \(\sqrt2\) zajistí, že smíšený člen sedí.</p></div>
+<div class="box definice" id="def-kpca"><div class="box-t">Definice: kernel PCA</div>
+<p><b>Kernel PCA</b> je PCA provedená v (implicitním) prostoru příznaků \(\Phi(\mathbf x)\) pomocí jádra: spočítá se Gramova matice \(K_{ij} = k(\mathbf x_i, \mathbf x_j)\), vycentruje se (\(\tilde K = HKH\), \(H = I - \frac1n\mathbf 1\mathbf 1^\top\)) a skóre komponent se získají z jejích vlastních vektorů a vlastních čísel.</p>
+<p class="jinak">lineární v prostoru příznaků, nelineární v původních vstupech; jádro určuje, jakou strukturu PCA zachytí. Je bez učitele a natrénovaná kernel PCA umí transformovat i nové vzorky (jejich hodnoty jádra se vycentrují uloženými průměry z trénovacích dat).</p></div>
+<p><b>Primár vs. duál PCA:</b> stejná skóre lze spočítat z matice \(d\times d\) (\(S = \frac1nX^\top X\)) nebo z matice \(n\times n\) (\(XX^\top\)); menší matice závisí na tom, zda \(d \lt n\), nebo \(n \lt d\). Duál obsahuje jen skalární součiny vzorků – proto ho lze „zjádrovat“.</p>
+<div data-demo="kernel"></div>
+<div class="box parametry"><div class="box-t">Parametry: kernel PCA (a jádra obecně)</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parametr</th><th>co znamená</th><th><span class="up">↑</span> když ho zvětším</th><th><span class="dn">↓</span> když ho zmenším</th></tr>
+<tr><td>typ jádra</td><td>lineární, polynomiální, RBF…</td><td colspan="2">určuje, jaký nelineární tvar dokáže metoda zachytit; lineární jádro = obyčejná PCA</td></tr>
+<tr><td>RBF \(\gamma = 1/2\sigma^2\)</td><td>inverzní šířka jádra – jak rychle klesá podobnost se vzdáleností</td><td>velmi lokální podobnost, komponenty zachycují jemné detaily (až šum)</td><td>širší podobnost, výsledek se blíží lineární PCA</td></tr>
+<tr><td>stupeň polynomu \(p\)</td><td>řád polynomiálního jádra</td><td>složitější struktury, numericky citlivější</td><td>jednodušší, \(p = 1\) je lineární</td></tr>
+<tr><td>počet komponent \(k\)</td><td>jako u PCA</td><td colspan="2">viz PCA</td></tr>
+</table></div></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„S rostoucí dimenzí data řídnou a při omezeném počtu vzorků může další příznak model zhoršit – Hughesův jev. Dimenzi snižuji buď výběrem původních příznaků – filtry podle korelace nebo vzájemné informace, mRMR, wrappery jako dopředný výběr v CV, embedded metody jako LASSO – nebo vytvořením nových. PCA bez labelů hledá ortogonální směry největšího rozptylu, což je totéž jako nejmenší chyba rekonstrukce; řešením jsou vlastní vektory kovarianční matice. LDA s labely maximalizuje poměr vzdálenosti průměrů tříd a rozptylu uvnitř tříd. t-SNE a UMAP zachovávají lokální sousedství pro vizualizaci; t-SNE řídí perplexita, UMAP n_neighbors a min_dist a umí transformovat nová data. Jádrový trik počítá skalární součin v rozšířeném prostoru bez jeho sestrojení.“</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Prokletí dimenzionality způsobuje, že pevný počet vzorků pokrývá vysokodimenzionální prostor stále řidčeji; Hughesův jev ukazuje, že přidávání příznaků může zhoršit predikci. Výběr příznaků ponechá původní proměnné: filtry hodnotí vazbu na cíl (Pearson pro lineární, Spearman pro monotónní, vzájemná informace i pro nelineární vztahy; mRMR navíc trestá redundanci), wrappery prohledávají podmnožiny podle CV skóre modelu (hladový dopředný výběr nebo zpětná eliminace bez záruky optima), embedded metody vybírají při trénování (LASSO, stromy). Redukce vytváří nové příznaky: PCA maximalizuje rozptyl projekcí (= minimalizuje chybu rekonstrukce) a řeší se vlastními vektory kovarianční matice; LDA s labely maximalizuje Fisherovo kritérium a dává nejvýše C−1 směrů. t-SNE a UMAP zachovávají sousedství; jejich mapy závisí na hyperparametrech (perplexita; n_neighbors, min_dist) a vzdálenosti mezi ostrovy nejsou kalibrované. Jádrový trik nahradí skalární součin v rozšířeném prostoru jádrem; kernel PCA je PCA v tomto prostoru.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Víc příznaků ≠ lepší model; s malými daty existuje optimální počet příznaků.</li>
+<li>Výběr ponechá původní proměnné; redukce staví nové.</li>
+<li>Relevantní příznaky mohou být redundantní – mRMR hledá informaci bez duplicit.</li>
+<li>Hladový dopředný výběr není vyčerpávající – může minout nejlepší kombinaci.</li>
+<li>PCA: max. rozptyl = min. chyba rekonstrukce; řešení = vlastní vektory kovariance; škálování volit vědomě.</li>
+<li>LDA používá labely a hledá oddělující směry, které PCA může přehlédnout.</li>
+<li>t-SNE/UMAP: čti jen lokální okolí, vždy uváděj hyperparametry; UMAP umí transform.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Co je prokletí dimenzionality a Hughesův jev?</summary><div>
+<p>S rostoucím počtem příznaků roste objem prostoru exponenciálně (4 intervaly na příznak ⇒ \(4^d\) buněk), takže stejný počet vzorků ho pokrývá stále řidčeji a potřebujeme exponenciálně víc dat. Hughesův jev: při omezeném počtu vzorků přidávání příznaků nejprve zlepšuje a pak zhoršuje přesnost, protože přínos informace nevyváží obtížnější odhad parametrů – existuje optimální počet příznaků.</p></div></details>
+<details class="q"><summary>Jaký je rozdíl mezi výběrem a redukcí příznaků? Popište filtry, wrappery a embedded metody.</summary><div>
+<p>Výběr ponechá podmnožinu původních příznaků, redukce vytvoří nové jako kombinace původních. Filtry hodnotí příznaky statisticky bez modelu (korelace, vzájemná informace, mRMR) – rychlé. Wrappery hodnotí podmnožiny podle CV výkonu modelu (dopředný výběr, zpětná eliminace) – přesnější, ale drahé. Embedded metody vybírají příznaky během trénování (LASSO, stromy) – specifické pro model.</p></div></details>
+<details class="q"><summary>Proč mohou být jednotlivě relevantní příznaky redundantní? Jak to řeší mRMR?</summary><div>
+<p>Dva příznaky mohou nést o cíli stejnou informaci (F1 a F2 s korelací 0,92) – každý je relevantní, ale druhý už nic nepřidá. mRMR začne příznakem s největší vzájemnou informací s cílem a pak přidává příznak maximalizující \(I(X_j; Y) - \frac1{|S|}\sum_{i\in S}I(X_j; X_i)\), tedy relevanci minus průměrnou redundanci s již vybranými.</p></div></details>
+<details class="q"><summary>Proč dopředný výběr (zkoušení každého dalšího příznaku) není vyčerpávající prohledávání?</summary><div>
+<p>V každém kroku přidá jen nejlepší příznak k aktuální množině a rozhodnutí už nevrací – prozkoumá jen jednu cestu prostorem \(2^d\) podmnožin. Kombinace, které nezačínají nejlepším jednotlivým příznakem, nevidí: hladově AB (ztráta 0,18), hrubou silou BC (0,10). Řešení: hrubá síla pro malé prostory, náhodné nebo lokální prohledávání, restarty.</p></div></details>
+<details class="q"><summary>Co optimalizuje PCA a jak se řeší? Spočítejte vysvětlený rozptyl pro kovarianční matici [[2,5; 2]; [2; 2,5]].</summary><div>
+<p>PCA hledá jednotkový směr \(\mathbf w\) maximalizující rozptyl projekcí \(\mathbf w^\top S\mathbf w\) (ekvivalentně minimalizující chybu rekonstrukce). Lagrangián dává \(S\mathbf w = \lambda\mathbf w\) – směry jsou vlastní vektory kovarianční matice a zachycený rozptyl je vlastní číslo. Pro danou \(S\): \((2{,}5 - \lambda)^2 = 4\) ⇒ \(\lambda = 4{,}5\) a \(0{,}5\), PC1 = \((1,1)/\sqrt2\) vysvětluje 4,5/5 = 90 % rozptylu.</p></div></details>
+<details class="q"><summary>Čím se liší PCA a LDA? Jakou informaci LDA zachová a PCA může ztratit?</summary><div>
+<p>Obě jsou lineární projekce. PCA je bez učitele a maximalizuje celkový rozptyl; LDA je s učitelem a maximalizuje Fisherovo kritérium – vzdálenost průměrů tříd vůči rozptylu uvnitř tříd, \(\mathbf w \propto S_W^{-1}(\boldsymbol\mu_1 - \boldsymbol\mu_2)\). LDA zachová oddělitelnost tříd: pokud se třídy liší ve směru s malým rozptylem, PCA ho zahodí a třídy splynou. LDA dává nejvýše \(C-1\) směrů.</p></div></details>
+<details class="q"><summary>Jak fungují t-SNE a UMAP a co dělají jejich hlavní hyperparametry?</summary><div>
+<p>t-SNE převede vzdálenosti na pravděpodobnosti sousedství (Gauss s lokálním \(\sigma_i\)) a hledá 2D polohy, jejichž t-rozdělené podobnosti se jim co nejvíc blíží (min. KL divergence). Perplexita = efektivní počet sousedů: malá → rozpadlé úlomky, velká → slévání shluků. UMAP staví vážený graf \(k\) sousedů a rozloží ho tak, aby zachoval silné hrany; n_neighbors řídí lokální vs. globální měřítko, min_dist hustotu bodů ve shlucích. UMAP umí transform nových vzorků, scikit-learn t-SNE ne. Vzdálenosti mezi ostrovy nejsou kalibrované.</p></div></details>
+<details class="q"><summary>Co je jádrový trik? Ukažte na příkladu, co ušetří.</summary><div>
+<p>Jádro \(k(\mathbf x, \mathbf z) = \Phi(\mathbf x)^\top\Phi(\mathbf z)\) spočítá skalární součin v rozšířeném prostoru bez sestrojení \(\Phi\). Pro \(\Phi(\mathbf x) = (x_1^2, x_2^2, \sqrt2x_1x_2)\) a \(\mathbf x = (1,2)\), \(\mathbf u = (3,4)\): explicitně \(9 + 64 + 48 = 121\), jádrem \((\mathbf x^\top\mathbf u)^2 = 11^2 = 121\). Ušetří výpočet (a paměť) vysokodimenzionálních vektorů – u RBF jádra by byl prostor dokonce nekonečněrozměrný. Použije se v metodách, které závisí jen na skalárních součinech (kernel PCA, SVM, kernel ridge).</p></div></details>

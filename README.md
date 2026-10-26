@@ -6,6 +6,7 @@ Studijní materiály k jednotlivým předmětům, zveřejněné přes GitHub Pag
 | Složka | Předmět | Web |
 |---|---|---|
 | `vmm/` | Vícerozměrné metody (VMM) | https://balnerm.github.io/pripravy/vmm/ |
+| `mlr/` | Strojové učení (MPA-MLR), přednášky 1–7 | https://balnerm.github.io/pripravy/mlr/ |
 
 ## Jak to funguje
 - `index.html` v kořeni je rozcestník (píše se ručně).

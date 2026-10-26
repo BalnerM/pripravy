@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MLR – příprava na zkoušku</title>
+<meta name="description" content="Jak skripta používat a jak spolu témata souvisí.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <a class="brand" href="index.html">MLR – příprava na zkoušku<small>strojové učení: principy, modely a jejich parametry</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <a class="iconbtn" href="pdf/skripta_vse.pdf" download title="Celá skripta v jednom PDF">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html" class="active"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_uvod.html"><span class="n">1</span><span>Úvod, větve ML a optimalizace</span></a></li>
+    <li><a href="02_hodnoceni.html"><span class="n">2</span><span>Hodnocení modelů a předzpracování</span></a></li>
+    <li><a href="03_redukce.html"><span class="n">3</span><span>Výběr příznaků a redukce dimenze</span></a></li>
+    <li><a href="04_linearni.html"><span class="n">4</span><span>Lineární modely, jádra a SVM</span></a></li>
+    <li><a href="05_vibecoding.html"><span class="n">5</span><span>Vibecoding: práce s AI agentem</span></a></li>
+    <li><a href="06_stromy.html"><span class="n">6</span><span>Rozhodovací stromy a ansámbly</span></a></li>
+    <li><a href="07_neuronove_site.html"><span class="n">7</span><span>Umělé neuronové sítě</span></a></li>
+    <li><a href="08_parametry.html"><span class="n">★</span><span>Tahák: parametry a srovnání modelů</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+
+</nav>
+<main>
+<p class="printhead">MLR – příprava na zkoušku · MLR – příprava na zkoušku · https://balnerm.github.io/pripravy/mlr/index.html</p>
+
+<h1>MLR – příprava na zkoušku</h1>
+<p class="lead">Skripta k předmětu <b>Strojové učení (MPA-MLR, FEKT VUT)</b>, přednášky 1–7 (podzim 2026). Důraz je na <b>principy a logiku</b>: přesná definice pojmu, co znamená prakticky, proč metoda existuje, co znamená každá proměnná ve vzorci – a u každého modelu <b>co dělají jeho hyperparametry</b> a co se stane, když je zvětšíš nebo zmenšíš.</p>
+
+<h2 id="mapa">Mapa kurzu</h2>
+<div class="schema">
+<svg viewBox="0 0 900 300" role="img" aria-label="Mapa kurzu: optimalizace a hodnocení jako základ, pak redukce dimenze, lineární modely, stromy a neuronové sítě">
+  <defs><marker id="arM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="20" y="20" width="260" height="62" rx="10" class="fl1"/><text x="150" y="46" text-anchor="middle" style="font-weight:600">1 · Optimalizace</text><text x="150" y="66" text-anchor="middle" class="t2">trénování = hledání minima ztráty</text>
+  <rect x="620" y="20" width="260" height="62" rx="10" class="fl1"/><text x="750" y="46" text-anchor="middle" style="font-weight:600">2 · Hodnocení a předzpracování</text><text x="750" y="66" text-anchor="middle" class="t2">jak poznat, že model zobecňuje</text>
+  <rect x="320" y="20" width="260" height="62" rx="10" class="node"/><text x="450" y="46" text-anchor="middle" style="font-weight:600">bias ↔ rozptyl</text><text x="450" y="66" text-anchor="middle" class="t2">každý hyperparametr posouvá model</text>
+  <g class="ln" marker-end="url(#arM)"><path d="M280 51 H315"/><path d="M620 51 H585"/></g>
+  <g class="ln" marker-end="url(#arM)"><path d="M380 82 L130 128"/><path d="M420 82 L345 128"/><path d="M480 82 L560 128"/><path d="M520 82 L775 128"/></g>
+  <rect x="20" y="130" width="210" height="76" rx="10" class="fl3"/><text x="125" y="155" text-anchor="middle" style="font-weight:600">3 · Redukce dimenze</text><text x="125" y="174" text-anchor="middle" class="t2">výběr příznaků, PCA, LDA,</text><text x="125" y="191" text-anchor="middle" class="t2">t-SNE, UMAP, jádra</text>
+  <rect x="240" y="130" width="210" height="76" rx="10" class="fl2"/><text x="345" y="155" text-anchor="middle" style="font-weight:600">4 · Lineární modely</text><text x="345" y="174" text-anchor="middle" class="t2">OLS, ridge, LASSO, logist.</text><text x="345" y="191" text-anchor="middle" class="t2">regrese, SVM, jádrový trik</text>
+  <rect x="460" y="130" width="210" height="76" rx="10" class="fl2"/><text x="565" y="155" text-anchor="middle" style="font-weight:600">6 · Stromy a ansámbly</text><text x="565" y="174" text-anchor="middle" class="t2">CART, bagging,</text><text x="565" y="191" text-anchor="middle" class="t2">random forest, AdaBoost</text>
+  <rect x="680" y="130" width="200" height="76" rx="10" class="fl2"/><text x="780" y="155" text-anchor="middle" style="font-weight:600">7 · Neuronové sítě</text><text x="780" y="174" text-anchor="middle" class="t2">backprop, Adam, ztráty,</text><text x="780" y="191" text-anchor="middle" class="t2">dropout, batch norm</text>
+  <g class="ln dash"><path d="M345 206 V240 H780 V206"/></g>
+  <text x="562" y="258" text-anchor="middle" class="t2">logistická regrese = jeden neuron se sigmoidou; ridge = weight decay; kernel trik ↔ rozšíření příznaků</text>
+  <rect x="240" y="270" width="430" height="26" rx="8" style="fill:var(--surface-2);stroke:var(--line-strong)"/><text x="455" y="288" text-anchor="middle" class="t2">5 · Vibecoding – jak s agentem stavět a hlavně ověřovat ML experimenty</text>
+</svg></div>
+
+<h2 id="jak-pouzivat">Jak skripta používat</h2>
+<ul>
+<li>Každá kapitola odpovídá jedné přednášce a má stejnou stavbu: motivace → <span class="pill">Definice</span> pojmu → princip (<span class="pill">Intuice</span>) → postup (<span class="pill">Postup</span>) → vzorec s vysvětlenými proměnnými (<span class="pill">Vzorec</span>) → příklad (<span class="pill">Příklad</span>, čísla z přednášky přepočítaná) → obrázek s <span class="pill">Co si z obrázku odnést</span>.</li>
+<li><b>Nové oproti obvyklým skriptům:</b> u každého modelu je zelený rámeček <span class="pill">Parametry</span> – tabulka „co parametr znamená · co se stane, když ho <span style="color:var(--box-pozor-edge);font-weight:700">↑</span> zvětším · když ho <span style="color:var(--accent-ink);font-weight:700">↓</span> zmenším“ a jak ho volit. Obrázky v kapitolách ukazují stejná data s různým nastavením jednoho parametru. Všechny parametry pohromadě jsou na stránce <a href="08_parametry.html">Tahák: parametry a srovnání modelů</a>.</li>
+<li>Rámeček <b>Definice</b> má dvě části: větu, kterou lze u zkoušky říct jako definici, a pod čarou <i>„Jinými slovy“</i>. Všechny definice jsou pohromadě ve <a href="99_slovnik.html">Slovníku pojmů</a>.</li>
+<li><b>Vyzkoušej si:</b> interaktivní ukázky (krok učení, k-NN, práh a ROC, polynomiální ridge, SVM, bagging stromů, optimalizátory) – posuvníky mění parametry a hned vidíš dopad.</li>
+<li>Na konci každé kapitoly je <b>shrnutí</b>, <b>take-home messages</b> a <b>otázky ke zkoušce</b> s rozbalovací odpovědí (většina vychází z „recap quiz“ slidů).</li>
+<li><b>PDF na tablet:</b> tlačítko <span class="pill">PDF</span> v horní liště stáhne aktuální stránku; na této úvodní stránce stáhne <a href="pdf/skripta_vse.pdf" download>celá skripta v jednom PDF</a>.</li>
+</ul>
+<p class="muted">Zdroj: přednášky T. Vičara a J. Chmelíka (MPA-MLR 2026, <a href="https://tomasvicar.github.io/MLR-public/lectures.html">tomasvicar.github.io/MLR-public</a>). Grafy jsou překreslené vlastním kódem na syntetických nebo standardních datech. Přednášky 8–12 (konvoluční sítě, transformery, generativní modely) budou doplněny po zveřejnění.</p>
+
+<h2 id="kapitoly">Kapitoly</h2>
+<div class="cards">
+<a class="card" href="01_uvod.html"><div class="n">Přednáška 1</div><div class="t">Úvod, větve ML a optimalizace</div><div class="d">AI/ML/DL, učení s učitelem i bez, optimalizační úloha, konvexita, gradientní sestup a krok učení, k-NN, k-means.</div></a>
+<a class="card" href="02_hodnoceni.html"><div class="n">Přednáška 2</div><div class="t">Hodnocení modelů a předzpracování</div><div class="d">Train/val/test, metriky z matice záměn, ROC a AUC, práh, nevyvážené třídy, křížová validace, únik informace.</div></a>
+<a class="card" href="03_redukce.html"><div class="n">Přednáška 3</div><div class="t">Výběr příznaků a redukce dimenze</div><div class="d">Hughesův jev, korelace a vzájemná informace, mRMR, dopředný výběr, PCA, LDA, t-SNE, UMAP, jádrový trik.</div></a>
+<a class="card" href="04_linearni.html"><div class="n">Přednáška 4</div><div class="t">Lineární modely, jádra a SVM</div><div class="d">OLS, LAD, ridge a LASSO, polynomiální regrese, duální forma a jádra, logistická regrese, perceptron, SVM.</div></a>
+<a class="card" href="05_vibecoding.html"><div class="n">Přednáška 5</div><div class="t">Vibecoding: práce s AI agentem</div><div class="d">Jazykový model, agent a nástroje, kontext, zadání, ověřování ML experimentů, bezpečnost.</div></a>
+<a class="card" href="06_stromy.html"><div class="n">Přednáška 6</div><div class="t">Rozhodovací stromy a ansámbly</div><div class="d">Bias, rozptyl a šum, CART a nečistota, bagging, random forest a OOB, AdaBoost, ID3.</div></a>
+<a class="card" href="07_neuronove_site.html"><div class="n">Přednáška 7</div><div class="t">Umělé neuronové sítě</div><div class="d">Neuron a aktivace, backpropagation, SGD, momentum, Adam, ztráty, weight decay, dropout, batch norm.</div></a>
+<a class="card" href="08_parametry.html"><div class="n">★ Opakování</div><div class="t">Tahák: parametry a srovnání modelů</div><div class="d">Všechny hyperparametry na jednom místě, srovnání modelů, metriky a chytáky.</div></a>
+<a class="card" href="99_slovnik.html"><div class="n">Aa Opakování</div><div class="t">Slovník pojmů</div><div class="d">Všechny definice na jednom místě.</div></a>
+</div>
+
+<nav class="pager"><a class="next" href="01_uvod.html"><small>další →</small>Úvod, větve ML a optimalizace</a></nav>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<h1>Hodnocení modelů, metriky a předzpracování</h1>
+<p class="lead">Trénovací chybu umí stáhnout skoro k nule každý dost složitý model. Zajímá nás ale číslo, které model dosáhne na datech, která <b>nikdy neviděl</b>. Kapitola ukazuje, jak data rozdělit, čím úspěšnost měřit (a co která metrika skrývá), jak naložit s nevyváženými třídami a jak data předzpracovat, aby do hodnocení neprosákla informace z testu.</p>
+
+<h2 id="pipeline">Cesta od dat k otestovanému modelu</h2>
+<div class="box postup"><div class="box-t">Pipeline učení s učitelem</div>
+<ol>
+<li><b>Definuj cíl</b> – co chceme předpovídat?</li>
+<li><b>Rozděl data</b> – trénovací / validační / testovací.</li>
+<li><b>Předzpracuj</b> – vyčisti a připrav příznaky.</li>
+<li><b>Trénuj a laď</b> – nauč modely, uprav nastavení.</li>
+<li><b>Vyhodnoť</b> – výkon na validačních datech.</li>
+<li><b>Finální test</b> – testovací data použij <b>jednou</b> pro realistický odhad.</li>
+</ol></div>
+<div class="box definice" id="def-train-val-test"><div class="box-t">Definice: trénovací, validační a testovací množina</div>
+<p><b>Trénovací množina</b> slouží k naučení parametrů modelu. <b>Validační množina</b> slouží k ladění hyperparametrů, výběru příznaků, porovnání modelů a hlídání přeučení. <b>Testovací množina</b> se odloží až na konec a použije se jednou – dává nestranný odhad výkonu na nových datech.</p>
+<p class="jinak">trénovací data jsou učebnice, validační zkušební test, na kterém si zkoušíš různé způsoby učení, a testovací data jsou ostrá zkouška, kterou nesmíš předem vidět. Kdo ladí na testu, „podvádí“ a dostane přehnaně optimistické číslo.</p></div>
+<div class="box definice" id="def-riziko"><div class="box-t">Definice: populační a empirické riziko</div>
+<p><b>Populační (očekávané) riziko</b> \(R(\theta) = \mathbb E_{(\mathbf x, y)\sim P}[L(f_\theta(\mathbf x), y)]\) je očekávaná ztráta modelu na budoucích vzorcích ze skutečného (neznámého) rozdělení \(P\). <b>Empirické riziko</b> je průměrná ztráta na konečném vzorku dat, např. na trénovací množině \(\hat R_{\text{train}}(\theta) = \frac{1}{n}\sum_{i} L(f_\theta(\mathbf x_i), y_i)\).</p>
+<p class="jinak">trénujeme minimalizací empirického rizika na trénovacích datech, ale záleží nám na populačním riziku. Odhadujeme ho průměrnou ztrátou na odložené testovací množině: \(\hat R_{\text{test}} \approx R(\theta)\). Celý vývoj modelu je optimalizace <b>zobecnění</b>.</p></div>
+<div class="box intuice"><div class="box-t">Dvě optimalizační úlohy v učení s učitelem</div>
+<p><b>Vnitřní úloha – trénování</b> (SGD, backpropagation…): parametry \(\theta\) se přizpůsobí trénovací množině, \(\theta^\ast = \arg\min_\theta \hat R_{\text{train}}(\theta)\). <b>Vnější úloha – vývoj modelu</b>: celá pipeline \(P\) (příznaky, předzpracování, model, hyperparametry) se hodnotí na validační množině, \(P^\ast = \arg\min_{P\in\mathcal H}\hat R_{\text{val}}(P)\). Test \(\hat R_{\text{test}}(P^\ast)\) – jednou, úplně na konci. Postup: trénuj → validuj → laď → opakuj; po výběru finálního modelu jednou test.</p></div>
+<div class="box definice" id="def-loss-metrika"><div class="box-t">Definice: ztrátová funkce vs. metrika</div>
+<p><b>Ztrátová funkce</b> (loss) je číslo, které při trénování minimalizuje optimalizátor v každém kroku; musí být diferencovatelná a počítá se po vzorcích (křížová entropie, MSE, hinge). <b>Metrika</b> je číslo, kterým výsledek hodnotíme my na validačních/testovacích datech a které vyjadřuje, na čem úloze záleží (accuracy, F1, AUC, Dice, MAE).</p>
+<p class="jinak">accuracy je vzhledem k výstupu modelu schodová funkce (gradient je skoro všude nula) a F1 nebo AUC se počítají z celé množiny, ne po vzorcích – proto trénujeme na hladké náhražce a reportujeme metriku. Někdy splývají (MSE u regrese). Bez ztrátové funkce by počítač nevěděl, který model je lepší.</p></div>
+
+<h2 id="metriky">Metriky</h2>
+<div class="box intuice"><div class="box-t">Jedno číslo nikdy nepopíše model celý</div><p>Ke každé metrice si polož otázku: co měří – a co skrývá?</p></div>
+<h3>Accuracy a regresní chyby</h3>
+<div class="box vzorec"><div class="box-t">Základní metriky</div>
+\[ \text{Accuracy} = \frac{\#\{\hat y_i = y_i\}}{n} = \frac{TP + TN}{TP + TN + FP + FN},\qquad \text{MSE} = \frac1n\sum_i e_i^2,\qquad \text{MAE} = \frac1n\sum_i |e_i|,\qquad \text{RMSE} = \sqrt{\text{MSE}} \]
+<table class="vars">
+<tr><td>\(e_i = \hat y_i - y_i\)</td><td>chyba (reziduum) \(i\)-té predikce</td></tr>
+<tr><td>MSE</td><td>průměr čtverců chyb = \(\frac1n\|\mathbf e\|_2^2\); velké chyby trestá výrazně víc</td></tr>
+<tr><td>MAE</td><td>průměr absolutních chyb = \(\frac1n\|\mathbf e\|_1\); robustnější k odlehlým hodnotám</td></tr>
+<tr><td>RMSE</td><td>odmocnina z MSE – má stejné jednotky jako \(y\)</td></tr>
+<tr><td>\(p\) v \(\frac1n\|\mathbf e\|_p^p\)</td><td>obecně: \(p\) určuje, jak drahá je velká chyba</td></tr>
+</table>
+<p>Chybovost (error rate) = 1 − accuracy.</p></div>
+<div class="box priklad"><div class="box-t">Ručně (přednáška)</div>
+<p>Klasifikace: \(\mathbf y = [1, 0, 1, 2, 0]\), \(\hat{\mathbf y} = [1, 1, 1, 0, 0]\) ⇒ accuracy = 3/5 = 0,6.</p>
+<p>Regrese: \(\mathbf y = [3;\ -0{,}5;\ 2;\ 7;\ 4{,}2]\), \(\hat{\mathbf y} = [2{,}5;\ 0;\ 2{,}1;\ 7{,}8;\ 3{,}5]\) ⇒ \(\mathbf e = [-0{,}5;\ 0{,}5;\ 0{,}1;\ 0{,}8;\ -0{,}7]\); MSE = 1,64/5 = 0,328; MAE = 2,6/5 = 0,52; RMSE = 0,573; \(R^2 = 0{,}946\).</p></div>
+<h3>Matice záměn a metriky z ní</h3>
+<div class="box definice" id="def-matice-zamen"><div class="box-t">Definice: matice záměn (confusion matrix)</div>
+<p><b>Matice záměn</b> je tabulka počtů, která pro binární klasifikaci křížově třídí skutečnou a předpovězenou třídu: <b>TP</b> (skutečně pozitivní, předpovězeno pozitivní), <b>FN</b> (pozitivní, předpovězeno negativní – chyba II. druhu), <b>FP</b> (negativní, předpovězeno pozitivní – chyba I. druhu) a <b>TN</b> (negativní, předpovězeno negativní).</p>
+<p class="jinak">přehled, kde přesně se model plete. Všechny běžné klasifikační metriky jsou poměry čísel z této tabulky.</p></div>
+<div class="tablewrap"><table>
+<tr><th></th><th>předpověď pozitivní</th><th>předpověď negativní</th><th>metrika řádku</th></tr>
+<tr><th>skutečně pozitivní</th><td>TP</td><td>FN (chyba II. druhu)</td><td>senzitivita = recall = TPR = TP/(TP+FN)</td></tr>
+<tr><th>skutečně negativní</th><td>FP (chyba I. druhu)</td><td>TN</td><td>specificita = TN/(TN+FP)</td></tr>
+<tr><th>metrika sloupce</th><td>přesnost (precision, PPV) = TP/(TP+FP)</td><td>NPV = TN/(TN+FN)</td><td>accuracy = (TP+TN)/vše</td></tr>
+</table></div>
+<div class="box definice" id="def-precision-recall"><div class="box-t">Definice: senzitivita (recall) a přesnost (precision)</div>
+<p><b>Senzitivita (recall, TPR)</b> je podíl skutečně pozitivních vzorků, které model označil jako pozitivní: TP/(TP+FN). <b>Přesnost (precision, PPV)</b> je podíl vzorků označených jako pozitivní, které jsou opravdu pozitivní: TP/(TP+FP). <b>Specificita</b> je podíl skutečně negativních označených jako negativní: TN/(TN+FP).</p>
+<p class="jinak">recall: „kolik nemocných jsem našel?“; precision: „když řeknu nemocný, kolikrát mám pravdu?“; specificita: „kolik zdravých jsem nechal na pokoji?“ Žádná z nich sama nestačí – model, který řekne každému „pozitivní“, má senzitivitu 1.</p></div>
+<div class="box definice" id="def-f1"><div class="box-t">Definice: F1 skóre (Dice)</div>
+<p><b>F1 skóre</b> je harmonický průměr přesnosti a senzitivity: \(F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision} + \text{recall}} = \frac{2TP}{2TP + FP + FN}\). Je totožné s Diceovým koeficientem \(2|X\cap Y|/(|X| + |Y|)\) množiny předpovězených a skutečných pozitiv.</p>
+<p class="jinak">jedno číslo, které je vysoké jen tehdy, když model zároveň málo přehlíží i málo plaše poplašuje. Nezávisí na TN, proto je užitečné, když je pozitivních vzorků málo.</p></div>
+<div class="box priklad"><div class="box-t">Ručně (přednáška)</div>
+<p>10 vzorků: TP = 4, FP = 2, FN = 1, TN = 3 ⇒ precision 4/6 = 0,67; recall 4/5 = 0,80; \(F_1 = 8/11 = 0{,}73\) (accuracy 0,7). Model „vždy pozitivní“ (TP = 5, FP = 5): recall 1,0, ale \(F_1 = 10/15 = 0{,}67\).</p></div>
+
+<h3>ROC křivka, AUC a volba prahu</h3>
+<p>Většina klasifikátorů vrací <b>skóre</b> (míru jistoty) a o třídě rozhoduje až <b>práh</b>. Co je skóre: u logistické regrese a sítí výstup sigmoidy/softmaxu, u random forestu podíl stromů hlasujících pro třídu, u k-NN podíl \(k\) sousedů, u SVM znaménková vzdálenost od nadroviny, u naivního Bayese aposteriorní pravděpodobnost. Někdy je práh součástí modelu (SVM).</p>
+<div class="box definice" id="def-roc"><div class="box-t">Definice: ROC křivka</div>
+<p><b>ROC křivka</b> (receiver operating characteristic) je křivka bodů \((\text{FPR}, \text{TPR})\), které dostaneme, když postupně posouváme rozhodovací práh přes všechny hodnoty skóre; \(\text{TPR} = TP/(TP+FN)\), \(\text{FPR} = FP/(FP+TN) = 1 - \text{specificita}\).</p>
+<p class="jinak">celý klasifikátor v jednom obrázku: každý práh je jeden bod, volba prahu jen vybírá bod na křivce. Vysoký práh ⇒ skoro nic není pozitivní, bod (0, 0); nízký práh ⇒ vše pozitivní, (1, 1). Dokonalý klasifikátor se dotkne (0, 1), náhodný leží na diagonále.</p></div>
+<div class="box postup"><div class="box-t">Konstrukce ROC křivky</div>
+<ol><li>Spočítej skóre \(s_i\) všech vzorků.</li><li>Seřaď unikátní hodnoty skóre a použij je jako prahy.</li><li>Pro každý práh binarizuj predikce a spočítej TPR a FPR.</li><li>Vynes body (FPR, TPR) a spoj je.</li></ol></div>
+<div class="box definice" id="def-auc"><div class="box-t">Definice: AUC (plocha pod ROC křivkou)</div>
+<p><b>ROC AUC</b> je plocha pod ROC křivkou, \(\text{AUC} = \int_0^1 \text{TPR}\,d(\text{FPR})\). Rovná se pravděpodobnosti, že náhodně vybraný pozitivní vzorek dostane vyšší skóre než náhodně vybraný negativní: \(\text{AUC} = P(s(\mathbf x^+) \gt s(\mathbf x^-))\).</p>
+<p class="jinak">jak dobře model <b>seřadí</b> pozitivní nad negativní, nezávisle na prahu. 0,5 = náhoda, 1 = dokonalé seřazení. AUC ale neříká nic o tom, jestli jsou skóre dobré pravděpodobnosti (kalibrace).</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig02_roc.png" alt="Rozdělení skóre dvou tříd s prahem a odpovídající ROC křivka" loading="lazy"></div>
+<figcaption><b>Obr. 2.1</b> Vlevo: skóre negativních a pozitivních vzorků a práh \(t = 1{,}2\); vybarvené plochy napravo od prahu jsou FPR (modrá) a TPR (oranžová). Vpravo: ROC křivka – každý práh je jeden bod.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Posun prahu doprava sníží FPR (méně falešných poplachů) i TPR (víc přehlédnutých) – je to vždy <b>kompromis</b>. Celá křivka je jeden klasifikátor; tvar křivky (a AUC) určuje, jak moc se rozdělení skóre obou tříd překrývají. Lepší model = méně překryvu = křivka blíž k levému hornímu rohu.</p></div>
+<div class="box priklad"><div class="box-t">Volba pracovního bodu (přednáška, prevalence 5 %)</div>
+<p>Výchozí práh 0,5 na pravděpodobnosti je zvyk, ne pravidlo.</p>
+<ul>
+<li><b>Maximální accuracy</b> (FP a FN stejně drahé): \(t = 2{,}54\), accuracy 0,956 – ale najde jen 23 % pozitivních.</li>
+<li><b>Youdenův index \(J = \text{TPR} - \text{FPR}\)</b> (bod nejdál od diagonály): \(t = 0{,}90\), senzitivita = specificita = 0,82.</li>
+<li><b>Požadovaná senzitivita</b> (screening: přehlédnout nejvýš 5 %): \(t = 0{,}16\), zaplaceno FPR = 0,44.</li>
+</ul>
+<p>Práh se volí na <b>validačních</b> datech, nikdy na testu.</p></div>
+<div class="box parametry"><div class="box-t">Parametry: rozhodovací práh klasifikátoru</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parametr</th><th>co znamená</th><th><span class="up">↑</span> když ho zvětším</th><th><span class="dn">↓</span> když ho zmenším</th></tr>
+<tr><td>práh \(t\)</td><td>od jakého skóre říkám „pozitivní“</td><td>méně pozitivních predikcí: FPR ↓, specificita ↑, precision obvykle ↑, ale recall (TPR) ↓ – víc přehlédnutých</td><td>víc pozitivních predikcí: recall ↑, ale FPR ↑ a precision ↓ – víc falešných poplachů</td></tr>
+</table></div>
+<p class="volba">podle cen chyb: screening → vysoká senzitivita; potvrzující test → vysoká specificita; bez preferencí Youdenův index. Na ROC ani AUC práh nemá vliv – mění jen bod na křivce.</p></div>
+<div data-demo="roc-prah"></div>
+<div class="box definice" id="def-kalibrace"><div class="box-t">Definice: kalibrace a Brierovo skóre</div>
+<p>Klasifikátor je <b>kalibrovaný</b>, pokud jeho výstup lze číst jako pravděpodobnost: mezi vzorky s \(\hat p = 0{,}8\) je asi 80 % pozitivních (kontroluje se po intervalech v reliability diagramu). <b>Brierovo skóre</b> \(\frac1n\sum_i(\hat p_i - y_i)^2\) je MSE pravděpodobností a kalibraci zachytí.</p>
+<p class="jinak">monotónní transformace skóre zachová pořadí, ROC i AUC – a přitom může zničit pravděpodobnosti. AUC kalibraci nevidí; Brier ano (v přednášce 0,133 vs. 0,153 pro stejné AUC).</p></div>
+<div class="box definice" id="def-r2"><div class="box-t">Definice: koeficient determinace R²</div>
+<p><b>Koeficient determinace</b> \(R^2 = 1 - \frac{\sum_i(y_i - \hat y_i)^2}{\sum_i(y_i - \bar y)^2} = 1 - \frac{\text{SSE}}{\text{SST}}\) udává, o kolik je model lepší než predikce průměrem; \(R^2 \in (-\infty, 1]\).</p>
+<p class="jinak">1 = dokonalá shoda, 0 = model není lepší než „vždy průměr“, záporné = je ještě horší. Čitatel je součet čtverců reziduí (SSE), jmenovatel celkový součet čtverců (SST).</p></div>
+
+<h3>Více tříd a více labelů</h3>
+<div class="box definice" id="def-multiclass"><div class="box-t">Definice: multiclass a multilabel klasifikace</div>
+<p><b>Multiclass</b> (jeden label): každý vzorek patří právě do jedné z \(K\) tříd, \(y \in \{1,\dots,K\}\) nebo one-hot vektor se součtem 1 (typ nádoru na MRI, stupeň diabetické retinopatie). <b>Multilabel</b>: vzorek může mít žádný, jeden i více labelů současně, \(\mathbf y \in \{0,1\}^K\) (multi-hot; tagy obrázku, komorbidity pacienta).</p>
+<p class="jinak">multiclass = „vyber jednu odpověď“, multilabel = „zaškrtni všechny, které platí“.</p></div>
+<div class="box definice" id="def-prumerovani"><div class="box-t">Definice: micro, macro a weighted průměrování</div>
+<p><b>Micro</b>: nejdřív se sečtou TP, FP, FN přes všechny třídy a z nich se spočítá jedna globální hodnota (u jednolabelového multiclass je micro-F1 = accuracy). <b>Macro</b>: metrika se spočítá pro každou třídu zvlášť a výsledky se prostě zprůměrují. <b>Weighted macro</b>: jako macro, ale průměr je vážený počtem vzorků třídy (support).</p>
+<p class="jinak">micro = „jak se daří na jednotlivých vzorcích“ (dominují časté třídy); macro = „každá třída má stejný hlas“ (zvýrazní špatný výkon na vzácných třídách, u malých tříd je hlučné); weighted = kompromis, rozumná výchozí volba při nevyváženosti.</p></div>
+<div class="box priklad"><div class="box-t">Příklad: tři nevyvážené třídy (vlastní výpočet)</div>
+<p>Třída A má 90 vzorků, B 8, C 2. Matice záměn (řádky = skutečnost, sloupce = predikce A, B, C): A [85, 3, 2], B [2, 5, 1], C [1, 0, 1]. F1 po třídách: A 0,955; B 0,625; C 0,333.</p>
+<ul><li>micro-F1 = accuracy = 91/100 = <b>0,91</b>;</li><li>weighted-F1 = <b>0,916</b> (dominuje A);</li><li>macro-F1 = (0,955 + 0,625 + 0,333)/3 = <b>0,638</b> – jediné číslo, které ukáže, že na C model skoro nefunguje.</li></ul>
+<p>Model „vždy A“ má accuracy 0,90, ale macro-F1 jen 0,316.</p></div>
+<p>Pro multilabel: <b>subset accuracy</b> (exact match – všechny labely musí sedět), <b>Hamming loss</b> (podíl chybných labelů, nižší je lepší) a micro/macro F1 přes labely.</p>
+
+<h2 id="nevyvazenost">Nevyvážené třídy</h2>
+<div class="box definice" id="def-nevyvazenost"><div class="box-t">Definice: nevyvážené třídy a paradox accuracy</div>
+<p>Data mají <b>nevyvážené třídy</b>, když je jedna třída mnohem vzácnější než ostatní (např. pozitivních je méně než 5 %). <b>Paradox accuracy</b>: model, který minoritní třídu úplně ignoruje, má přesto vysokou accuracy.</p>
+<p class="jinak">když je pozitivních 1 %, model, který nikdy nic nenajde, má accuracy 99 % – a je k ničemu.</p></div>
+<ul>
+<li><b>Hodnoť správně:</b> macro/weighted F1, normalizovaná matice záměn, uváděj prevalenci.</li>
+<li><b>Trénuj s ohledem na nevyváženost:</b> váhy tříd / cost-sensitive ztráta, nebo převzorkování.</li>
+</ul>
+<div class="tablewrap"><table>
+<tr><th></th><th>oversampling (zvětšit minoritu)</th><th>undersampling (zmenšit majoritu)</th></tr>
+<tr><td>metody</td><td>náhodné duplikování; <b>SMOTE, ADASYN</b> – syntetické body mezi sousedy minority; augmentace (otočení, šum – „SMOTE pro obrazy a signály“)</td><td>náhodné vyřazení; čisticí pravidla Tomek links, ENN, NearMiss, ClusterCentroids</td></tr>
+<tr><td>výhody</td><td>zachová všechna data majority, zvýší recall</td><td>rychlejší, může odstranit šum na hranici</td></tr>
+<tr><td>nevýhody</td><td>přeučení (duplikáty), artefakty (syntetické body)</td><td>zahodí informaci, riziko podučení</td></tr>
+<tr><td>kdy</td><td>velmi malá minorita</td><td>obrovská majorita, drahé trénování</td></tr>
+</table></div>
+<div class="box pozor"><div class="box-t">Kde se smí převzorkovávat</div>
+<p>Jakékoli převzorkování <b>jen na trénovacích datech</b>, uvnitř každého foldu CV – nikdy na validačních ani testovacích (jinak hodnotíš na umělých bodech). Totéž platí pro předzpracování (škálování, PCA): fit jen na trénovacích datech, hodnoty z nich se použijí na validaci/test.</p></div>
+<div class="box definice" id="def-stratifikace"><div class="box-t">Definice: stratifikované a skupinové rozdělení</div>
+<p><b>Stratifikované</b> rozdělení zachovává podíly tříd stejné v trénovací, validační i testovací množině a v každém foldu. <b>Skupinové (group-aware)</b> rozdělení dává všechna data jedné skupiny (pacient, přístroj, pracoviště) do stejné části.</p>
+<p class="jinak">když od jednoho pacienta máme víc signálů, musí být všechny buď v tréninku, nebo v testu. Jinak se model „naučí pacienta“, signály téhož pacienta jsou silně korelované a výsledek je přehnaně optimistický (únik informace).</p></div>
+
+<h2 id="validace">Validační přístupy</h2>
+<div class="box definice" id="def-cv"><div class="box-t">Definice: k-násobná křížová validace (k-fold CV)</div>
+<p><b>k-fold křížová validace</b> rozdělí data na \(k\) přibližně stejných částí (foldů) a provede \(k\) kol: v každém se model trénuje na \(k-1\) foldech a validuje na zbývajícím. Výsledkem je průměr ± směrodatná odchylka metriky přes foldy. Pro \(k = n\) jde o <b>leave-one-out</b> (LOO).</p>
+<p class="jinak">každý vzorek se jednou stane validačním a \(k-1\)-krát trénovacím, takže využijeme všechna data a dostaneme i představu o rozptylu odhadu. Testovací množina zůstává netknutá; škálování a převzorkování se dělá uvnitř každého foldu. U malých dat lze CV použít i místo testu.</p></div>
+<div class="schema">
+<svg viewBox="0 0 640 190" role="img" aria-label="Schéma 5-násobné křížové validace: v každém kole je jiný fold validační">
+  <g style="font-size:13px">
+  <text x="10" y="22" class="t2">kolo</text>
+  <text x="80" y="22" class="t2">data rozdělená na 5 foldů</text>
+  <text x="520" y="22" class="t2">výsledek</text>
+  </g>
+  <g>
+    <text x="20" y="50">1</text><rect x="70" y="36" width="80" height="22" class="fl2"/><rect x="152" y="36" width="80" height="22" class="fl1"/><rect x="234" y="36" width="80" height="22" class="fl1"/><rect x="316" y="36" width="80" height="22" class="fl1"/><rect x="398" y="36" width="80" height="22" class="fl1"/><text x="520" y="52">skóre₁</text>
+    <text x="20" y="80">2</text><rect x="70" y="66" width="80" height="22" class="fl1"/><rect x="152" y="66" width="80" height="22" class="fl2"/><rect x="234" y="66" width="80" height="22" class="fl1"/><rect x="316" y="66" width="80" height="22" class="fl1"/><rect x="398" y="66" width="80" height="22" class="fl1"/><text x="520" y="82">skóre₂</text>
+    <text x="20" y="110">3</text><rect x="70" y="96" width="80" height="22" class="fl1"/><rect x="152" y="96" width="80" height="22" class="fl1"/><rect x="234" y="96" width="80" height="22" class="fl2"/><rect x="316" y="96" width="80" height="22" class="fl1"/><rect x="398" y="96" width="80" height="22" class="fl1"/><text x="520" y="112">skóre₃</text>
+    <text x="20" y="140">4</text><rect x="70" y="126" width="80" height="22" class="fl1"/><rect x="152" y="126" width="80" height="22" class="fl1"/><rect x="234" y="126" width="80" height="22" class="fl1"/><rect x="316" y="126" width="80" height="22" class="fl2"/><rect x="398" y="126" width="80" height="22" class="fl1"/><text x="520" y="142">skóre₄</text>
+    <text x="20" y="170">5</text><rect x="70" y="156" width="80" height="22" class="fl1"/><rect x="152" y="156" width="80" height="22" class="fl1"/><rect x="234" y="156" width="80" height="22" class="fl1"/><rect x="316" y="156" width="80" height="22" class="fl1"/><rect x="398" y="156" width="80" height="22" class="fl2"/><text x="520" y="172">skóre₅</text>
+  </g>
+  <text x="590" y="112" class="t2" text-anchor="middle">→ průměr ± sd</text>
+</svg></div>
+<p class="muted">Modře trénovací foldy, oranžově validační fold daného kola.</p>
+<div class="box definice" id="def-holdout"><div class="box-t">Definice: hold-out validace</div>
+<p><b>Hold-out validace</b> rozdělí data jednou na trénovací, validační a testovací část (např. 70/15/15 nebo 60/20/20): trénuje se na trénovací, hyperparametry a prahy se ladí na validační a finální výkon se změří jednou na testovací.</p>
+<p class="jinak">jednoduché a rychlé (jeden fit na nastavení), dobré pro velká data a snadno udrží čistý test. Nevýhoda: odhad má vysoký rozptyl – závisí na tom, jak „šťastně“ padlo rozdělení – a u malých dat plýtvá vzorky, které by pomohly trénování.</p></div>
+<figure><div class="paper"><img src="figures/fig02_kfold_var.png" alt="Rozptyl odhadu accuracy pro hold-out a pro 5- a 10-fold křížovou validaci" loading="lazy"></div>
+<figcaption><b>Obr. 2.2</b> Logistická regrese na 200 vzorcích dat o rakovině prsu; každý bod je odhad accuracy pro jedno z 60 náhodných rozdělení dat.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Jedno rozdělení dává jedno číslo – a to číslo hodně závisí na štěstí (hold-out kolísá mezi 0,90 a 1,00, sd 0,027). Průměr přes foldy CV je mnohem stabilnější (sd 0,006 a 0,004). Otázka „kolik z čísla je model a kolik štěstí rozdělení“ je přesně důvod pro křížovou validaci.</p></div>
+<div class="box parametry"><div class="box-t">Parametry: rozdělení dat a křížová validace</div>
+<div class="tablewrap"><table class="params">
+<tr><th>parametr</th><th>co znamená</th><th><span class="up">↑</span> když ho zvětším</th><th><span class="dn">↓</span> když ho zmenším</th></tr>
+<tr><td>počet foldů \(k\)</td><td>na kolik částí data dělím</td><td>víc fitů (výpočet ↑), každý fit má víc trénovacích dat (\(n(k-1)/k\)) ⇒ méně pesimistický odhad; \(k = n\) je LOO</td><td>méně výpočtu, ale méně trénovacích dat na fit (odhad pesimističtější) a méně foldů k průměrování</td></tr>
+<tr><td>velikost testovací / validační části</td><td>kolik dat odložím</td><td>přesnější odhad výkonu, ale méně dat na trénování</td><td>víc dat na trénování, ale hlučný odhad</td></tr>
+<tr><td>stratifikace / skupiny</td><td>zachovat podíly tříd, nedělit skupiny</td><td colspan="2">zapnout vždy, když jsou třídy nevyvážené nebo když data mají skupiny (pacienty); jinak hrozí zkreslený nebo přehnaně optimistický odhad</td></tr>
+</table></div>
+<p class="volba">typicky \(k = 5\) nebo 10; hold-out 70/15/15 u velkých dat.</p></div>
+
+<h2 id="predzpracovani">Předzpracování bez úniku informace</h2>
+<div class="box definice" id="def-leakage"><div class="box-t">Definice: únik informace (data leakage)</div>
+<p><b>Únik informace</b> nastane, když se do učení modelu (včetně předzpracování, výběru příznaků či ladění) dostane informace z dat, na kterých má být model teprve hodnocen, nebo informace, kterou by model v reálném nasazení neměl k dispozici.</p>
+<p class="jinak">model „opisuje z řešení“ a na testu vypadá lépe, než ve skutečnosti je. Typické případy: průměr pro standardizaci spočítaný z celých dat, převzorkování před rozdělením, signály jednoho pacienta v tréninku i testu, výběr příznaků na celém datasetu. Model vidí jen předzpracovaná data – a právě tam vzniká většina úniků.</p></div>
+<p>Typické kroky: <b>čištění</b> (chybějící hodnoty, odlehlé hodnoty, nekonzistentní kategorie), <b>škálování</b>, <b>kódování</b> kategorií, <b>redukce dimenze</b>. Vše implementuj uvnitř <code>Pipeline</code> a hodnoť křížovou validací – pak se fit předzpracování automaticky děje jen na trénovacích foldech.</p>
+<h3>Škálování</h3>
+<div class="box vzorec"><div class="box-t">Čtyři varianty škálování (statistiky vždy z trénovacích dat)</div>
+\[ x' = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}}\ \ \text{(standardizace)},\qquad x' = \frac{x - \text{med}_{\text{train}}}{\text{IQR}_{\text{train}}}\ \ \text{(robustní)} \]
+\[ x' = \frac{x - \min_{\text{train}}}{\max_{\text{train}} - \min_{\text{train}}}\ \ \text{(min–max)},\qquad x' = \operatorname{clip}\!\left(\frac{x - P_{1}}{P_{99} - P_{1}}, 0, 1\right)\ \ \text{(percentilové min–max)} \]
+<table class="vars">
+<tr><td>standardizace (z-skóre)</td><td>průměr 0, sd 1, zachová tvar rozdělení; výchozí pro lineární modely, SVM, PCA, sítě</td></tr>
+<tr><td>robustní</td><td>medián a mezikvartilové rozpětí místo \(\mu, \sigma\) – odlehlé hodnoty měřítko neposunou</td></tr>
+<tr><td>min–max</td><td>přesně [0, 1]; pro omezené vstupy (obrazy, sigmoidy); jedna odlehlá hodnota „zmáčkne“ všechno ostatní</td></tr>
+<tr><td>percentilové min–max</td><td>omezené a robustní: extrémy se oříznou na 1. a 99. percentil</td></tr>
+</table></div>
+<p>Stromy škálování obvykle nepotřebují; lineární modely, SVM, k-NN a logistická regrese ano.</p>
+<h3>Chybějící hodnoty (imputace)</h3>
+<div class="box definice" id="def-imputace"><div class="box-t">Definice: imputace</div>
+<p><b>Imputace</b> je nahrazení chybějící hodnoty odhadem – statistikou sloupce (průměr, medián, nejčastější hodnota) nebo hodnotou odvozenou z ostatních příznaků (kNN imputer, iterativní MICE).</p>
+<p class="jinak">díru zalepíme „nejrozumnějším tipem“. Tip je ale vymyšlený, ne naměřený: jedna hodnota pro celý sloupec ho „zploští“ (v přednášce sd 0,96 → 0,77) a oslabí vztahy (korelace 0,73 → 0,59). kNN a MICE sledují trend (korelace 0,79), jen trochu příliš hladce.</p></div>
+<ul>
+<li><b>Indikátor chybění</b> – sloupec 0/1 „chybělo“: často nejinformativnější příznak (nevyšetřeno = lékař neviděl důvod).</li>
+<li><b>Vyřazení řádků</b> – jen když je jich málo a chybí náhodně.</li>
+<li>Všechny statistiky se počítají z trénovacích řádků; validační a testovací řádky dostanou stejná čísla.</li>
+</ul>
+<div class="box priklad"><div class="box-t">Ručně: imputační tabulka (přednáška)</div>
+<p>Výška (cm) osmi studentů: 172, –, 165, 180, 400, 168, –, 175. Průměr šesti známých hodnot je <b>210,0</b> – hodnota 400 (zjevná chyba) se tak „zkopíruje“ do dalších dvou řádků. Medián <b>173,5</b> ji ignoruje. U skóre testu (68, 74, –, 91, 55, 62, 80, –) znamená doplnění 0 „nešel na test“, průměr 71,7 „průměrný student“ – ani jedno není neutrální; fakt chybění zachová indikátorový sloupec.</p></div>
+<h3>Odlehlé hodnoty</h3>
+<div class="box definice" id="def-tukey"><div class="box-t">Definice: Tukeyho ploty a winsorizace</div>
+<p><b>Tukeyho ploty</b> označí hodnotu za odlehlou, pokud leží mimo interval \([Q_1 - 1{,}5\,\text{IQR},\ Q_3 + 1{,}5\,\text{IQR}]\), kde \(Q_1, Q_3\) jsou kvartily a IQR = \(Q_3 - Q_1\). <b>Winsorizace</b> je oříznutí extrémních hodnot na zvolenou mez (např. percentil nebo plot) – hodnota zůstane v datech, ale ztratí svůj nepřiměřený vliv.</p>
+<p class="jinak">kvartily se odlehlou hodnotou nepohnou, proto jsou ploty robustní. Pravidlo \(|z| \gt 3\) naopak selhává, protože odlehlá hodnota sama nafoukne \(\sigma\) (maskování).</p></div>
+<div class="box priklad"><div class="box-t">Ručně: proč z-skóre selže (přednáška)</div>
+<p>Výšky 172, 165, 180, 400, 168, 175, 161, 177. Průměr 199,8, \(\sigma = 75{,}9\) (bez hodnoty 400 by bylo \(\sigma = 6{,}3\)) ⇒ z-skóre hodnoty 400 je jen <b>2,64</b>, pravidlo \(|z| \gt 3\) ji nezachytí. V osmi hodnotách navíc žádné \(|z|\) ani nemůže hranice 3 dosáhnout: největší možné z-skóre je \(\sqrt{n-1} = \sqrt7 \approx 2{,}65\). Tukey: \(Q_1 = 167{,}25\), \(Q_3 = 177{,}75\), IQR = 10,5, horní plot \(Q_3 + 1{,}5\cdot\text{IQR} = 193{,}5\) ⇒ <b>400 je odlehlá</b>. Pokud by byla věrohodná, winsorizujeme ji na 193,5; 400 cm je nemožné, tedy ji odstraníme (uvnitř trénovacího foldu).</p></div>
+<ul>
+<li>Nejbezpečnější výchozí volba: hodnotu ponechat a použít <b>robustní škálování</b> – odlehlá hodnota nemusí být chyba, může to být ten zajímavý pacient.</li>
+<li>Ve více rozměrech: isolation forest, local outlier factor.</li>
+<li>Odstraňovat jen nemožné hodnoty, a to uvnitř trénovacího foldu s pravidlem nafitovaným tam.</li>
+</ul>
+<h3>Kódování kategorií</h3>
+<div class="box definice" id="def-kodovani"><div class="box-t">Definice: one-hot, ordinální a target encoding</div>
+<p><b>One-hot</b> vytvoří pro každou úroveň kategorie jeden sloupec 0/1. <b>Ordinální kód</b> převede úrovně na jedno celé číslo. <b>Target encoding</b> nahradí úroveň průměrem cílové proměnné \(y\) pro tuto úroveň.</p>
+<p class="jinak">one-hot je výchozí pro nominální kategorie (u lineárních modelů jeden sloupec vypusť – sloupce dávají součet 1; vzácné úrovně slouč do „ostatní“). Ordinální kód jen tam, kde pořadí opravdu existuje (nízký &lt; střední &lt; vysoký) – u nominální kategorie vymyslí pořadí, které model použije. Target encoding zvládne tisíce úrovní jedním sloupcem, ale „in-sample“ prozrazuje label (úroveň s jedním řádkem je zakódovaná vlastním labelem) – nutné jsou out-of-fold průměry na trénovacích datech, vyhlazené k celkovému průměru.</p></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Model hodnotím na datech, která neviděl: trénovací data slouží k učení parametrů, validační k ladění hyperparametrů a výběru modelu, testovací se použijí jednou na konci. U malých dat použiji stratifikovanou k-fold křížovou validaci a uvedu průměr ± sd. Metriku volím podle úlohy: u nevyvážených tříd ne accuracy, ale F1 / macro-F1, ROC AUC pro schopnost seřadit a Brier pro kalibraci; práh volím na validaci podle ceny chyb. Veškeré předzpracování – škálování, imputaci, převzorkování – fituji jen na trénovacích foldech, aby nevznikl únik informace.“</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Cílem není nízká trénovací chyba, ale nízké populační riziko – odhadujeme ho na odložených datech. Trénovací množina učí parametry (vnitřní optimalizace), validační vybírá pipeline a hyperparametry (vnější optimalizace), testovací se použije jednou. Ztrátová funkce (diferencovatelná, pro optimalizátor) se liší od metriky (pro nás). Klasifikační metriky vycházejí z matice záměn: senzitivita, specificita, precision, F1; ROC křivka ukazuje všechny prahy, AUC pravděpodobnost správného seřazení, kalibraci měří Brierovo skóre; práh je volba podle cen chyb. U více tříd rozlišujeme micro, macro a weighted průměry. U nevyvážených tříd je accuracy zavádějící; pomůžou váhy tříd a převzorkování – jen na trénovacích datech. K-fold CV dává stabilnější odhad než jedno rozdělení. Předzpracování (robustní škálování, imputace s indikátorem, Tukeyho ploty, one-hot) se fituje jen na trénovacích datech, jinak vzniká únik informace.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Test se použije jednou; ladění na testu = přehnaně optimistický výsledek.</li>
+<li>Loss je pro optimalizátor (hladký), metrika pro nás (co úloha potřebuje).</li>
+<li>Precision = „mám pravdu, když řeknu ano?“, recall = „kolik jsem jich našel?“, F1 = jejich harmonický průměr.</li>
+<li>ROC = všechny prahy; AUC = P(pozitivní má vyšší skóre); AUC nevidí kalibraci.</li>
+<li>Práh 0,5 není pravidlo – vol ho na validaci podle cen chyb.</li>
+<li>Nevyvážené třídy: macro-F1, stratifikace, převzorkování jen uvnitř trénovacích foldů.</li>
+<li>Vše, co se „fituje“ (škálování, imputace, výběr příznaků), se fituje jen na trénovacích datech.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Jaký je rozdíl mezi empirickým a populačním rizikem? Na kterém nám záleží?</summary><div>
+<p>Populační riziko je očekávaná ztráta na budoucích vzorcích ze skutečného (neznámého) rozdělení dat. Empirické riziko je průměrná ztráta na konečném vzorku – trénovací (minimalizujeme ji při učení) nebo testovací (odhadujeme jí populační riziko). Záleží nám na populačním riziku, tedy na zobecnění; trénovací chyba je přehnaně optimistická.</p></div></details>
+<details class="q"><summary>Jaké role mají trénovací, validační a testovací množina? Proč se test smí použít jen jednou?</summary><div>
+<p>Trénovací – učení parametrů; validační – ladění hyperparametrů, výběr příznaků, porovnání modelů; testovací – jednorázový nestranný odhad výkonu. Kdybychom se podle testu rozhodovali opakovaně, stal by se z něj další validační soubor a model by se mu „přizpůsobil“ – odhad by byl přehnaně optimistický.</p></div></details>
+<details class="q"><summary>Kdy je accuracy zavádějící? Které metriky použít pro vzácnou pozitivní třídu?</summary><div>
+<p>U nevyvážených tříd: při 1 % pozitivních má model, který nic nenajde, accuracy 99 % (paradox accuracy). Lepší je F1 (harmonický průměr precision a recall, nezávisí na TN), precision–recall dvojice, macro-F1 u více tříd, senzitivita při dané specificitě, ROC AUC, normalizovaná matice záměn s uvedenou prevalencí.</p></div></details>
+<details class="q"><summary>Jak se konstruuje ROC křivka, jak se interpretuje AUC a proč model s vysokým AUC může dávat nepoužitelné pravděpodobnosti?</summary><div>
+<p>Pro všechny prahy (unikátní hodnoty skóre) spočítám TPR a FPR a vynesu body (FPR, TPR). AUC = plocha pod křivkou = pravděpodobnost, že náhodný pozitivní vzorek má vyšší skóre než náhodný negativní; 0,5 náhoda, 1 dokonalé seřazení. AUC závisí jen na pořadí skóre – monotónní transformace ho nezmění, ale může zničit kalibraci. Kalibraci ukáže reliability diagram nebo Brierovo skóre.</p></div></details>
+<details class="q"><summary>Proč práh 0,5 není pravidlo? Jak a na jakých datech volit pracovní bod?</summary><div>
+<p>0,5 odpovídá stejné ceně FP a FN a kalibrovaným pravděpodobnostem – to v praxi často neplatí. Možnosti: maximální accuracy, Youdenův index \(J = \text{TPR} - \text{FPR}\), požadovaná senzitivita (screening) nebo specificita, minimalizace očekávané ceny chyb. Práh se volí na validačních datech (nebo v CV), nikdy na testu.</p></div></details>
+<details class="q"><summary>Vysvětlete k-fold křížovou validaci. Co se stane, když zvětšíme k?</summary><div>
+<p>Data rozdělím na \(k\) foldů; v každém z \(k\) kol trénuji na \(k-1\) a validuji na zbývajícím, reportuji průměr ± sd. Větší \(k\): víc fitů (výpočetně dražší), každý fit má víc trénovacích dat (\(n(k-1)/k\)), odhad je méně pesimistický; \(k = n\) je leave-one-out. Menší \(k\): levnější, ale méně trénovacích dat na fit. U tříd stratifikovaně, u skupin skupinově; předzpracování uvnitř foldů.</p></div></details>
+<details class="q"><summary>Uveďte dva příklady úniku informace a jak jim zabránit.</summary><div>
+<p>(1) Standardizace nebo imputace spočítaná z celého datasetu včetně testu – řešení: fit jen na trénovacích datech (Pipeline + CV). (2) Signály jednoho pacienta v tréninku i testu – řešení: skupinové rozdělení. Další: převzorkování (SMOTE) před rozdělením, výběr příznaků na celých datech, target encoding bez out-of-fold průměrů.</p></div></details>
+<details class="q"><summary>Vysvětlete micro, macro a weighted průměrování metrik.</summary><div>
+<p>Micro: sečtu TP, FP, FN přes třídy a spočítám jednu hodnotu – odráží výkon na vzorcích, dominují časté třídy (u jednolabelového multiclass micro-F1 = accuracy). Macro: metrika pro každou třídu zvlášť a prostý průměr – každá třída má stejnou váhu, zvýrazní slabý výkon na vzácných třídách. Weighted: průměr vážený počty vzorků tříd – kompromis, rozumná výchozí volba při nevyváženosti.</p></div></details>
+<details class="q"><summary>Proč pravidlo |z| &gt; 3 nemusí najít odlehlou hodnotu a co použít místo něj?</summary><div>
+<p>Odlehlá hodnota sama nafoukne směrodatnou odchylku (maskování): výška 400 cm mezi sedmi normálními zvětší \(\sigma\) z 6,3 na 75,9 a její z-skóre je jen 2,6. Robustní alternativa jsou Tukeyho ploty \(Q_3 + 1{,}5\,\text{IQR}\) (kvartily se odlehlou hodnotou nepohnou; plot 193,5 ji zachytí). Pak buď winsorizace (oříznutí na plot), robustní škálování, nebo odstranění nemožné hodnoty – vždy uvnitř trénovacího foldu.</p></div></details>
