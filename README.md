@@ -23,7 +23,18 @@ Studijní materiály k jednotlivým předmětům, zveřejněné přes GitHub Pag
 - **Historie verzí:** u každého souboru tlačítko *History* na GitHubu, lokálně `git log`;
   starou verzi lze zobrazit nebo vrátit (`git revert <commit>`).
 
-## Přidání dalšího předmětu
-1. Vytvoř složku (např. `ziz/`) s `index.html` – nejjednodušeji zkopíruj strukturu `vmm/` včetně `_build/`.
-2. Přidej kartu do kořenového `index.html` a řádek do tabulky výše.
-3. Commit a push – workflow sestaví a nasadí i novou složku.
+## Skripta k dalšímu předmětu (s pomocí Claude Code)
+Agent spuštěný v této složce má všechny potřebné informace v `AGENTS.md` (postup, standard obsahu, pravidla)
+a vychází ze šablony `_sablona/`. Stačí mu zpřístupnit složku s přednáškami:
+```
+cd "…/MPAD-BIO/pripravy"
+claude --add-dir "../ZIZ"
+> Udělej skripta k předmětu ZIZ podle AGENTS.md, přednášky jsou v ../ZIZ/prednasky.
+```
+(Ve spuštěné relaci jde složka přidat i příkazem `/add-dir ../ZIZ`.) Skripta mohou být česky i anglicky –
+stačí to agentovi říct („…v angličtině“). Přednášky se jen čtou, do veřejného repozitáře se nekopírují.
+
+Ručně: zkopíruj `_sablona/` do `<zkratka>/`, uprav konfiguraci v `<zkratka>/_build/build.py`, piš kapitoly
+do `<zkratka>/_build/obsah/`, přidej kartu do kořenového `index.html` a řádek do tabulky výše, commit a push
+(podrobně v `_sablona/README.md`). Grafy: `uv run python <zkratka>/_build/make_figures.py` (prostředí repa,
+po klonu `uv sync`).

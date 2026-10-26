@@ -34,7 +34,8 @@
       const label = () => {
         const dark = root.getAttribute("data-theme") === "dark" ||
           (!root.getAttribute("data-theme") && matchMedia("(prefers-color-scheme: dark)").matches);
-        tb.textContent = dark ? "Světlý režim" : "Tmavý režim";
+        const en = root.lang === "en";
+        tb.textContent = dark ? (en ? "Light mode" : "Světlý režim") : (en ? "Dark mode" : "Tmavý režim");
         return dark;
       };
       label();

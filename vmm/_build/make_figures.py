@@ -1,6 +1,6 @@
-"""Generuje obrázky do priprava zkouska/figures/.
+"""Generuje obrázky do vmm/figures/.
 
-Spuštění (z kořene projektu):  uv run python "priprava zkouska/_build/make_figures.py"
+Spuštění (z kořene repozitáře pripravy):  uv run python vmm/_build/make_figures.py
 Všechna data jsou syntetická (pevný random seed) nebo dataset spotřeby proteinů z přednášky 6.
 """
 from pathlib import Path

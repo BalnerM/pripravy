@@ -1,0 +1,53 @@
+<!-- VZOR KAPITOLY: ukazuje všechny stavební prvky. Pro reálnou kapitolu soubor zkopíruj, přejmenuj
+     (např. 02_nazev.html), přidej do PAGES v build.py a obsah nahraď. Každá kapitola přednášky musí mít
+     alespoň jednu definici, sekci #shrnuti s .takehome a sekci #otazky – build.py to kontroluje. -->
+<h1>Ukázková kapitola</h1>
+<p class="lead">Úvodní odstavec: o čem kapitola je a proč na tom záleží – jedna dvě věty s praktickou motivací.</p>
+
+<h2 id="pojem">První téma</h2>
+<div class="box definice" id="def-korelace"><div class="box-t">Definice: korelační koeficient</div>
+<p><b>Korelační koeficient</b> je bezrozměrné číslo z intervalu \(\langle -1, 1 \rangle\), které měří sílu a směr lineárního vztahu dvou proměnných.</p>
+<p class="jinak">jak dobře se mrak bodů dá nahradit přímkou a jestli stoupá, nebo klesá.</p></div>
+
+<div class="box intuice"><div class="box-t">Intuice</div>
+<p>Vysvětlení principu bez vzorců – obrazem, analogií, příkladem z praxe.</p></div>
+
+<div class="box postup"><div class="box-t">Postup</div>
+<ol><li>První krok algoritmu.</li><li>Druhý krok.</li><li>Opakuj, dokud…</li></ol></div>
+
+<div class="box vzorec"><div class="box-t">Vzorec</div>
+\[ r = \frac{\operatorname{cov}(x,y)}{s_x\, s_y} \]
+<table class="vars">
+<tr><td>\(\operatorname{cov}(x,y)\)</td><td>kovariance – jak spolu proměnné kolísají</td></tr>
+<tr><td>\(s_x, s_y\)</td><td>směrodatné odchylky – dělením zmizí jednotky</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad</div>
+<p>Konkrétní čísla, ideálně z přednášky. Všechna čísla v příkladech přepočítej skriptem.</p></div>
+
+<figure class="wide"><div class="paper"><img src="figures/fig01_ukazka.png" alt="Dva bodové grafy se slabým a silným vztahem" loading="lazy"></div>
+<figcaption><b>Obr. 1.1</b> Popisek obrázku: co je na něm.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Hlavní poselství obrázku jednou dvěma větami.</p></div>
+
+<div class="box pozor"><div class="box-t">Častá past</div>
+<p>Typická chyba nebo chyták u zkoušky.</p></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Formulace odpovědi vlastními slovy…“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Jedna věta shrnutí tématu.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Souvislý odstavec shrnující celou kapitolu.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Nejdůležitější myšlenka.</li>
+<li>Druhá nejdůležitější myšlenka.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Co měří korelační koeficient?</summary><div>
+<p>Modelová odpověď vlastními slovy.</p></div></details>

@@ -1,4 +1,5 @@
-# Sestaví všechny přípravy (každý předmět má vlastní <předmět>/_build/build.py) a nasadí je na GitHub Pages.
+# Sestaví všechny přípravy (každý předmět má vlastní <předmět>/_build/build.py a make_pdf.py) a nasadí je
+# na GitHub Pages. Složky začínající podtržítkem (_sablona) se přeskakují.
 name: Nasazení na GitHub Pages
 
 on:
@@ -26,12 +27,14 @@ jobs:
       - name: Sestavení stránek
         run: |
           for f in */_build/build.py; do
+            case "$f" in _*) continue ;; esac   # _sablona a jiné pomocné složky se nesestavují
             echo "== $f"
             python "$f"
           done
       - name: PDF verze (headless Chrome, předinstalovaný na runneru)
         run: |
           for f in */_build/make_pdf.py; do
+            case "$f" in _*) continue ;; esac   # _sablona a jiné pomocné složky se nesestavují
             echo "== $f"
             python "$f"
           done

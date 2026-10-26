@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 # PDF generuje GitHub Actions (make_pdf.py), do gitu nepatří
 */pdf/
+.venv/
+# šablona: vygenerované stránky se necommitují (vzniknou až po zkopírování do složky předmětu)
+_sablona/*.html
+_sablona/_build/obsah/99_slovnik.html

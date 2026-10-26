@@ -208,6 +208,7 @@ table.vars td:first-child { width: 120px; white-space: nowrap; font-weight: 600;
 .box.definice > p:first-of-type { font-size: 1.02em; }
 .box.definice .jinak { color: var(--ink-2); border-top: 1px dashed var(--line-strong); padding-top: 8px; }
 .box.definice .jinak::before { content: "Jinými slovy: "; font-weight: 600; color: var(--ink); }
+:lang(en) .box.definice .jinak::before { content: "In other words: "; }
 .slovnik-kap { margin-top: 28px; }
 .slovnik-odkaz { font-size: 13px; }
 :root[data-theme="dark"] .box .box-t, :root:not([data-theme="light"]) .box .box-t { filter: none; }

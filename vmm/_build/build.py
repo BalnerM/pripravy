@@ -2,18 +2,20 @@
 
 Spuštění (z kořene repozitáře pripravy):  python vmm/_build/build.py
 Stačí standardní knihovna Pythonu – stejný příkaz spouští i GitHub Actions při nasazení na Pages.
+Pro nový předmět se mění jen KONFIGURACE (nahoře), engine pod ní je společný (viz _sablona/).
 """
-from pathlib import Path
-import html
-import re
-import sys
 
-sys.stdout.reconfigure(encoding="utf-8")
+# =====================================================================================================================
+# KONFIGURACE PŘEDMĚTU
+# =====================================================================================================================
+LANG = "cs"                                   # jazyk skript: "cs" nebo "en" (texty rozhraní, <html lang>)
+SHORT = "VMM"                                 # zkratka předmětu (titulky stránek)
+BRAND = "VMM – příprava na zkoušku"           # název v horní liště a tiskové hlavičce
+BRAND_SUB = "vícerozměrné metody, principy a postupy"
+GLOSSARY = "13_slovnik"                       # stránka slovníku generovaná z rámečků definic (None = bez slovníku)
 
-ROOT = Path(__file__).resolve().parent.parent
-SRC = Path(__file__).resolve().parent / "obsah"
-
-# (soubor, číslo v kurzu, název, krátký popis pro rozcestník)
+# (soubor fragmentu bez .html, číslo přednášky / značka, název, krátký popis)
+# Stránky s číselným „číslem“ jsou kapitoly přednášek – musí mít definice, #shrnuti, take-home a #otazky.
 PAGES = [
     ("index", "", "Mapa kurzu", "Jak skripta používat a jak spolu témata souvisí."),
     ("01_uvod", "1", "Úvod do analýzy vícerozměrných dat",
@@ -44,18 +46,58 @@ PAGES = [
      "Všechny definice ze skript na jednom místě, seřazené podle kapitol."),
 ]
 
-# Rámeček definice ve fragmentu:
+
+# =====================================================================================================================
+# Níže je společný „engine“ – stejný pro všechny předměty, obvykle se nemění.
+# =====================================================================================================================
+from pathlib import Path
+import html
+import re
+import sys
+
+sys.stdout.reconfigure(encoding="utf-8")
+
+ROOT = Path(__file__).resolve().parent.parent          # složka předmětu (např. vmm/)
+SRC = Path(__file__).resolve().parent / "obsah"         # fragmenty stránek
+SITE = f"https://balnerm.github.io/pripravy/{ROOT.name}/"
+KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist"
+ALL = "skripta_vse"  # stránka se všemi kapitolami za sebou (podklad pro jedno PDF celých skript)
+
+TEXTS = {
+    "cs": dict(
+        menu="☰ Obsah", menu_aria="Obsah", nav_aria="Navigace", back="Všechny přípravy", theme="Tmavý režim",
+        chapters="Kapitoly", on_page="Na této stránce", prev="← předchozí", next="další →", lecture="Přednáška",
+        pdf_page="Stáhnout tuto stránku jako PDF", pdf_all="Celá skripta v jednom PDF",
+        all_title="Celá skripta", all_desc="Všechny kapitoly na jedné stránce (tisková verze).",
+        gl_title="Slovník pojmů",
+        gl_lead="Všechny definice ze skript na jednom místě, seřazené podle kapitol. Hodí se na rychlé opakování: "
+                "zakryj text, řekni definici nahlas a pak si ji zkontroluj. Odkaz „výklad“ vede k místu, kde je pojem "
+                "vysvětlen podrobně.",
+        gl_link="výklad v kapitole {num} →"),
+    "en": dict(
+        menu="☰ Contents", menu_aria="Contents", nav_aria="Navigation", back="All study notes", theme="Dark mode",
+        chapters="Chapters", on_page="On this page", prev="← previous", next="next →", lecture="Lecture",
+        pdf_page="Download this page as PDF", pdf_all="All notes in one PDF",
+        all_title="All notes", all_desc="All chapters on one page (print version).",
+        gl_title="Glossary",
+        gl_lead="All definitions from the notes in one place, ordered by chapter. Good for quick revision: cover the "
+                "text, say the definition out loud, then check it. The link leads to the detailed explanation.",
+        gl_link="explained in chapter {num} →"),
+}
+T = TEXTS[LANG]
+
+# Rámeček definice ve fragmentu (do slovníku se převezme automaticky):
 #   <div class="box definice" id="def-xyz"><div class="box-t">Definice: pojem</div><p>…</p><p class="jinak">…</p></div>
-DEF_RE = re.compile(r'<div class="box definice" id="(def-[^"]+)"><div class="box-t">Definice: (.*?)</div>(.*?)</div>',
-                    flags=re.S)
+#   (v angličtině „Definition: term“)
+DEF_RE = re.compile(r'<div class="box definice" id="(def-[^"]+)"><div class="box-t">(?:Definice|Definition): (.*?)</div>'
+                    r'(.*?)</div>', flags=re.S)
 
 
 def make_glossary():
-    """Z rámečků definic ve fragmentech poskládá stránku 13_slovnik (fragment se generuje, needituje se ručně)."""
-    parts = ['<h1>Slovník pojmů</h1>',
-             '<p class="lead">Všechny definice ze skript na jednom místě, seřazené podle kapitol. Hodí se na rychlé '
-             'opakování: zakryj text, řekni definici nahlas a pak si ji zkontroluj. Odkaz „výklad“ vede k místu, '
-             'kde je pojem vysvětlen podrobně.</p>']
+    """Z rámečků definic ve fragmentech poskládá stránku GLOSSARY (její fragment se generuje, needituje se ručně)."""
+    if not GLOSSARY:
+        return 0
+    parts = [f'<h1>{T["gl_title"]}</h1>', f'<p class="lead">{T["gl_lead"]}</p>']
     count = 0
     for slug, num, title, _ in PAGES:
         if not num.isdigit():
@@ -68,16 +110,14 @@ def make_glossary():
         for anchor, term, inner in defs:
             count += 1
             parts.append(f'<div class="box definice" id="s-{anchor[4:]}"><div class="box-t">{term}</div>{inner}'
-                         f'<p class="slovnik-odkaz"><a href="{slug}.html#{anchor}">výklad v kapitole {num} →</a></p></div>')
-    (SRC / "13_slovnik.html").write_text("\n".join(parts) + "\n", encoding="utf-8")
+                         f'<p class="slovnik-odkaz"><a href="{slug}.html#{anchor}">{T["gl_link"].format(num=num)}'
+                         f'</a></p></div>')
+    (SRC / f"{GLOSSARY}.html").write_text("\n".join(parts) + "\n", encoding="utf-8")
     return count
 
-KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist"
-SITE = "https://balnerm.github.io/pripravy/vmm/"
-ALL = "skripta_vse"  # stránka se všemi kapitolami za sebou (podklad pro jedno PDF celých skript)
 
 TEMPLATE = """<!doctype html>
-<html lang="cs">
+<html lang="{lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -92,16 +132,16 @@ TEMPLATE = """<!doctype html>
 </head>
 <body>
 <header class="topbar">
-  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
-  <a class="brand" href="index.html">VMM – příprava na zkoušku<small>vícerozměrné metody, principy a postupy</small></a>
+  <button class="iconbtn" id="menuBtn" aria-label="{t[menu_aria]}">{t[menu]}</button>
+  <a class="brand" href="index.html">{brand}<small>{brand_sub}</small></a>
   <span class="spacer"></span>
-  <a class="iconbtn back" href="../index.html" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <a class="iconbtn back" href="../index.html" title="{t[back]}">←<span> {t[back]}</span></a>
   {pdfbtn}
-  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+  <button class="iconbtn" id="themeBtn" type="button">{t[theme]}</button>
 </header>
 <div class="layout">
-<nav class="sidebar" aria-label="Navigace">
-  <h4>Kapitoly</h4>
+<nav class="sidebar" aria-label="{t[nav_aria]}">
+  <h4>{t[chapters]}</h4>
   <ol>
 {nav}
   </ol>
@@ -123,14 +163,18 @@ def strip_tags(s):
     return html.unescape(re.sub(r"<[^>]+>", "", s)).strip()
 
 
+def render(**kw):
+    return TEMPLATE.format(lang=LANG, t=T, katex=KATEX, brand=BRAND, brand_sub=BRAND_SUB, **kw)
+
+
 def chrome(slug, page_title):
     """Tlačítko PDF a tisková hlavička; úvodní stránka odkazuje na PDF celých skript."""
     if slug in ("index", ALL):
-        pdf, tip = ALL, "Celá skripta v jednom PDF"
+        pdf, tip = ALL, T["pdf_all"]
     else:
-        pdf, tip = slug, "Stáhnout tuto stránku jako PDF"
+        pdf, tip = slug, T["pdf_page"]
     pdfbtn = f'<a class="iconbtn" href="pdf/{pdf}.pdf" download title="{tip}">PDF</a>'
-    printhead = f'<p class="printhead">VMM – příprava na zkoušku · {html.escape(page_title)} · {SITE}{slug}.html</p>'
+    printhead = f'<p class="printhead">{BRAND} · {html.escape(page_title)} · {SITE}{slug}.html</p>'
     return pdfbtn, printhead
 
 
@@ -151,13 +195,12 @@ def make_all(bodies, nav):
         body = body.replace('href="#', f'href="#{p}-').replace("url(#", f"url(#{p}-")
         body = link_re.sub(lambda m: f'href="#{pref(m.group(1))}' + (f'-{m.group(2)}' if m.group(2) else "") + '"',
                            body)
-        kicker = f'<p class="kicker">Přednáška {num}</p>' if num.isdigit() else ""
+        kicker = f'<p class="kicker">{T["lecture"]} {num}</p>' if num.isdigit() else ""
         parts.append(f'<section class="kapitola" id="{p}">\n{kicker}\n{body}\n</section>')
-    page_title = "Celá skripta – VMM"
+    page_title = f'{T["all_title"]} – {SHORT}'
     pdfbtn, printhead = chrome(ALL, page_title)
-    return TEMPLATE.format(title=page_title, desc="Všechny kapitoly skript VMM na jedné stránce (tisková verze).",
-                           katex=KATEX, nav=nav, toc="", pdfbtn=pdfbtn, printhead=printhead, kicker="",
-                           body="\n".join(parts), pager="")
+    return render(title=page_title, desc=html.escape(f'{SHORT}: {T["all_desc"]}'), nav=nav, toc="", pdfbtn=pdfbtn,
+                  printhead=printhead, kicker="", body="\n".join(parts), pager="")
 
 
 def build():
@@ -179,21 +222,21 @@ def build():
         h2 = re.findall(r'<h2 id="([^"]+)"[^>]*>(.*?)</h2>', body, flags=re.S)
         toc = ""
         if h2 and slug != "index":
-            toc = '  <h4>Na této stránce</h4>\n  <ul class="toc">\n' + "\n".join(
+            toc = f'  <h4>{T["on_page"]}</h4>\n  <ul class="toc">\n' + "\n".join(
                 f'    <li><a href="#{a}">{html.escape(strip_tags(t))}</a></li>' for a, t in h2) + "\n  </ul>"
         prev = PAGES[i - 1] if i > 0 else None
         nxt = PAGES[i + 1] if i + 1 < len(PAGES) else None
         pager = '<nav class="pager">'
         if prev:
-            pager += f'<a class="prev" href="{prev[0]}.html"><small>← předchozí</small>{prev[2]}</a>'
+            pager += f'<a class="prev" href="{prev[0]}.html"><small>{T["prev"]}</small>{prev[2]}</a>'
         if nxt:
-            pager += f'<a class="next" href="{nxt[0]}.html"><small>další →</small>{nxt[2]}</a>'
+            pager += f'<a class="next" href="{nxt[0]}.html"><small>{T["next"]}</small>{nxt[2]}</a>'
         pager += "</nav>"
-        kicker = f'<p class="kicker">Přednáška {num}</p>' if num.isdigit() else ""
-        page_title = f"{title} – VMM" if slug != "index" else "VMM – příprava na zkoušku"
+        kicker = f'<p class="kicker">{T["lecture"]} {num}</p>' if num.isdigit() else ""
+        page_title = f"{title} – {SHORT}" if slug != "index" else BRAND
         pdfbtn, printhead = chrome(slug, page_title)
-        out = TEMPLATE.format(title=page_title, desc=html.escape(desc), katex=KATEX, nav=nav, toc=toc,
-                              pdfbtn=pdfbtn, printhead=printhead, kicker=kicker, body=body, pager=pager)
+        out = render(title=page_title, desc=html.escape(desc), nav=nav, toc=toc, pdfbtn=pdfbtn,
+                     printhead=printhead, kicker=kicker, body=body, pager=pager)
         (ROOT / f"{slug}.html").write_text(out, encoding="utf-8")
         built[slug] = out
 
@@ -203,6 +246,7 @@ def build():
     (ROOT / f"{ALL}.html").write_text(built[ALL], encoding="utf-8")
 
     # ---- kontroly ----
+    lectures = {s for s, n, *_ in PAGES if n.isdigit()}
     ids = {s: set(re.findall(r'id="([^"]+)"', h)) for s, h in built.items()}
     for slug, h in built.items():
         for src in re.findall(r'<img[^>]+src="([^"]+)"', h):
@@ -215,7 +259,7 @@ def build():
                 errors.append(f"{slug}: odkaz na neexistující {f}")
             elif frag and frag[1:] and target in ids and frag[1:] not in ids[target]:
                 errors.append(f"{slug}: kotva {f}{frag} neexistuje")
-        lecture = slug[:2].isdigit() and int(slug[:2]) <= 11
+        lecture = slug in lectures
         for a in ["shrnuti", "otazky"]:
             if lecture and a not in ids[slug]:
                 errors.append(f"{slug}: chybí sekce #{a}")

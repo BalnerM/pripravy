@@ -31,7 +31,7 @@ GitHub Actions stránky znovu sestaví a asi za minutu je změna na webu.
 **Úprava lokálně** (z kořene repozitáře `pripravy`):
 ```
 python vmm/_build/build.py                                       # sestaví stránky a zkontroluje odkazy
-uv run --project ../VMM python vmm/_build/make_figures.py        # přegeneruje obrázky (prostředí projektu VMM)
+uv run python vmm/_build/make_figures.py                         # přegeneruje obrázky (prostředí repa pripravy)
 git add -A && git commit -m "popis změny" && git push
 ```
 Vzorce vykresluje KaTeX z CDN (potřeba internet); offline zůstane vidět zdrojový zápis vzorců.
