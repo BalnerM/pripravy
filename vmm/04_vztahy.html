@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vztahy mezi proměnnými – VMM</title>
+<meta name="description" content="Vizualizace, regrese, korelace, multikolinearita (VIF), ANOVA a Tukey HSD.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <a class="brand" href="index.html">VMM – příprava na zkoušku<small>vícerozměrné metody, principy a postupy</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_uvod.html"><span class="n">1</span><span>Úvod do analýzy vícerozměrných dat</span></a></li>
+    <li><a href="02_vicerozmerne_rozdeleni.html"><span class="n">2</span><span>Vícerozměrné rozdělení a testy</span></a></li>
+    <li><a href="03_predzpracovani.html"><span class="n">3</span><span>Předzpracování dat</span></a></li>
+    <li><a href="04_vztahy.html" class="active"><span class="n">4</span><span>Vztahy mezi proměnnými</span></a></li>
+    <li><a href="05_shlukova_analyza.html"><span class="n">5</span><span>Shluková analýza</span></a></li>
+    <li><a href="06_pca.html"><span class="n">6</span><span>Analýza hlavních komponent (PCA)</span></a></li>
+    <li><a href="07_kernel_pca.html"><span class="n">7</span><span>Kernel PCA</span></a></li>
+    <li><a href="08_maticove_rozklady.html"><span class="n">8</span><span>Maticové rozklady: ED a SVD</span></a></li>
+    <li><a href="09_faktorova_analyza.html"><span class="n">9</span><span>Faktorová analýza</span></a></li>
+    <li><a href="10_tsne.html"><span class="n">10</span><span>t-SNE</span></a></li>
+    <li><a href="11_umap.html"><span class="n">11</span><span>UMAP</span></a></li>
+    <li><a href="12_srovnani.html"><span class="n">★</span><span>Srovnání metod a tahák</span></a></li>
+    <li><a href="13_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#proc">Proč potřebujeme znát vztahy mezi daty</a></li>
+    <li><a href="#zobrazeni">Zobrazení vhodná pro posuzování vztahů</a></li>
+    <li><a href="#regrese">Regrese</a></li>
+    <li><a href="#korelace">Korelace</a></li>
+    <li><a href="#multikolinearita">Multikolinearita</a></li>
+    <li><a href="#anova">Analýza rozptylu (ANOVA) a mnohonásobné porovnávání</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky ke zkoušce</a></li>
+  </ul>
+</nav>
+<main>
+<p class="kicker">Přednáška 4</p>
+<h1>Vztahy mezi proměnnými</h1>
+<p class="lead">Než postavíme model, musíme vědět, jak spolu proměnné souvisejí – navzájem i s výstupem. Nástroje: vhodné grafy, regrese, korelace, měření multikolinearity a analýza rozptylu s mnohonásobným porovnáváním.</p>
+
+<h2 id="proc">Proč potřebujeme znát vztahy mezi daty</h2>
+<ol>
+<li><b>Poznání chování veličin mezi sebou</b> – co s čím souvisí.</li>
+<li><b>Poznání chování veličin vzhledem k výstupu</b> – co má šanci výstup predikovat.</li>
+<li><b>Kontrola vstupů</b> (příznaků) pro modely.</li>
+<li><b>Indikace pro redukci vstupů</b> – dvě proměnné nesoucí stejnou informaci nepotřebujeme obě.</li>
+<li><b>Interpretace vlivu vstupů</b> v (regresních) modelech – bez znalosti vztahů mezi vstupy nelze koeficienty správně vyložit.</li>
+</ol>
+<div class="box intuice"><div class="box-t">Demonstrační dataset z přednášky</div>
+<p>Porucha vedení v Tawarových raméncích vede k levé (LBBB) nebo pravé (RBBB) raménkové blokádě, léčí se kardioresynchronizační terapií (CRT). Asi 30 % pacientů ale na CRT nereaguje a doporučení nemají přímé číselné měřítko dyssynchronie komor. Ultra-vysokofrekvenční EKG (250–1000 Hz) nabízí parametr <b>EDYS (VED)</b> – elektrickou dyssynchronii. 1094 záznamů (pacienti FNUSA indikovaní k CRT + zdraví dobrovolníci). Otázky: <i>Jaké jsou vzájemné vztahy v datech? Rozpozná EDYS druh blokády? Není příliš podobný šířce QRS (QRSd)?</i></p></div>
+
+<h2 id="zobrazeni">Zobrazení vhodná pro posuzování vztahů</h2>
+<div class="tablewrap"><table>
+<tr><th>Graf</th><th>Co ukazuje</th><th>Silná / slabá stránka</th></tr>
+<tr><td><b>Bodový graf</b> (scatterplot)</td><td>vztah dvou spojitých proměnných, každý bod = objekt</td><td>zobrazuje skutečné body; při tisících bodů se překrývají</td></tr>
+<tr><td>bodový graf <b>+ barva</b> (hue)</td><td>2 spojité + 1 kategorická proměnná</td><td>odhalí, jestli vztah závisí na skupině; rychle nepřehledné</td></tr>
+<tr><td><b>KDE graf</b> (kernel density estimate)</td><td>odhad hustoty – „vrstevnice“ kde je bodů hodně</td><td>přehledný i pro velká data; je to <i>odhad</i>, ne data; skupiny se zakrývají (pomůže průhlednost)</td></tr>
+<tr><td><b>Histogram</b> (zvlášť pro skupiny)</td><td>rozložení jedné proměnné v každé skupině</td><td>přímé srovnání rozložení; jen jedna proměnná</td></tr>
+<tr><td><b>Pair-plot</b></td><td>všechny dvojice najednou: mimo diagonálu bodové/KDE grafy, na diagonále histogramy/KDE</td><td>rychlý přehled celé matice; u mnoha proměnných a skupin nepřehledný</td></tr>
+<tr><td><b>Korelační matice</b> (heatmapa)</td><td>čísla síly vztahů všech dvojic</td><td>velmi efektivní a častý nástroj; vidí jen monotónní/lineární vztahy</td></tr>
+</table></div>
+<div class="box definice" id="def-kde"><div class="box-t">Definice: odhad hustoty jádrem (KDE)</div>
+<p><b>KDE</b> (kernel density estimate) je odhad hustoty rozdělení z dat, který vznikne tak, že na každý naměřený bod položíme malou hladkou „boulí“ (jádro, typicky Gaussovu křivku) a všechny boule sečteme. Šířka boulí (bandwidth) určuje, jak hladký odhad bude.</p>
+<p class="jinak">„vyhlazený histogram“. Místo sloupečků vznikne plynulá křivka (ve 2D vrstevnice), která ukazuje, kde je bodů hodně. Je to ale odhad – při špatné šířce může ukázat vrchol, který v datech není, nebo skutečný vrchol rozmazat.</p></div>
+<p>Přednáška ukazuje postupné vylepšování: bodový graf → obarvení podle kategorie → KDE (nevidíme, co je „pod zdravými“) → průhlednost → histogramy zvlášť → pair-plot s KDE a menším počtem vrstevnic. Užitečná otázka u každého grafu: <b>kde je slabé místo kohorty?</b> (např. zdraví dobrovolníci jsou systematicky mladší než pacienti – rozdíl pak může být způsoben věkem, ne nemocí).</p>
+<div class="box odnes"><div class="box-t">Hlavní poselství</div>
+<p>Vhodné zobrazení může zvýraznit vztahy, kterých si výpočty „nevšimnou“: nelinearitu, podskupiny, odlehlé hodnoty, rozdílné rozsahy skupin. Jednoduší zobrazení často pomůže pochopit vazby víc než složitý graf.</p></div>
+
+<h2 id="regrese">Regrese</h2>
+<div class="box definice" id="def-regrese"><div class="box-t">Definice: regresní analýza</div>
+<p><b>Regrese</b> je metoda, která hledá funkci (model) popisující, jak střední hodnota závislé proměnné \(y\) závisí na jedné nebo více nezávislých proměnných \(x\). Parametry funkce se odhadují z dat tak, aby se model co nejméně odchyloval od pozorovaných hodnot.</p>
+<p class="jinak">„prokládáme data křivkou“, abychom věděli, jak se v průměru mění \(y\), když se mění \(x\), a abychom mohli \(y\) předpovídat.</p></div>
+<h3>Lineární regrese</h3>
+<div class="box definice" id="def-ols"><div class="box-t">Definice: lineární regrese a metoda nejmenších čtverců</div>
+<p><b>Lineární regrese</b> modeluje \(y\) jako lineární funkci vstupů, \(y = a x + b + \varepsilon\) (s více vstupy \(y = a_1x_1 + \dots + a_px_p + b + \varepsilon\)), kde \(\varepsilon\) je náhodná chyba. <b>Metoda nejmenších čtverců (OLS)</b> volí koeficienty tak, aby byl co nejmenší součet čtverců <b>reziduí</b> – rozdílů mezi naměřeným \(y_i\) a hodnotou předpovězenou přímkou \(\hat y_i\).</p>
+<p class="jinak">hledáme přímku, od které mají body v součtu co nejmenší (čtvercovou) svislou vzdálenost. Čtverec trestá velké chyby víc než malé a dá se snadno spočítat.</p></div>
+<div class="box vzorec"><div class="box-t">Vzorec</div>
+\[ y = a\cdot x + b \qquad\text{např.}\quad \text{BMI} = a\cdot \text{věk} + b \]
+<table class="vars">
+<tr><td>\(y\)</td><td>závislá (vysvětlovaná) proměnná</td></tr>
+<tr><td>\(x\)</td><td>nezávislá (vysvětlující) proměnná</td></tr>
+<tr><td>\(a\)</td><td>regresní koeficient – o kolik se změní \(y\), když \(x\) vzroste o 1</td></tr>
+<tr><td>\(b\)</td><td>konstanta (intercept) – hodnota \(y\) pro \(x = 0\)</td></tr>
+</table></div>
+<div class="box definice" id="def-interval-spolehlivosti"><div class="box-t">Definice: interval spolehlivosti</div>
+<p><b>95% interval spolehlivosti</b> je interval spočtený z dat takovým postupem, že při opakování celého experimentu by v 95 % případů pokryl skutečnou (populační) hodnotu odhadovaného parametru.</p>
+<p class="jinak">„odhad i s chybovou úsečkou“. Čím užší interval, tím přesněji parametr známe; užší je při větším počtu dat a menším rozptylu.</p></div>
+<p>Pás kolem regresní přímky v grafech bývá <b>95% interval spolehlivosti</b> – oblast, kde s 95% jistotou leží skutečná přímka. Příklad použití z přednášky: predikce počtu dárců krve z 5 příznaků (trénink na 106 týdnech z let 2021, 2022 a 2024, test na 52 týdnech roku 2023).</p>
+
+<h3>Obyčejná vs. ortogonální regrese</h3>
+<div class="box definice" id="def-ortogonalni-regrese"><div class="box-t">Definice: ortogonální regrese</div>
+<p><b>Ortogonální regrese</b> (total least squares) je regrese, která minimalizuje součet čtverců <b>kolmých</b> vzdáleností bodů od přímky, a ne svislých vzdáleností jako OLS. Předpokládá, že chybou měření jsou zatíženy obě proměnné.</p>
+<p class="jinak">přímka „uprostřed mraku“, kde se s oběma proměnnými zachází stejně – žádná není ta „přesná“. Hodí se pro porovnání dvou přístrojů.</p></div>
+<figure><div class="paper"><img src="figures/fig04_regrese.png" alt="Svislé a kolmé rezidua u dvou typů regrese" loading="lazy"></div>
+<figcaption><b>Obr. 4.1</b> Z čeho se počítají čtverce, které regrese minimalizuje.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p><b>Obyčejná regrese (OLS)</b> předpokládá, že \(x\) je změřené přesně a chyba je jen v \(y\) – minimalizuje svislé vzdálenosti. <b>Ortogonální regrese</b> předpokládá chybu v obou proměnných a minimalizuje kolmé vzdálenosti k přímce. Typické použití: <b>kontrola měřidel</b> – měří dva přístroje stejně? Ani jeden není „přesný“, oba mají chybu. (Mimochodem: ortogonální regrese hledá stejný směr jako první hlavní komponenta v <a href="06_pca.html">PCA</a>.)</p></div>
+
+<h3>Logistická regrese</h3>
+<p>Když je výstup binární (zdravý / nemocný), přímka nedává smysl – predikovala by hodnoty mimo 0–1. Lineární kombinaci proto „zabalíme“ do esovité (sigmoidní) funkce:</p>
+<div class="box definice" id="def-logisticka"><div class="box-t">Definice: logistická regrese</div>
+<p><b>Logistická regrese</b> je regresní model pro binární závislou proměnnou, který modeluje pravděpodobnost \(P(y=1\mid\mathbf x)\) jako sigmoidní (logistickou) funkci lineární kombinace vstupů. Ekvivalentně: lineární kombinace vstupů modeluje <b>logaritmus šance</b> \(\ln\frac{P}{1-P}\).</p>
+<p class="jinak">lineární regrese „ohnutá“ do tvaru písmene S, aby výstup byl vždy pravděpodobnost mezi 0 a 1. Klasifikátor pak řekne „nemocný“, když pravděpodobnost přesáhne zvolený práh (např. 0,5).</p></div>
+<div class="box definice" id="def-sance"><div class="box-t">Definice: šance a poměr šancí (odds ratio)</div>
+<p><b>Šance</b> (odds) jevu je poměr pravděpodobnosti, že nastane, a pravděpodobnosti, že nenastane: \(P/(1-P)\). <b>Poměr šancí</b> (OR) je podíl šancí ve dvou situacích; v logistické regresi \(e^{a_j}\) říká, kolikrát se šance zvýší, když \(x_j\) vzroste o 1 a ostatní vstupy zůstanou stejné.</p>
+<p class="jinak">pravděpodobnost 0,8 = šance 4 : 1. OR = 2 znamená „šance se zdvojnásobí“, OR = 1 „žádný vliv“, OR &lt; 1 „šance klesá“.</p></div>
+<div class="box vzorec"><div class="box-t">Vzorec</div>
+\[ P(y=1\mid x) = \frac{1}{1+e^{-(a x + b)}} \qquad\qquad P(y=1\mid \mathbf{x}) = \frac{1}{1+e^{-(a_1\,\text{věk} + a_2\,\text{pohlaví} + \dots + c)}} \]
+<table class="vars">
+<tr><td>\(a x + b\)</td><td>lineární funkce („skóre“), může být libovolně velká i záporná</td></tr>
+<tr><td>\(1/(1+e^{-z})\)</td><td>převede skóre na pravděpodobnost v intervalu (0, 1); skóre 0 → pravděpodobnost 0,5</td></tr>
+<tr><td>\(a_j\)</td><td>vliv \(j\)-té proměnné: kladný zvyšuje pravděpodobnost výstupu, záporný snižuje; \(e^{a_j}\) je poměr šancí (odds ratio) při zvýšení proměnné o 1</td></tr>
+</table></div>
+<figure><div class="paper"><img src="figures/fig04_logit.png" alt="Sigmoidní křivka logistické regrese" loading="lazy"></div>
+<figcaption><b>Obr. 4.2</b> Logistická regrese: body jsou 0/1, křivka je predikovaná pravděpodobnost.</figcaption></figure>
+<p>S více proměnnými logistický model říká, jaký vliv má každá proměnná na to, že je subjekt „zdravý“, <b>při ostatních proměnných konstantních</b>. Aby koeficienty šlo mezi sebou porovnat, musí být vstupy standardizované a nesmí být silně korelované (viz multikolinearita). Podobně se v klinických studiích používají modely rizika (v přednášce porovnání vlivu proměnných na riziko úmrtí nebo hospitalizace pro srdeční selhání v databázi MADIT-CRT, výsledkem jsou hazard ratio).</p>
+<div class="box kostka"><div class="box-t">V kostce</div><p>Regrese hledá funkci, která vysvětluje závislou proměnnou nezávislými. Lineární pro spojitý výstup, logistická pro binární. OLS = chyba jen v \(y\); ortogonální = chyba v obou.</p></div>
+
+<h2 id="korelace">Korelace</h2>
+<div class="box definice" id="def-pearson"><div class="box-t">Definice: Pearsonův korelační koeficient</div>
+<p><b>Pearsonův korelační koeficient</b> \(r\) je kovariance dvou proměnných vydělená součinem jejich směrodatných odchylek. Je bezrozměrný, leží v intervalu \(\langle -1, 1 \rangle\) a měří sílu a směr <b>lineárního</b> vztahu; \(|r| = 1\) znamená, že body leží přesně na přímce.</p>
+<p class="jinak">„jak dobře se mrak bodů dá nahradit přímkou a jestli stoupá, nebo klesá“. Znaménko = směr, absolutní hodnota = těsnost. Sklon přímky ale neříká – strmá i plochá přímka mohou mít \(r = 1\).</p></div>
+<div class="box vzorec"><div class="box-t">Vzorec (Pearsonův korelační koeficient)</div>
+\[ r_{x,y} = \frac{\operatorname{cov}(x,y)}{\operatorname{std}(x)\cdot \operatorname{std}(y)} \]
+<table class="vars">
+<tr><td>\(\operatorname{cov}(x,y)\)</td><td>kovariance – jak spolu proměnné kolísají (viz <a href="02_vicerozmerne_rozdeleni.html#charakteristiky">přednáška 2</a>)</td></tr>
+<tr><td>\(\operatorname{std}\)</td><td>směrodatné odchylky – dělením se zbavíme jednotek</td></tr>
+<tr><td>\(r\)</td><td>od −1 (dokonalý klesající lineární vztah) přes 0 (žádný lineární vztah) po +1 (dokonalý rostoucí)</td></tr>
+</table></div>
+<p>Korelace popisuje <b>lineární</b> vazbu. \(r\) blízké 0 vylučuje lineární vztah, ale <b>nevylučuje jiný</b> (např. parabolický).</p>
+<figure class="wide"><div class="paper"><img src="figures/fig04_korelace_tvary.png" alt="Čtyři typy vztahů s Pearsonovou a Spearmanovou korelací" loading="lazy"></div>
+<figcaption><b>Obr. 4.3</b> Pearson vs. Spearman na čtyřech typech dat.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>Lineární vztah</b>: oba koeficienty se shodují.</li>
+<li><b>Parabola</b>: oba ≈ 0, přestože vztah je zjevně silný – korelace měří jen lineární (resp. monotónní) vztah.</li>
+<li><b>Odlehlá hodnota</b>: jeden bod vyrobí z nekorelovaných dat „korelaci“ podle Pearsona; Spearman se nenechá ošálit.</li>
+<li><b>Monotónní nelineární</b> (exponenciála): Spearman zachytí, že vztah je dokonale rostoucí, Pearson ho podhodnotí.</li>
+</ul></div>
+<div class="box definice" id="def-spearman"><div class="box-t">Definice: Spearmanův korelační koeficient</div>
+<p><b>Spearmanův koeficient pořadové korelace</b> \(r_s\) je Pearsonův korelační koeficient spočítaný na <b>pořadích</b> hodnot (každou hodnotu nahradíme jejím pořadím 1, 2, …, \(n\) v rámci proměnné). Měří sílu <b>monotónního</b> vztahu; \(|r_s| = 1\) znamená, že pořadí v obou proměnných se dokonale shoduje (nebo je přesně obrácené).</p>
+<p class="jinak">ptá se jen „když roste \(x\), roste (nebo klesá) i \(y\)?“ – nezáleží na tom, jestli rovnoměrně. Protože pracuje s pořadím, extrémní hodnota je prostě „první“ nebo „poslední“ a nemůže výsledek přetáhnout.</p></div>
+<div class="box priklad"><div class="box-t">Příklad: jak Spearman pracuje s pořadím</div>
+<p>\(x\) = 1, 2, 3, 4, 5 a \(y\) = 2, 4, 8, 16, 1000. Pořadí \(y\): 1, 2, 3, 4, 5 – stejné jako u \(x\), proto \(r_s = 1\). Pearson vyjde jen asi 0,72, protože hodnota 1000 „neleží na přímce“ s ostatními.</p></div>
+<div class="tablewrap"><table>
+<tr><th>Pearsonův koeficient</th><th>Spearmanův koeficient</th></tr>
+<tr><td>předpokládá normální rozdělení</td><td>nepředpokládá normální rozdělení</td></tr>
+<tr><td>pracuje se skutečnými hodnotami</td><td>pracuje jen s <b>pořadím</b> hodnot (je to Pearson spočítaný na pořadích)</td></tr>
+<tr><td>měří lineární vztah</td><td>měří monotónní vztah (roste/klesá, nemusí lineárně)</td></tr>
+<tr><td>citlivý na odlehlé hodnoty</td><td>méně citlivý na odlehlé hodnoty</td></tr>
+</table></div>
+
+<h3>Korelační matice</h3>
+<p>Spočítá korelaci každé proměnné s každou. Co v ní chceme vidět pro dobře fungující model? <b>Vstupy silně korelované s výstupem a málo korelované mezi sebou</b> (každý vstup nese novou informaci). Přednáška kombinuje do jednoho obrázku korelační matici (horní trojúhelník, s p-hodnotou), KDE grafy (dolní trojúhelník) a histogramy (diagonála).</p>
+<div class="box pozor"><div class="box-t">Běžné prohřešky s korelací</div>
+<ul>
+<li><b>Korelace ≠ kauzalita.</b> Dvě proměnné mohou korelovat proto, že obě závisí na třetí (věk). Taková třetí proměnná se nazývá <b>matoucí (confounder)</b>: např. velikost bot a slovní zásoba u dětí silně korelují, protože obě rostou s věkem.</li>
+<li>Pearson na nenormálních datech nebo s odlehlými hodnotami (→ použij Spearmana).</li>
+<li>Záměna statistické významnosti a síly: \(r = 0{,}1\) může být při velkém \(n\) „významné“, ale vztah je slabý.</li>
+<li>Interpretace \(r \approx 0\) jako „žádný vztah“ – může jít o nelineární vztah.</li>
+</ul></div>
+
+<h2 id="multikolinearita">Multikolinearita</h2>
+<div class="box definice" id="def-multikolinearita"><div class="box-t">Definice: multikolinearita</div>
+<p><b>Multikolinearita</b> je stav, kdy jsou nezávislé proměnné (vstupy modelu) navzájem silně lineárně závislé – některý vstup lze s velkou přesností vyjádřit jako lineární kombinaci ostatních. V krajním případě (<b>dokonalá multikolinearita</b>) to jde přesně.</p>
+<p class="jinak">několik vstupů „říká totéž“. Model pak nedokáže rozhodnout, kterému z nich připsat vliv na výstup, a jejich koeficienty jsou nestabilní a špatně interpretovatelné.</p></div>
+<p><b>Čím víc příznaky navzájem korelují (jsou lineárně závislé), tím vyšší je míra multikolinearity.</b> Extrémní případ: jeden příznak lze přesně spočítat z ostatních. Pozor, multikolinearita nemusí být vidět v korelační matici: tři proměnné mohou být po dvojicích korelované jen středně, a přesto třetí přesně určit z prvních dvou (např. \(x_3 = x_1 + x_2\)). Proto se měří VIF, který bere v úvahu všechny ostatní proměnné najednou.</p>
+<p>Proč vadí:</p>
+<ul>
+<li>porušuje předpoklad většiny modelů, že vstupy jsou nezávislé;</li>
+<li><b>znemožňuje porovnávat příznaky</b> – když jsou výška a hmotnost silně spojené, model neví, „komu připsat zásluhu“, koeficienty jsou nestabilní (malá změna dat je výrazně změní, mohou mít i nesmyslné znaménko).</li>
+</ul>
+<h3>Jak ji měřit: VIF</h3>
+<div class="box definice" id="def-r2"><div class="box-t">Definice: koeficient determinace R²</div>
+<p><b>Koeficient determinace</b> \(R^2\) je podíl rozptylu závislé proměnné, který vysvětluje regresní model: \(R^2 = 1 - \frac{\sum (y_i-\hat y_i)^2}{\sum (y_i - \bar y)^2}\). Nabývá hodnot 0 (model nevysvětluje nic) až 1 (model vysvětluje vše, body leží přesně na modelu).</p>
+<p class="jinak">„kolik procent kolísání \(y\) umím vysvětlit pomocí \(x\)“. \(R^2 = 0{,}9\) znamená, že z rozdílů mezi pacienty v \(y\) jich 90 % vysvětluje model a 10 % zůstává nevysvětleno.</p></div>
+<div class="box definice" id="def-vif"><div class="box-t">Definice: VIF (variance inflation factor)</div>
+<p><b>VIF</b> \(j\)-té proměnné je \(1/(1-R_j^2)\), kde \(R_j^2\) je koeficient determinace regrese \(j\)-té proměnné na všech ostatních vstupních proměnných. Udává, kolikrát je rozptyl odhadu regresního koeficientu této proměnné zvětšen kvůli její lineární závislosti na ostatních vstupech.</p>
+<p class="jinak">zkusím proměnnou předpovědět z ostatních. Když to jde dobře (\(R_j^2\) blízko 1), proměnná je nadbytečná a VIF vyletí nahoru. Nezávislá proměnná má VIF = 1.</p></div>
+<div class="box vzorec"><div class="box-t">Vzorec (variance inflation factor – faktor zvětšení rozptylu)</div>
+\[ \mathrm{VIF}_j = \frac{1}{1 - R_j^2} \]
+<table class="vars">
+<tr><td>\(R_j^2\)</td><td>koeficient determinace regrese, ve které \(j\)-tý příznak vysvětlujeme <b>všemi ostatními příznaky</b> – jak dobře ho z nich umíme „spočítat“</td></tr>
+<tr><td>\(\mathrm{VIF}_j\)</td><td>kolikrát je rozptyl (nejistota) koeficientu příznaku \(j\) zvětšen kvůli jeho korelaci s ostatními</td></tr>
+</table>
+<p>Orientační hranice: <b>&lt; 5 v pořádku</b>, <b>5–10 vyžaduje pozornost</b>, <b>&gt; 10 problém</b>.</p></div>
+<div class="box priklad"><div class="box-t">Příklad</div>
+<p>Když příznak umíme z ostatních vysvětlit z 90 % (\(R^2 = 0{,}9\)), je \(\mathrm{VIF} = 1/0{,}1 = 10\). Při \(R^2 = 0{,}5\) je VIF = 2. Nezávislý příznak (\(R^2 = 0\)) má VIF = 1.</p></div>
+<h3>Jak ji odstranit</h3>
+<ul>
+<li><b>sloučením</b> příznaků (výška a hmotnost → BMI);</li>
+<li><b>odstraněním</b> příznaku (typicky postupně ten s nejvyšším VIF);</li>
+<li><b>nelineární transformací</b> příznaků nebo <b>redukcí celého souboru</b> (PCA – hlavní komponenty jsou nekorelované; t-SNE, UMAP).</li>
+</ul>
+<div class="box pozor"><div class="box-t">Chyták: odstraní multikolinearitu standardizace?</div>
+<p><b>Ne.</b> Standardizace jen posune a přeškáluje každý sloupec; korelace mezi sloupci zůstane úplně stejná (korelace na měřítku nezávisí), takže VIF se nezmění.</p></div>
+<div class="box priklad"><div class="box-t">Experiment z přednášky</div>
+<p>Model pro rozlišení druhu raménkové blokády (žádná / LBBB / RBBB), postupné odstraňování příznaku s nejhorším VIF, test 50% hold-out:</p>
+<div class="tablewrap"><table>
+<tr><th>krok</th><th class="num">0</th><th class="num">1</th><th class="num">2</th><th class="num">3</th><th class="num">4</th></tr>
+<tr><td>LR (F1)</td><td class="num">0,658</td><td class="num">0,660</td><td class="num">0,632</td><td class="num">0,571</td><td class="num">0,310</td></tr>
+<tr><td>SVM (F1)</td><td class="num">0,619</td><td class="num">0,639</td><td class="num">0,638</td><td class="num">0,633</td><td class="num">0,302</td></tr>
+<tr><td>RF (F1)</td><td class="num">0,585</td><td class="num">0,574</td><td class="num">0,541</td><td class="num">0,491</td><td class="num">0,302</td></tr>
+</table></div>
+<p>Odstranění nejvíce redundantního příznaku LR a SVM mírně pomohlo, další odstraňování už bere užitečnou informaci. Otázka „který model je nejlepší?“ – <b>nemáme dost informací</b>: jediné rozdělení 50/50, bez intervalů spolehlivosti, rozdíly v řádu setin mohou být náhodné.</p></div>
+
+<h2 id="anova">Analýza rozptylu (ANOVA) a mnohonásobné porovnávání</h2>
+<p>Otázka: liší se hodnota příznaku (např. EDYS) mezi skupinami L, R a Sync?</p>
+<div class="box definice" id="def-anova"><div class="box-t">Definice: analýza rozptylu (ANOVA)</div>
+<p><b>Jednofaktorová ANOVA</b> je statistický test nulové hypotézy, že střední hodnoty spojité proměnné jsou shodné ve všech \(k\) skupinách (\(H_0: \mu_1 = \mu_2 = \dots = \mu_k\)). Testová statistika \(F\) je podíl rozptylu mezi skupinami a rozptylu uvnitř skupin. Předpokládá normalitu ve skupinách, shodné rozptyly a nezávislá pozorování.</p>
+<p class="jinak">zobecnění t-testu na víc než dvě skupiny. Ptá se: jsou rozdíly mezi průměry skupin větší, než by se dalo čekat jen z toho, jak moc se liší pacienti uvnitř jedné skupiny?</p></div>
+<p>Proč nestačí udělat t-test pro každou dvojici skupin? Pro 3 skupiny jsou to 3 testy, pro 5 skupin už 10 – a s každým testem roste šance na falešně pozitivní výsledek (<a href="01_uvod.html#def-mnohonasobne-testovani">problém mnohonásobného testování</a>). ANOVA položí jedinou otázku pro všechny skupiny najednou.</p>
+<div class="box intuice"><div class="box-t">Intuice: proč „analýza rozptylu“, když porovnáváme průměry</div>
+<p>ANOVA porovnává dva rozptyly: <b>jak moc se liší průměry skupin mezi sebou</b> a <b>jak moc kolísají hodnoty uvnitř skupin</b>. Pokud jsou průměry skupin od sebe daleko ve srovnání s rozptylem uvnitř skupin, skupiny se liší.</p></div>
+\[ F = \frac{\text{rozptyl mezi skupinami (průměrů kolem celkového průměru)}}{\text{rozptyl uvnitř skupin (hodnot kolem průměru své skupiny)}} \]
+<p>\(F \approx 1\) → rozdíly průměrů jsou jen tak velké, jak by odpovídalo náhodě. Velké \(F\) → aspoň jedna skupina se liší.</p>
+<div class="box vzorec"><div class="box-t">Vzorec podrobněji</div>
+\[ F = \frac{\frac{1}{k-1}\sum_{g=1}^{k} n_g(\bar y_g - \bar y)^2}{\frac{1}{N-k}\sum_{g=1}^{k}\sum_{i \in g}(y_i - \bar y_g)^2} \]
+<table class="vars">
+<tr><td>\(k\), \(N\)</td><td>počet skupin a celkový počet objektů</td></tr>
+<tr><td>\(n_g\), \(\bar y_g\)</td><td>počet objektů a průměr ve skupině \(g\)</td></tr>
+<tr><td>\(\bar y\)</td><td>celkový průměr všech objektů</td></tr>
+<tr><td>čitatel</td><td>jak daleko jsou průměry skupin od celkového průměru (vážené velikostí skupiny)</td></tr>
+<tr><td>jmenovatel</td><td>jak daleko jsou jednotlivé hodnoty od průměru své skupiny – „šum“</td></tr>
+</table>
+<p>Dělení \(k-1\) a \(N-k\) (stupni volnosti) převádí součty čtverců na průměrné rozptyly, aby šly porovnat. Za platnosti \(H_0\) má \(F\) Fisherovo rozdělení \(F(k-1, N-k)\), z něj se spočítá p-hodnota.</p></div>
+<div class="box pozor"><div class="box-t">Co ANOVA neřekne</div>
+<p>K významnosti stačí, aby se odlišovala střední hodnota <b>jen jedné</b> skupiny. ANOVA neřekne, <b>které</b> skupiny se liší. Na to slouží post-hoc mnohonásobné porovnávání, např. <b>Tukey HSD</b> (Honestly Significant Difference): porovná všechny dvojice skupin a přitom hlídá, aby se při mnoha testech nezvýšilo riziko falešně pozitivního výsledku.</p></div>
+<div class="box definice" id="def-posthoc"><div class="box-t">Definice: post-hoc test (Tukey HSD)</div>
+<p><b>Post-hoc test</b> je test provedený až po zamítnutí \(H_0\) v ANOVA, který porovná všechny dvojice skupin a určí, které se od sebe liší. <b>Tukeyho HSD</b> (honestly significant difference) to dělá tak, že pro všechna párová porovnání drží celkovou pravděpodobnost falešně pozitivního výsledku na hladině \(\alpha\).</p>
+<p class="jinak">ANOVA řekne „někde je rozdíl“, post-hoc test řekne „mezi L a R ano, mezi R a Sync ne“ – a přitom nepodvádí tím, že by dělal mnoho testů bez korekce.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig04_anova.png" alt="Tři situace ANOVA: znak odděluje vše, jen jednu skupinu, nic" loading="lazy"></div>
+<figcaption><b>Obr. 4.4</b> Tři situace odpovídající výsledkům z přednášky (černá čárka = průměr skupiny).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést (výsledky přednášky)</div>
+<ul>
+<li><b>EDYS</b>: ANOVA F = 233, p &lt; 0,001; Tukey HSD – znak <b>odděluje všechny tři skupiny</b> navzájem.</li>
+<li><b>Area QRS</b>: F = 126, p &lt; 0,001; Tukey – znak <b>odděluje už jen skupinu L</b> od ostatních.</li>
+<li><b>BMI</b>: F = 0,9, p = 0,42 – znak <b>neodděluje nic</b> (ani pohlaví, ani BMI neoddělí L, R, Sync).</li>
+</ul>
+<p>Obě první ANOVA jsou „významné“, ale teprve post-hoc test ukáže, že EDYS je pro rozlišení blokád mnohem užitečnější.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Vztahy mezi proměnnými zkoumáme proto, abychom rozuměli datům, vybrali vstupy modelů, odhalili redundanci a správně interpretovali modely. <b>Grafy</b> (bodové, KDE, histogramy, pair-plot) odhalí nelinearity, podskupiny a slabiny kohorty. <b>Regrese</b> modeluje závislou proměnnou nezávislými – lineární pro spojitý výstup (OLS = chyba v y, ortogonální = chyba v obou), logistická pro binární výstup. <b>Korelace</b> měří sílu lineárního (Pearson) nebo monotónního (Spearman, na pořadích, robustní) vztahu; nulová korelace nevylučuje nelineární vztah a korelace neznamená kauzalitu. <b>Multikolinearita</b> (silně korelované vstupy) znehodnocuje interpretaci koeficientů; měříme ji <b>VIF</b> = 1/(1−R²) a řešíme sloučením, odstraněním nebo redukcí dimenze – ne standardizací. <b>ANOVA</b> testuje, zda se liší aspoň jedna skupina (poměr rozptylu mezi a uvnitř skupin), <b>Tukey HSD</b> řekne které.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Vhodný graf ukáže vztahy, které výpočet přehlédne – vždy se na data podívej.</li>
+<li>Korelační matice je rychlý a efektivní nástroj, ale vidí jen lineární/monotónní vztahy.</li>
+<li>Spearman = Pearson na pořadích; robustní k odlehlým hodnotám a nelinearitě.</li>
+<li>Multikolinearita: VIF &gt; 10 je problém; standardizace ji neřeší.</li>
+<li>Snížení multikolinearity obvykle zvýší užitnou hodnotu (a interpretovatelnost) modelů.</li>
+<li>ANOVA řekne „někde je rozdíl“, Tukey HSD řekne „kde“.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Jaký je rozdíl mezi Pearsonovým a Spearmanovým korelačním koeficientem?</summary><div>
+<p>Pearson měří sílu lineárního vztahu, pracuje se skutečnými hodnotami, předpokládá normalitu a je citlivý na odlehlé hodnoty. Spearman pracuje jen s pořadím hodnot, měří monotónní vztah, normalitu nepředpokládá a je robustní k odlehlým hodnotám. U exponenciálního vztahu dá Spearman 1, Pearson méně; jedna odlehlá hodnota může Pearsona „vyrobit“, Spearmana ne.</p></div></details>
+<details class="q"><summary>Znamená nulová korelace, že proměnné spolu nesouvisejí?</summary><div>
+<p>Ne. Nulová korelace vylučuje jen lineární vztah. Proměnné mohou mít silný nelineární vztah, např. parabolický (\(y = x^2\) na symetrickém intervalu má \(r \approx 0\)). Proto je nutné se na data podívat graficky.</p></div></details>
+<details class="q"><summary>Co je multikolinearita, proč vadí a jak se měří?</summary><div>
+<p>Situace, kdy jsou vstupní proměnné navzájem silně korelované (lineárně závislé). Vadí, protože porušuje předpoklad nezávislosti vstupů a znemožňuje oddělit vliv jednotlivých proměnných – koeficienty jsou nestabilní a nelze je porovnávat. Měří se VIF\(_j = 1/(1-R_j^2)\), kde \(R_j^2\) je podíl rozptylu příznaku vysvětlený ostatními příznaky. Pod 5 OK, 5–10 pozor, nad 10 problém. Řeší se sloučením (výška + hmotnost → BMI), odstraněním příznaku nebo PCA; standardizace nepomůže.</p></div></details>
+<details class="q"><summary>Jaký je rozdíl mezi obyčejnou a ortogonální regresí?</summary><div>
+<p>Obyčejná (OLS) minimalizuje svislé vzdálenosti bodů od přímky – předpokládá chybu jen v závislé proměnné. Ortogonální minimalizuje kolmé vzdálenosti – předpokládá chybu v obou proměnných. Používá se např. při srovnání dvou měřicích přístrojů, kde ani jeden není referenční.</p></div></details>
+<details class="q"><summary>Jak funguje logistická regrese a co říkají její koeficienty?</summary><div>
+<p>Lineární kombinaci vstupů \(a_1x_1 + \dots + c\) převede sigmoidou \(1/(1+e^{-z})\) na pravděpodobnost v intervalu 0–1, takže se hodí pro binární výstup. Kladný koeficient zvyšuje pravděpodobnost výstupu, záporný snižuje; \(e^{a_j}\) je poměr šancí při zvýšení proměnné o jednotku při ostatních konstantních. Pro porovnání vlivu proměnných je potřeba standardizace a nízká multikolinearita.</p></div></details>
+<details class="q"><summary>Vysvětlete princip ANOVA. Proč potřebujeme post-hoc test?</summary><div>
+<p>ANOVA porovnává rozptyl průměrů skupin (mezi skupinami) s rozptylem hodnot uvnitř skupin; poměr je F statistika. Velké F znamená, že průměry jsou od sebe dál, než by odpovídalo náhodnému kolísání. Výsledek ale jen říká, že se liší aspoň jedna skupina – ne která. Post-hoc test (Tukey HSD) porovná všechny dvojice a kontroluje chybu při mnohonásobném testování. V přednášce: EDYS odděluje všechny skupiny, Area QRS jen L, BMI nic.</p></div></details>
+<details class="q"><summary>Jaké grafy použijete pro zkoumání vztahů a na co si dát pozor?</summary><div>
+<p>Bodový graf (skutečné body; s barvou pro kategorie), KDE graf (odhad hustoty, přehledný u velkých dat, pozor na zakrývání skupin – průhlednost), histogramy po skupinách, pair-plot (všechny dvojice), korelační matici. Pozor na rozdíl mezi zobrazením dat a zobrazením odhadu, na přeplácanost a na slabiny kohorty (např. rozdílný věk zdravých a nemocných).</p></div></details>
+
+<nav class="pager"><a class="prev" href="03_predzpracovani.html"><small>← předchozí</small>Předzpracování dat</a><a class="next" href="05_shlukova_analyza.html"><small>další →</small>Shluková analýza</a></nav>
+</main>
+</div>
+</body>
+</html>

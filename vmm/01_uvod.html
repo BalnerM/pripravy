@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Úvod do analýzy vícerozměrných dat – VMM</title>
+<meta name="description" content="Zdrojová matice, typy dat, proč více proměnných najednou a jak se metody dělí.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <a class="brand" href="index.html">VMM – příprava na zkoušku<small>vícerozměrné metody, principy a postupy</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_uvod.html" class="active"><span class="n">1</span><span>Úvod do analýzy vícerozměrných dat</span></a></li>
+    <li><a href="02_vicerozmerne_rozdeleni.html"><span class="n">2</span><span>Vícerozměrné rozdělení a testy</span></a></li>
+    <li><a href="03_predzpracovani.html"><span class="n">3</span><span>Předzpracování dat</span></a></li>
+    <li><a href="04_vztahy.html"><span class="n">4</span><span>Vztahy mezi proměnnými</span></a></li>
+    <li><a href="05_shlukova_analyza.html"><span class="n">5</span><span>Shluková analýza</span></a></li>
+    <li><a href="06_pca.html"><span class="n">6</span><span>Analýza hlavních komponent (PCA)</span></a></li>
+    <li><a href="07_kernel_pca.html"><span class="n">7</span><span>Kernel PCA</span></a></li>
+    <li><a href="08_maticove_rozklady.html"><span class="n">8</span><span>Maticové rozklady: ED a SVD</span></a></li>
+    <li><a href="09_faktorova_analyza.html"><span class="n">9</span><span>Faktorová analýza</span></a></li>
+    <li><a href="10_tsne.html"><span class="n">10</span><span>t-SNE</span></a></li>
+    <li><a href="11_umap.html"><span class="n">11</span><span>UMAP</span></a></li>
+    <li><a href="12_srovnani.html"><span class="n">★</span><span>Srovnání metod a tahák</span></a></li>
+    <li><a href="13_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#proc-data">Proč vůbec data sbíráme</a></li>
+    <li><a href="#typy-dat">Typy dat – a proč na nich záleží</a></li>
+    <li><a href="#matice">Zdrojová matice dat</a></li>
+    <li><a href="#proc-vicerozmerne">Proč nestačí analyzovat proměnné po jedné</a></li>
+    <li><a href="#klasifikace">Jak se metody dělí</a></li>
+    <li><a href="#schema-prace">Základní schéma práce s vícerozměrnými daty</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky ke zkoušce</a></li>
+  </ul>
+</nav>
+<main>
+<p class="kicker">Přednáška 1</p>
+<h1>Úvod do analýzy vícerozměrných dat</h1>
+<p class="lead">O co v celém předmětu jde: máme mnoho objektů (pacientů, vzorků, záznamů) a u každého mnoho měřených vlastností. Chceme z té tabulky čísel vytěžit <b>strukturu</b> – co spolu souvisí, které objekty jsou si podobné, co je podstatné a co jen šum. Tahle kapitola dává „mapu“, do které pak zapadají všechny další metody.</p>
+
+<h2 id="proc-data">Proč vůbec data sbíráme</h2>
+<p>V biomedicíně sbíráme data ze tří hlavních důvodů:</p>
+<ol>
+  <li><b>Popis objektu</b> – pacienta popíšeme souborem jeho vlastností (věk, tep, teplota, tlak…). Ideálně číselných, protože s čísly umí pracovat počítač.</li>
+  <li><b>Modelování struktury nebo funkce</b> – např. jak funguje buňka, tkáň, orgán.</li>
+  <li><b>Rozhodování</b> – diagnostika („má pacient sepsi?“), volba léčby, predikce rizika.</li>
+</ol>
+<p>Ve všech třech případech platí, že jedna vlastnost obvykle nestačí. Sepsi nepoznáme jen z teploty – potřebujeme teplotu, tep, dechovou frekvenci, tlak… a hlavně to, <b>jak spolu tyto hodnoty souvisí</b>. To je důvod, proč existují vícerozměrné metody.</p>
+<div class="box definice" id="def-vicerozmerna-data"><div class="box-t">Definice: vícerozměrná data a vícerozměrná analýza</div>
+<p><b>Vícerozměrná data</b> jsou data, kde je u každého objektu změřeno současně více proměnných (\(p &gt; 2\)). <b>Vícerozměrná analýza</b> je soubor statistických metod, které tyto proměnné zpracovávají <b>současně</b> – včetně vztahů (kovariancí, korelací) mezi nimi – místo aby každou analyzovaly zvlášť.</p>
+<p class="jinak">nedíváme se na pacienta po jednotlivých číslech, ale na celý jeho „profil“ najednou. Podstatné je, jak spolu čísla souvisejí – a to vidí jen metoda, která má všechna čísla v ruce zároveň.</p></div>
+
+<h2 id="typy-dat">Typy dat – a proč na nich záleží</h2>
+<p>Typ proměnné určuje, <b>jaké operace s ní mají smysl</b>, a tím i jaké metody smíme použít.</p>
+<div class="box definice" id="def-promenna"><div class="box-t">Definice: proměnná (příznak)</div>
+<p><b>Proměnná</b> (příznak, znak, feature) je měřená nebo zaznamenaná vlastnost objektu, která se mezi objekty liší – např. věk, tep, krevní skupina. Hodnoty jedné proměnné u všech objektů tvoří jeden sloupec datové matice.</p>
+<p class="jinak">otázka, kterou položíme každému pacientovi („kolik vám je let?“). Odpovědi všech pacientů na tutéž otázku jsou jedna proměnná.</p></div>
+<div class="box definice" id="def-kvant-kval"><div class="box-t">Definice: kvantitativní a kvalitativní proměnná</div>
+<p><b>Kvantitativní (číselná)</b> proměnná vyjadřuje <b>množství</b> – její hodnoty jsou čísla, se kterými má smysl počítat (sčítat, průměrovat). Může být <b>spojitá</b> (libovolná hodnota z intervalu: teplota) nebo <b>diskrétní</b> (jen oddělené hodnoty, typicky počty). <b>Kvalitativní (kategoriální)</b> proměnná vyjadřuje <b>příslušnost do kategorie</b> – její hodnoty jsou značky, i kdyby byly zapsané čísly.</p>
+<p class="jinak">kvantitativní = „kolik“, kvalitativní = „jaký / do které skupiny“. Test: dává smysl hodnoty zprůměrovat? Průměrný věk ano, „průměrná krevní skupina“ ne.</p></div>
+<div class="box definice" id="def-nominalni-ordinalni"><div class="box-t">Definice: nominální, ordinální a binární proměnná</div>
+<p><b>Nominální</b> proměnná má kategorie bez přirozeného pořadí (krevní skupina). <b>Ordinální</b> proměnná má kategorie s přirozeným pořadím, ale bez definované vzdálenosti mezi nimi (stadium I, II, III). <b>Binární (dichotomická)</b> proměnná má právě dvě kategorie (ano/ne).</p>
+<p class="jinak">u nominální umím říct jen „stejné / jiné“; u ordinální navíc „víc / míň“, ale ne „o kolik“ – rozdíl mezi stadiem I a II nemusí být stejný jako mezi II a III.</p></div>
+<div class="tablewrap"><table>
+<tr><th>Skupina</th><th>Typ</th><th>Příklad</th><th>Co s tím jde dělat</th></tr>
+<tr><td rowspan="2"><b>Kvantitativní</b> (číselná)</td><td>spojitá</td><td>tělesná teplota, tlak, BMI</td><td>průměr, rozptyl, korelace, rozdíly</td></tr>
+<tr><td>diskrétní</td><td>počet dětí, počet tepů za minutu</td><td>průměr dává smysl (2,3 dítěte jako průměr), jednotlivá hodnota jen celé číslo</td></tr>
+<tr><td rowspan="3"><b>Kvalitativní</b> (kategoriální)</td><td>nominální</td><td>barva očí, krevní skupina</td><td>jen „stejné / jiné“, četnosti; žádné pořadí</td></tr>
+<tr><td>ordinální</td><td>míra únavy (žádná / mírná / silná), stadium nemoci</td><td>pořadí ano, ale „vzdálenost“ mezi stupni není definovaná</td></tr>
+<tr><td>binární (dichotomická)</td><td>pohlaví, sepse ano/ne</td><td>dvě kategorie; často kódujeme 0/1</td></tr>
+</table></div>
+<p>U číselných dat se ještě rozlišuje <b>intervalová</b> a <b>poměrová</b> škála. Rozdíl je v tom, zda má nula „fyzikální“ význam:</p>
+<ul>
+  <li><b>Intervalová</b> – teplota ve °C: rozdíl 10 °C → 20 °C je stejný jako 20 °C → 30 °C, ale 20 °C <i>není</i> „dvakrát tepleji“ než 10 °C (nula je dohodnutá).</li>
+  <li><b>Poměrová</b> – hmotnost, počet dětí, teplota v kelvinech: nula znamená „nic“, takže poměry dávají smysl (4 děti = dvakrát víc než 2).</li>
+</ul>
+<div class="box definice" id="def-intervalova-pomerova"><div class="box-t">Definice: intervalová a poměrová škála</div>
+<p><b>Intervalová škála</b> je číselná škála se stejně velkými kroky, ale s nulou zvolenou dohodou; smysl mají rozdíly hodnot, ne jejich poměry. <b>Poměrová škála</b> má navíc přirozenou (absolutní) nulu, která znamená nepřítomnost veličiny; smysl mají rozdíly i poměry.</p>
+<p class="jinak">na poměrové škále smím říct „dvakrát víc“, na intervalové ne. 20 °C není dvakrát tepleji než 10 °C, ale 20 kg je dvakrát víc než 10 kg.</p></div>
+<div class="box pozor"><div class="box-t">Častá past</div>
+<p>Zakódovat kategorie čísly (modrá = 1, hnědá = 2, zelená = 3) a pak s nimi počítat jako s čísly. Počítač pak „věří“, že zelená je třikrát víc než modrá a hnědá je mezi nimi. Proto se nominální proměnné převádějí <a href="03_predzpracovani.html#kategorie">one-hot kódováním</a> (přednáška 3).</p></div>
+
+<h3>Čím víc dat, tím líp?</h3>
+<p>Ne nutně. Každá proměnná by měla splňovat tři požadavky (validita a relevance jsou žádoucí, redundance nežádoucí):</p>
+<ul>
+  <li><b>Validita</b> – měří opravdu to, co si myslíme, a správně (BMI 94,75 je spíš chyba měření než pacient).</li>
+  <li><b>Relevance</b> – souvisí s otázkou, kterou řešíme (barva auta pacienta sepsi nepredikuje).</li>
+  <li><b>Redundance</b> – nenese stejnou informaci jako jiná proměnná (výška v cm a výška v palcích). Redundance komplikuje modely (<a href="04_vztahy.html#multikolinearita">multikolinearita</a>) a je důvodem pro <a href="06_pca.html">redukci dimenze</a>.</li>
+</ul>
+<div class="box definice" id="def-redundance"><div class="box-t">Definice: validita, relevance a redundance proměnné</div>
+<p><b>Validita</b> proměnné znamená, že měří skutečně tu vlastnost, kterou měřit má, a to správně. <b>Relevance</b> znamená, že proměnná souvisí s řešenou otázkou. <b>Redundance</b> znamená, že proměnná nenese novou informaci, protože je (téměř) určena jinými proměnnými.</p>
+<p class="jinak">dobrá proměnná měří správně, k věci a něco nového. Redundantní proměnná je „ozvěna“ jiné proměnné – nic nepřidá, ale komplikuje výpočty.</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div><p>Typ proměnné určuje povolené operace. Víc proměnných pomůže jen tehdy, když jsou validní, relevantní a ne zbytečně redundantní.</p></div>
+
+<h2 id="matice">Zdrojová matice dat</h2>
+<p>Všechno v předmětu začíná <b>zdrojovou maticí</b>: tabulkou, kde <b>řádky = objekty</b> (pacienti, vzorky) a <b>sloupce = příznaky</b> (proměnné, vlastnosti, „features“). Značíme ji \(X\) o rozměru \(n \times p\): \(n\) objektů, \(p\) příznaků.</p>
+<div class="box definice" id="def-zdrojova-matice"><div class="box-t">Definice: zdrojová (datová) matice</div>
+<p><b>Zdrojová matice</b> \(X\) je obdélníková tabulka o \(n\) řádcích a \(p\) sloupcích, ve které prvek \(x_{ij}\) je hodnota \(j\)-té proměnné naměřená u \(i\)-tého objektu. Řádky odpovídají <b>objektům</b> (pozorováním), sloupce <b>proměnným</b>.</p>
+<p class="jinak">„Excelová tabulka“ dat, kde každý pacient má svůj řádek a každá měřená vlastnost svůj sloupec. Všechny metody předmětu dostávají na vstup právě tuto tabulku.</p></div>
+<div class="box definice" id="def-dimenze"><div class="box-t">Definice: dimenze dat</div>
+<p><b>Dimenze</b> (rozměrnost) dat je počet proměnných \(p\), tj. počet souřadnic, kterými je popsán každý objekt. Objekt je pak bodem v \(p\)-rozměrném prostoru, jehož osy jsou jednotlivé proměnné.</p>
+<p class="jinak">kolik čísel potřebuju, abych popsal jednoho pacienta. Se dvěma čísly (věk, tep) ho nakreslím jako bod do roviny; se 7 čísly je to bod v sedmirozměrném prostoru, který už nakreslit nejde, ale počítat s ním ano.</p></div>
+<div class="schema">
+<svg viewBox="0 0 760 250" role="img" aria-label="Schéma zdrojové matice: řádky jsou objekty, sloupce příznaky">
+  <text x="225" y="22" text-anchor="middle" class="t2">p příznaků (proměnných) →</text>
+  <g>
+    <rect x="70" y="34" width="310" height="28" class="fl1" />
+    <text x="85" y="53" style="font-size:12.5px">věk</text><text x="135" y="53" style="font-size:12.5px">tep</text><text x="185" y="53" style="font-size:12.5px">teplota</text><text x="250" y="53" style="font-size:12.5px">dech</text><text x="300" y="53" style="font-size:12.5px">pohlaví</text><text x="355" y="53" style="font-size:12.5px">…</text>
+    <rect x="70" y="62" width="310" height="150" class="node" />
+    <rect x="70" y="92" width="310" height="28" class="fl2" />
+    <text x="85" y="82" class="t2">28</text><text x="135" y="82" class="t2">86</text><text x="185" y="82" class="t2">36,8</text><text x="250" y="82" class="t2">17</text><text x="300" y="82" class="t2">M</text>
+    <text x="85" y="111" style="font-size:12.5px">51</text><text x="135" y="111" style="font-size:12.5px">125</text><text x="185" y="111" style="font-size:12.5px">36,7</text><text x="250" y="111" style="font-size:12.5px">17</text><text x="300" y="111" style="font-size:12.5px">F</text>
+    <text x="85" y="140" class="t2">81</text><text x="135" y="140" class="t2">69</text><text x="185" y="140" class="t2">36,2</text><text x="250" y="140" class="t2">15</text><text x="300" y="140" class="t2">M</text>
+    <text x="85" y="169" class="t2">32</text><text x="135" y="169" class="t2">58</text><text x="185" y="169" class="t2">NaN</text><text x="250" y="169" class="t2">16</text><text x="300" y="169" class="t2">M</text>
+    <text x="85" y="198" class="t2">⋮</text><text x="185" y="198" class="t2">⋮</text>
+    <text x="40" y="140" text-anchor="middle" class="t2" transform="rotate(-90 40 140)">n objektů ↓</text>
+  </g>
+  <text x="395" y="111" class="t2">← jeden objekt = jeden bod v p-rozměrném prostoru</text>
+  <text x="395" y="169" class="t2">← chybějící hodnota (řeší přednáška 3)</text>
+  <line x1="168" y1="215" x2="168" y2="232" class="ln" />
+  <text x="168" y="246" text-anchor="middle" class="t2">jeden sloupec = jedna proměnná (rozdělení hodnot)</text>
+  <rect x="560" y="70" width="180" height="120" rx="8" class="fl3" />
+  <text x="650" y="96" text-anchor="middle">rozměr matice</text>
+  <text x="650" y="126" text-anchor="middle" style="font-size:20px;font-weight:600">X (n × p)</text>
+  <text x="650" y="156" text-anchor="middle" class="t2">n = počet objektů</text>
+  <text x="650" y="175" text-anchor="middle" class="t2">p = počet příznaků</text>
+</svg>
+</div>
+<p>Dvě důležité představy, které se budou vracet celý semestr:</p>
+<ul>
+  <li><b>Objekt = bod v prostoru.</b> Pacient s \(p\) změřenými hodnotami je bod v \(p\)-rozměrném prostoru. Podobní pacienti jsou blízké body. Na téhle představě stojí shlukování, PCA, t-SNE i UMAP.</li>
+  <li><b>Sloupec = proměnná s nějakým rozdělením.</b> Každý sloupec má svůj průměr, rozptyl, tvar rozdělení; dvojice sloupců mají kovarianci/korelaci.</li>
+</ul>
+
+<h3>Od 1D k mnoha rozměrům</h3>
+<p>Přednáška to ukazuje postupným přidáváním sloupců:</p>
+<ul>
+  <li><b>1 proměnná</b> (věk) – histogram, průměr, rozptyl. Snadné.</li>
+  <li><b>2 proměnné</b> (věk, tep) – bodový graf, je vidět vztah.</li>
+  <li><b>3 proměnné</b> – 3D graf, ještě se dá otáčet a dívat.</li>
+  <li><b>7 a více</b> – už nelze nakreslit. A přesně tady potřebujeme vícerozměrné metody: buď dimenzi <b>zredukovat</b> na 2–3 rozměry, které nakreslit jdou, nebo strukturu najít <b>výpočtem</b> (shluky, korelace, faktory).</li>
+</ul>
+<div class="box kostka"><div class="box-t">V kostce</div><p>Data = matice \(n \times p\). Řádek = objekt = bod v \(p\)-rozměrném prostoru. Lidské oko zvládne 3 rozměry, metody VMM zvládnou libovolně mnoho.</p></div>
+
+<h2 id="proc-vicerozmerne">Proč nestačí analyzovat proměnné po jedné</h2>
+<div class="tablewrap"><table>
+<tr><th>Přístup</th><th>Počet proměnných</th><th>Princip</th></tr>
+<tr><td>Jednorozměrné metody</td><td>1</td><td>Každou proměnnou zkoumáme zvlášť a závěry „skládáme“ dohromady intuitivně → <b>zdroj chyb</b>.</td></tr>
+<tr><td>Dvojrozměrné metody</td><td>2</td><td>Zkoumáme dvojice: vztah, korelace.</td></tr>
+<tr><td>Vícerozměrné metody</td><td>&gt; 2</td><td>Všechny najednou: vztahy mezi proměnnými a skupinami proměnných, rozdíly mezi subpopulacemi, přesnější kvantitativní závěry.</td></tr>
+</table></div>
+<div class="box intuice"><div class="box-t">Intuice</div>
+<p>Představ si dvě skupiny pacientů, které se v tepu ani v tlaku <i>samostatně</i> skoro neliší. Když ale nakreslíš tep proti tlaku, skupiny leží každá na jiné straně „úzkého mraku“ – kombinace obou proměnných je oddělí dokonale. Jednorozměrný pohled tuhle informaci <b>principiálně nemůže vidět</b>, protože je ukrytá ve vztahu (korelaci) mezi proměnnými. Přesně tohle ukazuje obrázek v <a href="02_vicerozmerne_rozdeleni.html#hotelling">kapitole o Hotellingově testu</a>.</p></div>
+<p>Druhý důvod je statistický: když testujeme 20 proměnných zvlášť, každá na hladině 5 %, je téměř jisté, že nějaká „vyjde“ náhodou (problém mnohonásobného testování). Vícerozměrný test položí jednu otázku pro všechny proměnné najednou.</p>
+<div class="box definice" id="def-mnohonasobne-testovani"><div class="box-t">Definice: problém mnohonásobného testování</div>
+<p><b>Problém mnohonásobného testování</b> je nárůst pravděpodobnosti alespoň jednoho falešně pozitivního výsledku (chyby I. druhu), když provádíme mnoho testů najednou. Při \(m\) nezávislých testech na hladině \(\alpha\) je tato pravděpodobnost \(1-(1-\alpha)^m\).</p>
+<p class="jinak">čím víc „losů“ si koupím, tím spíš některý vyhraje čistě náhodou. Pro 20 testů na hladině 5 % je \(1 - 0{,}95^{20} \approx 0{,}64\): ve 64 % případů něco „vyjde“, i když žádný rozdíl neexistuje.</p></div>
+
+<h3>K čemu se vícerozměrné metody používají</h3>
+<ol>
+  <li><b>Vizualizace</b> vícerozměrných dat (PCA, t-SNE, UMAP → 2D obrázek).</li>
+  <li><b>Popis dat</b> – vztahy mezi proměnnými (korelace, faktorová analýza), podobnost objektů (shluková analýza).</li>
+  <li><b>Redukce dimenzionality</b> – méně nových proměnných se zachováním podstatné informace, např. jako vstup pro predikční modely.</li>
+</ol>
+
+<h2 id="klasifikace">Jak se metody dělí</h2>
+<p>První otázka, kterou si nad daty položíme: <b>dají se proměnné rozdělit na závislé (vysvětlované) a nezávislé (vysvětlující)?</b></p>
+<div class="box definice" id="def-zavisla-nezavisla"><div class="box-t">Definice: závislá a nezávislá proměnná</div>
+<p><b>Závislá (vysvětlovaná, výstupní) proměnná</b> \(y\) je ta, jejíž hodnoty chceme vysvětlit nebo předpovědět. <b>Nezávislé (vysvětlující, vstupní) proměnné</b> \(X\) jsou ty, pomocí kterých ji vysvětlujeme.</p>
+<p class="jinak">závislá = „co mě zajímá“ (má pacient sepsi?), nezávislé = „z čeho to odhaduju“ (teplota, tep, laktát…). Pokud žádnou proměnnou takto nevyčleníme a všechny jsou si rovny, zkoumáme jen vnitřní strukturu dat.</p></div>
+<div class="schema">
+<svg viewBox="0 0 760 210" role="img" aria-label="Rozhodovací schéma volby typu analýzy">
+  <rect x="10" y="70" width="210" height="70" rx="10" class="node"/>
+  <text x="115" y="98" text-anchor="middle">Lze rozdělit proměnné</text>
+  <text x="115" y="118" text-anchor="middle">na závislé a nezávislé?</text>
+  <path d="M220 95 L300 45" class="ln"/><path d="M220 115 L300 165" class="ln"/>
+  <text x="258" y="58" class="t2">ANO</text><text x="258" y="160" class="t2">NE</text>
+  <rect x="300" y="12" width="250" height="66" rx="10" class="fl1"/>
+  <text x="425" y="38" text-anchor="middle">zkoumáme, jak závislé proměnné</text>
+  <text x="425" y="58" text-anchor="middle">vysvětlit nezávislými</text>
+  <rect x="300" y="132" width="250" height="66" rx="10" class="fl3"/>
+  <text x="425" y="158" text-anchor="middle">zkoumáme vzájemné vazby</text>
+  <text x="425" y="178" text-anchor="middle">mezi všemi proměnnými</text>
+  <path d="M550 45 L590 45" class="ln"/><path d="M550 165 L590 165" class="ln"/>
+  <text x="596" y="40">externální metody</text><text x="596" y="58" class="t2">regrese, MANOVA, diskriminační…</text>
+  <text x="596" y="160">internální metody</text><text x="596" y="178" class="t2">PCA, FA, shluková analýza…</text>
+  <text x="380" y="112" text-anchor="middle" class="t2">+ vždy: jaký je typ proměnných (číselné / kategoriální)?</text>
+</svg>
+</div>
+<p>Z toho vychází klasifikace z přednášky:</p>
+<div class="box definice" id="def-internalni-externalni"><div class="box-t">Definice: internální a externální metody</div>
+<p><b>Internální metody</b> zkoumají vztahy uvnitř jedné skupiny rovnocenných proměnných, aniž by některou z nich považovaly za vysvětlovanou. <b>Externální metody</b> zkoumají, jak jedna skupina (nezávislé proměnné) vysvětluje druhou skupinu (závislé proměnné).</p>
+<p class="jinak">internální = „jaká je struktura dat samotných?“ (PCA, shlukování); externální = „jak \(X\) ovlivňuje \(y\)?“ (regrese, MANOVA).</p></div>
+<div class="tablewrap"><table>
+<tr><th>Skupina</th><th>Co zkoumá</th><th>Metody</th></tr>
+<tr><td><b>Internální</b></td><td>vztahy <i>uvnitř jedné skupiny</i> rovnocenných proměnných – podobnost objektů, strukturu proměnných</td><td>analýza hlavních komponent, faktorová analýza, shluková analýza (numerická data); korespondenční analýza, konfigurační četnostní analýza (kategoriální data)</td></tr>
+<tr><td><b>Externální</b></td><td>vztahy <i>mezi závislými a nezávislými</i> proměnnými</td><td>mnohonásobná regrese, kanonická korelační analýza, vícerozměrná analýza rozptylu (MANOVA), diskriminační analýza</td></tr>
+<tr><td><b>Strukturální</b></td><td>složitější síť příčinných vztahů mezi skupinami proměnných</td><td>analýza korelačních cest (path analysis), lineární strukturální relační modely</td></tr>
+</table></div>
+<p>Jiné, „účelové“ dělení:</p>
+<ul>
+  <li><b>Průzkumová (popisná) analýza</b> – vizuální analýza podobnosti objektů, hledání vybočujících objektů, ověření předpokladů (normalita, nekorelovanost, homogenita).</li>
+  <li><b>Techniky pro zkoumání vzájemných vazeb</b> – mezi příznaky nebo mezi objekty.</li>
+  <li><b>Redukce dimenzionality</b> – popis matice menším počtem nově odvozených příznaků se zachováním důležité informace. Těm se říká <b>ordinační metody</b> (PCA, faktorová analýza; v širším smyslu i t-SNE, UMAP).</li>
+</ul>
+<div class="box definice" id="def-redukce-dimenze"><div class="box-t">Definice: redukce dimenzionality (ordinační metody)</div>
+<p><b>Redukce dimenzionality</b> je převod dat z \(p\) původních proměnných na menší počet \(k &lt; p\) nových proměnných, které zachovají co nejvíce podstatné informace (rozptylu, vzdáleností, sousedství). Metody, které to dělají, se nazývají <b>ordinační</b>, protože objekty „uspořádají“ (ordinují) do nového prostoru o menší dimenzi.</p>
+<p class="jinak">z mnoha sloupců uděláme pár nových, „shrnujících“ sloupců. Ztratíme jen málo, ale data se dají nakreslit, lépe interpretovat a modely se nepotýkají s nadbytečnými proměnnými.</p></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Než zvolím metodu, zeptám se: mám závislou proměnnou, kterou chci vysvětlit? Pokud ano, jdu do externálních metod jako regrese nebo MANOVA. Pokud ne a zajímá mě struktura dat samotných, použiji internální metody – PCA nebo faktorovou analýzu na proměnné, shlukovou analýzu na objekty. A vždy zohledním, jestli jsou proměnné číselné, nebo kategoriální.“</p></div>
+
+<h2 id="schema-prace">Základní schéma práce s vícerozměrnými daty</h2>
+<p>Celý předmět se dá číst jako jedna „pipeline“. Každá kapitola skript odpovídá jednomu jejímu kroku:</p>
+<div class="schema">
+<svg viewBox="0 0 900 190" role="img" aria-label="Schéma práce: akvizice, zdrojová matice, předúprava, transformace, analýza, model">
+  <defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <g>
+    <rect x="5" y="40" width="120" height="56" rx="10" class="node"/><text x="65" y="73" text-anchor="middle">akvizice dat</text>
+    <rect x="155" y="40" width="130" height="56" rx="10" class="node"/><text x="220" y="65" text-anchor="middle">zdrojová</text><text x="220" y="84" text-anchor="middle">matice</text>
+    <rect x="315" y="40" width="130" height="56" rx="10" class="fl2"/><text x="380" y="65" text-anchor="middle">předúprava</text><text x="380" y="84" text-anchor="middle" class="t2">přednáška 3</text>
+    <rect x="475" y="40" width="130" height="56" rx="10" class="fl2"/><text x="540" y="65" text-anchor="middle">transformace</text><text x="540" y="84" text-anchor="middle" class="t2">přednáška 3</text>
+    <rect x="635" y="40" width="120" height="56" rx="10" class="fl1"/><text x="695" y="65" text-anchor="middle">analýza</text><text x="695" y="84" text-anchor="middle" class="t2">přednášky 2, 4–11</text>
+    <rect x="785" y="40" width="110" height="56" rx="10" class="fl3"/><text x="840" y="65" text-anchor="middle">predikční</text><text x="840" y="84" text-anchor="middle">model</text>
+    <path d="M125 68H153M285 68H313M445 68H473M605 68H633M755 68H783" class="ln" marker-end="url(#ar1)"/>
+  </g>
+  <text x="380" y="122" text-anchor="middle" class="t2">odlehlé hodnoty</text>
+  <text x="380" y="140" text-anchor="middle" class="t2">chybějící hodnoty</text>
+  <text x="380" y="158" text-anchor="middle" class="t2">šum, artefakty</text>
+  <text x="540" y="122" text-anchor="middle" class="t2">škálování (centrování,</text>
+  <text x="540" y="140" text-anchor="middle" class="t2">standardizace)</text>
+  <text x="540" y="158" text-anchor="middle" class="t2">log → normalita</text>
+  <text x="695" y="122" text-anchor="middle" class="t2">PCA, FA, shlukování,</text>
+  <text x="695" y="140" text-anchor="middle" class="t2">MANOVA, regrese…</text>
+  <text x="460" y="24" text-anchor="middle" style="font-weight:600;fill:var(--c2)">nepodceňovat!</text>
+</svg>
+</div>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Analýza samotná je až pátý krok. Předúprava a transformace (oranžově) jsou v praxi časově nejnáročnější a chyba v nich znehodnotí všechno, co přijde potom – „garbage in, garbage out“. Proto přednáška zdůrazňuje: <b>nepodceňovat</b>.</p></div>
+
+<h3>Kam VMM zapadá</h3>
+<p>VMM staví na matematice (lineární algebra – matice, vlastní čísla) a biostatistice (rozdělení, testy) a vede ke strojovému učení a umělé inteligenci v medicíně. Proto se pracuje v Pythonu – je to dnes standardní nástroj pro datovou analýzu i ML (oproti Excelu, Statistice, R nebo Matlabu).</p>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Vícerozměrná analýza pracuje se zdrojovou maticí \(n\) objektů × \(p\) příznaků. Každý objekt chápeme jako bod v \(p\)-rozměrném prostoru, každý sloupec jako proměnnou s vlastním rozdělením. Typ proměnných (kvantitativní / kvalitativní, nominální / ordinální, intervalová / poměrová) určuje, co s nimi smíme dělat. Vícerozměrné metody používáme, protože podstatná informace se často skrývá ve <b>vztazích mezi proměnnými</b>, které jednorozměrný pohled nevidí. Metody dělíme podle toho, zda máme závislou proměnnou (externální) nebo zkoumáme strukturu dat samotných (internální), a podle účelu (průzkum, vazby, redukce dimenze). Celý proces má pevné pořadí: data → matice → předúprava → transformace → analýza → model.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Řádek matice = objekt = bod v prostoru; sloupec = proměnná. Tuhle představu použiješ u každé další metody.</li>
+<li>Typ dat není formalita – rozhoduje o povolených operacích a o volbě metody.</li>
+<li>Víc proměnných ≠ lepší: musí být validní, relevantní a ne redundantní.</li>
+<li>Vícerozměrné metody vidí vztahy mezi proměnnými, které po jedné proměnné nevidíme.</li>
+<li>Závislá proměnná ano → externální metody; ne → internální metody.</li>
+<li>Předzpracování je nejdůležitější a nejčastěji podceněný krok.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Co je zdrojová matice a jak ji „číst“?</summary><div>
+<p>Tabulka \(n \times p\): řádky jsou objekty (pacienti, vzorky), sloupce příznaky (měřené vlastnosti). Řádek si představím jako bod v \(p\)-rozměrném prostoru – blízké body jsou podobné objekty. Sloupec je proměnná, u které mě zajímá rozdělení (průměr, rozptyl) a vztahy k ostatním sloupcům.</p></div></details>
+<details class="q"><summary>Jaké typy dat rozlišujeme a proč na tom záleží?</summary><div>
+<p>Kvantitativní (spojitá, diskrétní; intervalová vs. poměrová podle toho, zda nula znamená „nic“) a kvalitativní (nominální bez pořadí, ordinální s pořadím, binární). Záleží na tom, protože typ určuje povolené operace: průměr nominální proměnné nemá smysl, poměry u intervalové škály nedávají smysl. Kategoriální proměnné musím před většinou metod převést (one-hot), jinak metoda předpokládá neexistující číselné pořadí.</p></div></details>
+<details class="q"><summary>Proč nestačí analyzovat každou proměnnou zvlášť?</summary><div>
+<p>Protože informace může být ve vztahu mezi proměnnými. Dvě skupiny se mohou v každé proměnné zvlášť lišit nevýznamně, ale v kombinaci (při korelovaných proměnných) být dokonale oddělené. Navíc testování mnoha proměnných zvlášť zvyšuje riziko falešně pozitivního výsledku. Vícerozměrné metody pracují se všemi proměnnými a jejich kovariancí najednou.</p></div></details>
+<details class="q"><summary>Jak se dělí vícerozměrné metody?</summary><div>
+<p>Podle vztahu proměnných: internální (vztahy uvnitř jedné skupiny – PCA, FA, shluková, korespondenční analýza), externální (závislé vs. nezávislé – mnohonásobná regrese, MANOVA, diskriminační, kanonická korelační analýza) a strukturální (síť příčinných vztahů – path analysis). Podle účelu: průzkumová analýza, zkoumání vazeb, redukce dimenzionality (ordinační metody).</p></div></details>
+<details class="q"><summary>Popište základní schéma práce s vícerozměrnými daty.</summary><div>
+<p>Akvizice dat → sestavení zdrojové matice → předúprava (odlehlé a chybějící hodnoty, šum, artefakty) → transformace (škálování, logaritmus pro přiblížení normalitě) → vlastní analýza (PCA, MANOVA, regrese, shlukování…) → případně predikční model. Kroky předúpravy a transformace jsou kritické, chyba v nich se propíše do všech výsledků.</p></div></details>
+<details class="q"><summary>Je dobré měřit co nejvíc proměnných?</summary><div>
+<p>Ne automaticky. Každá proměnná má být validní (měří správně), relevantní (souvisí s otázkou) a nemá být redundantní (nenese stejnou informaci jako jiná). Redundantní proměnné způsobují multikolinearitu a zbytečně zvyšují dimenzi; s rostoucí dimenzí se navíc prostor „řídne“ a vzdálenosti ztrácejí vypovídací hodnotu. Proto existují metody redukce dimenze.</p></div></details>
+
+<nav class="pager"><a class="prev" href="index.html"><small>← předchozí</small>Mapa kurzu</a><a class="next" href="02_vicerozmerne_rozdeleni.html"><small>další →</small>Vícerozměrné rozdělení a testy</a></nav>
+</main>
+</div>
+</body>
+</html>

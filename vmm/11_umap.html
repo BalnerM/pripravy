@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UMAP – VMM</title>
+<meta name="description" content="Topologický přístup, graf sousedů, hyperparametry, srovnání s t-SNE.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <a class="brand" href="index.html">VMM – příprava na zkoušku<small>vícerozměrné metody, principy a postupy</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_uvod.html"><span class="n">1</span><span>Úvod do analýzy vícerozměrných dat</span></a></li>
+    <li><a href="02_vicerozmerne_rozdeleni.html"><span class="n">2</span><span>Vícerozměrné rozdělení a testy</span></a></li>
+    <li><a href="03_predzpracovani.html"><span class="n">3</span><span>Předzpracování dat</span></a></li>
+    <li><a href="04_vztahy.html"><span class="n">4</span><span>Vztahy mezi proměnnými</span></a></li>
+    <li><a href="05_shlukova_analyza.html"><span class="n">5</span><span>Shluková analýza</span></a></li>
+    <li><a href="06_pca.html"><span class="n">6</span><span>Analýza hlavních komponent (PCA)</span></a></li>
+    <li><a href="07_kernel_pca.html"><span class="n">7</span><span>Kernel PCA</span></a></li>
+    <li><a href="08_maticove_rozklady.html"><span class="n">8</span><span>Maticové rozklady: ED a SVD</span></a></li>
+    <li><a href="09_faktorova_analyza.html"><span class="n">9</span><span>Faktorová analýza</span></a></li>
+    <li><a href="10_tsne.html"><span class="n">10</span><span>t-SNE</span></a></li>
+    <li><a href="11_umap.html" class="active"><span class="n">11</span><span>UMAP</span></a></li>
+    <li><a href="12_srovnani.html"><span class="n">★</span><span>Srovnání metod a tahák</span></a></li>
+    <li><a href="13_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#kontext">Kde UMAP stojí</a></li>
+    <li><a href="#princip">Topologický přístup ve dvou krocích</a></li>
+    <li><a href="#krok1">Krok 1: jak z bodů udělat graf</a></li>
+    <li><a href="#krok2">Krok 2: projekce do nízké dimenze</a></li>
+    <li><a href="#hyperparametry">Nejdůležitější hyperparametry</a></li>
+    <li><a href="#pouziti">Různé způsoby použití UMAP</a></li>
+    <li><a href="#vs-tsne">UMAP vs. t-SNE</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky ke zkoušce</a></li>
+  </ul>
+</nav>
+<main>
+<p class="kicker">Přednáška 11</p>
+<h1>UMAP: Uniform Manifold Approximation and Projection</h1>
+<p class="lead">UMAP dělá podobnou věc jako t-SNE – staví mapu, ve které zůstanou sousedé sousedy – ale vychází z topologie: z dat sestaví vážený graf sousedů a pak hledá 2D (nebo vícerozměrný) graf s co nejpodobnější strukturou. Je rychlejší, stabilnější, lépe drží globální strukturu a umí promítat nová data.</p>
+
+<h2 id="kontext">Kde UMAP stojí</h2>
+<div class="box definice" id="def-umap"><div class="box-t">Definice: UMAP</div>
+<p><b>UMAP</b> (Uniform Manifold Approximation and Projection) je nelineární metoda redukce dimenze, která z dat sestaví vážený graf \(k\) nejbližších sousedů (fuzzy topologickou reprezentaci variety, na které data leží) a pak hledá rozmístění bodů v nízkorozměrném prostoru, jehož vážený graf se tomuto grafu co nejvíce podobá; shodu měří křížová entropie.</p>
+<p class="jinak">„udělej síť, kdo je s kým spojený a jak pevně, a pak ji rozlož na papír tak, aby spojení zůstala co nejvěrnější“. Pevná spojení body přitahují, chybějící spojení je odpuzují.</p></div>
+<div class="tablewrap"><table>
+<tr><th>PCA (20. století)</th><th>t-SNE (od 2008)</th><th>UMAP (od 2018)</th></tr>
+<tr><td>globální struktura (vysvětlení variability)</td><td>lokální struktura, ztráta globální</td><td>lokální i globální struktura</td></tr>
+</table></div>
+<p>Limitace t-SNE, které UMAP řeší:</p>
+<ul>
+<li>výpočetní náročnost pro velká data (mnoho objektů i příznaků);</li>
+<li>vhodnost jen pro 2D/3D vizualizaci, ne pro redukci příznaků s \(R &gt; 3\);</li>
+<li>chybějící transformační funkce pro nové (testovací) objekty;</li>
+<li>zachování lokální struktury (shluků) se „zanedbáním“ globální (vztahů a vzdáleností mezi shluky).</li>
+</ul>
+
+<h2 id="princip">Topologický přístup ve dvou krocích</h2>
+<div class="schema">
+<svg viewBox="0 0 780 200" role="img" aria-label="Dva kroky UMAP: graf sousedů ve vysoké dimenzi a jeho model v nízké dimenzi">
+  <defs><marker id="ar11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="10" y="10" width="330" height="180" rx="12" class="node"/>
+  <text x="175" y="34" text-anchor="middle" style="font-weight:600">1) vysokorozměrný prostor</text>
+  <g style="stroke:var(--c1)">
+    <path d="M60 140 L100 120 L140 125 L180 100 L220 95 L260 70 L300 80" style="stroke-width:3;fill:none;opacity:.7"/>
+    <path d="M100 120 L140 160 M140 125 L140 160 M180 100 L220 95" style="stroke-width:1.2;fill:none;opacity:.5"/>
+  </g>
+  <g class="f2"><circle cx="60" cy="140" r="6"/><circle cx="100" cy="120" r="6"/><circle cx="140" cy="125" r="6"/><circle cx="140" cy="160" r="6"/><circle cx="180" cy="100" r="6"/><circle cx="220" cy="95" r="6"/><circle cx="260" cy="70" r="6"/><circle cx="300" cy="80" r="6"/></g>
+  <text x="175" y="182" text-anchor="middle" class="t2">vážený graf k nejbližších sousedů (fuzzy topologie)</text>
+  <path d="M350 100 H425" class="ln" marker-end="url(#ar11)"/>
+  <text x="388" y="90" text-anchor="middle" class="t2">optimalizace</text>
+  <rect x="435" y="10" width="335" height="180" rx="12" class="node"/>
+  <text x="602" y="34" text-anchor="middle" style="font-weight:600">2) nízkorozměrný prostor (2D)</text>
+  <g style="stroke:var(--c1)">
+    <path d="M480 110 L520 110 L560 110 L600 105 L640 100 L680 95 L720 92" style="stroke-width:3;fill:none;opacity:.7"/>
+    <path d="M520 110 L545 140 M560 110 L545 140" style="stroke-width:1.2;fill:none;opacity:.5"/>
+  </g>
+  <g class="f2"><circle cx="480" cy="110" r="6"/><circle cx="520" cy="110" r="6"/><circle cx="560" cy="110" r="6"/><circle cx="545" cy="140" r="6"/><circle cx="600" cy="105" r="6"/><circle cx="640" cy="100" r="6"/><circle cx="680" cy="95" r="6"/><circle cx="720" cy="92" r="6"/></g>
+  <text x="602" y="182" text-anchor="middle" class="t2">body rozmístěné tak, aby graf měl podobnou topologii</text>
+</svg></div>
+<div class="box definice" id="def-topologie"><div class="box-t">Definice: topologie (v tomto kontextu)</div>
+<p><b>Topologie</b> je obor matematiky, který studuje vlastnosti tvarů zachované při spojitých deformacích (natahování, ohýbání – bez trhání a slepování): souvislost, počet „děr“, kdo je s kým spojený. Neřeší přesné vzdálenosti a úhly.</p>
+<p class="jinak">pro topologii je hrnek totéž co donut (oba mají jednu díru). UMAP chce v mapě zachovat právě tyto „gumové“ vlastnosti dat – co souvisí s čím – ne přesné vzdálenosti.</p></div>
+<div class="box definice" id="def-graf"><div class="box-t">Definice: (vážený) graf a graf k nejbližších sousedů</div>
+<p><b>Graf</b> je množina <b>uzlů</b> (vrcholů) a <b>hran</b>, které spojují některé dvojice uzlů. Ve <b>váženém grafu</b> má každá hrana číslo – váhu. <b>Graf \(k\) nejbližších sousedů</b> (kNN graf) spojí každý objekt hranou s jeho \(k\) nejbližšími objekty.</p>
+<p class="jinak">„síť přátelství“: pacienti jsou uzly, hrana znamená „jsou si podobní“ a váha, jak moc. Graf zachycuje sousedství, aniž by potřeboval souřadnice.</p></div>
+<ol>
+<li><b>Topologická reprezentace</b> – aproximace plochy (manifoldu), ze které data „pochází“, pomocí grafu: uzly = objekty, hrany = informace o podobnosti.</li>
+<li><b>Projekce</b> – vytvoření grafu v nízké dimenzi s co nejpodobnější topologií (optimalizací rozmístění bodů).</li>
+</ol>
+
+<h2 id="krok1">Krok 1: jak z bodů udělat graf</h2>
+<h3>Simplexy a otevřené pokrytí</h3>
+<p>Topologie popisuje tvar pomocí <b>simplexů</b>: 0-simplex = bod, 1-simplex = úsečka mezi dvěma body, 2-simplex = trojúhelník (tři úsečky)… Slepením simplexů vznikne <b>simpliciální komplex</b> – „kostra“ tvaru.</p>
+<p>Jak ho z dat postavit: kolem každého bodu nakreslíme okolí (ve 2D kruh) – tzv. <b>otevřené pokrytí</b> (do množiny patří bod i jeho okolí). Body, jejichž okolí se překrývají, spojíme hranou (1-simplex); tři navzájem se překrývající okolí spojíme trojúhelníkem atd. Vznikne <b>Čechův komplex</b>. V praxi stačí 0- a 1-simplexy (<b>Vietoris–Ripsův komplex</b>) → jednoduché výpočty a v nízké dimenzi je to obyčejný graf (uzly a hrany).</p>
+<div class="box definice" id="def-simplex"><div class="box-t">Definice: simplex a simpliciální komplex</div>
+<p><b>\(k\)-simplex</b> je nejjednodušší \(k\)-rozměrný útvar určený \(k+1\) body: 0-simplex je bod, 1-simplex úsečka, 2-simplex trojúhelník, 3-simplex čtyřstěn. <b>Simpliciální komplex</b> je soubor simplexů slepených dohromady podél společných stěn (vrcholů, hran…).</p>
+<p class="jinak">„stavebnice z bodů, tyček a trojúhelníků“, ze které se dá poskládat přibližný tvar čehokoli. Pro UMAP stačí body a tyčky – tedy graf.</p></div>
+<div class="box definice" id="def-cech"><div class="box-t">Definice: otevřené pokrytí, Čechův a Vietoris–Ripsův komplex</div>
+<p><b>Otevřené pokrytí</b> je soubor otevřených množin (zde koulí kolem bodů), jejichž sjednocení obsahuje celý zkoumaný prostor. <b>Čechův komplex</b> vznikne tak, že pro každou skupinu koulí, které mají <i>společný</i> průnik, přidáme simplex na jejich středech. <b>Vietoris–Ripsův komplex</b> přidá simplex pro každou skupinu bodů, jejichž koule se překrývají <i>po dvojicích</i>; v praxi z něj UMAP bere jen 0- a 1-simplexy (graf).</p>
+<p class="jinak">kolem každého bodu nakreslím kruh; kde se kruhy dotýkají, spojím body. Z překryvů kruhů vznikne kostra tvaru dat.</p></div>
+<p>Platí <b>věta o nervu</b>: když pokrytí souvisle pokrývá prostor, je komplex topologicky ekvivalentní původní struktuře dat. Jenže v praxi narazíme na čtyři problémy.</p>
+<div class="box definice" id="def-nerv"><div class="box-t">Definice: věta o nervu</div>
+<p><b>Věta o nervu</b> říká, že je-li pokrytí prostoru „dobré“ (všechny neprázdné průniky jeho množin jsou souvislé bez děr), pak simpliciální komplex vytvořený z tohoto pokrytí (jeho <b>nerv</b>, tedy Čechův komplex) je topologicky ekvivalentní (homotopický) s pokrytým prostorem.</p>
+<p class="jinak">záruka, že „kostra z kruhů“ má stejné topologické vlastnosti (souvislost, díry) jako skutečný tvar dat, ze kterého body pocházejí – pokud kruhy volíme rozumně.</p></div>
+
+<div class="box pozor"><div class="box-t">Problém 1: jak velké okolí?</div>
+<p>Malé okolí → „roztříštěný“ komplex (body se nespojí). Velké okolí → spousta vysokorozměrných simplexů → výpočetně náročné a špatná struktura. S konečným počtem bodů navíc pokrytí nemusí být souvislé.</p>
+<p><b>Řešení – „U“ v UMAP (uniform):</b> předpokládáme, že body jsou na ploše rozmístěné <b>rovnoměrně</b>. Pak pokrytí nemá mezery, graf je spojený a podle věty o nervu odpovídá struktuře dat; okolí lze volit jako průměrnou vzdálenost mezi objekty.</p></div>
+<div class="box pozor"><div class="box-t">Problém 2: reálná data rovnoměrná nejsou</div>
+<p><b>Řešení:</b> otočíme pohled – body <i>jsou</i> rozmístěné rovnoměrně, jen vypadají nerovnoměrně, protože <b>plocha je různě zakřivená</b> a „pojem vzdálenosti“ se mění místo od místa. Každý bod proto dostane vlastní „jednotkový kruh“ sahající ke svému <b>k-tému nejbližšímu sousedovi</b> (\(k\) = hyperparametr). V husté oblasti je kruh malý, v řídké velký – lokálně proměnná metrika (Riemannova metrika). Nastavení přes \(k\) je jednodušší než přes vzdálenosti:</p>
+<ul><li>malé \(k\) → lokální aproximace vzdáleností → detaily topologie;</li>
+<li>velké \(k\) → lepší reprezentace globální topologie, zanedbání detailů.</li></ul></div>
+<div class="box definice" id="def-fuzzy"><div class="box-t">Definice: fuzzy množina</div>
+<p><b>Fuzzy (neostrá) množina</b> je množina, do které prvek nepatří buď úplně, nebo vůbec, ale s určitou <b>mírou příslušnosti</b> z intervalu \([0, 1]\). V UMAP je okolí bodu fuzzy množinou: soused patří do okolí s mírou, která klesá se vzdáleností.</p>
+<p class="jinak">místo ostré hranice „uvnitř kruhu / mimo kruh“ je plynulý přechod – blízký soused patří do okolí na 100 %, vzdálenější na 40 %, ještě vzdálenější skoro vůbec.</p></div>
+<div class="box intuice"><div class="box-t">Fuzzy topologie</div>
+<p>Když má každý bod svou lokální metriku, můžeme hrany <b>vážit</b>: váha (tloušťka hrany) = pravděpodobnost, že soused patří do okolí bodu; klesá se vzdáleností od středu kruhu. Okolí tak nemá ostrou hranici – je „fuzzy“ (bod patří do okolí s určitou mírou).</p></div>
+<div class="box pozor"><div class="box-t">Problém 3: izolované body</div>
+<p>Při rychlém poklesu váhy by vzniklo hodně bodů bez spojení (pravděpodobnost ≈ 0). <b>Řešení:</b> každý bod musí být spojen <b>alespoň se svým nejbližším sousedem</b>: do vzdálenosti nejbližšího souseda je pásmo „jisté“ (váha 1), dál „neurčité“ s klesající pravděpodobností.</p>
+<p><b>Bonus:</b> omezení na okolí řeší <b>prokletí dimenzionality</b> – ve vysoké dimenzi jsou vzdálenosti velmi podobné (k nejbližšímu bodu 5, ke dvacátému také ≈ 5). Odečtením vzdálenosti k nejbližšímu sousedovi a prací jen v malém okolí jsou rozdíly zachyceny věrohodněji a v mapě je vidět lokální struktura.</p></div>
+<div class="box vzorec"><div class="box-t">Váha hrany z pohledu bodu i</div>
+\[ w_{i\to j} = \exp\!\left(-\frac{d(\mathbf{x}_i,\mathbf{x}_j) - \rho_i}{\sigma_i}\right) \quad\text{pro } k \text{ nejbližších sousedů } j \]
+<table class="vars">
+<tr><td>\(\rho_i\)</td><td>vzdálenost k nejbližšímu sousedovi → ten má váhu 1 (problém 3)</td></tr>
+<tr><td>\(\sigma_i\)</td><td>lokální měřítko – zvolené tak, aby součet vah přes \(k\) sousedů byl \(\log_2 k\) (obdoba perplexity v t-SNE)</td></tr>
+</table></div>
+<div class="box pozor"><div class="box-t">Problém 4: asymetrie</div>
+<p>Každý bod má vlastní měřítko, takže vzdálenost A–B z pohledu A (např. 1,2) není stejná jako z pohledu B (např. 1) – hrana A→B má jinou váhu než B→A. Která je správná? <b>Řešení: fuzzy sjednocení</b> (pravděpodobnost, že existuje alespoň jedna z hran):</p>
+\[ w = a + b - a\cdot b \]
+<p>Je to vhodnější než vzít maximum, minimum nebo průměr. Výsledkem je <b>vážený graf</b> (fuzzy simpliciální komplex) – tloušťka hrany = pravděpodobnost, že jsou dva objekty ve vysoké dimenzi „propojené“.</p>
+<p><b>Příklad:</b> \(a = 0{,}6\), \(b = 0{,}3\) → \(w = 0{,}6 + 0{,}3 - 0{,}18 = 0{,}72\). Když jeden z bodů hranu „vidí jistě“ (\(a = 1\)), je \(w = 1\) bez ohledu na \(b\); když ji nevidí žádný (\(a = b = 0\)), je \(w = 0\).</p></div>
+<div class="box definice" id="def-fuzzy-sjednoceni"><div class="box-t">Definice: fuzzy sjednocení (pravděpodobnostní t-konorma)</div>
+<p><b>Fuzzy sjednocení</b> dvou měr příslušnosti \(a, b\) je \(a + b - ab\). Odpovídá pravděpodobnosti, že nastane alespoň jeden ze dvou nezávislých jevů s pravděpodobnostmi \(a\) a \(b\).</p>
+<p class="jinak">„hrana existuje, pokud ji vidí aspoň jeden z obou bodů“. Výsledek je vždy aspoň tak velký jako větší z obou vah, ale nikdy nepřesáhne 1.</p></div>
+<div data-demo="umap-graf"></div>
+<p><b>Proč tak komplikované?</b> Výstupem je „obyčejný“ graf okolí objektů. Ale za ním stojí pevný teoretický základ (výsledný komplex topologicky odpovídá struktuře dat), známé zákonitosti a důsledky a jasná algoritmizace.</p>
+
+<h2 id="krok2">Krok 2: projekce do nízké dimenze</h2>
+<p>Teď hledáme v nízkorozměrném (obvykle eukleidovském) prostoru rozmístění bodů \(\mathbf{Y}\), jehož graf má co nejpodobnější váhy. Začíná se z (náhodného nebo spektrálního) rozmístění a body se posouvají. Ve vysoké dimenzi měla každá oblast vlastní „měřítko“, v mapě se používají standardní globální vzdálenosti a hyperparametr <b>min_dist</b> – minimální vzdálenost, na kterou se body v mapě smí přiblížit.</p>
+<div class="box definice" id="def-krizova-entropie"><div class="box-t">Definice: křížová entropie (v UMAP)</div>
+<p><b>Křížová entropie</b> mezi dvěma fuzzy množinami hran (vahami \(w_h\) ve vysoké a \(w_l\) v nízké dimenzi) je součet přes všechny hrany dvou členů: \(w_h\log(w_h/w_l)\), který je velký, když hrana ve vysoké dimenzi existuje, ale v mapě ne, a \((1-w_h)\log\big((1-w_h)/(1-w_l)\big)\), který je velký, když hrana ve vysoké dimenzi neexistuje, ale v mapě ano.</p>
+<p class="jinak">„trestáme obě chyby“: roztržení sousedů i slepení nesousedů. KL divergence v t-SNE obsahuje jen obdobu prvního členu – proto UMAP lépe drží rozestupy mezi shluky.</p></div>
+<div class="box vzorec"><div class="box-t">Kriteriální funkce: křížová entropie</div>
+\[ C = \sum_{e\in E}\Big[\,\underbrace{w_h(e)\log\frac{w_h(e)}{w_l(e)}}_{\text{přitahování}} + \underbrace{(1-w_h(e))\log\frac{1-w_h(e)}{1-w_l(e)}}_{\text{odpuzování}}\,\Big] \]
+<table class="vars">
+<tr><td>\(E\)</td><td>množina všech možných hran (1-simplexů)</td></tr>
+<tr><td>\(w_h(e)\)</td><td>váha hrany ve vysoké dimenzi (pravděpodobnost, že hrana existuje)</td></tr>
+<tr><td>\(w_l(e)\)</td><td>váha hrany v nízké dimenzi (mapě)</td></tr>
+<tr><td>\(C = 0\)</td><td>když \(w_h = w_l\) pro všechny hrany; minimalizuje se stochastickým gradientním sestupem</td></tr>
+</table></div>
+<div class="box intuice"><div class="box-t">Dva členy = lokální i globální struktura</div>
+<ul>
+<li><b>První člen</b>: je-li \(w_h\) velké (podobné objekty), bude člen velký, pokud je \(w_l\) malé → minimalizace <b>přitáhne</b> body k sobě → optimalizace shluků (lokální struktura).</li>
+<li><b>Druhý člen</b>: je-li \(w_h\) malé (nepodobné objekty), bude člen velký, pokud je \(w_l\) velké → minimalizace body <b>odpudí</b> → optimalizace prostoru mezi shluky (globální struktura).</li>
+</ul>
+<p>Právě explicitní odpudivý člen je důvod, proč UMAP drží globální uspořádání lépe než t-SNE (jehož KL divergence trestá hlavně roztržení sousedů).</p></div>
+<p>Nízkorozměrný prostor nemusí být eukleidovský – lze promítat i na sféru, torus nebo do hyperbolického prostoru (užitečné např. pro periodická data se strukturou smyčky).</p>
+
+<h2 id="hyperparametry">Nejdůležitější hyperparametry</h2>
+<div class="box definice" id="def-umap-hyperparametry"><div class="box-t">Definice: n_neighbors a min_dist</div>
+<p><b>n_neighbors</b> (\(k\)) je počet nejbližších sousedů, ze kterých se pro každý bod staví lokální okolí ve vysoké dimenzi (a určuje jeho \(\sigma_i\)). <b>min_dist</b> je nejmenší vzdálenost, na kterou se mohou body přiblížit v nízkorozměrné mapě; určuje tvar funkce, která v mapě převádí vzdálenost na váhu hrany.</p>
+<p class="jinak">n_neighbors = „jak daleko se každý bod rozhlíží“ (víc = víc globálního kontextu); min_dist = „jak natěsno se smějí body v mapě namačkat“ (méně = kompaktnější shluky).</p></div>
+<div class="tablewrap"><table>
+<tr><th>hyperparametr</th><th>co dělá</th><th>malá hodnota</th><th>velká hodnota</th><th>obvykle</th></tr>
+<tr><td><b>n_neighbors</b> (\(k\))</td><td>počet nejbližších sousedů v lokální aproximaci topologie</td><td>malé shluky, detaily, bez globální struktury (graf se může rozpadnout)</td><td>propojení více bodů → korektní globální struktura, zanedbání detailů</td><td>5–50 (výchozí 15)</td></tr>
+<tr><td><b>min_dist</b></td><td>minimální vzdálenost bodů v mapě</td><td>husté, kompaktní shluky (dobré pro následné shlukování)</td><td>„dilatované“, méně husté shluky, víc vidět vnitřní uspořádání</td><td>0,001–0,5 (např. 0,1)</td></tr>
+</table></div>
+<p>Další: metrika v původním prostoru, počet výsledných dimenzí, počet epoch, krok učení. Kompromis se hledá relativně snadno (ve srovnání s t-SNE).</p>
+<figure class="wide"><div class="paper"><img src="figures/fig11_umap_params.png" alt="UMAP pro různé n_neighbors a min_dist" loading="lazy"></div>
+<figcaption><b>Obr. 11.1</b> Tři skupiny ve 20D (A a B blízko sebe, C daleko) zobrazené UMAPem pro různé kombinace hyperparametrů.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p><b>n_neighbors</b> (sloupce) mění, kolik globální informace se dostane do grafu: s malým \(k\) jsou shluky rozmístěné spíš náhodně a mohou se trhat, s velkým \(k\) se lépe zachová, že A a B jsou si blíž než C. <b>min_dist</b> (řádky) mění jen „hustotu“ zobrazení: 0 = sevřené shluky, 0,8 = rozvolněné. Struktura (které body patří k sobě) se mezi nastaveními mění mnohem méně než u t-SNE – UMAP je stabilnější.</p></div>
+
+<h2 id="pouziti">Různé způsoby použití UMAP</h2>
+<ul>
+<li><b>Bez učitele</b> (standardní) – zobrazení a redukce dimenze.</li>
+<li><b>S učitelem (supervised UMAP)</b> – (supervised = při konstrukci se využijí známé třídy objektů, label; semi-supervised = třídy známe jen u části objektů) – do konstrukce grafu se zahrnou labely: skupiny jsou dobře odlišené (logické při využití labelů), a přitom jsou zachované vzájemné vztahy mezi skupinami (např. tričko, košile, svetr a šaty blízko sebe; boty a oblečení naproti sobě) i lokální struktura uvnitř shluků. Lze i <b>semi-supervised</b> (labely jen pro část dat).</li>
+<li><b>Práce s novými objekty</b> – naučený model umí promítnout nové body do existující mapy (<code>transform</code>) – t-SNE to neumí.</li>
+<li><b>Inverzní transformace</b> – z bodu v mapě odhadne (rekonstruuje) vysokorozměrný objekt. Diagnostika: blízké shluky jsou si v něčem podobné (číslice 1–7–9), variabilita uvnitř shluku má směr (rovná „1“ přechází v nakloněnou), body v „mezeře“ mezi shluky dávají podivné přechody (bota → kalhoty) – je vidět, jak UMAP data „vnímá“.</li>
+<li><b>Parametrická UMAP</b> – mapování se naučí neuronová síť (encoder; volitelně decoder pro inverzní transformaci, nebo jeden autoencoder).</li>
+<li>Předzpracování pro <b>shlukování</b> (viz <a href="05_shlukova_analyza.html#redukce">přednáška 5</a>) a redukce příznaků s libovolným \(R\), i \(R &gt; 3\).</li>
+</ul>
+
+<h2 id="vs-tsne">UMAP vs. t-SNE</h2>
+<figure class="wide"><div class="paper"><img src="figures/fig11_srovnani.png" alt="PCA, t-SNE a UMAP na stejných datech" loading="lazy"></div>
+<figcaption><b>Obr. 11.2</b> Stejná data zobrazená PCA, t-SNE a UMAP. Nahoře tři skupiny ve 20D (A a B blízko, C daleko), dole švýcarská roláda (barva = poloha podél plochy).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>PCA</b> zachová globální rozmístění (C je daleko), ale lineární projekcí slije vrstvy rolády.</li>
+<li><b>t-SNE</b> tady C odsune dál, ale blízké skupiny A a B slije k sobě; jak daleko shluky skončí, obecně závisí na perplexitě (obr. 10.3). Roládu rozseká na kusy – lokální sousedství drží, souvislost plochy ne.</li>
+<li><b>UMAP</b> oddělí skupiny a zároveň lépe zachová, že C je daleko; roládu rozbalí do souvislejšího pásu – lokální i globální struktura.</li>
+</ul></div>
+<div class="tablewrap"><table>
+<tr><th>Společné oběma</th><th>Navíc UMAP</th></tr>
+<tr><td>
+<ul style="margin:0">
+<li>učení bez učitele</li>
+<li>zdařilá vizualizace vícerozměrných dat</li>
+<li>deformují vysokorozměrný prostor → souřadnice a vzdálenosti v mapě nejsou tak interpretovatelné jako u PCA</li>
+<li><b>velikost shluků vůči sobě nemá význam</b></li>
+<li><b>vzdálenosti mezi shluky nemusí být validní</b> (u UMAP má umístění shluků větší význam, ale pozor)</li>
+<li>vyžadují opakované trénování pro nastavení hyperparametrů</li>
+</ul></td><td>
+<ul style="margin:0">
+<li>zachovává i <b>globální</b> strukturu (už při relativně malém počtu sousedů)</li>
+<li>umí pracovat s <b>novými objekty</b></li>
+<li>vhodný pro redukci počtu příznaků s libovolným \(R\) (i \(R &gt; 3\))</li>
+<li>výpočetně <b>nenáročný</b> – čím větší data, tím větší rozdíl oproti t-SNE</li>
+<li><b>stabilnější</b> výsledek vůči změně hyperparametrů</li>
+</ul></td></tr>
+</table></div>
+
+<h3>Tendence v oblasti vícerozměrných dat (závěr kurzu)</h3>
+<ul>
+<li>efektivní algoritmy (miliony objektů), paralelizace výpočtů;</li>
+<li>sofistikované přístupy pro reprezentaci a redukci (t-SNE, UMAP), strojové učení (hluboké sítě, fuzzy);</li>
+<li>jednoduché přístupy pro interpretaci (PCA, FA);</li>
+<li><b>nejdůležitější: prvotní (i vizuální) analýza dat</b> a <b>spolupráce s experty</b>.</li>
+</ul>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>UMAP je nelineární metoda varietního učení s topologickým základem. Ve vysoké dimenzi sestaví <b>vážený graf k nejbližších sousedů</b>: každý bod má vlastní lokální měřítko (kruh k k-tému sousedovi – předpoklad rovnoměrného rozmístění na zakřivené ploše), je vždy spojen s nejbližším sousedem a váhy hran klesají se vzdáleností (fuzzy topologie); asymetrické váhy sjednotí vzorcem \(a + b - ab\). Pak v nízké dimenzi hledá rozmístění bodů, jehož graf má podobné váhy, minimalizací <b>křížové entropie</b> – její první člen přitahuje podobné body (lokální struktura), druhý odpuzuje nepodobné (globální struktura). Hlavní hyperparametry: <b>n_neighbors</b> (detail vs. globální tvar) a <b>min_dist</b> (hustota shluků). Oproti t-SNE je UMAP rychlejší, stabilnější, lépe drží globální strukturu, umí nové objekty, inverzní transformaci, supervised variantu a redukci do libovolné dimenze. Velikosti a vzdálenosti shluků je ale stále třeba interpretovat opatrně.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>UMAP = graf sousedů ve vysoké dimenzi → co nejpodobnější graf v nízké dimenzi.</li>
+<li>Každý bod má vlastní měřítko (k-tý soused) a vždy aspoň jednoho souseda.</li>
+<li>Křížová entropie: přitahování (lokální) + odpuzování (globální struktura).</li>
+<li>n_neighbors = lokální detail ↔ globální tvar; min_dist = jak těsně body leží.</li>
+<li>Oproti t-SNE: rychlejší, stabilnější, globálnější, umí transform a libovolné R.</li>
+<li>Ani v UMAP nemají velikosti shluků a vzdálenosti mezi nimi spolehlivý význam.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Vysvětlete princip UMAP.</summary><div>
+<p>Ve dvou krocích. 1) Ve vysokorozměrném prostoru postavím vážený graf: každý bod spojím s jeho k nejbližšími sousedy, váhy hran klesají se vzdáleností, přičemž vzdálenost měřím v lokálním měřítku každého bodu (k-tý soused = jednotka) a nejbližší soused má vždy váhu 1; asymetrické váhy sjednotím \(a + b - ab\). 2) V nízké dimenzi hledám rozmístění bodů, jehož graf má co nejpodobnější váhy – minimalizuji křížovou entropii gradientním sestupem; podobné body se přitahují, nepodobné odpuzují.</p></div></details>
+<details class="q"><summary>Jaké problémy řeší UMAP při konstrukci grafu a jak?</summary><div>
+<p>1) Velikost okolí: předpoklad rovnoměrného rozmístění bodů na ploše. 2) Nerovnoměrná reálná data: každý bod má vlastní lokální metriku danou vzdáleností ke k-tému sousedovi. 3) Izolované body: každý bod je spojen alespoň s nejbližším sousedem (do jeho vzdálenosti „jisté“ pásmo); zároveň to zmírňuje prokletí dimenzionality. 4) Asymetrie vah A→B a B→A: fuzzy sjednocení \(a+b-ab\).</p></div></details>
+<details class="q"><summary>Jakou kriteriální funkci UMAP minimalizuje a proč zachovává i globální strukturu?</summary><div>
+<p>Křížovou entropii mezi vahami hran ve vysoké a nízké dimenzi. První člen \(w_h\log(w_h/w_l)\) je velký, když jsou podobné body v mapě daleko → přitahování (lokální struktura). Druhý člen \((1-w_h)\log((1-w_h)/(1-w_l))\) je velký, když jsou nepodobné body v mapě blízko → odpuzování (prostor mezi shluky, globální struktura). Explicitní odpuzování je hlavní rozdíl oproti KL divergenci v t-SNE.</p></div></details>
+<details class="q"><summary>Jaký vliv mají hyperparametry n_neighbors a min_dist?</summary><div>
+<p>n_neighbors (k): malé → důraz na detail, malé shluky, ztráta globální struktury, graf se může rozpadnout; velké → víc propojení, lepší globální struktura, ztráta detailu; obvykle 5–50. min_dist: minimální vzdálenost bodů v mapě; malá → husté kompaktní shluky, velká → rozvolněné shluky; obvykle 0,001–0,5.</p></div></details>
+<details class="q"><summary>Porovnejte UMAP a t-SNE.</summary><div>
+<p>Společné: nelineární, bez učitele, výborné pro vizualizaci, deformují prostor, velikosti shluků a vzdálenosti mezi nimi nemají spolehlivý význam, nutné ladění. UMAP navíc: lépe zachovává globální strukturu, je výrazně rychlejší (zvlášť pro velká data), stabilnější vůči hyperparametrům, umí promítat nové objekty a inverzní transformaci, má supervised variantu a hodí se i pro redukci do více než 3 dimenzí. Teoreticky vychází z topologie (graf), t-SNE z pravděpodobností sousedství a KL divergence.</p></div></details>
+<details class="q"><summary>Co je supervised UMAP a inverzní transformace?</summary><div>
+<p>Supervised UMAP zahrne do konstrukce grafu známé labely – skupiny jsou v mapě lépe oddělené a přitom zůstanou zachované vztahy mezi skupinami i struktura uvnitř nich (lze i semi-supervised). Inverzní transformace z bodu v mapě odhadne odpovídající vysokorozměrný objekt – slouží k diagnostice, jak UMAP data „vnímá“ (co je uvnitř shluku, co v mezerách mezi nimi).</p></div></details>
+
+<nav class="pager"><a class="prev" href="10_tsne.html"><small>← předchozí</small>t-SNE</a><a class="next" href="12_srovnani.html"><small>další →</small>Srovnání metod a tahák</a></nav>
+</main>
+</div>
+</body>
+</html>

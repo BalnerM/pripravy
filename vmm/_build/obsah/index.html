@@ -1,0 +1,62 @@
+<h1>Vícerozměrné metody – příprava na ústní zkoušku</h1>
+<p class="lead">Skripta pokrývají všech 11 přednášek kurzu VMM. Důraz je na <b>principy a logiku</b>: proč metoda existuje, jak „uvažuje“, co znamená každá proměnná ve vzorci a co si odnést z obrázků. Definice zpaměti nejsou cílem – cílem je umět metodu vysvětlit vlastními slovy.</p>
+
+<h2 id="jak-pouzivat">Jak skripta používat</h2>
+<ul>
+<li>Každá kapitola odpovídá jedné přednášce a má stejnou stavbu: motivace → přesná <span class="pill">Definice</span> pojmu → princip (<span class="pill">Intuice</span>) → postup (<span class="pill">Postup</span>) → vzorec s vysvětlenými proměnnými (<span class="pill">Vzorec</span>) → příklad (<span class="pill">Příklad</span>) → obrázek s <span class="pill">Co si z obrázku odnést</span>.</li>
+<li>Rámeček <b>Definice</b> má dvě části: první větu, kterou lze u zkoušky říct jako definici, a pod čarou <i>„Jinými slovy“</i> – co pojem znamená prakticky. Všechny definice najdeš pohromadě ve <a href="13_slovnik.html">Slovníku pojmů</a>.</li>
+<li>Rámečky <span class="pill">Častá past</span> upozorňují na typické chyby a chytáky, <span class="pill">Jak to říct u zkoušky</span> nabízí formulaci odpovědi.</li>
+<li>Na konci každé kapitoly je <b>shrnutí</b>, <b>take-home messages</b> a <b>otázky ke zkoušce</b> s rozbalovací modelovou odpovědí. Doporučení: nejdřív odpověz nahlas sám, pak rozbal.</li>
+<li>Ukázky <b>„Vyzkoušej si“</b> jsou interaktivní – posuvníky a tlačítka ukazují, jak metoda reaguje (PCA, k-means, perplexita, UMAP graf…).</li>
+<li>Poslední stránka <a href="12_srovnani.html">Srovnání metod a tahák</a> shrnuje, kterou metodu kdy použít, srovnávací tabulky a nejdůležitější vzorce.</li>
+</ul>
+<div class="box zkouska"><div class="box-t">Ke zkoušce (z 1. přednášky)</div>
+<p>Závěrečná zkouška je <b>ústní</b>, za max. 80 bodů, ve <b>dvou částech po 40 bodech</b>; z každé části je potřeba aspoň 20 bodů a celkem (s projektem za max. 20 bodů) aspoň 50 bodů.</p></div>
+
+<h2 id="mapa">Mapa kurzu: jak témata navazují</h2>
+<div class="schema">
+<svg viewBox="0 0 900 380" role="img" aria-label="Mapa kurzu: od dat přes předzpracování a popis vztahů k shlukování a redukci dimenze">
+  <defs><marker id="arI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <a href="01_uvod.html"><rect x="10" y="20" width="190" height="60" rx="10" class="node"/><text x="105" y="46" text-anchor="middle">1 · data a matice</text><text x="105" y="66" text-anchor="middle" class="t2">typy dat, schéma práce</text></a>
+  <a href="02_vicerozmerne_rozdeleni.html"><rect x="235" y="20" width="200" height="60" rx="10" class="fl1"/><text x="335" y="46" text-anchor="middle">2 · rozdělení a testy</text><text x="335" y="66" text-anchor="middle" class="t2">kovariance, Mahalanobis, T²</text></a>
+  <a href="03_predzpracovani.html"><rect x="470" y="20" width="200" height="60" rx="10" class="fl2"/><text x="570" y="46" text-anchor="middle">3 · předzpracování</text><text x="570" y="66" text-anchor="middle" class="t2">one-hot, NaN, standardizace</text></a>
+  <a href="04_vztahy.html"><rect x="700" y="20" width="190" height="60" rx="10" class="fl1"/><text x="795" y="46" text-anchor="middle">4 · vztahy</text><text x="795" y="66" text-anchor="middle" class="t2">korelace, VIF, ANOVA</text></a>
+  <g class="ln" marker-end="url(#arI)"><path d="M200 50 H233"/><path d="M435 50 H468"/><path d="M670 50 H698"/></g>
+  <path d="M570 80 V112 H210 V132" class="ln" marker-end="url(#arI)"/>
+  <path d="M570 112 H690 V132" class="ln" marker-end="url(#arI)"/>
+  <text x="450" y="106" text-anchor="middle" class="t2">připravená data</text>
+  <a href="05_shlukova_analyza.html"><rect x="80" y="134" width="260" height="64" rx="10" class="fl3"/><text x="210" y="160" text-anchor="middle" style="font-weight:600">5 · shluková analýza</text><text x="210" y="181" text-anchor="middle" class="t2">skupiny objektů (řádků)</text></a>
+  <rect x="520" y="134" width="340" height="64" rx="10" class="fl3"/><text x="690" y="160" text-anchor="middle" style="font-weight:600">ordinační metody (6–11)</text><text x="690" y="181" text-anchor="middle" class="t2">nové proměnné, redukce dimenze (sloupců)</text>
+  <path d="M600 198 V228 H130 V246" class="ln" marker-end="url(#arI)"/>
+  <path d="M600 228 H360 V246" class="ln" marker-end="url(#arI)"/>
+  <path d="M690 198 V228 H845 V246" class="ln" marker-end="url(#arI)"/>
+  <path d="M625 228 V246" class="ln" marker-end="url(#arI)"/><path d="M625 228 H690" class="ln"/>
+  <path d="M745 228 V246" class="ln" marker-end="url(#arI)"/>
+  <text x="260" y="222" text-anchor="middle" class="t2">lineární</text><text x="790" y="222" text-anchor="middle" class="t2">nelineární</text>
+  <a href="06_pca.html"><rect x="40" y="248" width="180" height="56" rx="10" class="fl1"/><text x="130" y="272" text-anchor="middle">6 · PCA</text><text x="130" y="291" text-anchor="middle" class="t2">směry max. rozptylu</text></a>
+  <a href="09_faktorova_analyza.html"><rect x="270" y="248" width="180" height="56" rx="10" class="fl1"/><text x="360" y="272" text-anchor="middle">9 · faktorová analýza</text><text x="360" y="291" text-anchor="middle" class="t2">skryté příčiny korelací</text></a>
+  <a href="07_kernel_pca.html"><rect x="565" y="248" width="120" height="56" rx="10" class="fl2"/><text x="625" y="272" text-anchor="middle">7 · kernel PCA</text><text x="625" y="291" text-anchor="middle" class="t2">jádrový trik</text></a>
+  <a href="10_tsne.html"><rect x="695" y="248" width="100" height="56" rx="10" class="fl2"/><text x="745" y="272" text-anchor="middle">10 · t-SNE</text><text x="745" y="291" text-anchor="middle" class="t2">sousedství</text></a>
+  <a href="11_umap.html"><rect x="805" y="248" width="85" height="56" rx="10" class="fl2"/><text x="847" y="272" text-anchor="middle">11 · UMAP</text><text x="847" y="291" text-anchor="middle" class="t2">graf</text></a>
+  <a href="08_maticove_rozklady.html"><rect x="40" y="318" width="645" height="50" rx="10" class="node"/><text x="362" y="348" text-anchor="middle">8 · ED a SVD – matematický motor PCA, FA a kernel PCA</text></a>
+  <path d="M220 276 H268" class="ln dash"/><text x="244" y="268" text-anchor="middle" class="t2" style="font-size:11px">rozšíření</text>
+</svg></div>
+<p>Dvě velké otázky celého kurzu: <b>které objekty k sobě patří</b> (shlukování – pracuje s řádky matice) a <b>jak data popsat menším počtem nových proměnných</b> (ordinační metody – pracují se sloupci). Obě potřebují dobře připravená data a obě stojí na pojmu vzdálenosti/podobnosti a na kovarianční struktuře.</p>
+
+<h2 id="kapitoly">Kapitoly</h2>
+<div class="cards">
+<a class="card" href="01_uvod.html"><div class="n">Přednáška 1</div><div class="t">Úvod do analýzy vícerozměrných dat</div><div class="d">Zdrojová matice, typy dat, proč vícerozměrně, dělení metod, schéma práce.</div></a>
+<a class="card" href="02_vicerozmerne_rozdeleni.html"><div class="n">Přednáška 2</div><div class="t">Vícerozměrné rozdělení a testy</div><div class="d">Střední vektor, kovarianční matice, normalita, Mahalanobis, χ² diagram, Hotelling.</div></a>
+<a class="card" href="03_predzpracovani.html"><div class="n">Přednáška 3</div><div class="t">Předzpracování dat</div><div class="d">One-hot, chybějící hodnoty, standardizace vs. normalizace, transformace.</div></a>
+<a class="card" href="04_vztahy.html"><div class="n">Přednáška 4</div><div class="t">Vztahy mezi proměnnými</div><div class="d">Grafy, regrese, Pearson a Spearman, multikolinearita a VIF, ANOVA a Tukey.</div></a>
+<a class="card" href="05_shlukova_analyza.html"><div class="n">Přednáška 5</div><div class="t">Shluková analýza</div><div class="d">Metriky, hierarchické shlukování, k-means, DBSCAN, počet shluků, validace.</div></a>
+<a class="card" href="06_pca.html"><div class="n">Přednáška 6</div><div class="t">PCA</div><div class="d">Otočení os, vlastní čísla a vektory, počet komponent, zátěže, skóre, biplot.</div></a>
+<a class="card" href="07_kernel_pca.html"><div class="n">Přednáška 7</div><div class="t">Kernel PCA</div><div class="d">Limity lineární PCA, jádro, kernel trick, polynomiální a RBF jádro.</div></a>
+<a class="card" href="08_maticove_rozklady.html"><div class="n">Přednáška 8</div><div class="t">ED a SVD</div><div class="d">Spektrální a singulární rozklad, výpočet krok za krokem, proč SVD.</div></a>
+<a class="card" href="09_faktorova_analyza.html"><div class="n">Přednáška 9</div><div class="t">Faktorová analýza</div><div class="d">Model FA, komunalita, odhad, rotace varimax/oblimin, PCA vs. FA.</div></a>
+<a class="card" href="10_tsne.html"><div class="n">Přednáška 10</div><div class="t">t-SNE</div><div class="d">Varietní učení, pravděpodobnosti sousedství, perplexita, KL divergence, pasti.</div></a>
+<a class="card" href="11_umap.html"><div class="n">Přednáška 11</div><div class="t">UMAP</div><div class="d">Graf sousedů, fuzzy topologie, křížová entropie, hyperparametry, vs. t-SNE.</div></a>
+<a class="card" href="12_srovnani.html"><div class="n">Opakování</div><div class="t">Srovnání metod a tahák</div><div class="d">Rozhodovací schéma, srovnávací tabulky, zaměňované pojmy, vzorce.</div></a>
+<a class="card" href="13_slovnik.html"><div class="n">Opakování</div><div class="t">Slovník pojmů</div><div class="d">Všechny definice ze skript na jednom místě, seřazené podle kapitol, s odkazem na výklad.</div></a>
+</div>
+<p class="muted">Obrázky jsou vygenerované skriptem z dat se stejnou strukturou jako příklady z přednášek (u PCA přímo z datasetu spotřeby proteinů z přednášky 6 – vlastní čísla odpovídají slidům). Vzorce se vykreslují knihovnou KaTeX z internetu; bez připojení zůstanou čitelné jako zdrojový zápis.</p>

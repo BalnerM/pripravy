@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Srovnání metod a tahák – VMM</title>
+<meta name="description" content="Kdy použít kterou metodu, srovnávací tabulky, rozhodovací schéma.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <a class="brand" href="index.html">VMM – příprava na zkoušku<small>vícerozměrné metody, principy a postupy</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_uvod.html"><span class="n">1</span><span>Úvod do analýzy vícerozměrných dat</span></a></li>
+    <li><a href="02_vicerozmerne_rozdeleni.html"><span class="n">2</span><span>Vícerozměrné rozdělení a testy</span></a></li>
+    <li><a href="03_predzpracovani.html"><span class="n">3</span><span>Předzpracování dat</span></a></li>
+    <li><a href="04_vztahy.html"><span class="n">4</span><span>Vztahy mezi proměnnými</span></a></li>
+    <li><a href="05_shlukova_analyza.html"><span class="n">5</span><span>Shluková analýza</span></a></li>
+    <li><a href="06_pca.html"><span class="n">6</span><span>Analýza hlavních komponent (PCA)</span></a></li>
+    <li><a href="07_kernel_pca.html"><span class="n">7</span><span>Kernel PCA</span></a></li>
+    <li><a href="08_maticove_rozklady.html"><span class="n">8</span><span>Maticové rozklady: ED a SVD</span></a></li>
+    <li><a href="09_faktorova_analyza.html"><span class="n">9</span><span>Faktorová analýza</span></a></li>
+    <li><a href="10_tsne.html"><span class="n">10</span><span>t-SNE</span></a></li>
+    <li><a href="11_umap.html"><span class="n">11</span><span>UMAP</span></a></li>
+    <li><a href="12_srovnani.html" class="active"><span class="n">★</span><span>Srovnání metod a tahák</span></a></li>
+    <li><a href="13_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#rozhodovani">Kterou metodu použít: rozhodovací schéma</a></li>
+    <li><a href="#ordinacni">Srovnání metod redukce dimenze</a></li>
+    <li><a href="#shlukovani">Srovnání shlukovacích metod</a></li>
+    <li><a href="#testy">Co odpovídá který test / ukazatel</a></li>
+    <li><a href="#standardizace">Kdo potřebuje standardizaci</a></li>
+    <li><a href="#zamena">Často zaměňované pojmy</a></li>
+    <li><a href="#vzorce">Tahák klíčových vzorců</a></li>
+    <li><a href="#jak-odpovidat">Jak stavět odpověď u ústní zkoušky</a></li>
+  </ul>
+</nav>
+<main>
+
+<h1>Srovnání metod a tahák</h1>
+<p class="lead">Tahle stránka spojuje celý kurz: kterou metodu použít pro jakou otázku, jak se metody liší a které pojmy se nejčastěji pletou. Hodí se na závěrečné opakování a na rychlou orientaci během učení.</p>
+
+<h2 id="rozhodovani">Kterou metodu použít: rozhodovací schéma</h2>
+<div class="schema">
+<svg viewBox="0 0 900 470" role="img" aria-label="Rozhodovací schéma volby vícerozměrné metody podle otázky">
+  <defs><marker id="arS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="330" y="8" width="240" height="44" rx="10" class="node"/><text x="450" y="35" text-anchor="middle" style="font-weight:600">Na co se ptám?</text>
+  <g class="ln" marker-end="url(#arS)"><path d="M380 52 L110 92"/><path d="M420 52 L335 92"/><path d="M480 52 L565 92"/><path d="M520 52 L790 92"/></g>
+  <rect x="10" y="94" width="200" height="56" rx="10" class="fl1"/><text x="110" y="117" text-anchor="middle">liší se skupiny /</text><text x="110" y="136" text-anchor="middle">vysvětlit výstup?</text>
+  <rect x="235" y="94" width="200" height="56" rx="10" class="fl2"/><text x="335" y="117" text-anchor="middle">jsou v datech</text><text x="335" y="136" text-anchor="middle">skupiny objektů?</text>
+  <rect x="465" y="94" width="200" height="56" rx="10" class="fl3"/><text x="565" y="117" text-anchor="middle">zobrazit / zmenšit</text><text x="565" y="136" text-anchor="middle">počet příznaků?</text>
+  <rect x="690" y="94" width="200" height="56" rx="10" class="node"/><text x="790" y="117" text-anchor="middle">proč příznaky</text><text x="790" y="136" text-anchor="middle">korelují?</text>
+  <g class="t2" style="font-size:12.5px">
+    <text x="18" y="180">2 skupiny, více proměnných</text><text x="30" y="198" style="fill:var(--ink)">→ Hotellingův T²</text>
+    <text x="18" y="226">≥ 3 skupiny, 1 proměnná</text><text x="30" y="244" style="fill:var(--ink)">→ ANOVA + Tukey HSD</text>
+    <text x="18" y="272">spojitý výstup</text><text x="30" y="290" style="fill:var(--ink)">→ (mnohonásobná) regrese</text>
+    <text x="18" y="318">binární výstup</text><text x="30" y="336" style="fill:var(--ink)">→ logistická regrese</text>
+    <text x="18" y="364">vztah dvou proměnných</text><text x="30" y="382" style="fill:var(--ink)">→ Pearson / Spearman</text>
+    <text x="243" y="180">znám K, kulaté shluky</text><text x="255" y="198" style="fill:var(--ink)">→ k-means</text>
+    <text x="243" y="226">odlehlé hodnoty, jiná metrika</text><text x="255" y="244" style="fill:var(--ink)">→ k-medoids</text>
+    <text x="243" y="272">neznám K, libovolný tvar, šum</text><text x="255" y="290" style="fill:var(--ink)">→ DBSCAN</text>
+    <text x="243" y="318">chci hierarchii, menší data</text><text x="255" y="336" style="fill:var(--ink)">→ aglomerativní + dendrogram</text>
+    <text x="243" y="364">hodně příznaků</text><text x="255" y="382" style="fill:var(--ink)">→ nejdřív PCA / UMAP</text>
+    <text x="473" y="180">lineární, interpretace, nové body</text><text x="485" y="198" style="fill:var(--ink)">→ PCA</text>
+    <text x="473" y="226">nelineární, chci komponenty</text><text x="485" y="244" style="fill:var(--ink)">→ kernel PCA</text>
+    <text x="473" y="272">jen 2D obrázek lokální struktury</text><text x="485" y="290" style="fill:var(--ink)">→ t-SNE</text>
+    <text x="473" y="318">obrázek i redukce, nové body,</text><text x="473" y="334">velká data</text><text x="485" y="352" style="fill:var(--ink)">→ UMAP</text>
+    <text x="698" y="180">skryté společné příčiny,</text><text x="698" y="196">interpretace</text><text x="710" y="214" style="fill:var(--ink)">→ faktorová analýza</text>
+    <text x="698" y="244">jen přehled vztahů</text><text x="710" y="262" style="fill:var(--ink)">→ korelační matice, pair-plot</text>
+    <text x="698" y="292">redundance vstupů modelu</text><text x="710" y="310" style="fill:var(--ink)">→ VIF, sloučení, PCA</text>
+  </g>
+  <rect x="10" y="408" width="880" height="54" rx="10" style="fill:var(--box-pozor);stroke:var(--c2)"/>
+  <text x="450" y="431" text-anchor="middle">Vždy před tím: poznej data → kategorie (one-hot) → chybějící hodnoty → transformace (log) → standardizace</text>
+  <text x="450" y="451" text-anchor="middle" class="t2">a ověř předpoklady (normalita, korelovanost příznaků, odlehlé hodnoty)</text>
+</svg></div>
+
+<h2 id="ordinacni">Srovnání metod redukce dimenze</h2>
+<div class="tablewrap"><table>
+<tr><th></th><th>PCA</th><th>kernel PCA</th><th>faktorová analýza</th><th>t-SNE</th><th>UMAP</th></tr>
+<tr><td>typ</td><td>lineární</td><td>nelineární (jádro)</td><td>lineární model se skrytými faktory</td><td>nelineární, pravděpodobnosti sousedství</td><td>nelineární, topologický graf</td></tr>
+<tr><td>co zachovává</td><td>globální strukturu, maximální rozptyl</td><td>rozptyl v prostoru jádra</td><td>korelace (sdílený rozptyl)</td><td>lokální okolí</td><td>lokální i (částečně) globální</td></tr>
+<tr><td>matematické jádro</td><td>vlastní čísla/vektory S nebo R (SVD)</td><td>vlastní čísla jádrové matice n × n</td><td>S = ΓΓᵀ + Ψ, rotace</td><td>KL divergence, gradientní sestup</td><td>křížová entropie, SGD</td></tr>
+<tr><td>hyperparametry</td><td>žádné (jen K)</td><td>jádro, γ / řád</td><td>počet faktorů R, metoda odhadu, rotace</td><td>perplexita, iterace, krok učení</td><td>n_neighbors, min_dist</td></tr>
+<tr><td>nové objekty</td><td>ano (× V)</td><td>ano (jádro s tréninkem)</td><td>ano (faktorové skóre)</td><td><b>ne</b></td><td>ano (transform)</td></tr>
+<tr><td>interpretace os</td><td>zátěže = váhy příznaků</td><td>obtížná</td><td>nejlepší – pojmenované faktory</td><td>osy bez významu</td><td>osy bez významu</td></tr>
+<tr><td>výstupní dimenze</td><td>libovolná (podle rozptylu)</td><td>libovolná</td><td>R ≤ p/2</td><td>2–3</td><td>libovolná</td></tr>
+<tr><td>hlavní past</td><td>max. rozptyl ≠ oddělení tříd; jen lineární</td><td>ladění γ; drahé pro velká n</td><td>nejednoznačnost řešení</td><td>velikosti a vzdálenosti shluků bez významu</td><td>vzdálenosti shluků stále opatrně</td></tr>
+</table></div>
+
+<h2 id="shlukovani">Srovnání shlukovacích metod</h2>
+<div class="tablewrap"><table>
+<tr><th></th><th>aglomerativní</th><th>k-means</th><th>k-medoids</th><th>DBSCAN</th></tr>
+<tr><td>princip</td><td>postupné slučování nejbližších shluků</td><td>přiřaď k nejbližšímu těžišti ↔ přepočítej těžiště</td><td>jako k-means, střed = skutečný bod</td><td>husté oblasti = shluky</td></tr>
+<tr><td>počet shluků</td><td>volím řezem dendrogramu</td><td>K předem</td><td>K předem</td><td>vyjde sám (ε, min_samples)</td></tr>
+<tr><td>tvar shluků</td><td>podle vazby (single: libovolný; Ward: kulatý)</td><td>kulaté, podobně velké</td><td>kulaté</td><td>libovolný</td></tr>
+<tr><td>odlehlé hodnoty</td><td>single citlivá (řetězení)</td><td>citlivý (průměr)</td><td>robustnější</td><td>označí jako šum</td></tr>
+<tr><td>výpočet</td><td>pro velká n náročný</td><td>rychlý</td><td>pomalý (~10×)</td><td>středně</td></tr>
+<tr><td>kategorická data</td><td>s vhodnou metrikou</td><td><b>ne</b></td><td>ano (interpretovatelné)</td><td>s vhodnou metrikou</td></tr>
+</table></div>
+<p><b>Volba počtu shluků</b>: WSS – loket (minimum nehledat, vždy klesá), Calinski–Harabasz (max), silueta (max), Davies–Bouldin (min) + znalost problematiky + vizualizace. <b>Validace</b>: se známými třídami ARI, homogenita, kompletnost, V-skóre.</p>
+
+<h2 id="testy">Co odpovídá který test / ukazatel</h2>
+<div class="tablewrap"><table>
+<tr><th>nástroj</th><th>otázka, na kterou odpovídá</th><th>poznámka</th></tr>
+<tr><td>Pearsonova korelace</td><td>jak silný je lineární vztah dvou proměnných?</td><td>normalita, citlivá na odlehlé hodnoty</td></tr>
+<tr><td>Spearmanova korelace</td><td>jak silný je monotónní vztah?</td><td>na pořadích, robustní</td></tr>
+<tr><td>Shapiro–Wilk aj.</td><td>je proměnná normální?</td><td>u velkých n zamítá i drobnosti</td></tr>
+<tr><td>χ² diagram</td><td>jsou data vícerozměrně normální? jsou tam vícerozměrně odlehlé body?</td><td>seřazené D² vs. kvantily χ²(p)</td></tr>
+<tr><td>Hotellingův T²</td><td>liší se vektory průměrů dvou skupin?</td><td>vícerozměrný t-test; pak simultánní F testy</td></tr>
+<tr><td>ANOVA</td><td>liší se průměr aspoň jedné ze skupin?</td><td>poměr rozptylu mezi / uvnitř skupin</td></tr>
+<tr><td>Tukey HSD</td><td>které dvojice skupin se liší?</td><td>kontrola mnohonásobného testování</td></tr>
+<tr><td>Bartlettův test sféricity</td><td>jsou příznaky korelované natolik, že má PCA/FA smysl?</td><td>H₀: R = I</td></tr>
+<tr><td>VIF</td><td>je příznak redundantní vůči ostatním (multikolinearita)?</td><td>1/(1−R²); &gt; 10 problém</td></tr>
+</table></div>
+
+<h2 id="standardizace">Kdo potřebuje standardizaci</h2>
+<div class="tablewrap"><table>
+<tr><th>potřebují (citlivé na měřítko)</th><th>nepotřebují</th></tr>
+<tr><td>PCA (nebo korelační matice), FA, k-means, hierarchické shlukování, kNN, DBSCAN, t-SNE, UMAP, SVM, neuronové sítě, logistická regrese (konvergence, srovnání koeficientů)</td><td>rozhodovací stromy, random forest; korelace (je na měřítku nezávislá – proto standardizace <b>neodstraní multikolinearitu</b>)</td></tr>
+</table></div>
+
+<h2 id="zamena">Často zaměňované pojmy</h2>
+<div class="tablewrap"><table>
+<tr><th>pojem A</th><th>pojem B</th><th>rozdíl</th></tr>
+<tr><td>kovariance</td><td>korelace</td><td>korelace = kovariance vydělená směrodatnými odchylkami; bez jednotek, ⟨−1, 1⟩</td></tr>
+<tr><td>eukleidovská vzdálenost</td><td>Mahalanobisova vzdálenost</td><td>Mahalanobis zohledňuje rozptyl a korelace (S⁻¹); pro S = I jsou stejné</td></tr>
+<tr><td>standardizace</td><td>normalizace</td><td>(x − průměr)/s vs. (x − min)/(max − min); normalizace citlivá na odlehlé hodnoty</td></tr>
+<tr><td>statistická významnost</td><td>klinická (reálná) významnost</td><td>malé p ≠ velký / užitečný rozdíl</td></tr>
+<tr><td>komponentní zátěže</td><td>komponentní skóre</td><td>zátěže popisují příznaky (váhy), skóre popisují objekty (nové souřadnice)</td></tr>
+<tr><td>vlastní číslo</td><td>singulární číslo</td><td>λ = σ²/(n−1) pro centrovanou X; obojí „velikost“ směru</td></tr>
+<tr><td>hlavní komponenta</td><td>faktor</td><td>PC = kombinace příznaků (popis rozptylu); faktor = skrytá příčina, příznaky jsou jeho kombinace + chyba</td></tr>
+<tr><td>komunalita</td><td>specifický rozptyl</td><td>část rozptylu příznaku sdílená přes faktory vs. vlastní (chyba měření)</td></tr>
+<tr><td>ortogonální rotace</td><td>šikmá rotace</td><td>faktory nekorelované (varimax) vs. smí korelovat (oblimin)</td></tr>
+<tr><td>perplexita (t-SNE)</td><td>n_neighbors (UMAP)</td><td>oboje ≈ velikost okolí, se kterým metoda počítá</td></tr>
+<tr><td>KL divergence</td><td>křížová entropie</td><td>t-SNE (trestá hlavně roztržení sousedů) vs. UMAP (přitahování + explicitní odpuzování)</td></tr>
+<tr><td>homogenita</td><td>kompletnost</td><td>shluk obsahuje jednu třídu vs. třída je v jednom shluku</td></tr>
+<tr><td>OLS regrese</td><td>ortogonální regrese</td><td>chyba jen v y (svisle) vs. v obou (kolmo)</td></tr>
+</table></div>
+
+<h2 id="vzorce">Tahák klíčových vzorců</h2>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec</th><th>jedna věta</th></tr>
+<tr><td>kovariance</td><td>\(s_{jk} = \frac{1}{n-1}\sum_i (x_{ij}-\bar x_j)(x_{ik}-\bar x_k)\)</td><td>průměrný součin odchylek – rostou spolu?</td></tr>
+<tr><td>korelace</td><td>\(r = \frac{\mathrm{cov}(x,y)}{s_x s_y}\)</td><td>kovariance bez jednotek</td></tr>
+<tr><td>Mahalanobis</td><td>\(D^2 = (\mathbf x-\bar{\mathbf x})^T\mathbf S^{-1}(\mathbf x-\bar{\mathbf x})\)</td><td>vzdálenost v jednotkách rozptylu ve směru</td></tr>
+<tr><td>Hotelling</td><td>\(T^2 = \frac{n_1n_2}{n_1+n_2}(\bar{\mathbf x}_1-\bar{\mathbf x}_2)^T\mathbf S^{-1}(\bar{\mathbf x}_1-\bar{\mathbf x}_2)\)</td><td>Mahalanobisova vzdálenost centroidů</td></tr>
+<tr><td>z-skóre</td><td>\(z = (x-\bar x)/s\)</td><td>kolik směrodatných odchylek od průměru</td></tr>
+<tr><td>VIF</td><td>\(1/(1-R_j^2)\)</td><td>jak moc je příznak vysvětlitelný ostatními</td></tr>
+<tr><td>logistická regrese</td><td>\(P = 1/(1+e^{-(a x + b)})\)</td><td>lineární skóre → pravděpodobnost</td></tr>
+<tr><td>WSS</td><td>\(\sum_k\sum_{n\in k} d_n^2\)</td><td>rozplizlost shluků</td></tr>
+<tr><td>silueta</td><td>\((b-a)/\max(a,b)\)</td><td>oddělenost vs. soudržnost</td></tr>
+<tr><td>vlastní vektor</td><td>\(\mathbf A\mathbf v = \lambda\mathbf v\), \(\det(\mathbf A-\lambda\mathbf I)=0\)</td><td>směr, který se jen natáhne</td></tr>
+<tr><td>vysvětlený rozptyl</td><td>\(\sum_{j\le K}\lambda_j / \sum_j\lambda_j\)</td><td>kolik informace drží K komponent</td></tr>
+<tr><td>SVD</td><td>\(\mathbf X = \mathbf U\boldsymbol\Sigma\mathbf V^T\), \(\lambda = \sigma^2/(n-1)\)</td><td>rotace × škálování × rotace</td></tr>
+<tr><td>RBF jádro</td><td>\(e^{-\gamma\lVert\mathbf a-\mathbf b\rVert^2}\)</td><td>podobnost klesající se vzdáleností</td></tr>
+<tr><td>model FA</td><td>\(\mathbf x-\boldsymbol\mu = \boldsymbol\Gamma\mathbf F + \boldsymbol\varepsilon\), \(\mathbf S = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi\)</td><td>příznak = faktory + vlastní chyba</td></tr>
+<tr><td>komunalita</td><td>\(h_j^2 = \sum_r\gamma_{jr}^2\)</td><td>sdílená část rozptylu</td></tr>
+<tr><td>t-SNE (vysoká dim.)</td><td>\(p_{j|i} \propto e^{-\lVert\mathbf x_i-\mathbf x_j\rVert^2/2\sigma_i^2}\)</td><td>pravděpodobnost sousedství</td></tr>
+<tr><td>t-SNE (mapa)</td><td>\(q_{ij} \propto (1+\lVert\mathbf y_i-\mathbf y_j\rVert^2)^{-1}\)</td><td>těžké chvosty proti crowdingu</td></tr>
+<tr><td>perplexita</td><td>\(2^{H}\)</td><td>efektivní počet sousedů</td></tr>
+<tr><td>KL divergence</td><td>\(\sum p_{ij}\log(p_{ij}/q_{ij})\)</td><td>ztráta informace P → Q</td></tr>
+<tr><td>UMAP sjednocení</td><td>\(a+b-ab\)</td><td>pravděpodobnost aspoň jedné hrany</td></tr>
+</table></div>
+
+<h2 id="jak-odpovidat">Jak stavět odpověď u ústní zkoušky</h2>
+<div class="box zkouska"><div class="box-t">Osvědčená struktura odpovědi (2–4 minuty)</div>
+<ol>
+<li><b>Problém</b> – k čemu metoda je, jakou otázku řeší („Máme hodně korelovaných příznaků a chceme…“).</li>
+<li><b>Princip jednou větou</b> – intuice („PCA otočí osy do směru největšího rozptylu“).</li>
+<li><b>Postup</b> – kroky algoritmu.</li>
+<li><b>Klíčový vzorec</b> – napsat a říct, co je každá proměnná.</li>
+<li><b>Příklad</b> – z přednášky (proteiny, sepse, EKG, sportovci) nebo vlastní.</li>
+<li><b>Předpoklady a limity</b> – kdy metoda selže a co pak.</li>
+<li><b>Srovnání</b> s příbuznou metodou (PCA vs. FA, t-SNE vs. UMAP, k-means vs. DBSCAN).</li>
+</ol>
+<p>Když nevíš detail vzorce, řekni princip a logiku – zkouška je o porozumění. Kresli: osy, mrak bodů, šipky. Obrázek často řekne víc než definice.</p></div>
+<div class="box intuice"><div class="box-t">Tři myšlenky, které propojují celý kurz</div>
+<ol>
+<li><b>Objekt = bod v prostoru, podobnost = vzdálenost.</b> Na tom stojí shlukování, Mahalanobis, kernel metody, t-SNE i UMAP. Proto je tak důležitá standardizace a volba metriky.</li>
+<li><b>Kovarianční / korelační matice nese strukturu dat.</b> Z ní vychází normální rozdělení, Hotelling, PCA (vlastní vektory), FA (ΓΓᵀ + Ψ) i VIF.</li>
+<li><b>Globální vs. lokální struktura.</b> Lineární metody (PCA) drží celkové rozložení, nelineární (t-SNE) sousedství; UMAP se snaží o obojí. Každá redukce něco ztrácí – je potřeba vědět co.</li>
+</ol></div>
+
+<nav class="pager"><a class="prev" href="11_umap.html"><small>← předchozí</small>UMAP</a><a class="next" href="13_slovnik.html"><small>další →</small>Slovník pojmů (definice)</a></nav>
+</main>
+</div>
+</body>
+</html>

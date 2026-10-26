@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shluková analýza – VMM</title>
+<meta name="description" content="Vzdálenosti, hierarchické shlukování, k-means, DBSCAN, počet shluků, validace.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <a class="brand" href="index.html">VMM – příprava na zkoušku<small>vícerozměrné metody, principy a postupy</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_uvod.html"><span class="n">1</span><span>Úvod do analýzy vícerozměrných dat</span></a></li>
+    <li><a href="02_vicerozmerne_rozdeleni.html"><span class="n">2</span><span>Vícerozměrné rozdělení a testy</span></a></li>
+    <li><a href="03_predzpracovani.html"><span class="n">3</span><span>Předzpracování dat</span></a></li>
+    <li><a href="04_vztahy.html"><span class="n">4</span><span>Vztahy mezi proměnnými</span></a></li>
+    <li><a href="05_shlukova_analyza.html" class="active"><span class="n">5</span><span>Shluková analýza</span></a></li>
+    <li><a href="06_pca.html"><span class="n">6</span><span>Analýza hlavních komponent (PCA)</span></a></li>
+    <li><a href="07_kernel_pca.html"><span class="n">7</span><span>Kernel PCA</span></a></li>
+    <li><a href="08_maticove_rozklady.html"><span class="n">8</span><span>Maticové rozklady: ED a SVD</span></a></li>
+    <li><a href="09_faktorova_analyza.html"><span class="n">9</span><span>Faktorová analýza</span></a></li>
+    <li><a href="10_tsne.html"><span class="n">10</span><span>t-SNE</span></a></li>
+    <li><a href="11_umap.html"><span class="n">11</span><span>UMAP</span></a></li>
+    <li><a href="12_srovnani.html"><span class="n">★</span><span>Srovnání metod a tahák</span></a></li>
+    <li><a href="13_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#kdy">Kdy se shluková analýza hodí</a></li>
+    <li><a href="#metriky">Metriky vzdálenosti – co znamená „podobné“</a></li>
+    <li><a href="#hierarchicke">Hierarchické (aglomerativní) shlukování</a></li>
+    <li><a href="#kmeans">Nehierarchické metody: k-means</a></li>
+    <li><a href="#alternativy">Alternativy: k-medoids a DBSCAN</a></li>
+    <li><a href="#redukce">Shlukování s redukcí dimenzionality</a></li>
+    <li><a href="#validace">Validace výsledků</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky ke zkoušce</a></li>
+  </ul>
+</nav>
+<main>
+<p class="kicker">Přednáška 5</p>
+<h1>Shluková analýza</h1>
+<p class="lead">Jak najít v datech skupiny podobných objektů, když nikdo předem neřekl, jaké skupiny existují. Klíčové je vědět, jak se měří podobnost, jak fungují hlavní algoritmy, jak zvolit počet shluků a jak výsledek ověřit.</p>
+
+<h2 id="kdy">Kdy se shluková analýza hodí</h2>
+<div class="box definice" id="def-shlukova"><div class="box-t">Definice: shluková analýza a shluk</div>
+<p><b>Shluková analýza</b> (clustering) je soubor metod, které rozdělí objekty do skupin – <b>shluků</b> – tak, aby si objekty uvnitř jednoho shluku byly co nejpodobnější a objekty z různých shluků co nejméně podobné. Skupiny nejsou předem dané, metoda je odvozuje jen z dat.</p>
+<p class="jinak">„roztřiď pacienty do přihrádek podle toho, jak si jsou podobní“ – aniž by ti někdo řekl, jaké přihrádky existují a kolik jich je.</p></div>
+<div class="box definice" id="def-bez-ucitele"><div class="box-t">Definice: učení bez učitele vs. s učitelem</div>
+<p><b>Učení s učitelem</b> (supervised) se učí z dat, u kterých známe správnou odpověď (label, třídu) – cílem je předpovídat ji pro nová data (klasifikace, regrese). <b>Učení bez učitele</b> (unsupervised) správné odpovědi nemá a hledá strukturu v datech samotných (shlukování, redukce dimenze).</p>
+<p class="jinak">s učitelem = učím se z vyřešených příkladů; bez učitele = dostanu hromadu neoznačených dat a sám hledám, co v nich je.</p></div>
+<ol>
+<li>Když potřebujeme data <b>roztřídit</b>, ale nemáme data s označením (labely) pro trénink klasifikátoru.</li>
+<li>Když nás zajímá, <b>zda data tvoří shluky</b>: výzkum nových souvislostí, roztřídění patologií na užší podskupiny, čištění dat (např. před strojovým učením).</li>
+</ol>
+<p>Je to <b>učení bez učitele</b> (unsupervised learning) – algoritmus nedostává správné odpovědi, hledá strukturu sám.</p>
+<div class="box intuice"><div class="box-t">Reálný příklad z přednášky</div>
+<p>Holterovské EKG obsahuje hodně rušení. 16 454 záznamů označil dodavatel jako „nehodnotitelné kvůli rušení“. Tvoří shluky, které by odlišily <i>důvody</i> nečitelnosti (lámání kabelů, špatný kontakt elektrod, myopotenciály…)? 19 spojitých příznaků popisujících rušení, standardizovaných.</p></div>
+<p>Nástroje: <b>metriky vzdálenosti</b> → <b>hierarchické</b> a <b>nehierarchické</b> metody → <b>redukce dimenzionality</b> → <b>validace</b> výsledků.</p>
+
+<h2 id="metriky">Metriky vzdálenosti – co znamená „podobné“</h2>
+<p>Shlukování stojí na tom, jak měříme vzdálenost (nepodobnost) dvou objektů. Volba metriky musí odpovídat úloze.</p>
+<div class="box definice" id="def-metrika"><div class="box-t">Definice: metrika (míra vzdálenosti)</div>
+<p><b>Metrika</b> je funkce \(d(\mathbf a, \mathbf b)\), která každé dvojici objektů přiřadí nezáporné číslo – vzdálenost – a splňuje: \(d(\mathbf a,\mathbf b) = 0\) právě když \(\mathbf a = \mathbf b\); symetrii \(d(\mathbf a,\mathbf b) = d(\mathbf b,\mathbf a)\); trojúhelníkovou nerovnost \(d(\mathbf a,\mathbf c) \le d(\mathbf a,\mathbf b) + d(\mathbf b,\mathbf c)\).</p>
+<p class="jinak">pravidlo, jak číslem vyjádřit „jak moc se dva pacienti liší“. Malá vzdálenost = podobní. Různé metriky chápou podobnost různě (pravítkem, po osách, podle úhlu). Kosinová „vzdálenost“ trojúhelníkovou nerovnost obecně nesplňuje, přesto se jako míra nepodobnosti běžně používá.</p></div>
+<div class="box definice" id="def-eukl-manh-kos"><div class="box-t">Definice: eukleidovská, manhattanská a kosinová vzdálenost</div>
+<p><b>Eukleidovská vzdálenost</b> je délka úsečky mezi dvěma body: odmocnina ze součtu čtverců rozdílů souřadnic. <b>Manhattanská vzdálenost</b> je součet absolutních rozdílů souřadnic. <b>Kosinová vzdálenost</b> je \(1 - \cos\theta\), kde \(\theta\) je úhel mezi vektory obou objektů (vedených z počátku).</p>
+<p class="jinak">eukleidovská = „vzdušnou čarou“; manhattanská = „pěšky po pravoúhlých ulicích“; kosinová = „míří oba vektory stejným směrem?“ – nezáleží na délce, jen na tvaru profilu.</p></div>
+<div class="schema">
+<svg viewBox="0 0 780 230" role="img" aria-label="Eukleidovská, manhattanská a kosinová vzdálenost">
+  <g transform="translate(20,10)">
+    <text x="105" y="14" text-anchor="middle" style="font-weight:600">eukleidovská (L2)</text>
+    <path d="M20 200 H210 M20 200 V30" class="ln2"/>
+    <circle cx="50" cy="175" r="6" class="f1"/><text x="38" y="196" class="t2">A</text>
+    <circle cx="170" cy="60" r="6" class="f2"/><text x="178" y="56" class="t2">C</text>
+    <path d="M50 175 L170 60" class="ln s2" style="stroke-width:2.5"/>
+    <text x="112" y="104" class="t2">přímá čára</text>
+  </g>
+  <g transform="translate(275,10)">
+    <text x="105" y="14" text-anchor="middle" style="font-weight:600">manhattanská (L1)</text>
+    <path d="M20 200 H210 M20 200 V30" class="ln2"/>
+    <circle cx="50" cy="175" r="6" class="f1"/><text x="38" y="196" class="t2">A</text>
+    <circle cx="170" cy="60" r="6" class="f2"/><text x="178" y="56" class="t2">C</text>
+    <path d="M50 175 H170 V60" class="ln s2" style="stroke-width:2.5"/>
+    <text x="80" y="168" class="t2">po „ulicích“</text>
+  </g>
+  <g transform="translate(530,10)">
+    <text x="115" y="14" text-anchor="middle" style="font-weight:600">kosinová</text>
+    <path d="M20 200 H230 M20 200 V30" class="ln2"/>
+    <path d="M20 200 L110 150" class="ln s1" style="stroke-width:2.5"/><circle cx="110" cy="150" r="6" class="f1"/><text x="112" y="170" class="t2">A</text>
+    <path d="M20 200 L200 100" class="ln s1" style="stroke-width:2.5"/><circle cx="200" cy="100" r="6" class="f1"/><text x="206" y="104" class="t2">B</text>
+    <path d="M20 200 L70 50" class="ln s2" style="stroke-width:2.5"/><circle cx="70" cy="50" r="6" class="f2"/><text x="78" y="50" class="t2">C</text>
+    <path d="M60 178 A 45 45 0 0 0 40 158" class="ln"/><text x="62" y="160" class="t2">θ</text>
+    <text x="120" y="215" text-anchor="middle" class="t2">A a B: stejný směr → vzdálenost ≈ 0</text>
+  </g>
+</svg></div>
+<div class="tablewrap"><table>
+<tr><th>Metrika</th><th>Vzorec</th><th>Kdy</th></tr>
+<tr><td><b>eukleidovská</b> (L2)</td><td>\(d_E = \sqrt{\sum_{i=1}^{N}(a_i-b_i)^2}\)</td><td>výchozí volba pro spojitá standardizovaná data; „vzdálenost pravítkem“</td></tr>
+<tr><td><b>manhattanská</b> (L1, city-block)</td><td>\(d_M = \sum_{i=1}^{N}|a_i-b_i|\)</td><td>součet rozdílů po osách; méně citlivá na jeden velký rozdíl</td></tr>
+<tr><td><b>kosinová</b></td><td>\(d_C = 1 - \cos\theta = 1 - \dfrac{\mathbf{a}\cdot\mathbf{b}}{\lVert\mathbf{a}\rVert\,\lVert\mathbf{b}\rVert}\)</td><td>jen úhel mezi vektory – porovnává <b>tvar profilu</b>, ne velikost (analýza textu, spektra)</td></tr>
+</table></div>
+<p>\(N\) = počet dimenzí (příznaků), \(a_i, b_i\) = souřadnice obou objektů v \(i\)-té dimenzi.</p>
+<div class="box priklad"><div class="box-t">Příklad</div>
+<p>A = (1, 1), C = (4, 5). Eukleidovská: \(\sqrt{3^2 + 4^2} = 5\). Manhattanská: \(3 + 4 = 7\). Body A = (1, 1) a B = (3, 3) mají eukleidovskou vzdálenost 2,83, ale kosinovou 0 – leží na stejné polopřímce z počátku (B je jen „větší verze“ A).</p></div>
+<div class="box pozor"><div class="box-t">Otázka z přednášky</div>
+<p><i>Co může znamenat, když je eukleidovská vzdálenost dvou různých vzorků 0?</i> Mají úplně stejné hodnoty všech příznaků – pravděpodobně jde o <b>duplicitní záznam</b>, nebo příznaky nestačí k rozlišení objektů.</p></div>
+
+<h2 id="hierarchicke">Hierarchické (aglomerativní) shlukování</h2>
+<div class="box definice" id="def-hierarchicke"><div class="box-t">Definice: hierarchické shlukování</div>
+<p><b>Hierarchické shlukování</b> vytváří posloupnost do sebe vnořených rozdělení objektů – hierarchii shluků. <b>Aglomerativní</b> (shlukovací, „zdola nahoru“) varianta začíná s každým objektem jako samostatným shlukem a postupně slučuje nejbližší shluky; <b>divizivní</b> („shora dolů“) začíná jedním shlukem a postupně ho dělí.</p>
+<p class="jinak">jako rodokmen: jednotlivci → rodiny → rody → celý národ. Výsledkem není jedno rozdělení, ale celý strom, ze kterého si počet shluků vyberu až dodatečně.</p></div>
+<div class="box postup"><div class="box-t">Algoritmus</div>
+<ol>
+<li><b>Start:</b> co objekt, to shluk (n shluků).</li>
+<li>Najdi <b>dva nejbližší shluky</b> a slouč je do jednoho. Zapiš si, které to byly a v jaké vzdálenosti.</li>
+<li>Opakuj, dokud nezbude jediný shluk (n − 1 iterací).</li>
+<li>Historii slučování nakresli jako <b>dendrogram</b> a „řízni“ ho v zvolené výšce.</li>
+</ol></div>
+<div class="schema">
+<svg viewBox="0 0 760 230" role="img" aria-label="Postupné slučování pěti bodů a odpovídající dendrogram">
+  <g transform="translate(10,10)">
+    <text x="160" y="14" text-anchor="middle" style="font-weight:600">body v prostoru</text>
+    <ellipse cx="72" cy="140" rx="48" ry="30" class="fl1" style="stroke:var(--c1);stroke-dasharray:4 3"/>
+    <ellipse cx="240" cy="90" rx="62" ry="40" class="fl2" style="stroke:var(--c2);stroke-dasharray:4 3"/>
+    <circle cx="50" cy="140" r="7" class="f1"/><text x="40" y="128" class="t2">A</text>
+    <circle cx="95" cy="145" r="7" class="f1"/><text x="98" y="132" class="t2">B</text>
+    <circle cx="210" cy="70" r="7" class="f2"/><text x="200" y="58" class="t2">C</text>
+    <circle cx="235" cy="100" r="7" class="f2"/><text x="222" y="120" class="t2">D</text>
+    <circle cx="275" cy="90" r="7" class="f2"/><text x="284" y="86" class="t2">E</text>
+    <text x="160" y="205" text-anchor="middle" class="t2">pořadí sloučení: A+B, C+D, (CD)+E, nakonec vše</text>
+  </g>
+  <g transform="translate(400,10)">
+    <text x="170" y="14" text-anchor="middle" style="font-weight:600">dendrogram</text>
+    <path d="M30 30 V190 H340" class="ln2"/>
+    <text x="22" y="194" text-anchor="end" class="t2">0</text><text x="22" y="40" text-anchor="end" class="t2">vzd.</text>
+    <path d="M70 190 V160 H120 V190" class="ln s1" style="stroke-width:2"/>
+    <path d="M180 190 V170 H230 V190" class="ln s2" style="stroke-width:2"/>
+    <path d="M205 170 V145 H290 V190" class="ln s2" style="stroke-width:2"/>
+    <path d="M95 160 V60 H247 V145" class="ln" style="stroke-width:2"/>
+    <text x="70" y="208" text-anchor="middle">A</text><text x="120" y="208" text-anchor="middle">B</text><text x="180" y="208" text-anchor="middle">C</text><text x="230" y="208" text-anchor="middle">D</text><text x="290" y="208" text-anchor="middle">E</text>
+    <path d="M30 110 H340" class="ln dash" style="stroke:var(--c2)"/><text x="338" y="104" text-anchor="end" class="t2">řez → 2 shluky</text>
+  </g>
+</svg></div>
+<div class="box definice" id="def-dendrogram"><div class="box-t">Definice: dendrogram</div>
+<p><b>Dendrogram</b> je stromový diagram, který zobrazuje průběh hierarchického shlukování: listy jsou jednotlivé objekty, každé spojení dvou větví znázorňuje sloučení dvou shluků a jeho výška odpovídá vzdálenosti, ve které ke sloučení došlo.</p>
+<p class="jinak">„zápis“ celého slučování v jednom obrázku. Čím níž se dvě větve spojí, tím podobnější objekty jsou.</p></div>
+<div class="box odnes"><div class="box-t">Jak číst dendrogram</div>
+<p>Výška spojnice = vzdálenost, ve které byly shluky sloučeny. Nízké spojnice = velmi podobné objekty. Vodorovný řez dendrogramem určí počet shluků (kolik svislých čar protne). Dlouhá svislá čára bez slučování = shluky, které „drží pohromadě“ dlouho → přirozené rozdělení.</p></div>
+
+<h3>Jak měřit vzdálenost mezi shluky (metody vazby)</h3>
+<p>Vzdálenost dvou <i>bodů</i> známe. Ale jak daleko jsou dva <i>shluky</i>? Tím se metody liší:</p>
+<div class="box definice" id="def-vazba"><div class="box-t">Definice: metoda vazby (linkage)</div>
+<p><b>Metoda vazby</b> je pravidlo, které určuje vzdálenost mezi dvěma shluky ze vzdáleností mezi jejich body. <b>Single</b>: minimum vzdáleností dvojic bodů. <b>Complete</b>: maximum. <b>Average</b>: průměr všech vzdáleností dvojic. <b>Ward</b>: přírůstek vnitroshlukového součtu čtverců (WSS), který by sloučení způsobilo.</p>
+<p class="jinak">„jak daleko jsou od sebe dvě vesnice?“ – od nejbližších domů (single), od nejvzdálenějších (complete), průměrně (average), nebo „o kolik by se nová obec rozlezla, kdybych je spojil“ (Ward).</p></div>
+<div class="tablewrap"><table>
+<tr><th>Metoda</th><th>Vzdálenost shluků =</th><th>Chování</th></tr>
+<tr><td><b>nejbližší soused</b> (single linkage)</td><td>vzdálenost dvou <b>nejbližších</b> bodů</td><td>umí protáhlé a nekonvexní tvary, ale „řetězí“ – jeden most z šumových bodů spojí dva shluky</td></tr>
+<tr><td><b>nejvzdálenější soused</b> (complete)</td><td>vzdálenost dvou <b>nejvzdálenějších</b> bodů</td><td>kompaktní, kulaté shluky podobného průměru</td></tr>
+<tr><td><b>průměrná vazba</b> (average)</td><td><b>průměr</b> všech vzdáleností mezi body obou shluků</td><td>kompromis</td></tr>
+<tr><td><b>Wardova metoda</b></td><td>o kolik by se sloučením <b>zvětšil rozptyl uvnitř</b> shluku</td><td>minimalizuje vnitroshlukový rozptyl → kompaktní shluky podobné velikosti (podobně jako k-means)</td></tr>
+</table></div>
+<figure class="wide"><div class="paper"><img src="figures/fig05_vazby.png" alt="Porovnání čtyř metod vazby na dvou datasetech" loading="lazy"></div>
+<figcaption><b>Obr. 5.1</b> Čtyři metody vazby na shlucích různé hustoty (nahoře) a na soustředných kruzích (dole).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Žádná metoda není nejlepší obecně. <b>Single linkage</b> jako jediná rozdělí soustředné kruhy (sleduje „řetěz“ blízkých bodů), ale nahoře selže – řídký rozlehlý shluk připojí přes „most“ bodů k hustému shluku. <b>Ward, complete a average</b> hledají kompaktní shluky: na kruzích selžou (řežou je napůl). Nahoře si nejlépe vede <b>Ward</b>; average a complete „ukousnou“ kus řídkého shluku sousedovi, protože jejich kritérium nesedí na shluky velmi rozdílné velikosti a hustoty. Volba metody musí odpovídat představě o tvaru shluků.</p></div>
+
+<h3>Jak zvolit počet shluků</h3>
+<figure class="wide"><div class="paper"><img src="figures/fig05_dendrogram.png" alt="Bodový graf tří shluků a dendrogram s řezem" loading="lazy"></div>
+<figcaption><b>Obr. 5.2</b> 30 bodů a jejich dendrogram (Ward). Čísla bodů vlevo odpovídají listům dendrogramu, barvy větví barvám shluků.</figcaption></figure>
+<ul>
+<li><b>Z tvaru bodového grafu a dendrogramu</b> – u 2D dat často zjevné.</li>
+<li><b>Největší vzdálenost nepřerušená slučováním</b> – najdi nejdelší svislý úsek dendrogramu a řízni v něm. (V přednášce tohle pravidlo vedlo na 2 shluky, což bylo chybně – pravidla jsou jen vodítka.)</li>
+<li><b>Změna vzdálenosti slučování</b> – vynes vzdálenost sloučení proti iteraci; místo prudké změny nárůstu („loket“) signalizuje potenciální počet shluků.</li>
+</ul>
+<div class="box priklad"><div class="box-t">Na reálných datech je to těžší</div>
+<p>U 19rozměrných EKG dat nejde počet shluků odhadnout „okem“. Pomůže zobrazit výsledek v prvních dvou hlavních komponentách (PCA zvýraznila shluky, které v původních dvojicích příznaků čitelné nebyly). Přechod ze 3 na 5 shluků dal skupiny s 4308, 4081 a 1491 záznamy… Pak je nutné <b>prohlédnout reálné záznamy</b> z každého shluku a ptát se: dává rozdělení smysl? Můžeme věřit N = 3?</p></div>
+
+<h2 id="kmeans">Nehierarchické metody: k-means</h2>
+<div class="box definice" id="def-kmeans"><div class="box-t">Definice: k-means a těžiště shluku</div>
+<p><b>k-means</b> je nehierarchická shlukovací metoda, která rozdělí objekty do předem zvoleného počtu \(K\) shluků tak, aby byl co nejmenší součet čtverců eukleidovských vzdáleností bodů od <b>těžiště</b> (centroidu) jejich shluku. <b>Těžiště</b> shluku je bod, jehož souřadnice jsou průměry souřadnic všech bodů shluku.</p>
+<p class="jinak">„rozmísti \(K\) středů tak, aby každý bod měl svůj střed co nejblíž“. Každý bod patří k nejbližšímu středu a každý střed je uprostřed svých bodů. Nehierarchická = vznikne rovnou jedno rozdělení, žádný strom.</p></div>
+<div class="box postup"><div class="box-t">Algoritmus k-means</div>
+<ol>
+<li>Vygeneruj (zvol) <b>K počátečních těžišť</b> shluků.</li>
+<li>Každý bod <b>přiřaď</b> ke shluku s nejbližším těžištěm (eukleidovská vzdálenost).</li>
+<li><b>Přepočítej těžiště</b> jako průměr bodů, které do shluku patří.</li>
+<li>Pokud se kterékoli těžiště posunulo víc než o toleranci, opakuj od kroku 2.</li>
+</ol></div>
+<div data-demo="kmeans"></div>
+<p>Co z postupu vyplývá (otázky z přednášky):</p>
+<ul>
+<li><b>Co musíme znát před spuštěním?</b> Počet shluků K a způsob inicializace těžišť. Výsledek závisí na startu → algoritmus se spouští vícekrát a vezme se nejlepší výsledek.</li>
+<li><b>Potřebujeme standardizovaná data?</b> Ano – pracuje s eukleidovskou vzdáleností, takže proměnná s velkým rozsahem by dominovala.</li>
+<li><b>Můžeme mít kategorická data?</b> Ne – průměr kategorií („průměrná krevní skupina“) nedává smysl.</li>
+<li>Těžiště je průměr → <b>citlivost na odlehlé hodnoty</b>; k-means hledá <b>kulaté (konvexní) shluky podobné velikosti</b>.</li>
+</ul>
+<h3>Jak určit K</h3>
+<ol>
+<li>ze <b>znalosti problematiky</b>;</li>
+<li><b>vizuálně</b> z bodového grafu (při mnoha dimenzích po redukci, např. PCA);</li>
+<li><b>WSS a metoda lokte</b>;</li>
+<li><b>Calinski–Harabasz index</b>;</li>
+<li><b>kombinací</b> výše uvedeného.</li>
+</ol>
+<div class="box vzorec"><div class="box-t">Vnitroshluková vzdálenost (WSS)</div>
+\[ \mathrm{WCSS}_k = \sum_{n=1}^{N_k} d_n^2 \qquad\qquad \mathrm{WSS} = \sum_{k=1}^{K}\mathrm{WCSS}_k \]
+<table class="vars">
+<tr><td>\(d_n\)</td><td>vzdálenost \(n\)-tého bodu shluku od jeho těžiště</td></tr>
+<tr><td>\(N_k\)</td><td>počet bodů v \(k\)-tém shluku</td></tr>
+<tr><td>WSS</td><td>celkový součet čtverců vzdáleností k těžištím (within sum of squares) – „jak moc jsou shluky rozplizlé“</td></tr>
+</table></div>
+<div class="box definice" id="def-wss"><div class="box-t">Definice: WSS a metoda lokte</div>
+<p><b>WSS</b> (within-cluster sum of squares, vnitroshlukový součet čtverců) je součet čtverců vzdáleností všech bodů od těžišť jejich shluků. <b>Metoda lokte</b> (elbow method) vynese WSS proti počtu shluků \(K\) a za vhodné \(K\) zvolí místo, kde se pokles křivky výrazně zpomalí („loket“).</p>
+<p class="jinak">WSS měří, jak „rozplizlé“ jsou shluky. Dalšími shluky ho vždy zmenšíme, ale od určitého \(K\) už jen trochu – tam se přestává vyplácet shluky přidávat.</p></div>
+<p>WSS s rostoucím K <b>vždy klesá</b> (při K = n je nula – každý bod je sám sobě těžištěm). Proto nehledáme minimum, ale <b>„loket“</b> – místo, za kterým přidání dalšího shluku už WSS sníží jen málo.</p>
+<div class="box definice" id="def-ch"><div class="box-t">Definice: Calinski–Harabasz index</div>
+<p><b>Calinski–Harabasz index</b> je poměr rozptylu <i>mezi</i> shluky a rozptylu <i>uvnitř</i> shluků, každý vydělený svými stupni volnosti: \(\mathrm{CH} = \dfrac{B/(K-1)}{W/(N-K)}\), kde \(W\) je WSS a \(B = \sum_k N_k \lVert \mathbf c_k - \mathbf c \rVert^2\) je součet čtverců vzdáleností těžišť shluků \(\mathbf c_k\) od celkového těžiště \(\mathbf c\) (vážený velikostí shluku \(N_k\)). Vyšší hodnota = lepší rozdělení.</p>
+<p class="jinak">stejná logika jako F-statistika v ANOVA: „jsou shluky od sebe daleko ve srovnání s tím, jak jsou samy rozptýlené?“ Hledáme \(K\) s maximálním CH. Korekce \(K-1\) a \(N-K\) brání tomu, aby index rostl jen díky tomu, že přidáváme shluky.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig05_pocet_k.png" alt="Data se třemi shluky a grafy WSS, Calinski-Harabasz a silueta pro různé K" loading="lazy"></div>
+<figcaption><b>Obr. 5.3</b> Volba K na datech se třemi shluky.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Na „učebnicových“ datech se kritéria shodnou: loket WSS, maximum CH i siluety leží u správného K. Na reálných EKG datech to tak hezké nebylo: <b>elbow metoda byla prakticky nepoužitelná</b> (žádný zřetelný loket), CH ukazoval na 7 nebo 2 shluky. Při K = 7 vznikl i shluk s jediným záznamem (N = 1) – to je odlehlá hodnota, ne shluk. Kritéria jsou vodítka, ne pravda.</p></div>
+
+<h2 id="alternativy">Alternativy: k-medoids a DBSCAN</h2>
+<div class="box definice" id="def-kmedoids"><div class="box-t">Definice: k-medoids a medoid</div>
+<p><b>Medoid</b> shluku je ten jeho skutečný objekt, který má nejmenší součet vzdáleností ke všem ostatním objektům shluku. <b>k-medoids</b> je obdoba k-means, ve které středem každého shluku není průměr (těžiště), ale medoid; minimalizuje součet vzdáleností (v libovolné metrice) objektů od medoidu jejich shluku.</p>
+<p class="jinak">místo „virtuálního průměrného pacienta“ vybereme za zástupce shluku skutečného, nejtypičtějšího pacienta. Jeden extrém ho nepřetáhne a dá se ukázat („takhle vypadá typický záznam shluku 2“).</p></div>
+<div class="box definice" id="def-dbscan"><div class="box-t">Definice: DBSCAN</div>
+<p><b>DBSCAN</b> (density-based spatial clustering of applications with noise) je shlukovací metoda založená na hustotě. Bod je <b>jádrový</b>, pokud má ve svém okolí o poloměru \(\varepsilon\) alespoň <i>min_samples</i> bodů. Shluk tvoří jádrové body navzájem dosažitelné přes okolí jiných jádrových bodů, spolu s <b>hraničními</b> body ležícími v jejich okolí. Body, které nepatří k žádnému shluku, jsou <b>šum</b>.</p>
+<p class="jinak">shluk = souvislá „hustě obydlená oblast“, ať má jakýkoli tvar. Řídká místa shluky oddělují a osamocené body zůstanou neoznačené jako šum.</p></div>
+<div class="tablewrap"><table>
+<tr><th></th><th>k-medoids</th><th>DBSCAN</th></tr>
+<tr><td>princip</td><td>jako k-means, ale střed shluku je <b>skutečný bod</b> (medoid)</td><td>shluk = oblast s dostatečnou <b>hustotou</b> bodů</td></tr>
+<tr><td>výhody</td><td>menší vliv odlehlých hodnot; interpretovatelné i u kategorických proměnných; libovolná metrika (ve scikit implicitně manhattanská)</td><td>nepotřebuje znát počet shluků; zvládne <b>nekonvexní</b> tvary; odlehlé body označí jako <b>šum</b></td></tr>
+<tr><td>nevýhody</td><td>výrazně delší výpočet (cca 10× na úloze z přednášky)</td><td>potřebuje nastavit ε (poloměr okolí) a minimální počet bodů v okolí; špatně zvládá shluky různé hustoty</td></tr>
+</table></div>
+<div class="box intuice"><div class="box-t">Jak DBSCAN „myslí“</div>
+<p>Kolem každého bodu nakresli kruh o poloměru ε. Má-li v něm aspoň <i>min_samples</i> bodů, je to <b>jádrový bod</b>. Jádrové body, které na sebe dosáhnou, tvoří jeden shluk; body na okraji (v dosahu jádra, ale samy ne jádrové) se přidají. Co nedosáhne nikam, je <b>šum</b>. Shluk se tak „rozlévá“ po hustých oblastech libovolného tvaru.</p></div>
+<figure><div class="paper"><img src="figures/fig05_kmeans_dbscan.png" alt="k-means a DBSCAN na datech tvaru půlměsíců" loading="lazy"></div>
+<figcaption><b>Obr. 5.4</b> Dva propletené půlměsíce s trochou šumu.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>k-means dělí prostor na „kulaté“ oblasti kolem těžišť, takže půlměsíce rozřízne napříč. DBSCAN sleduje hustotu, najde oba tvary a rozptýlené body vyřadí jako šum. Na reálných EKG datech (po UMAP) ale DBSCAN našel 36 shluků a nejasné oblasti slil dohromady, zatímco k-means (K = 4) vytvářel podobně velké shluky a jeden zjevný shluk přehlédl. <b>Nic z toho není perfektní</b> – je potřeba ladit a kombinovat.</p></div>
+
+<h2 id="redukce">Shlukování s redukcí dimenzionality</h2>
+<p>Při mnoha příznacích je vhodné data před shlukováním (nebo alespoň pro zobrazení výsledku) zredukovat:</p>
+<ul>
+<li><b>PCA</b> natočí podprostor tak, aby co nejlépe pokryl variabilitu dat (<a href="06_pca.html">přednáška 6</a>);</li>
+<li><b>UMAP</b> (příp. t-SNE) převede data do 2D se zachováním topologických vazeb (<a href="11_umap.html">přednáška 11</a>). Je žádoucí věnovat čas nastavení parametrů a zafixovat <i>random seed</i> (reprodukovatelnost).</li>
+</ul>
+<p>V přednášce: UMAP + aglomerativní shlukování rozdělily EKG data na 7 dobře viditelných skupin (376 až 3486 záznamů).</p>
+
+<h2 id="validace">Validace výsledků</h2>
+<div class="box definice" id="def-validace"><div class="box-t">Definice: validace shlukování (vnější a vnitřní kritéria)</div>
+<p><b>Validace shlukování</b> je hodnocení kvality nalezených shluků. <b>Vnější (externí) kritéria</b> porovnávají shluky se známým „správným“ rozdělením do tříd (ARI, homogenita, kompletnost, V-skóre). <b>Vnitřní (interní) kritéria</b> hodnotí shluky jen z dat samotných – podle kompaktnosti a oddělenosti (silueta, Calinski–Harabasz, Davies–Bouldin).</p>
+<p class="jinak">vnější = „sedí to s pravdou?“ (máme-li ji); vnitřní = „vypadají shluky jako pěkné, oddělené hromádky?“</p></div>
+<h3>Když známe skutečné třídy</h3>
+<div class="box definice" id="def-ari"><div class="box-t">Definice: Adjusted Rand Index (ARI)</div>
+<p><b>Randův index</b> je podíl dvojic objektů, u kterých se dvě rozdělení „shodnou“ – obě dají dvojici do stejné skupiny, nebo obě do různých. <b>Adjusted Rand Index</b> je jeho verze opravená o shodu, kterou bychom čekali čistě náhodou: 1 = rozdělení jsou totožná, ≈ 0 = shoda jako u náhodného přiřazení, záporné = horší než náhoda.</p>
+<p class="jinak">projdu všechny dvojice pacientů a ptám se: „Jsou spolu ve stejném shluku a zároveň ve stejné skutečné třídě?“ (nebo ani v jednom). Názvy (čísla) shluků nehrají roli – jde jen o to, kdo je s kým.</p></div>
+<div class="box definice" id="def-homogenita"><div class="box-t">Definice: homogenita, kompletnost, V-skóre</div>
+<p><b>Homogenita</b> je míra (0–1) toho, že každý shluk obsahuje objekty jen jedné skutečné třídy. <b>Kompletnost</b> je míra (0–1) toho, že všechny objekty jedné třídy padnou do stejného shluku. <b>V-skóre</b> je jejich harmonický průměr.</p>
+<p class="jinak">homogenita = „shluky jsou čisté“, kompletnost = „třídy nejsou rozsekané“. Jedno lze snadno vyhrát na úkor druhého (každý bod zvlášť → dokonalá homogenita; všechno v jednom shluku → dokonalá kompletnost), proto se sledují obě.</p></div>
+<ul>
+<li><b>Adjusted Rand Index (ARI)</b> – podobnost dvou rozdělení do skupin; rozsah ⟨−1, 1⟩, ideál 1, náhodné přiřazení ≤ 0; nezáleží na tom, jak jsou skupiny očíslované.</li>
+<li><b>Homogenita</b> – obsahuje každý nalezený shluk prvky jen jedné skutečné třídy?</li>
+<li><b>Kompletnost</b> – jsou všechny prvky jedné třídy ve stejném shluku?</li>
+<li><b>V-skóre</b> – harmonický průměr homogenity a kompletnosti.</li>
+</ul>
+<div class="tablewrap"><table>
+<tr><th>K</th><th class="num">1</th><th class="num">2</th><th class="num">3</th><th class="num">4</th><th class="num">5</th><th class="num">6</th></tr>
+<tr><td>ARI</td><td class="num">0,00</td><td class="num">0,57</td><td class="num"><b>0,97</b></td><td class="num">0,84</td><td class="num">0,73</td><td class="num">0,57</td></tr>
+<tr><td>homogenita</td><td class="num">0,00</td><td class="num">0,58</td><td class="num">0,95</td><td class="num">0,94</td><td class="num">0,94</td><td class="num">0,94</td></tr>
+<tr><td>kompletnost</td><td class="num">1,00</td><td class="num">1,00</td><td class="num">0,95</td><td class="num">0,78</td><td class="num">0,67</td><td class="num">0,58</td></tr>
+<tr><td>V-skóre</td><td class="num">0,00</td><td class="num">0,73</td><td class="num"><b>0,95</b></td><td class="num">0,85</td><td class="num">0,78</td><td class="num">0,72</td></tr>
+</table></div>
+<p>Logika: s rostoucím K roste homogenita (malé shluky jsou „čisté“), ale klesá kompletnost (třídy se rozdrobí). Při K = 1 je kompletnost dokonalá, homogenita nulová. Kompromis (V-skóre, ARI) ukazuje na K = 3.</p>
+
+<h3>Když skutečné třídy neznáme</h3>
+<p>Můžeme ručně označit část dat a postupovat jako výše, nebo použít vnitřní kritéria:</p>
+<div class="box definice" id="def-silueta"><div class="box-t">Definice: silueta</div>
+<p><b>Silueta</b> objektu \(i\) je \(s(i) = \frac{b(i)-a(i)}{\max\{a(i),b(i)\}}\), kde \(a(i)\) je průměrná vzdálenost objektu k ostatním objektům jeho shluku a \(b(i)\) průměrná vzdálenost k objektům nejbližšího jiného shluku. Nabývá hodnot −1 až 1. <b>Průměrná silueta</b> přes všechny objekty hodnotí celé shlukování.</p>
+<p class="jinak">každý bod se ptá: „jsem blíž svým, nebo sousedům?“ Blízko 1 = jasně patřím sem; kolem 0 = stojím na hranici; záporné = asi jsem ve špatném shluku.</p></div>
+<div class="box vzorec"><div class="box-t">Silueta (silhouette)</div>
+\[ s(i) = \frac{b(i) - a(i)}{\max\{a(i), b(i)\}} \]
+<table class="vars">
+<tr><td>\(a(i)\)</td><td>průměrná vzdálenost bodu \(i\) k ostatním bodům <b>jeho</b> shluku (soudržnost)</td></tr>
+<tr><td>\(b(i)\)</td><td>průměrná vzdálenost bodu \(i\) k bodům <b>nejbližšího jiného</b> shluku (oddělenost)</td></tr>
+<tr><td>\(s(i)\)</td><td>blízko 1 = bod je dobře zařazen; 0 = na hranici; záporné = spíš patří jinam. Průměr přes body = průměrná silueta.</td></tr>
+</table></div>
+<div class="box definice" id="def-db"><div class="box-t">Definice: Davies–Bouldin index</div>
+<p><b>Davies–Bouldin index</b> je průměr přes všechny shluky z hodnoty „nejhoršího souseda“: pro shluk \(k\) se najde jiný shluk \(j\), pro který je poměr \(\frac{s_k + s_j}{d(\mathbf c_k, \mathbf c_j)}\) největší (\(s\) = průměrná vzdálenost bodů shluku od jeho těžiště, \(d\) = vzdálenost těžišť). Nižší hodnota = lepší rozdělení.</p>
+<p class="jinak">pro každý shluk zjistím, s kterým sousedem se mu nejhůř „rozumí“ – oba jsou rozplizlé a přitom mají středy blízko. Čím menší je tato „zmatenost“ v průměru, tím lepší shlukování.</p></div>
+<div class="tablewrap"><table>
+<tr><th>K</th><th class="num">2</th><th class="num">3</th><th class="num">4</th><th class="num">5</th><th class="num">6</th><th>lepší je</th></tr>
+<tr><td>průměrná silueta</td><td class="num"><b>0,75</b></td><td class="num">0,68</td><td class="num">0,59</td><td class="num">0,51</td><td class="num">0,34</td><td>vyšší</td></tr>
+<tr><td>Calinski–Harabasz</td><td class="num">2437</td><td class="num"><b>3794</b></td><td class="num">2928</td><td class="num">2512</td><td class="num">2379</td><td>vyšší</td></tr>
+<tr><td>Davies–Bouldin</td><td class="num"><b>0,35</b></td><td class="num">0,45</td><td class="num">0,75</td><td class="num">0,87</td><td class="num">1,1</td><td>nižší</td></tr>
+</table></div>
+<div class="box odnes"><div class="box-t">Co si z tabulky odnést</div>
+<p>Na stejných datech (skutečné K = 3) silueta i Davies–Bouldin preferují K = 2, Calinski–Harabasz K = 3. Indexy se neshodují, protože každý měří „kvalitu“ trochu jinak (Davies–Bouldin hodnotí hranice mezi shluky). Proto se <b>kombinují s vlastním odhadem</b> a znalostí úlohy.</p></div>
+<p><i>Pro zajímavost:</i> stabilitu shluků lze ověřit <b>bootstrapem</b> (bootstrap = vytvoření nového vzorku stejné velikosti náhodným výběrem objektů z původních dat <i>s vracením</i> – některé objekty se v něm objeví vícekrát, jiné vůbec) – data opakovaně převzorkujeme s nahrazením, znovu nashlukujeme a měříme shodu shluků (Jaccardův index). Správné shluky se objevují opakovaně. (V Pythonu zatím chybí, v R existuje.)</p>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Shluková analýza je učení bez učitele: hledá skupiny podobných objektů. Základem je <b>metrika vzdálenosti</b> (eukleidovská, manhattanská, kosinová), která musí odpovídat úloze. <b>Hierarchické aglomerativní</b> shlukování postupně slučuje nejbližší shluky a výsledek ukáže v dendrogramu; chování určuje <b>metoda vazby</b> (single řetězí a zvládne nekonvexní tvary, complete/average/Ward hledají kompaktní shluky). <b>k-means</b> střídá přiřazení k nejbližšímu těžišti a přepočet těžišť; potřebuje znát K, standardizovaná spojitá data, je citlivý na start a odlehlé hodnoty a preferuje kulaté shluky podobné velikosti. <b>k-medoids</b> používá skutečné body jako středy, <b>DBSCAN</b> hustotu (bez K, s detekcí šumu). Počet shluků volíme kombinací znalosti, vizualizace a kritérií (WSS–loket, Calinski–Harabasz, silueta, Davies–Bouldin). Výsledky <b>validujeme</b> – se známými třídami (ARI, homogenita, kompletnost, V-skóre), bez nich vnitřními indexy. Při mnoha příznacích pomáhá PCA nebo UMAP.</p>
+<div class="takehome"><h3>Take-home messages (podle přednášky)</h3><ol>
+<li>Používej jen vstupy, které souvisejí s požadovaným shlukováním.</li>
+<li>Spojité vstupy pro shlukování standardizuj.</li>
+<li>Vysoký počet proměnných lze redukovat PCA, případně PCA + UMAP.</li>
+<li>Volba metody i metriky musí odpovídat úloze (k-means ne na kategorická data, eukleidovská vzdálenost ne na řetězce/slova).</li>
+<li>Volbou a nastavením metody ovlivníš citlivost na odlehlé hodnoty.</li>
+<li>Počet shluků odhaduj nástroji (WSS, CH, silueta, DB) a kombinuj je s vlastním úsudkem.</li>
+<li>Celý postup vyžaduje pečlivé nastavení – a kontrolu skutečných objektů ve shlucích.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Popište algoritmus k-means. Jaké má předpoklady a slabiny?</summary><div>
+<p>Zvolím K, náhodně umístím K těžišť; každý bod přiřadím k nejbližšímu těžišti; těžiště přepočítám jako průměr přiřazených bodů; opakuji, dokud se těžiště hýbou. Minimalizuje WSS. Předpoklady: znám K, data jsou spojitá a standardizovaná (eukleidovská vzdálenost). Slabiny: závislost na počáteční volbě (spouští se vícekrát), citlivost na odlehlé hodnoty (průměr), preferuje kulaté shluky podobné velikosti, nezvládne nekonvexní tvary ani kategorická data.</p></div></details>
+<details class="q"><summary>Jak funguje hierarchické shlukování a co je dendrogram?</summary><div>
+<p>Aglomerativní varianta začne s každým objektem jako samostatným shlukem a v každém kroku sloučí dva nejbližší shluky, až zbude jeden. Dendrogram je strom této historie: výška spojení odpovídá vzdálenosti sloučení. Vodorovným řezem zvolím počet shluků; vhodné místo je tam, kde jsou dlouhé svislé úseky bez slučování nebo kde prudce roste vzdálenost slučování.</p></div></details>
+<details class="q"><summary>Jaké znáte metody vazby a jak se liší?</summary><div>
+<p>Single (nejbližší soused) – vzdálenost nejbližších bodů; řetězí, zvládne protáhlé tvary, citlivá na šum. Complete (nejvzdálenější soused) – nejvzdálenější body; kompaktní shluky. Average – průměr všech vzdáleností; kompromis. Ward – sloučí ty shluky, jejichž spojením nejméně vzroste vnitroshlukový rozptyl; kompaktní shluky podobné velikosti.</p></div></details>
+<details class="q"><summary>Jak určíte optimální počet shluků?</summary><div>
+<p>Kombinací: znalost problematiky; vizuálně (bodový graf, po PCA/UMAP; dendrogram); metoda lokte na WSS (WSS vždy klesá, hledám zlom); Calinski–Harabasz (maximum; poměr rozptylu mezi a uvnitř shluků); průměrná silueta (maximum); Davies–Bouldin (minimum). Indexy se mohou neshodovat, proto je kombinuji s úsudkem a kontrolou skutečných objektů ve shlucích.</p></div></details>
+<details class="q"><summary>Jaký je rozdíl mezi k-means, k-medoids a DBSCAN?</summary><div>
+<p>k-means: střed = průměr bodů, potřebuje K, kulaté shluky, citlivý na odlehlé hodnoty. k-medoids: střed = skutečný bod, robustnější, libovolná metrika, použitelný i pro kategorie, ale pomalý. DBSCAN: shluky jako husté oblasti, nepotřebuje K, ale ε a minimální počet bodů; zvládne nekonvexní tvary a označí šum, hůř zvládá shluky různé hustoty.</p></div></details>
+<details class="q"><summary>Jak validovat výsledek shlukování?</summary><div>
+<p>Se známými třídami: ARI (−1 až 1, 1 ideál, ≤ 0 náhoda), homogenita (shluk obsahuje jednu třídu), kompletnost (třída je v jednom shluku), V-skóre (jejich harmonický průměr). Bez tříd: silueta (soudržnost vs. oddělenost bodu), Calinski–Harabasz, Davies–Bouldin; případně stabilita při bootstrapu. Vždy navíc věcná kontrola – dávají shluky smysl?</p></div></details>
+<details class="q"><summary>Proč standardizovat data před shlukováním a kdy použít kosinovou vzdálenost?</summary><div>
+<p>Shlukování stojí na vzdálenostech; bez standardizace by proměnná s největším rozsahem (např. v tisících) určovala vzdálenost téměř sama. Kosinovou vzdálenost použiji, když mě zajímá tvar profilu (směr vektoru), ne jeho velikost – např. u textu (frekvence slov), spekter nebo profilů exprese.</p></div></details>
+
+<nav class="pager"><a class="prev" href="04_vztahy.html"><small>← předchozí</small>Vztahy mezi proměnnými</a><a class="next" href="06_pca.html"><small>další →</small>Analýza hlavních komponent (PCA)</a></nav>
+</main>
+</div>
+</body>
+</html>

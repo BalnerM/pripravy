@@ -1,0 +1,256 @@
+<h1>Faktorová analýza (FA)</h1>
+<p class="lead">PCA popisuje, <i>kam</i> se data rozptylují. Faktorová analýza se ptá <i>proč</i> spolu příznaky korelují: předpokládá, že za korelacemi stojí několik skrytých společných příčin – faktorů – a snaží se je odhalit a pojmenovat.</p>
+
+<h2 id="motivace">Od PCA k faktorové analýze</h2>
+<p>V příkladu se spotřebou proteinů měla korelační matice silné korelace (maso, vejce, mléko spolu; obiloviny proti nim). <b>Proč?</b> Jedna možnost: potraviny se přímo ovlivňují. Druhá, pravděpodobnější: existují <b>skryté společné příčiny</b> (faktory) – třeba „životní úroveň“ nebo „středomořské klima“ – které ovlivňují spotřebu více potravin najednou, a tím mezi nimi vytvářejí korelace.</p>
+<div class="box intuice"><div class="box-t">Intuice</div>
+<p>Představ si, že u sportovců měříš 10 věcí (kilometry týdně, počet maratonů, rychlost, výkon, spirometrii…). Všechno se vším koreluje. FA předpokládá, že ve skutečnosti existují jen dvě skryté vlastnosti – např. „dlouhodobý trénink“ a „aktuální forma“ – a každé měření je jejich směsí plus něco vlastního (chyba měření, specifický vliv). Korelace mezi měřeními vznikají jen proto, že sdílejí stejné faktory.</p></div>
+<div class="box definice" id="def-fa"><div class="box-t">Definice: faktorová analýza</div>
+<p><b>Faktorová analýza</b> je statistická metoda, která vysvětluje korelace mezi \(p\) pozorovanými proměnnými pomocí menšího počtu \(R\) nepozorovaných (latentních) <b>společných faktorů</b>. Každá proměnná je modelována jako lineární kombinace společných faktorů plus vlastní <b>specifický faktor</b>.</p>
+<p class="jinak">hledám „skryté příčiny“, kvůli kterým se měřené veličiny pohybují spolu. Měřím kilometry, maratony, rychlost…, ale ve skutečnosti za tím stojí jen „trénovanost“ a „forma“.</p></div>
+<h3>Vlastnosti faktorů</h3>
+<ul>
+<li><b>působí na měřené příznaky</b> (ve větší či menší míře);</li>
+<li><b>nejsou / nemohou být měřeny</b> – jsou hypotetické (latentní);</li>
+<li>je jich <b>málo</b>: \(R \ll p\) (\(R\) = počet faktorů, \(p\) = počet příznaků);</li>
+<li>jsou (většinou) <b>nezávislé</b> mezi sebou a odlišné.</li>
+</ul>
+<h3>Cíle a podmínky FA</h3>
+<div class="tablewrap"><table>
+<tr><th>Cíle</th><th>Podmínky</th></tr>
+<tr><td>
+<ul style="margin:0">
+<li>odhalit <b>strukturu vztahů</b> mezi příznaky</li>
+<li><b>vysvětlit</b> lineární korelace / kovariance příznaků</li>
+<li>získat latentní příznaky = společné faktory</li>
+<li>redukce počtu příznaků (jen <i>vedlejší</i> cíl)</li>
+</ul></td><td>
+<ul style="margin:0">
+<li>vícerozměrné normální rozdělení příznaků</li>
+<li><b>korelované příznaky</b> (jinak FA nemá co popisovat)</li>
+<li>nepřítomnost odlehlých hodnot (podobně jako PCA)</li>
+</ul></td></tr>
+</table></div>
+
+<h2 id="model">Model faktorové analýzy</h2>
+<div class="box definice" id="def-spolecny-specificky"><div class="box-t">Definice: společný a specifický faktor</div>
+<p><b>Společný faktor</b> \(F_r\) je latentní proměnná, která ovlivňuje více pozorovaných proměnných zároveň, a tím mezi nimi vytváří korelace. <b>Specifický (jedinečný) faktor</b> \(\varepsilon_j\) ovlivňuje jen jednu proměnnou \(x_j\) a zahrnuje její vlastní variabilitu včetně chyby měření; s ničím jiným nekoreluje.</p>
+<p class="jinak">společný faktor = „sdílená příčina“ (trénovanost se projeví v kilometrech i maratonech); specifický faktor = „vlastní šum“ jedné veličiny (nepřesnost měření spirometrem).</p></div>
+<div class="box definice" id="def-faktorove-zateze"><div class="box-t">Definice: faktorové zátěže</div>
+<p><b>Faktorová zátěž</b> \(\gamma_{jr}\) je koeficient, se kterým \(r\)-tý společný faktor vstupuje do modelu \(j\)-té proměnné. Pro standardizované proměnné a nekorelované faktory je rovna <b>korelaci</b> proměnné \(j\) s faktorem \(r\).</p>
+<p class="jinak">jak silně daná skrytá příčina ovlivňuje danou měřenou veličinu. Podle proměnných s vysokými zátěžemi faktor pojmenovávám.</p></div>
+<div class="box vzorec"><div class="box-t">Model pro jeden příznak</div>
+\[ x_j - \mu_j = \gamma_{j1}F_1 + \gamma_{j2}F_2 + \dots + \gamma_{jR}F_R + \varepsilon_j \]
+<table class="vars">
+<tr><td>\(x_j - \mu_j\)</td><td>odchylka \(j\)-tého příznaku od jeho průměru</td></tr>
+<tr><td>\(F_1,\dots,F_R\)</td><td><b>společné faktory</b> – působí na všechny příznaky; <b>vyvolávají korelace</b> mezi příznaky</td></tr>
+<tr><td>\(\gamma_{jr}\)</td><td><b>faktorové zátěže</b> – příspěvek faktoru \(r\) do příznaku \(j\); pro standardizovaná data = korelace příznaku s faktorem</td></tr>
+<tr><td>\(\varepsilon_j\)</td><td><b>specifický faktor</b> – vlastní pro každý příznak; jen další zdroj variability (např. chyba měření), korelace nevytváří</td></tr>
+</table>
+<p>Maticově: \(\mathbf{x} - \boldsymbol\mu = \boldsymbol\Gamma\mathbf{F} + \boldsymbol\varepsilon\); pro standardizovaná data \(\mathbf{z} = \boldsymbol\Gamma^*\mathbf{F} + \boldsymbol\varepsilon^*\).</p></div>
+<div class="schema">
+<svg viewBox="0 0 760 260" role="img" aria-label="Diagram modelu faktorové analýzy: dva faktory působí na šest příznaků, každý příznak má vlastní specifický faktor">
+  <defs><marker id="ar9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <ellipse cx="200" cy="50" rx="95" ry="30" class="fl1" style="stroke:var(--c1)"/><text x="200" y="46" text-anchor="middle">F₁</text><text x="200" y="64" text-anchor="middle" class="t2">„dlouhodobý trénink“</text>
+  <ellipse cx="560" cy="50" rx="95" ry="30" class="fl2" style="stroke:var(--c2)"/><text x="560" y="46" text-anchor="middle">F₂</text><text x="560" y="64" text-anchor="middle" class="t2">„aktuální forma“</text>
+  <g>
+    <rect x="20" y="140" width="100" height="40" rx="6" class="node"/><text x="70" y="165" text-anchor="middle" style="font-size:13px">km/týden</text>
+    <rect x="140" y="140" width="100" height="40" rx="6" class="node"/><text x="190" y="165" text-anchor="middle" style="font-size:13px">maratony</text>
+    <rect x="260" y="140" width="100" height="40" rx="6" class="node"/><text x="310" y="165" text-anchor="middle" style="font-size:13px">spirometrie</text>
+    <rect x="400" y="140" width="100" height="40" rx="6" class="node"/><text x="450" y="165" text-anchor="middle" style="font-size:13px">rychlost</text>
+    <rect x="520" y="140" width="100" height="40" rx="6" class="node"/><text x="570" y="165" text-anchor="middle" style="font-size:13px">zrychlení</text>
+    <rect x="640" y="140" width="100" height="40" rx="6" class="node"/><text x="690" y="165" text-anchor="middle" style="font-size:13px">výkon</text>
+  </g>
+  <g style="stroke:var(--c1);stroke-width:2.2" marker-end="url(#ar9)"><path d="M170 78 L80 138"/><path d="M195 80 L192 138"/><path d="M225 78 L300 138"/></g>
+  <g style="stroke:var(--c1);stroke-width:1;opacity:.55" marker-end="url(#ar9)"><path d="M260 70 L440 138"/></g>
+  <g style="stroke:var(--c2);stroke-width:2.2" marker-end="url(#ar9)"><path d="M535 80 L460 138"/><path d="M562 80 L570 138"/><path d="M590 78 L680 138"/></g>
+  <g style="stroke:var(--c2);stroke-width:1;opacity:.55" marker-end="url(#ar9)"><path d="M480 66 L325 138"/></g>
+  <g class="t2" text-anchor="middle"><text x="70" y="236">ε₁</text><text x="190" y="236">ε₂</text><text x="310" y="236">ε₃</text><text x="450" y="236">ε₄</text><text x="570" y="236">ε₅</text><text x="690" y="236">ε₆</text></g>
+  <g class="ln" marker-end="url(#ar9)"><path d="M70 222 V184"/><path d="M190 222 V184"/><path d="M310 222 V184"/><path d="M450 222 V184"/><path d="M570 222 V184"/><path d="M690 222 V184"/></g>
+  <text x="380" y="256" text-anchor="middle" class="t2">tloušťka šipky ~ velikost zátěže γ; ε = specifické faktory (vlastní rozptyl příznaku)</text>
+</svg></div>
+<div class="box odnes"><div class="box-t">Co si z diagramu odnést</div>
+<p>Každý příznak je ovlivněn <b>všemi</b> společnými faktory, ale <b>v různé míře</b> (různé zátěže). Příznaky „pod stejným faktorem“ spolu korelují, protože sdílejí stejnou příčinu. Specifické faktory ε jsou pro každý příznak vlastní a korelace nevytvářejí.</p></div>
+<h3>Vlastnosti parametrů modelu</h3>
+<ul>
+<li>Společné faktory \(F_r\): vzájemně nezávislé, střední hodnota 0, rozptyl 1 (kovarianční matice faktorů = \(\mathbf{I}\)).</li>
+<li>Specifické faktory \(\varepsilon_j\): vzájemně nezávislé, střední hodnota 0, rozptyly \(\psi_j\) → jejich kovarianční matice \(\boldsymbol\Psi\) je <b>diagonální</b>.</li>
+<li>\(F_r\) a \(\varepsilon_j\) jsou nezávislé pro každou kombinaci \(r\) a \(j\).</li>
+</ul>
+
+<h2 id="komunalita">Model „trochu jinak“: rozklad kovarianční matice a komunalita</h2>
+<p>Z modelu a vlastností parametrů plyne, jak vypadá kovarianční (korelační) matice příznaků:</p>
+<div class="box vzorec"><div class="box-t">Kovarianční struktura</div>
+\[ \mathbf{S} = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi \qquad\qquad \mathbf{P} = \boldsymbol\Gamma^*\boldsymbol\Gamma^{*T} + \boldsymbol\Psi^* \;\text{(korelační)} \]
+<p>Pro rozptyl jednoho příznaku (diagonála):</p>
+\[ s_j^2 = \underbrace{\sum_{r=1}^{R}\gamma_{jr}^2}_{h_j^2\ \text{komunalita}} + \underbrace{\psi_j}_{\text{specifický rozptyl}} \qquad\xrightarrow{\text{standardizovaná data}}\qquad 1 = h_j^2 + \psi_j \]
+<table class="vars">
+<tr><td>\(\boldsymbol\Gamma\boldsymbol\Gamma^T\)</td><td>část kovariancí vysvětlená společnými faktory – <b>mimo diagonálu je celá korelační struktura</b></td></tr>
+<tr><td>\(\boldsymbol\Psi\)</td><td>diagonální matice specifických rozptylů – přispívá jen na diagonálu</td></tr>
+<tr><td>\(h_j^2\)</td><td><b>komunalita</b> – podíl rozptylu příznaku vysvětlený společnými faktory</td></tr>
+<tr><td>\(\psi_j\)</td><td>specifický rozptyl způsobený jinými příčinami (chyba měření, vlastní vlivy)</td></tr>
+</table></div>
+<div class="box definice" id="def-komunalita"><div class="box-t">Definice: komunalita a specifický rozptyl</div>
+<p><b>Komunalita</b> \(h_j^2 = \sum_r \gamma_{jr}^2\) je ta část rozptylu \(j\)-té proměnné, kterou vysvětlují společné faktory. <b>Specifický rozptyl</b> (unikvita) \(\psi_j\) je zbývající část rozptylu, připadající na specifický faktor. Pro standardizovanou proměnnou platí \(h_j^2 + \psi_j = 1\).</p>
+<p class="jinak">komunalita říká, „kolik má proměnná společného s ostatními“ (přes faktory); specifický rozptyl, „kolik je v ní jejího vlastního, nesdíleného“.</p></div>
+<div class="box priklad"><div class="box-t">Příklad</div>
+<p>Standardizovaný příznak má zátěže 0,8 na F1 a 0,3 na F2. Komunalita \(h^2 = 0{,}8^2 + 0{,}3^2 = 0{,}64 + 0{,}09 = 0{,}73\): 73 % jeho rozptylu vysvětlují společné faktory, 27 % je specifický rozptyl.</p></div>
+<div class="box intuice"><div class="box-t">Je lepší vysoká, nebo nízká komunalita?</div>
+<p>Vysoká komunalita = příznak je dobře popsán faktory (hodí se do společné analýzy). Velmi nízká = příznak má s ostatními málo společného. Ale <b>nesnažíme se</b> dosáhnout komunalit blízkých 1 (specifických rozptylů blízkých 0) – vede to k triviálním faktorům, které jen kopírují jednotlivé příznaky.</p></div>
+
+<h2 id="odhad">Odhad parametrů modelu</h2>
+<p><b>Známe</b>: standardizovaná data \(\mathbf{Z}\,(n\times p)\) a korelační matici \(\mathbf{P}\,(p\times p)\). <b>Neznáme</b>: hodnoty faktorů \(\mathbf{F}\,(n\times R)\), zátěže \(\boldsymbol\Gamma\,(p\times R)\), specifické faktory a jejich rozptyly \(\boldsymbol\Psi\). Musíme zvolit počet faktorů \(R \ll p\). Metody odhadu:</p>
+<ol>
+<li><b>Odhad založený na PCA</b>,</li>
+<li><b>metoda hlavních faktorů</b> (hlavních os; iterační / neiterační),</li>
+<li>metoda maximální věrohodnosti (maximum likelihood) a další.</li>
+</ol>
+<h3>Odhad pomocí PCA</h3>
+<p>Z PCA korelační matice máme vlastní vektory \(\mathbf{V}\) a vlastní čísla \(\boldsymbol\Lambda\). Data lze zpětně rekonstruovat z hlavních komponent. Rozdělíme komponenty na \(R\) nejdůležitějších (→ společné faktory) a zbylých \(p-R\) (→ specifické faktory):</p>
+<div class="box vzorec"><div class="box-t">Výsledek</div>
+\[ \hat{\boldsymbol\Gamma} = \mathbf{V}_1\boldsymbol\Lambda_1^{1/2} \qquad\text{(faktorové zátěže = komponentní zátěže vážené odmocninou vlastních čísel)} \]
+<table class="vars">
+<tr><td>\(\mathbf{V}_1\)</td><td>prvních \(R\) vlastních vektorů korelační matice</td></tr>
+<tr><td>\(\boldsymbol\Lambda_1^{1/2}\)</td><td>odmocniny prvních \(R\) vlastních čísel – převedou směr na korelaci příznak–faktor</td></tr>
+</table>
+<p>Odhad faktorů = normované komponentní skóre prvních \(R\) komponent; specifické faktory se odhadnou z posledních \(p-R\) komponent (jejich kovarianční matice ale vyjde jen přibližně diagonální).</p></div>
+<h3>Metoda hlavních faktorů (princip)</h3>
+<div class="box postup"><div class="box-t">Iterace komunalit</div>
+<ol>
+<li>Korelační matice \(\mathbf{P}\).</li>
+<li>Počáteční odhad komunalit \(h_j^2\) jako čtverec vícenásobného korelačního koeficientu (jak dobře \(x_j\) vysvětlí ostatní příznaky).</li>
+<li>Komunality dosadíme <b>na diagonálu místo jedniček</b> → <b>redukovaná korelační matice</b> (na diagonále jen „sdílený“ rozptyl, ne celkový).</li>
+<li>PCA redukované matice → \(R\) největších vlastních čísel a vektorů → zátěže → nové komunality.</li>
+<li>Nové komunality znovu na diagonálu, opakovat dokud to konverguje a není to nesmyslné (záporné komunality apod.).</li>
+</ol></div>
+<p>Rozdíl od PCA je právě v diagonále: PCA rozkládá <b>celý rozptyl</b>, metoda hlavních faktorů jen <b>společný (sdílený)</b> rozptyl.</p>
+<div class="box definice" id="def-redukovana-matice"><div class="box-t">Definice: redukovaná korelační matice</div>
+<p><b>Redukovaná korelační matice</b> je korelační matice, ve které jsou jedničky na diagonále nahrazeny (odhady) komunalit \(h_j^2\). Mimo diagonálu zůstávají původní korelace.</p>
+<p class="jinak">„korelační matice bez vlastního šumu proměnných“. Na diagonále necháme jen tu část rozptylu, kterou proměnná sdílí s ostatními – a právě tu chce faktorová analýza vysvětlit.</p></div>
+<div class="box definice" id="def-vicenasobna-korelace"><div class="box-t">Definice: vícenásobný korelační koeficient</div>
+<p><b>Vícenásobný (mnohonásobný) korelační koeficient</b> \(R_j\) je korelace mezi proměnnou \(x_j\) a její nejlepší lineární předpovědí ze všech ostatních proměnných; jeho čtverec je koeficient determinace \(R_j^2\) této regrese (stejný jako ve VIF).</p>
+<p class="jinak">„jak dobře umím \(x_j\) spočítat z ostatních“. Je to rozumný první tip na komunalitu: co jde předpovědět z ostatních, to s nimi proměnná sdílí.</p></div>
+
+<h2 id="pocet">Volba počtu faktorů R</h2>
+<ul>
+<li><b>Subjektivně podle PCA</b> (vysvětlený rozptyl, scree plot) – aspoň na začátku, pak lze počet měnit.</li>
+<li>\(R \le p/2\) – jinak je neznámých příliš mnoho a faktorové řešení nemusí existovat; navíc Kaiserovo kritérium (vlastní čísla \(\mathbf{P}\) &gt; 1).</li>
+<li>Počet faktorů vysvětlující &gt; 90 % celkové <b>komunality</b> (ne celkového rozptylu!) a aspoň 70–80 % celkového rozptylu.</li>
+<li>Odstranit <b>triviální faktory</b> (triviální faktor = faktor, který má vysokou zátěž jen u jediného příznaku, takže nevysvětluje žádnou korelaci, jen kopíruje tento příznak). Pokud ten příznak koreluje jen s tímto faktorem, lze ho analyzovat zvlášť – může být důležitý, ale do společné analýzy nepatří.</li>
+<li>Nesnažit se o specifické rozptyly blízké nule (viz výše).</li>
+</ul>
+
+<h2 id="rotace">Nejednoznačnost řešení a rotace faktorů</h2>
+<div class="box intuice"><div class="box-t">Klíčový problém FA</div>
+<p>Vezmi libovolnou ortogonální matici \(\mathbf{T}\) (rotaci, \(\mathbf{T}\mathbf{T}^T = \mathbf{I}\)) a definuj nové zátěže \(\boldsymbol\Gamma_1 = \boldsymbol\Gamma\mathbf{T}\) a nové faktory \(\mathbf{F}_1 = \mathbf{T}^T\mathbf{F}\). Pak</p>
+\[ \boldsymbol\Gamma_1\boldsymbol\Gamma_1^T + \boldsymbol\Psi = \boldsymbol\Gamma\mathbf{T}\mathbf{T}^T\boldsymbol\Gamma^T + \boldsymbol\Psi = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi = \mathbf{S} \]
+<p>Různé zátěže generují <b>stejnou</b> kovarianční matici – modely jsou z dat <b>nerozlišitelné</b>. \(\mathbf{S}\) lze vyjádřit nekonečně mnoha modely. Která \(\mathbf{T}\) je „správná“? Geometricky \(\mathbf{T}\) jen <b>otočí faktorové osy</b>.</p></div>
+<div class="box definice" id="def-rotace"><div class="box-t">Definice: rotace faktorů</div>
+<p><b>Rotace faktorů</b> je transformace matice zátěží \(\boldsymbol\Gamma \to \boldsymbol\Gamma\mathbf T\) (a faktorů \(\mathbf F \to \mathbf T^{-1}\mathbf F\)), která nemění vysvětlenou kovarianční strukturu ani komunality, ale mění zátěže tak, aby se faktory daly snáz interpretovat. <b>Ortogonální</b> rotace (\(\mathbf T\) ortogonální) zachovává nekorelovanost faktorů, <b>šikmá</b> (oblique) připouští korelované faktory.</p>
+<p class="jinak">„natočím osy faktorů, aby mířily přímo do skupin proměnných“. Data ani jejich vzájemné vztahy se nezmění, jen se změní pohled – a s ním srozumitelnost.</p></div>
+<p>Odpověď FA: zvolíme tu rotaci, při které je <b>popis nejjednodušší</b>. Zatímco PCA má jednoznačný cíl (maximální rozptyl v každé ose), cílem FA je <b>jednoduchá interpretace</b> – optimalizace se týká hledání matice \(\mathbf{T}\).</p>
+<h3>Jednoduchá struktura</h3>
+<div class="box definice" id="def-jednoducha-struktura"><div class="box-t">Definice: jednoduchá struktura</div>
+<p><b>Jednoduchá struktura</b> (Thurstone) je takový tvar matice zátěží, ve kterém má každá proměnná vysokou zátěž jen u jednoho (nebo co nejmenšího počtu) faktoru a zanedbatelné zátěže u ostatních, a každý faktor je výrazně spojen jen s částí proměnných.</p>
+<p class="jinak">„každá proměnná patří hlavně k jednomu faktoru“. Matice zátěží pak vypadá jako bloky velkých čísel obklopené nulami a faktory jdou jednoznačně pojmenovat.</p></div>
+<p>Ideál: každý příznak má <b>vysokou zátěž u co nejmenšího počtu faktorů</b> (ideálně jednoho) a nízké u ostatních; každý faktor je spojen jen s částí příznaků. Formálně např.: každý řádek matice zátěží obsahuje aspoň jednu nulu, každý sloupec aspoň \(R\) nul, pro každou dvojici sloupců existuje víc příznaků s nulou v jednom a vysokou zátěží v druhém, málo příznaků je vysoko v obou… V praxi je struktura jen <b>přibližně</b> jednoduchá (zátěže se nule blíží).</p>
+<figure class="wide"><div class="paper"><img src="figures/fig09_rotace.png" alt="Faktorové zátěže před a po rotaci varimax" loading="lazy"></div>
+<figcaption><b>Obr. 9.1</b> Zátěže 10 příznaků sportovců (simulace se strukturou jako v přednášce) před rotací (odhad z PCA) a po rotaci varimax.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Šipky (příznaky) se rotací <b>nehýbou vůči sobě</b> – otáčí se jen osy F1 a F2. Před rotací mají všechny příznaky vysokou zátěž na F1 (F1 je „obecný faktor“, jako PC1) a interpretace je mlhavá. Po rotaci leží osa F1 u modré skupiny (trénink) a osa F2 u oranžové (forma); každý z těchto příznaků je „nasycen“ hlavně jedním faktorem. Zelené příznaky leží mezi osami – souvisejí s oběma faktory. Komunality se rotací nemění.</p></div>
+<h3>Druhy rotací</h3>
+<div class="tablewrap"><table>
+<tr><th>typ</th><th>faktory po rotaci</th><th>význam zátěží</th><th>algoritmy</th></tr>
+<tr><td><b>ortogonální</b> (pravoúhlá, rigidní)</td><td>nekorelované</td><td>zátěže = korelace příznak–faktor</td><td><b>varimax</b>, quartimax, orthomax</td></tr>
+<tr><td><b>šikmá</b> (neortogonální, oblique)</td><td>mohou být korelované</td><td>dostupné korelace příznak–faktor i faktor–faktor</td><td>promax, <b>oblimin</b></td></tr>
+</table></div>
+<p>Subjektivní (grafická) rotace = otáčím osy ručně, dokud neleží blízko skupin příznaků. Objektivní (numerické) metody implementují podmínky jednoduché struktury a iterativně optimalizují zátěže po dvojicích faktorů.</p>
+<div class="box definice" id="def-varimax"><div class="box-t">Definice: varimax a oblimin</div>
+<p><b>Varimax</b> je ortogonální rotace, která volí rotační matici tak, aby byl součet (přes faktory) rozptylů druhých mocnin zátěží v jednotlivých sloupcích matice zátěží co největší. <b>Oblimin</b> je šikmá rotace, která minimalizuje kovariance druhých mocnin zátěží mezi různými faktory a připouští, aby faktory spolu korelovaly.</p>
+<p class="jinak">varimax „polarizuje“ zátěže každého faktoru na velké a téměř nulové – nic napůl. Oblimin dělá podobné zjednodušení, ale nenutí osy faktorů být kolmé, když skupiny proměnných kolmé nejsou.</p></div>
+<div class="box vzorec"><div class="box-t">Varimax (myšlenka vzorce)</div>
+\[ \max_{\mathbf{T}}\ \sum_{r=1}^{R}\left[\frac{1}{p}\sum_{j=1}^{p}\left(\gamma_{jr}^2\right)^2 - \left(\frac{1}{p}\sum_{j=1}^{p}\gamma_{jr}^2\right)^2\right] \]
+<p>= maximalizuj <b>rozptyl druhých mocnin zátěží</b> v každém sloupci (faktoru). Velký rozptyl znamená, že zátěže jsou buď velké, nebo blízko nuly – nic „napůl“. Zvětšují se rozdíly mezi korelacemi: některé příznaky silně souvisí s faktorem, jiné skoro vůbec. <b>Normalizovaný varimax</b> zátěže nejdřív vydělí \(\sqrt{h_j^2}\) (aby příznaky s nízkou komunalitou neměly menší váhu) a na konci je zpět vynásobí.</p>
+<p>Limitace: různé výchozí zátěže (PCA, hlavní faktory, ML) dávají různé výsledky; pro různé \(R\) vychází jiná jednoduchá struktura.</p></div>
+<p><b>Oblimin</b> (šikmá rotace) vychází z varimaxových zátěží a minimalizuje kovarianci druhých mocnin zátěží v různých sloupcích. Hodí se, když jsou v datech „nekolmé“ shluky příznaků (faktory, které spolu přirozeně souvisí). Limitace: vychází z ortogonálních os, čímž do řešení „zanáší“ ortogonalitu.</p>
+
+<h2 id="skore">Faktorové skóre</h2>
+<div class="box definice" id="def-faktorove-skore"><div class="box-t">Definice: faktorové skóre</div>
+<p><b>Faktorové skóre</b> je odhad hodnoty společného faktoru pro konkrétní objekt, vypočtený z jeho naměřených hodnot pomocí odhadnutých zátěží a specifických rozptylů.</p>
+<p class="jinak">„kolik má tento sportovec trénovanosti a kolik formy“. Faktory přímo měřit nejde, proto je u každého objektu musíme dopočítat z toho, co měřit jde.</p></div>
+<p>Hodnoty faktorů pro jednotlivé objekty (např. jak „trénovaný“ je konkrétní sportovec) potřebujeme, když chceme faktory použít jako nové příznaky – vstup do další analýzy nebo shlukování. Odhadují se ze zátěží a specifických rozptylů (nerotovaných nebo rotovaných), např. <b>váženou metodou nejmenších čtverců</b>:</p>
+\[ \hat{\mathbf{f}}_i = (\hat{\boldsymbol\Gamma}^T\hat{\boldsymbol\Psi}^{-1}\hat{\boldsymbol\Gamma})^{-1}\hat{\boldsymbol\Gamma}^T\hat{\boldsymbol\Psi}^{-1}(\mathbf{x}_i - \bar{\mathbf{x}}) \]
+<p>Logika: hledáme takové hodnoty faktorů, aby se z nich data „zrekonstruovala“ s co nejmenší chybou; příznaky s velkým specifickým rozptylem (nespolehlivé) mají menší váhu. Při odhadu podle PCA (stejné specifické rozptyly) to vede jednoduše na normovaná komponentní skóre.</p>
+
+<h2 id="postup">Shrnutí postupu FA</h2>
+<div class="box postup"><div class="box-t">Postup</div>
+<ol>
+<li>Ověř podmínky FA (průzkumová analýza: korelace, normalita, odlehlé hodnoty; Bartlettův test).</li>
+<li>Odvoď výchozí faktorové osy (odhad parametrů, např. PCA).</li>
+<li>Stanov počet faktorů \(R\) (vlastní čísla, scree plot…).</li>
+<li>Rotuj faktorové osy (zjednodušení popisu).</li>
+<li>Znovu analyzuj: komunality, zátěže (korelace příznaků s faktory), faktorové skóre (je-li potřeba).</li>
+<li><b>Interpretuj</b> – pojmenuj faktory.</li>
+</ol></div>
+<div class="box priklad"><div class="box-t">Příklad z přednášky: sportovci</div>
+<p>10 příznaků (km/týden, počet maratonů, roky aktivity, BMI, věk, rychlost, zrychlení, výkon, spirometrie, biochemie), silné korelace (Bartlett 897,4; 45 st. v.; p ≈ 0). PCA: první vlastní číslo 5,88, druhé 1,48; podle vysvětleného rozptylu a \(R &lt; p/2\) → \(R = 2\). Po rotaci varimax (v tabulce přednášky dávají hodnoty F1 + F2 v řádku komunalitu, jde tedy o podíly rozptylu příznaku připadající na každý faktor, tj. kvadráty zátěží):</p>
+<div class="tablewrap"><table>
+<tr><th>příznak</th><th class="num">F1</th><th class="num">F2</th><th class="num">komunalita</th></tr>
+<tr><td>km/týden</td><td class="num"><b>0,57</b></td><td class="num">0,00</td><td class="num">0,57</td></tr>
+<tr><td>počet maratonů</td><td class="num"><b>0,77</b></td><td class="num">0,01</td><td class="num">0,78</td></tr>
+<tr><td>roky aktivity</td><td class="num"><b>0,68</b></td><td class="num">0,01</td><td class="num">0,69</td></tr>
+<tr><td>BMI</td><td class="num">0,52</td><td class="num">0,36</td><td class="num">0,89</td></tr>
+<tr><td>věk</td><td class="num">0,49</td><td class="num">0,24</td><td class="num">0,73</td></tr>
+<tr><td>rychlost</td><td class="num">0,01</td><td class="num"><b>0,53</b></td><td class="num">0,54</td></tr>
+<tr><td>zrychlení</td><td class="num">0,01</td><td class="num"><b>0,80</b></td><td class="num">0,82</td></tr>
+<tr><td>výkon</td><td class="num">0,02</td><td class="num"><b>0,61</b></td><td class="num">0,63</td></tr>
+<tr><td>spirometrie</td><td class="num">0,53</td><td class="num">0,34</td><td class="num">0,91</td></tr>
+<tr><td>biochemie</td><td class="num">0,52</td><td class="num">0,26</td><td class="num">0,78</td></tr>
+</table></div>
+<p><b>Interpretace:</b> F1 „nasycuje“ km/týden, maratony a roky aktivity → <b>faktor dlouhodobého tréninku</b>. F2 nasycuje rychlost, zrychlení a výkon → <b>faktor aktuální sportovní formy</b>. BMI, věk, spirometrie a biochemie souvisí s oběma. Komunality jsou relativně vysoké → korelace příznaků jsou z velké části vysvětleny společnými faktory. Korelační matice ukázala jen „co koreluje s čím“; FA nabídla <b>vysvětlení proč</b>.</p></div>
+
+<h2 id="pca-vs-fa">PCA vs. FA</h2>
+<div class="tablewrap"><table>
+<tr><th></th><th>PCA</th><th>FA</th></tr>
+<tr><td>otázka</td><td>jak co nejúsporněji popsat <b>rozptyl</b> dat?</td><td>jaké skryté příčiny vysvětlují <b>korelace</b>?</td></tr>
+<tr><td>směr modelu</td><td>komponenty = kombinace příznaků (\(PC = \mathbf{x}\mathbf{v}\))</td><td>příznaky = kombinace faktorů + chyba (\(\mathbf{x} = \boldsymbol\Gamma\mathbf{F} + \boldsymbol\varepsilon\))</td></tr>
+<tr><td>rozptyl</td><td>celkový; žádná chybová složka (\(\boldsymbol\Psi = 0\))</td><td>dělí se na společný (komunalita) a specifický (\(\boldsymbol\Psi\))</td></tr>
+<tr><td>řešení</td><td>jednoznačné (maximální rozptyl)</td><td>nejednoznačné → rotace pro jednoduchou strukturu</td></tr>
+<tr><td>první osa</td><td>PC1 = směr max. rozptylu</td><td>hlavní faktor de facto odpovídá PC1 (před rotací)</td></tr>
+<tr><td>korelace os</td><td>vždy nekorelované</td><td>nekorelované, nebo korelované (šikmá rotace)</td></tr>
+<tr><td>interpretace</td><td>často obtížná (vše ve všem)</td><td>snazší – faktory leží blízko skupin korelovaných příznaků</td></tr>
+<tr><td>hlavní účel</td><td>redukce dimenze, vizualizace</td><td>vysvětlení struktury; redukce je vedlejší</td></tr>
+</table></div>
+<p>FA tak lze chápat jako „rozšíření“ PCA pro vysvětlení podstaty závislostí mezi příznaky.</p>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Faktorová analýza předpokládá, že korelace mezi příznaky způsobuje malý počet skrytých <b>společných faktorů</b>; každý příznak je lineární kombinací faktorů (s <b>faktorovými zátěžemi</b>) plus vlastní <b>specifický faktor</b>. Z toho plyne rozklad \(\mathbf{S} = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi\): rozptyl každého příznaku = <b>komunalita</b> (sdílená část) + specifický rozptyl. Parametry se odhadují např. pomocí PCA (\(\hat{\boldsymbol\Gamma} = \mathbf{V}_1\boldsymbol\Lambda_1^{1/2}\)) nebo metodou hlavních faktorů (iterace komunalit na diagonále). Řešení je <b>nejednoznačné</b> – libovolná rotace os dává stejnou kovarianční matici – a proto se osy <b>rotují</b> k jednoduché struktuře: ortogonálně (varimax – maximalizuje rozptyl kvadrátů zátěží) nebo šikmo (oblimin – faktory mohou korelovat). Faktorové skóre umožní použít faktory jako nové příznaky. Na rozdíl od PCA FA vysvětluje korelace, odděluje chybový rozptyl a míří na interpretaci.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>FA hledá skryté příčiny korelací; PCA hledá směry největšího rozptylu.</li>
+<li>Model: příznak = Σ zátěž × faktor + specifický faktor.</li>
+<li>Komunalita = podíl rozptylu příznaku vysvětlený společnými faktory (1 = h² + ψ u standardizovaných dat).</li>
+<li>Řešení FA je jednoznačné jen do rotace – rotace mění interpretaci, ne kvalitu modelu.</li>
+<li>Varimax = ortogonální rotace k „buď velké, nebo nulové“ zátěži; oblimin = šikmá, faktory smí korelovat.</li>
+<li>Faktory je nutné věcně pojmenovat – to je hlavní výstup FA.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Jaký je princip a cíl faktorové analýzy?</summary><div>
+<p>FA předpokládá, že pozorované korelace mezi příznaky vznikají působením malého počtu neměřitelných společných faktorů. Cílem je odhalit strukturu vztahů mezi příznaky, vysvětlit jejich korelace a získat interpretovatelné latentní proměnné; redukce dimenze je vedlejší. Podmínky: korelované příznaky, ideálně vícerozměrná normalita, žádné odlehlé hodnoty.</p></div></details>
+<details class="q"><summary>Napište a vysvětlete model FA.</summary><div>
+<p>\(x_j - \mu_j = \gamma_{j1}F_1 + \dots + \gamma_{jR}F_R + \varepsilon_j\). Společné faktory \(F\) (nezávislé, průměr 0, rozptyl 1) působí na všechny příznaky a vytvářejí mezi nimi korelace; zátěže \(\gamma\) říkají, jak silně (pro standardizovaná data = korelace příznak–faktor); specifický faktor \(\varepsilon_j\) je vlastní pro každý příznak (chyba měření), nezávislý, s rozptylem \(\psi_j\). Maticově \(\mathbf x - \boldsymbol\mu = \boldsymbol\Gamma\mathbf F + \boldsymbol\varepsilon\), a z toho \(\mathbf S = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi\).</p></div></details>
+<details class="q"><summary>Co je komunalita?</summary><div>
+<p>Část rozptylu příznaku vysvětlená společnými faktory: \(h_j^2 = \sum_r \gamma_{jr}^2\). Pro standardizované příznaky \(1 = h_j^2 + \psi_j\). Vysoká komunalita = příznak dobře popsaný faktory; ale nesnažíme se o komunality blízké 1, vedlo by to k triviálním faktorům.</p></div></details>
+<details class="q"><summary>Proč se v FA rotují faktory a jak funguje varimax?</summary><div>
+<p>Protože řešení je nejednoznačné: pro libovolnou ortogonální matici \(\mathbf T\) dávají zátěže \(\boldsymbol\Gamma\mathbf T\) stejnou kovarianční matici. Z nekonečně mnoha ekvivalentních řešení vybereme to s nejjednodušší interpretací (jednoduchá struktura: každý příznak výrazně jen u jednoho faktoru). Varimax hledá ortogonální rotaci, která maximalizuje rozptyl druhých mocnin zátěží v každém sloupci – zátěže se tak polarizují na velké a téměř nulové. Normalizovaná verze nejdřív dělí zátěže odmocninou komunality.</p></div></details>
+<details class="q"><summary>Jaký je rozdíl mezi ortogonální a šikmou rotací?</summary><div>
+<p>Ortogonální (varimax, quartimax) zachová kolmost os → faktory zůstanou nekorelované a zátěže jsou korelace příznak–faktor. Šikmá (oblimin, promax) dovolí faktorům korelovat; hodí se, když skupiny příznaků nejsou „kolmé“ (faktory přirozeně souvisí). Získáme navíc korelace mezi faktory.</p></div></details>
+<details class="q"><summary>Jak se odhadují parametry FA?</summary><div>
+<p>Metodou založenou na PCA (zátěže = vlastní vektory korelační matice × odmocniny vlastních čísel prvních R komponent; specifické faktory z ostatních komponent), metodou hlavních faktorů (komunality iterativně dosazované na diagonálu korelační matice a opakovaná PCA této redukované matice) nebo metodou maximální věrohodnosti.</p></div></details>
+<details class="q"><summary>Porovnejte PCA a FA.</summary><div>
+<p>PCA: komponenty jsou kombinace příznaků, popisují celkový rozptyl, žádná chybová složka, jednoznačné řešení (max. rozptyl), cílem je redukce dimenze. FA: příznaky jsou kombinace faktorů + specifická chyba, rozptyl dělí na komunalitu a specifický rozptyl, řešení nejednoznačné (rotace), cílem je vysvětlit korelace a interpretovat skryté příčiny; faktory mohou být i korelované (šikmá rotace). Nerotovaný hlavní faktor přibližně odpovídá PC1.</p></div></details>
+<details class="q"><summary>Jak zvolit počet faktorů?</summary><div>
+<p>Podle PCA (vysvětlený rozptyl, scree plot, Kaiser λ &gt; 1), s omezením R ≤ p/2; faktory mají vysvětlit &gt; 90 % celkové komunality a aspoň 70–80 % rozptylu; triviální faktory (vázané na jediný příznak) vyřadit. Nesnažit se o nulové specifické rozptyly.</p></div></details>

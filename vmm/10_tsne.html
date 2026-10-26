@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>t-SNE – VMM</title>
+<meta name="description" content="Varietní učení, podobnosti jako pravděpodobnosti, perplexita, KL divergence, úskalí.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <a class="brand" href="index.html">VMM – příprava na zkoušku<small>vícerozměrné metody, principy a postupy</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_uvod.html"><span class="n">1</span><span>Úvod do analýzy vícerozměrných dat</span></a></li>
+    <li><a href="02_vicerozmerne_rozdeleni.html"><span class="n">2</span><span>Vícerozměrné rozdělení a testy</span></a></li>
+    <li><a href="03_predzpracovani.html"><span class="n">3</span><span>Předzpracování dat</span></a></li>
+    <li><a href="04_vztahy.html"><span class="n">4</span><span>Vztahy mezi proměnnými</span></a></li>
+    <li><a href="05_shlukova_analyza.html"><span class="n">5</span><span>Shluková analýza</span></a></li>
+    <li><a href="06_pca.html"><span class="n">6</span><span>Analýza hlavních komponent (PCA)</span></a></li>
+    <li><a href="07_kernel_pca.html"><span class="n">7</span><span>Kernel PCA</span></a></li>
+    <li><a href="08_maticove_rozklady.html"><span class="n">8</span><span>Maticové rozklady: ED a SVD</span></a></li>
+    <li><a href="09_faktorova_analyza.html"><span class="n">9</span><span>Faktorová analýza</span></a></li>
+    <li><a href="10_tsne.html" class="active"><span class="n">10</span><span>t-SNE</span></a></li>
+    <li><a href="11_umap.html"><span class="n">11</span><span>UMAP</span></a></li>
+    <li><a href="12_srovnani.html"><span class="n">★</span><span>Srovnání metod a tahák</span></a></li>
+    <li><a href="13_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#limity">Limity lineární redukce dimenzionality</a></li>
+    <li><a href="#manifold">Varietní učení (manifold learning)</a></li>
+    <li><a href="#cil">Cíl t-SNE</a></li>
+    <li><a href="#podobnost">Jak měřit, kdo je soused: z vzdálenosti pravděpodobnost</a></li>
+    <li><a href="#mapa">Podobnost v mapě: proč „t“ v t-SNE</a></li>
+    <li><a href="#kl">Kriteriální funkce: KL divergence</a></li>
+    <li><a href="#postup">Postup t-SNE</a></li>
+    <li><a href="#hyperparametry">Hyperparametry a jak (ne)číst výsledky</a></li>
+    <li><a href="#limity-tsne">Limitace t-SNE</a></li>
+    <li><a href="#srovnani">t-SNE vs. PCA a vs. k-means</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky ke zkoušce</a></li>
+  </ul>
+</nav>
+<main>
+<p class="kicker">Přednáška 10</p>
+<h1>t-SNE: nelineární redukce dimenzionality</h1>
+<p class="lead">t-SNE nekreslí data „z jiného úhlu“ jako PCA. Staví úplně novou 2D mapu, ve které se snaží, aby <b>každý bod měl stejné sousedy jako v původním prostoru</b>. Výsledkem jsou výborně čitelné shluky – ale i řada pastí při interpretaci.</p>
+
+<h2 id="limity">Limity lineární redukce dimenzionality</h2>
+<div class="box intuice"><div class="box-t">Proč nestačí PCA</div>
+<p>Představ si data ležící na zakřivené ploše (např. „švýcarská roláda“). Dva body A a B na sousedních závitech jsou si <b>eukleidovsky blízko</b> (vzdálenost měřená napříč vzduchem), ale <b>po ploše daleko</b> (skutečná vzdálenost po povrchu). PCA i k-means pracují s eukleidovskou vzdáleností, takže A a B ve výsledku dají vedle sebe – a strukturu poničí.</p></div>
+<ul>
+<li>Eukleidovská vzdálenost <b>není relevantní</b> u nelineární struktury dat (je validní jen v malém okolí).</li>
+<li>Lineární metody mají tendenci zachovávat vzdálenosti mezi <b>nepodobnými</b> (vzdálenými) objekty – zachovávají globální strukturu – a to je ve vysoké dimenzi nevýhodné (<b>prokletí dimenzionality</b>: prostor je „řídký“, všechny vzdálenosti si jsou podobné).</li>
+<li>Výsledek: ve 2D rovině často nenajdou kvalitní reprezentaci.</li>
+</ul>
+<div class="box definice" id="def-prokleti"><div class="box-t">Definice: prokletí dimenzionality</div>
+<p><b>Prokletí dimenzionality</b> je souhrnný název pro jevy, které nastávají s rostoucím počtem proměnných: objem prostoru roste tak rychle, že data jsou v něm extrémně řídká, a vzdálenosti mezi všemi dvojicemi bodů si jsou čím dál podobnější (rozdíl mezi nejbližším a nejvzdálenějším sousedem se relativně zmenšuje).</p>
+<p class="jinak">ve 100 rozměrech je „všechno skoro stejně daleko“. Metody založené na vzdálenostech pak špatně rozlišují blízké a vzdálené body a k pokrytí prostoru by bylo potřeba obrovské množství dat.</p></div>
+
+<h2 id="manifold">Varietní učení (manifold learning)</h2>
+<p>Zjednodušená představa: body se svým okolím leží na lokálně „rovné“ ploše (<b>varietě</b>, manifoldu), která má v malém měřítku vlastnosti eukleidovského prostoru, ale jako celek je zakřivená a „vložená“ do vysokorozměrného prostoru. Cílem je tuto plochu „<b>rozbalit</b>“ do roviny.</p>
+<div class="box definice" id="def-varieta"><div class="box-t">Definice: varieta a varietní učení</div>
+<p><b>Varieta</b> (manifold) dimenze \(d\) je útvar, který v okolí každého svého bodu vypadá jako \(d\)-rozměrný eukleidovský prostor, ale jako celek může být zakřivený (povrch koule je 2D varieta ve 3D). <b>Varietní učení</b> (manifold learning) je skupina nelineárních metod redukce dimenze, které předpokládají, že vysokorozměrná data leží na (nebo blízko) variety nízké dimenze, a snaží se ji „rozvinout“ do prostoru této nízké dimenze.</p>
+<p class="jinak">data jsou jako popsaný papír zmačkaný v prostoru. Na malém kousku je papír rovný, ale celý je pokroucený. Varietní učení ho chce rozložit zpět na stůl tak, aby sousední slova zůstala vedle sebe.</p></div>
+<div class="box definice" id="def-lokalni-globalni"><div class="box-t">Definice: lokální a globální struktura dat</div>
+<p><b>Lokální struktura</b> jsou vztahy mezi blízkými objekty – kdo je čí nejbližší soused. <b>Globální struktura</b> jsou vztahy mezi vzdálenými objekty a skupinami – vzájemné polohy a vzdálenosti shluků, celkový tvar dat.</p>
+<p class="jinak">lokální = „kdo bydlí ve stejné ulici“; globální = „jak daleko jsou od sebe města“. Žádná 2D mapa nezachová obojí dokonale; PCA upřednostňuje globální, t-SNE lokální strukturu.</p></div>
+<ul>
+<li><b>Globální struktura</b> – bere v úvahu vztahy všech objektů (PCA).</li>
+<li><b>Lokální struktura</b> – bere v úvahu jen podskupiny blízkých objektů (t-SNE).</li>
+</ul>
+<figure class="wide"><div class="paper"><img src="figures/fig10_swiss.png" alt="Švýcarská roláda v 3D, výsledek PCA a t-SNE" loading="lazy"></div>
+<figcaption><b>Obr. 10.1</b> Body na stočené ploše (barva = poloha podél plochy). PCA ji jen „promáčkne“ do roviny, t-SNE zachová sousedství.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>V PCA se překrývají světlé a tmavé body – vrstvy rolády, které jsou po ploše daleko, leží v projekci na sobě. t-SNE drží pohromadě body stejné barvy (lokální sousedství) a barevný gradient je spojitý. Zároveň ale plochu roztrhá na několik kusů – globální tvar (jedna souvislá plocha) se ztratil. To je typické: t-SNE výborně zachová <b>lokální</b> strukturu na úkor <b>globální</b>.</p></div>
+
+<h2 id="cil">Cíl t-SNE</h2>
+<p><b>t-SNE</b> = <i>t-distributed Stochastic Neighbor Embedding</i> (stochastické vkládání sousedů podle t-rozdělení).</p>
+<div class="box definice" id="def-tsne"><div class="box-t">Definice: t-SNE</div>
+<p><b>t-SNE</b> je nelineární metoda redukce dimenze (hlavně pro vizualizaci), která podobnosti objektů ve vysoké dimenzi vyjádří jako pravděpodobnosti sousedství (pomocí Gaussovy křivky), podobnosti v nízkorozměrné mapě jako pravděpodobnosti podle Studentova t-rozdělení, a polohy bodů v mapě hledá iterativně tak, aby se obě rozdělení co nejvíce shodovala (minimalizací KL divergence).</p>
+<p class="jinak">„nakresli 2D mapu, kde si každý bod ponechá své sousedy z původních dat“. Body se v mapě posouvají, dokud sousedé nejsou blízko a nesousedé daleko.</p></div>
+<ul>
+<li>Zachovat <b>lokální strukturu</b> vícerozměrných dat v méně rozměrném prostoru → zachovat <b>blízké okolí každého objektu</b>.</li>
+<li>Blízké / podobné objekty z vysoké dimenze budou blízko i v mapě.</li>
+<li>Nejde o transformaci původních objektů (jako v PCA), ale o <b>modelování</b>: vysokorozměrné objekty \(\mathbf{x}_i\) reprezentujeme novými objekty \(\mathbf{y}_i\) ve 2D. (Mapování blízkého okolí = <i>neighbor embedding</i>, „NE“ v názvu.)</li>
+<li>Nejčastější aplikace: <b>zobrazení</b> vícerozměrných dat.</li>
+</ul>
+
+<h2 id="podobnost">Jak měřit, kdo je soused: z vzdálenosti pravděpodobnost</h2>
+<p>Vzdálenost (nepodobnost) převedeme na podobnost Gaussovou funkcí: čím blíž, tím podobnější; daleké body mají podobnost ≈ 0. Pak podobnosti znormujeme, aby dávaly pravděpodobnosti:</p>
+<div class="box definice" id="def-pji"><div class="box-t">Definice: podmíněná pravděpodobnost sousedství p<sub>j|i</sub></div>
+<p><b>Podmíněná pravděpodobnost</b> \(p_{j|i}\) je pravděpodobnost, že by bod \(\mathbf x_i\) zvolil bod \(\mathbf x_j\) za svého souseda, kdyby sousedy vybíral náhodně s pravděpodobností úměrnou Gaussově hustotě se středem v \(\mathbf x_i\) a směrodatnou odchylkou \(\sigma_i\). Pro každý bod \(i\) tvoří hodnoty \(p_{j|i}\) rozdělení pravděpodobnosti \(P_i\) (součet přes \(j\) je 1).</p>
+<p class="jinak">vzdálenost převedená na „hlasy“: každý bod rozdělí 100 % svých hlasů mezi ostatní body, nejvíc dá nejbližším, vzdáleným skoro nic.</p></div>
+<div class="box vzorec"><div class="box-t">Podmíněná pravděpodobnost ve vysoké dimenzi</div>
+\[ p_{j|i} = \frac{\exp\!\left(-\lVert\mathbf{x}_i-\mathbf{x}_j\rVert^2 / 2\sigma_i^2\right)}{\sum_{k\ne i}\exp\!\left(-\lVert\mathbf{x}_i-\mathbf{x}_k\rVert^2 / 2\sigma_i^2\right)}, \qquad p_{i|i} = 0,\quad \sum_j p_{j|i} = 1 \]
+<table class="vars">
+<tr><td>\(p_{j|i}\)</td><td>pravděpodobnost, že si bod \(i\) „vybere“ bod \(j\) za souseda, pokud sousedy vybírá úměrně Gaussově křivce se středem v \(\mathbf{x}_i\)</td></tr>
+<tr><td>\(\lVert\mathbf{x}_i-\mathbf{x}_j\rVert\)</td><td>eukleidovská vzdálenost (validní pro blízké okolí)</td></tr>
+<tr><td>\(\sigma_i\)</td><td>šířka Gaussovy křivky kolem bodu \(i\) – <b>pro každý bod jiná</b></td></tr>
+<tr><td>jmenovatel</td><td>normalizace – aby součet přes všechny objekty byl 1</td></tr>
+</table></div>
+<p>Pracuje se tedy jen s blízkým okolím (\(p_{j|i} &gt; 0\) pro blízké, \(\to 0\) pro vzdálené) → „lokální“ chování. Postupný pokles \(p_{j|i}\) se vzdáleností ale zachová alespoň částečně i globální strukturu.</p>
+
+<h3>Proč má každý bod svou σ: perplexita</h3>
+<div class="box intuice"><div class="box-t">Myšlenka</div>
+<p>V husté oblasti stačí úzká Gaussova křivka, aby zahrnula několik sousedů; v řídké oblasti musí být širší, jinak by bod neměl žádného souseda. t-SNE proto volí \(\sigma_i\) zvlášť pro každý bod tak, aby měl každý bod <b>stejný efektivní počet sousedů</b>. Tím se vhodně modelují hustě i málo osídlené oblasti.</p></div>
+<div class="box definice" id="def-entropie"><div class="box-t">Definice: entropie rozdělení</div>
+<p><b>(Shannonova) entropie</b> diskrétního rozdělení \(P\) je \(H(P) = -\sum_j p_j\log_2 p_j\) (v bitech). Je nulová, když je jedna hodnota jistá, a maximální, když jsou všechny možnosti stejně pravděpodobné (pro \(k\) možností \(\log_2 k\)).</p>
+<p class="jinak">míra „nejistoty“ nebo „rozprostření“ rozdělení. Rozdělí-li bod hlasy rovnoměrně mezi 8 sousedů, je entropie 3 bity; dá-li vše jednomu, je 0.</p></div>
+<div class="box definice" id="def-perplexita"><div class="box-t">Definice: perplexita</div>
+<p><b>Perplexita</b> rozdělení \(P_i\) je \(2^{H(P_i)}\). V t-SNE je to hyperparametr: pro každý bod se \(\sigma_i\) nastaví tak, aby perplexita jeho rozdělení sousedů byla rovna zvolené hodnotě.</p>
+<p class="jinak">„efektivní počet sousedů“, se kterými bod počítá. Perplexita 30 ≈ každý bod bere v úvahu zhruba 30 nejbližších sousedů, ať leží v husté, nebo řídké oblasti.</p></div>
+<div class="box priklad"><div class="box-t">Příklad: perplexita jako počet sousedů</div>
+<p>Bod dává pravděpodobnost 0,25 čtyřem sousedům a ostatním 0: \(H = -4\cdot 0{,}25\log_2 0{,}25 = 2\) bity, Perp \(= 2^2 = 4\) – přesně počet sousedů. Rozdělení 0,5; 0,25; 0,25: \(H = 0{,}5 + 0{,}5 + 0{,}5 = 1{,}5\), Perp \(= 2^{1{,}5} \approx 2{,}8\) – „necelí tři“ sousedé, protože jeden dominuje.</p></div>
+<div class="box vzorec"><div class="box-t">Perplexita</div>
+\[ \mathrm{Perp}(P_i) = 2^{H(P_i)}, \qquad H(P_i) = -\sum_j p_{j|i}\log_2 p_{j|i} \]
+<table class="vars">
+<tr><td>\(H\)</td><td>entropie rozdělení sousedů bodu \(i\) – „jak nejisté je, koho si vybere“</td></tr>
+<tr><td>Perp</td><td>je-li \(p_{j|i}\) rovnoměrné přes \(k\) bodů, je Perp = \(k\) → <b>odhad počtu vlivných sousedů</b>; nastavuje ho uživatel</td></tr>
+</table>
+<p>\(\sigma_i\) se hledá <b>půlením intervalu</b> (binary search) tak, aby perplexita byla rovna zadané hodnotě. Doporučená perplexita 5–50.</p></div>
+<div data-demo="perplexita"></div>
+
+<h3>Symetrizace</h3>
+<p>Protože každý bod má jinou \(\sigma\), platí obecně \(p_{j|i} \ne p_{i|j}\) (bod v řídké oblasti „vidí“ bod v husté oblasti jinak než naopak) – na rozdíl od symetrické eukleidovské vzdálenosti. t-SNE proto používá symetrickou společnou pravděpodobnost:</p>
+\[ p_{ij} = \frac{p_{j|i} + p_{i|j}}{2n} \]
+<p>(To je jedno ze zjednodušení oproti původní metodě SNE z roku 2002; t-SNE je z roku 2008.)</p>
+<div class="box definice" id="def-pij"><div class="box-t">Definice: sdružená pravděpodobnost p<sub>ij</sub></div>
+<p><b>Sdružená (symetrická) pravděpodobnost</b> \(p_{ij} = (p_{j|i} + p_{i|j})/(2n)\) je pravděpodobnost, že náhodně vybraná dvojice sousedů je právě dvojice \(\{i, j\}\). Součet přes všechny dvojice je 1 a platí \(p_{ij} = p_{ji}\).</p>
+<p class="jinak">„průměr toho, jak moc je \(j\) sousedem \(i\) a \(i\) sousedem \(j\)“. Dělení \(2n\) zajistí, že i osamělý bod (odlehlá hodnota) má alespoň nějakou váhu a v mapě se neztratí.</p></div>
+
+<h2 id="mapa">Podobnost v mapě: proč „t“ v t-SNE</h2>
+<p>V cílové 2D mapě se podobnost bodů \(\mathbf{y}_i, \mathbf{y}_j\) neměří Gaussovou křivkou, ale <b>Studentovým t-rozdělením s 1 stupněm volnosti</b>:</p>
+<div class="box definice" id="def-t-rozdeleni"><div class="box-t">Definice: Studentovo t-rozdělení s 1 stupněm volnosti</div>
+<p><b>Studentovo t-rozdělení</b> je symetrické zvonovité rozdělení podobné normálnímu, ale s <b>těžšími chvosty</b> (hustota klesá se vzdáleností pomaleji). S 1 stupněm volnosti (Cauchyho rozdělení) je jeho hustota úměrná \((1 + d^2)^{-1}\).</p>
+<p class="jinak">„Gaussova křivka s tlustými konci“. I v dost velké vzdálenosti dává nezanedbatelnou podobnost, takže středně vzdálené body lze v mapě odsunout dál, aniž by se tím pokazila shoda pravděpodobností.</p></div>
+<div class="box definice" id="def-crowding"><div class="box-t">Definice: problém stísněného prostoru (crowding problem)</div>
+<p><b>Problém stísněného prostoru</b> je nemožnost umístit v nízké dimenzi všechny body tak, aby byly zachovány jejich střední vzdálenosti z vysoké dimenze: ve vysoké dimenzi se do stejné vzdálenosti od bodu vejde mnohem více sousedů než v rovině.</p>
+<p class="jinak">v 10D má bod „kolem sebe“ hodně místa pro mnoho stejně vzdálených sousedů, v rovině ne. Když bychom je chtěli umístit poctivě, nahrnuli by se doprostřed mapy a shluky by splynuly.</p></div>
+<div class="box vzorec"><div class="box-t">Podobnost v mapě</div>
+\[ q_{ij} = \frac{\left(1 + \lVert\mathbf{y}_i-\mathbf{y}_j\rVert^2\right)^{-1}}{\sum_{k\ne l}\left(1 + \lVert\mathbf{y}_k-\mathbf{y}_l\rVert^2\right)^{-1}} \]</div>
+<figure><div class="paper"><img src="figures/fig10_gauss_t.png" alt="Gaussova křivka a Studentovo t-rozdělení s těžkými chvosty" loading="lazy"></div>
+<figcaption><b>Obr. 10.2</b> Gaussova křivka vs. Studentovo t-rozdělení (1 st. volnosti).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést: problém stísněného prostoru (crowding)</div>
+<p>Ve vysoké dimenzi může mít bod hodně sousedů ve stejné „střední“ vzdálenosti (v 10D se kolem bodu vejde mnohem víc bodů ve stejné vzdálenosti než ve 2D). V rovině na ně <b>není místo</b> – kdybychom chtěli zachovat všechny vzdálenosti, střední vzdálenosti se musí stlačit a všechno se „slepí“ do středu. t-rozdělení má <b>těžké chvosty</b>: stejné pravděpodobnosti \(q\) odpovídá v mapě <b>větší</b> vzdálenost než u Gaussovy křivky. Body, které ve vysoké dimenzi jsou „středně daleko“, tak mohou být v mapě dál – vznikne místo a shluky se od sebe oddělí. Bonus: výpočet je jednodušší (bez exponenciály).</p></div>
+
+<h2 id="kl">Kriteriální funkce: KL divergence</h2>
+<p>Cíl formálně: najít takové body \(\mathbf{Y}\) v mapě, aby rozdělení podobností \(Q\) v mapě co nejlépe modelovalo rozdělení \(P\) ve vysoké dimenzi (\(q_{ij} \approx p_{ij}\)). Obyčejná vzdálenost (L1, L2) se pro porovnání rozdělení nehodí, používá se <b>Kullbackova–Leiblerova divergence</b>:</p>
+<div class="box definice" id="def-kl"><div class="box-t">Definice: Kullbackova–Leiblerova divergence</div>
+<p><b>KL divergence</b> rozdělení \(Q\) od rozdělení \(P\) je \(\mathrm{KL}(P\Vert Q) = \sum_k p_k\log\frac{p_k}{q_k}\). Je vždy nezáporná, nulová právě tehdy, když \(P = Q\), a není symetrická (\(\mathrm{KL}(P\Vert Q) \ne \mathrm{KL}(Q\Vert P)\)), proto to není vzdálenost v pravém smyslu.</p>
+<p class="jinak">„o kolik se spletu (kolik informace ztratím), když skutečné rozdělení \(P\) nahradím modelem \(Q\)“. Nejvíc trestá místa, kde je \(P\) velké a \(Q\) malé.</p></div>
+<div class="box vzorec"><div class="box-t">KL divergence</div>
+\[ C = \mathrm{KL}(P\,\Vert\,Q) = \sum_i\sum_j p_{ij}\log\frac{p_{ij}}{q_{ij}} \]
+<table class="vars">
+<tr><td>\(C\)</td><td>„nesoulad“ – množství informace ztracené, když \(P\) modelujeme pomocí \(Q\)</td></tr>
+<tr><td>\(C = 0\)</td><td>když \(q_{ij} = p_{ij}\) pro všechny dvojice; snažíme se \(C\) minimalizovat</td></tr>
+</table></div>
+<div class="box intuice"><div class="box-t">Asymetrie KL – co t-SNE „trestá“</div>
+<p>Velký člen vznikne, když je \(p_{ij}\) velké (body jsou sousedé) a \(q_{ij}\) malé (v mapě jsou daleko). Opačná chyba (\(p\) malé, \(q\) velké – nesousedé dáni blízko) přispívá málo, protože je vynásobena malým \(p\). t-SNE proto <b>hlavně hlídá, aby se sousedé neroztrhli</b>; vzdálenosti mezi vzdálenými body ho tolik nezajímají. Odtud „lokální“ charakter metody.</p></div>
+<h3>Optimalizace: gradientní sestup a analogie s pružinami</h3>
+<div class="box definice" id="def-gradient"><div class="box-t">Definice: gradientní sestup</div>
+<p><b>Gradientní sestup</b> je iterační metoda hledání minima funkce: v každém kroku se parametry posunou o malý krok (\(\mu\), krok učení) proti směru <b>gradientu</b> – vektoru parciálních derivací, který ukazuje směr nejrychlejšího růstu funkce.</p>
+<p class="jinak">„sestup z kopce v mlze“: rozhlédnu se, kudy to nejvíc klesá, udělám krok tím směrem a opakuji. U funkce, která není <b>konvexní</b> (nemá tvar jediné mísy), můžu skončit v lokálním dolíku, který není nejhlubší – proto je t-SNE citlivé na start.</p></div>
+\[ \frac{\partial C}{\partial\mathbf{y}_i} = 4\sum_j (p_{ij} - q_{ij})(\mathbf{y}_i - \mathbf{y}_j)\left(1 + \lVert\mathbf{y}_i - \mathbf{y}_j\rVert^2\right)^{-1}, \qquad \mathbf{y}_i^{\text{nový}} = \mathbf{y}_i^{\text{starý}} - \mu\,\frac{\partial C}{\partial\mathbf{y}_i} \]
+<p>Každý bod se v každé iteraci posune proti gradientu (\(\mu\) = krok učení). Vzorec se dá číst jako soustava <b>pružin</b> mezi \(\mathbf{y}_i\) a ostatními body:</p>
+<ul>
+<li>\(p_{ij} &gt; q_{ij}\) (v mapě jsou chybně daleko, ač jsou sousedé) → pružina <b>přitahuje</b>;</li>
+<li>\(p_{ij} &lt; q_{ij}\) (v mapě jsou chybně blízko, ač si nejsou podobné) → pružina <b>odpuzuje</b>;</li>
+<li>v ideálním modelu \(p = q\) je výsledná síla nulová.</li>
+</ul>
+<p>Postupně se tak „rozbalují“ vícerozměrné plochy do 2D a vzniká mapa s čitelnou lokální strukturou. Kriteriální funkce ale <b>není konvexní</b> – má lokální minima, výstup se během optimalizace mění a je „nestabilní“.</p>
+<div class="box priklad"><div class="box-t">Nelze vždy zachovat okolí bez zkreslení (příklad z přednášky)</div>
+<p>Čtyři body ve vrcholech čtverce (2D), každý má dva sousedy ve vzdálenosti \(d\): \(N(x_1) = \{x_2, x_4\}\) atd. Chceme je rozbalit do 1D přímky. Položíme \(x_1, x_2, x_3\) za sebou – sousedství 1–2 a 2–3 je zachované, vzdálenost 1–3 je 2d místo d√2, ale to t-SNE nevadí (\(x_3\) není soused \(x_1\)). Kam ale s \(x_4\)? Má být soused \(x_1\) i \(x_3\), které jsou na přímce 2d od sebe – ať ho dáme kamkoli, jedno sousedství se poruší. <b>Ne vždy lze zachovat blízké okolí bez zkreslení</b> – „pružiny“ se snaží, ale prostor nižší dimenze to nedovolí.</p></div>
+
+<h2 id="postup">Postup t-SNE</h2>
+<div class="box postup"><div class="box-t">Algoritmus</div>
+<ol>
+<li>Data \(\mathbf{X}\,(n\times p)\).</li>
+<li>Nastav hyperparametry: perplexita, počet iterací \(T\), krok učení \(\mu\), případně momentum.</li>
+<li>Náhodně (nebo z PCA) rozmísti výchozí body \(\mathbf{Y}\,(n\times R)\), většinou \(R = 2\).</li>
+<li>Spočítej \(p_{j|i}\) (σ podle perplexity) a symetrické \(p_{ij}\).</li>
+<li>Opakuj \(T\)-krát: spočítej \(q_{ij}\) v mapě → gradient \(C\) → posuň body \(\mathbf{Y}\).</li>
+</ol></div>
+
+<h2 id="hyperparametry">Hyperparametry a jak (ne)číst výsledky</h2>
+<figure class="wide"><div class="paper"><img src="figures/fig10_perplexita.png" alt="Původní data a t-SNE pro perplexitu 2, 5, 30 a 100" loading="lazy"></div>
+<figcaption><b>Obr. 10.3</b> Tři shluky v 2D: malý hustý (modrý), velký řídký (oranžový) blízko něj a třetí (zelený) daleko. t-SNE s různou perplexitou.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>Nízká perplexita</b> (2, 5): za sousedy se považují jen ti úplně nejbližší → data se rozpadnou na spoustu malých falešných „shluků“, které v datech nejsou.</li>
+<li><b>Střední perplexita</b> (30): tři skupiny čitelné. Ale <b>velikosti shluků neodpovídají</b> – hustý modrý shluk je v mapě stejně velký jako řídký oranžový (t-SNE „roztahuje“ husté a „stlačuje“ řídké shluky).</li>
+<li><b>Vzdálenosti mezi shluky</b> také neodpovídají – zelený shluk byl v původních datech mnohem dál než oranžový od modrého, při perplexitě 30 jsou ale všechny tři skoro stejně daleko; a jak daleko, záleží na perplexitě.</li>
+<li>Perplexita blízká \(n\) → všechny body jsou sousedé všech, struktura se „zprůměruje“.</li>
+</ul></div>
+<p>Pravidla z přednášky (podle známého článku <i>How to Use t-SNE Effectively</i>):</p>
+<ul>
+<li><b>Perplexita</b>: zkoušet více hodnot; různé části (měřítka) dat mohou chtít různou perplexitu, ale v t-SNE je to jeden globální parametr. Ani 50–100 není samospasné – s více objekty se optimum posouvá.</li>
+<li><b>Počet iterací</b>: příliš málo → nedokončená konvergence (podivné „1D“ struktury, „sevřené“ tvary); hledáme stabilní stav.</li>
+<li><b>Velikost shluků v mapě nemá význam.</b></li>
+<li><b>Vzdálenosti mezi shluky nemusí mít význam</b> (odlišitelné shluky mohou vyjít ekvidistantní).</li>
+<li>Barvy v t-SNE grafech slouží jen pro čitelnost – t-SNE o třídách nic neví.</li>
+</ul>
+
+<h2 id="limity-tsne">Limitace t-SNE</h2>
+<ul>
+<li>Riziko špatné struktury pro \(R &gt; 3\) (těžké chvosty t-rozdělení) → vhodné pro <b>2D/3D vizualizaci</b>, redukce dimenze pro další modely není hlavní využití.</li>
+<li>Předpokládá lokální linearitu (eukleidovská metrika) → při extrémně vysoké dimenzi jsou si všechny vzdálenosti podobné a \(p_{ij}\) jsou stejně vysoké (prokletí dimenzionality). Řešení: nejdřív zredukovat (např. PCA, autoencoder).</li>
+<li><b>Nekonvexní</b> kriteriální funkce → lokální minima, nestabilní výsledky, komplikované ladění hyperparametrů; zafixuj <i>random seed</i>.</li>
+<li><b>Chybí mapovací funkce</b> pro nové objekty – pro rozšířený dataset je nutné vytvořit novou mapu.</li>
+<li>Výpočetně náročná pro velká data.</li>
+</ul>
+
+<h2 id="srovnani">t-SNE vs. PCA a vs. k-means</h2>
+<div class="tablewrap"><table>
+<tr><th>PCA</th><th>t-SNE (varietní učení)</th></tr>
+<tr><td>zachovává <b>globální</b> strukturu</td><td>zachovává <b>lokální</b> strukturu</td></tr>
+<tr><td>méně citlivá na šum (zanedbáme poslední PC)</td><td>citlivější</td></tr>
+<tr><td>žádné hyperparametry</td><td>perplexita, iterace, krok učení…</td></tr>
+<tr><td>dimenzi R lze „diagnostikovat“ z vysvětleného rozptylu</td><td>R se volí experimentálně</td></tr>
+<tr><td>komponenty relativně snadno interpretovatelné</td><td>osy mapy nemají význam</td></tr>
+<tr><td>méně výpočetně náročná; umí promítnout nové objekty</td><td>náročnější; nové objekty ne</td></tr>
+<tr><td>jen lineární struktury</td><td><b>umí reprezentovat nelineární strukturu</b></td></tr>
+</table></div>
+<div class="box pozor"><div class="box-t">t-SNE není shlukovací metoda!</div>
+<p>t-SNE jen modeluje původní data body v nižší dimenzi tak, aby zachovaly informaci o podobnosti v lokálním měřítku. Shluky, které „vidíš“, jsou vizuální dojem, ne výsledek shlukování – a mohou být i artefaktem nízké perplexity. Shlukování se má dělat na datech (nebo na vhodné redukci), výsledek t-SNE lze použít k jeho zobrazení.</p></div>
+<p>t-SNE je jen jedna z nelineárních metod (zachování blízkého okolí je jen jeden z přístupů): Sammon mapping, curvilinear component analysis, Isomap, locally linear embedding (LLE), SNE, t-SNE, UMAP, kernel PCA, samoorganizující se mapy…</p>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Lineární metody ztrácí strukturu dat ležících na zakřivených plochách, protože eukleidovská vzdálenost je validní jen lokálně. t-SNE je metoda varietního učení, která zachovává <b>lokální okolí</b>: ve vysoké dimenzi převede vzdálenosti na pravděpodobnosti sousedství pomocí Gaussovy křivky, jejíž šířka \(\sigma_i\) se pro každý bod volí podle <b>perplexity</b> (efektivní počet sousedů), a pravděpodobnosti symetrizuje. V mapě měří podobnost <b>Studentovým t-rozdělením</b>, jehož těžké chvosty řeší crowding problém. Rozmístění bodů v mapě optimalizuje gradientním sestupem tak, aby minimalizovalo <b>KL divergenci</b> mezi \(P\) a \(Q\) („pružiny“ přitahují sousedy a odpuzují nesousedy). Výsledek je skvělý pro vizualizaci, ale velikosti a vzdálenosti shluků nemají význam, výsledek závisí na perplexitě a náhodě, nové body nelze přidat a t-SNE není shlukovací metoda.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>t-SNE zachovává sousedství, ne vzdálenosti – lokální struktura ano, globální ne.</li>
+<li>Perplexita ≈ počet sousedů, se kterými bod „počítá“; každý bod má vlastní σ.</li>
+<li>„t“ = Studentovo rozdělení v mapě – těžké chvosty dělají místo (crowding).</li>
+<li>Minimalizuje se KL divergence; hlavně se trestá roztržení sousedů.</li>
+<li>Velikosti shluků a vzdálenosti mezi nimi v t-SNE mapě neinterpretuj.</li>
+<li>Vždy zkus víc perplexit a zafixuj seed; t-SNE není shlukování.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Jaký je cíl a princip t-SNE?</summary><div>
+<p>Zobrazit vysokorozměrná data do 2D (3D) tak, aby se zachovalo lokální okolí každého bodu – sousedé zůstanou sousedy. Ve vysoké dimenzi převede vzdálenosti na pravděpodobnosti, že si bod vybere jiný bod za souseda (Gaussova křivka), v mapě definuje analogické pravděpodobnosti pomocí t-rozdělení a rozmístění bodů v mapě optimalizuje tak, aby se obě rozdělení co nejvíc shodovala (minimalizace KL divergence gradientním sestupem).</p></div></details>
+<details class="q"><summary>Co je perplexita a jak ovlivní výsledek?</summary><div>
+<p>Perplexita \(2^H\) rozdělení sousedů bodu je efektivní počet sousedů; uživatel ji zadá a t-SNE pro každý bod půlením intervalu najde \(\sigma_i\), aby jí odpovídala – tím se vyrovná vliv hustých a řídkých oblastí. Nízká perplexita → jen nejbližší sousedé, data se rozpadnou na malé falešné shluky; vysoká → víc globální pohled, při Perp ≈ n se struktura rozmaže. Doporučeno 5–50, zkoušet více hodnot.</p></div></details>
+<details class="q"><summary>Proč se v mapě používá Studentovo t-rozdělení?</summary><div>
+<p>Kvůli problému stísněného prostoru (crowding): ve vysoké dimenzi může mít bod mnoho sousedů ve střední vzdálenosti, ve 2D se nevejdou. t-rozdělení má těžké chvosty, takže stejné podobnosti odpovídá v mapě větší vzdálenost – středně vzdálené body se mohou odsunout a shluky se oddělí. Navíc je výpočet jednodušší (bez exponenciály).</p></div></details>
+<details class="q"><summary>Co je KL divergence a proč se používá?</summary><div>
+<p>\(\mathrm{KL}(P\Vert Q) = \sum p_{ij}\log(p_{ij}/q_{ij})\) měří, kolik informace ztratíme, když rozdělení P (vysoká dimenze) modelujeme rozdělením Q (mapa); je nulová při shodě. Hodí se pro porovnání rozdělení pravděpodobností (běžné vzdálenosti ne). Je asymetrická: silně trestá, když sousedé (velké p) skončí v mapě daleko, málo trestá opačnou chybu – proto t-SNE zachovává hlavně lokální strukturu. Není konvexní → lokální minima.</p></div></details>
+<details class="q"><summary>Na co si dát pozor při interpretaci t-SNE mapy?</summary><div>
+<p>Velikost shluků nemá význam (husté se roztahují, řídké stlačují), vzdálenosti mezi shluky nemusí mít význam, osy nemají význam, při nízké perplexitě vznikají falešné shluky, výsledek závisí na náhodné inicializaci a počtu iterací. t-SNE není shlukovací metoda a neumí promítnout nové body.</p></div></details>
+<details class="q"><summary>Porovnejte PCA a t-SNE.</summary><div>
+<p>PCA: lineární, globální struktura, bez hyperparametrů, interpretovatelné komponenty, počet dimenzí z vysvětleného rozptylu, rychlá, umí nové body, robustnější vůči šumu. t-SNE: nelineární, lokální struktura, hyperparametry (perplexita, iterace), osy bez významu, hlavně pro 2D vizualizaci, náročnější, nové body neumí – ale zachytí nelineární struktury, které PCA nevidí.</p></div></details>
+<details class="q"><summary>Vysvětlete analogii s pružinami.</summary><div>
+<p>Gradient KL divergence lze číst jako součet sil pružin mezi bodem a ostatními body v mapě. Je-li \(p_{ij} &gt; q_{ij}\) (sousedé jsou v mapě příliš daleko), pružina je přitahuje; je-li \(p_{ij} &lt; q_{ij}\) (nesousedé jsou příliš blízko), odpuzuje je. Síla roste s rozdílem \(p - q\). Iterováním se mapa „rozbaluje“, dokud se síly nevyrovnají.</p></div></details>
+
+<nav class="pager"><a class="prev" href="09_faktorova_analyza.html"><small>← předchozí</small>Faktorová analýza</a><a class="next" href="11_umap.html"><small>další →</small>UMAP</a></nav>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Předzpracování dat – VMM</title>
+<meta name="description" content="Kódování kategorií, chybějící hodnoty, standardizace a normalizace, transformace.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <a class="brand" href="index.html">VMM – příprava na zkoušku<small>vícerozměrné metody, principy a postupy</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_uvod.html"><span class="n">1</span><span>Úvod do analýzy vícerozměrných dat</span></a></li>
+    <li><a href="02_vicerozmerne_rozdeleni.html"><span class="n">2</span><span>Vícerozměrné rozdělení a testy</span></a></li>
+    <li><a href="03_predzpracovani.html" class="active"><span class="n">3</span><span>Předzpracování dat</span></a></li>
+    <li><a href="04_vztahy.html"><span class="n">4</span><span>Vztahy mezi proměnnými</span></a></li>
+    <li><a href="05_shlukova_analyza.html"><span class="n">5</span><span>Shluková analýza</span></a></li>
+    <li><a href="06_pca.html"><span class="n">6</span><span>Analýza hlavních komponent (PCA)</span></a></li>
+    <li><a href="07_kernel_pca.html"><span class="n">7</span><span>Kernel PCA</span></a></li>
+    <li><a href="08_maticove_rozklady.html"><span class="n">8</span><span>Maticové rozklady: ED a SVD</span></a></li>
+    <li><a href="09_faktorova_analyza.html"><span class="n">9</span><span>Faktorová analýza</span></a></li>
+    <li><a href="10_tsne.html"><span class="n">10</span><span>t-SNE</span></a></li>
+    <li><a href="11_umap.html"><span class="n">11</span><span>UMAP</span></a></li>
+    <li><a href="12_srovnani.html"><span class="n">★</span><span>Srovnání metod a tahák</span></a></li>
+    <li><a href="13_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#proc">Proč data předzpracovávat</a></li>
+    <li><a href="#kategorie">Převod kategorických příznaků</a></li>
+    <li><a href="#chybejici">Chybějící hodnoty</a></li>
+    <li><a href="#skalovani">Standardizace a normalizace</a></li>
+    <li><a href="#transformace">Další transformace: úprava rozložení</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky ke zkoušce</a></li>
+  </ul>
+</nav>
+<main>
+<p class="kicker">Přednáška 3</p>
+<h1>Předzpracování dat</h1>
+<p class="lead">Surová data téměř nikdy nejdou rovnou do modelu. Obsahují text místo čísel, díry, chyby a proměnné v nesrovnatelných jednotkách. Předzpracování je soubor kroků, které z nich udělají něco, s čím metoda umí korektně počítat.</p>
+
+<h2 id="proc">Proč data předzpracovávat</h2>
+<div class="box definice" id="def-predzpracovani"><div class="box-t">Definice: předzpracování dat</div>
+<p><b>Předzpracování dat</b> (data preprocessing) je soubor úprav surových dat provedených <b>před</b> samotnou analýzou: kontrola a oprava chyb, převod kategorií na čísla, ošetření chybějících hodnot, úprava rozložení a sjednocení měřítek proměnných.</p>
+<p class="jinak">je to „úklid a příprava surovin“ před vařením. Metoda (regrese, PCA, k-means…) umí počítat jen s čísly, bez děr a ve srovnatelných jednotkách. Předzpracování zajistí, aby tomu data odpovídala a aby výsledek nezkreslila technická vada dat.</p></div>
+<p>Vezmi tabulku pacientů: vstupy (příznaky, <i>features</i>, \(X\)) a výstup (\(y\), např. „zdravý / nemocný“). Dá se z ní rovnou postavit model? Typicky ne, protože narazíme na tato místa:</p>
+<ol>
+  <li><b>Kategorické příznaky</b> (pohlaví „Female/Male“, typ blokády „L/R/Sync“) – je třeba je převést na čísla.</li>
+  <li><b>Chybějící hodnoty</b> – je třeba je odstranit nebo nahradit.</li>
+  <li><b>Rozložení</b> všech vstupů i výstupů – je třeba ho zkontrolovat. Odpovídá min/max/průměr/medián očekávání? (BMI = 307 kg / 1,8² m² = 94,75 je téměř jistě chyba zápisu.)</li>
+  <li><b>Rozsah hodnot</b> – je vhodný pro zvolenou metodu? Věk v desítkách, koncentrace v tisících, odpor v milionech…</li>
+</ol>
+<div class="box postup"><div class="box-t">Postup předzpracování (shrnutí z přednášky)</div>
+<ol>
+<li><b>Poznej svoje data</b> – typy, rozsahy, rozložení, chybějící hodnoty.</li>
+<li><b>Převeď kategorické proměnné</b> na čísla (one-hot encoding).</li>
+<li><b>Uprav rozložení</b>, pokud je třeba (log, 1/x, exp, druhá mocnina…).</li>
+<li><b>Standardizuj</b> – a transformační údaje (průměr, směrodatnou odchylku) <b>uchovej pro inferenci</b>.</li>
+<li><b>Ošetři chybějící hodnoty.</b></li>
+</ol></div>
+
+<h2 id="kategorie">Převod kategorických příznaků</h2>
+<p>Kategorická proměnná nabývá hodnot z konečného seznamu „značek“ (pohlaví, krevní skupina, typ blokády). Rozlišujeme <b>nominální</b> kategorie (bez pořadí: L/R/Sync, krevní skupina) a <b>ordinální</b> kategorie (s přirozeným pořadím: stadium I &lt; II &lt; III, „mírná &lt; střední &lt; těžká“). Výpočetní metody pracují s čísly, proto je musíme zakódovat. Způsob kódování ale rozhoduje o tom, jakou informaci do dat vložíme.</p>
+<div class="box definice" id="def-label-encoding"><div class="box-t">Definice: label encoding (číselné kódování)</div>
+<p><b>Label encoding</b> je převod kategorické proměnné na jedinou číselnou proměnnou tak, že každá kategorie dostane jedno celé číslo (0, 1, 2, …).</p>
+<p class="jinak">kategorie se „přejmenují na čísla“. Tím ale vznikne i pořadí a vzdálenosti mezi kategoriemi, které v realitě nemusí existovat.</p></div>
+<h3>Label encoding: každá kategorie dostane číslo</h3>
+<p>Nejjednodušší řešení: Female → 1, Male → 0 (ručně, nebo třídou <code>LabelEncoder</code>, která si navíc pamatuje převod a umí ho vrátit zpět). U <b>binárních</b> proměnných je to v pořádku. U proměnných s více kategoriemi je to ale past:</p>
+<div class="box pozor"><div class="box-t">Proč prosté číslování nestačí</div>
+<p>Typ raménkové blokády: L → 0, R → 1, Sync → 2. Převod je technicky správně, ale <b>zavádí zcestnou číselnou řadu</b>: model si „myslí“, že Sync je dvakrát víc než R a že R leží mezi L a Sync. Vzdálenost L–Sync by byla dvojnásobná oproti L–R. Nic takového v realitě neplatí – kategorie jsou jen různé.</p></div>
+
+<h3>One-hot encoding: každá kategorie dostane vlastní sloupec</h3>
+<div class="box definice" id="def-one-hot"><div class="box-t">Definice: one-hot encoding</div>
+<p><b>One-hot encoding</b> (kódování „1 z k“, dummy proměnné) je převod kategorické proměnné s \(k\) kategoriemi na \(k\) binárních proměnných. Každá z nich odpovídá jedné kategorii a má hodnotu 1, pokud objekt do této kategorie patří, jinak 0. V každém řádku je tedy právě jedna jednička („one hot“).</p>
+<p class="jinak">místo otázky „jaký typ blokády?“ s odpovědí 0/1/2 položíme tři otázky ano/ne: „je to L?“, „je to R?“, „je to Sync?“. Žádná kategorie pak není „větší“ ani „blíž“ jiné.</p></div>
+<div class="schema narrow">
+<svg viewBox="0 0 560 190" role="img" aria-label="One-hot encoding: jeden sloupec s kategoriemi se rozloží na tři binární sloupce">
+  <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="20" y="20" width="110" height="30" class="fl2"/><text x="75" y="40" text-anchor="middle">blokáda</text>
+  <rect x="20" y="50" width="110" height="120" class="node"/>
+  <text x="75" y="75" text-anchor="middle">L</text><text x="75" y="103" text-anchor="middle">R</text><text x="75" y="131" text-anchor="middle">Sync</text><text x="75" y="159" text-anchor="middle">L</text>
+  <path d="M150 105 H215" class="ln" marker-end="url(#ar3)"/>
+  <rect x="230" y="20" width="300" height="30" class="fl1"/>
+  <text x="280" y="40" text-anchor="middle">je_L</text><text x="380" y="40" text-anchor="middle">je_R</text><text x="480" y="40" text-anchor="middle">je_Sync</text>
+  <rect x="230" y="50" width="300" height="120" class="node"/>
+  <text x="280" y="75" text-anchor="middle">1</text><text x="380" y="75" text-anchor="middle" class="t2">0</text><text x="480" y="75" text-anchor="middle" class="t2">0</text>
+  <text x="280" y="103" text-anchor="middle" class="t2">0</text><text x="380" y="103" text-anchor="middle">1</text><text x="480" y="103" text-anchor="middle" class="t2">0</text>
+  <text x="280" y="131" text-anchor="middle" class="t2">0</text><text x="380" y="131" text-anchor="middle" class="t2">0</text><text x="480" y="131" text-anchor="middle">1</text>
+  <text x="280" y="159" text-anchor="middle">1</text><text x="380" y="159" text-anchor="middle" class="t2">0</text><text x="480" y="159" text-anchor="middle" class="t2">0</text>
+</svg></div>
+<p>Z jednoho sloupce s \(k\) kategoriemi vznikne \(k\) sloupců s 0/1. Každá kategorie je teď od každé jiné „stejně daleko“ a žádné falešné pořadí neexistuje. V Pythonu <code>OneHotEncoder</code> nebo jednodušeji <code>pandas.get_dummies</code>.</p>
+<div class="box priklad"><div class="box-t">Má to reálný dopad? Ano.</div>
+<p>SVM klasifikátor pro predikci srdečního selhání (19 proměnných, u dvou z nich zapomenutý one-hot): <b>AUC 0,73</b> a hazard ratio 3,89. Se správným one-hot kódováním: <b>AUC 0,76</b> a hazard ratio 5,16. Model si „nějak poradí“ i bez něj, ale zbytečně ztrácí výkon.</p></div>
+<div class="box intuice"><div class="box-t">Kdy číslování naopak dává smysl</div>
+<p>U <b>ordinálních</b> proměnných (stadium I &lt; II &lt; III) pořadí existuje, takže kódování 1, 2, 3 zachová skutečnou informaci. A u binárních stačí jediný sloupec 0/1. Pro lineární modely se u one-hot často jeden sloupec vypouští (zbylé ho jednoznačně určují – jinak vzniká dokonalá multikolinearita).</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div><p>Nominální kategorie → one-hot (každá kategorie svůj 0/1 sloupec). Prosté číslování zavádí neexistující pořadí a vzdálenosti.</p></div>
+
+<h2 id="chybejici">Chybějící hodnoty</h2>
+<div class="box definice" id="def-chybejici"><div class="box-t">Definice: chybějící hodnota</div>
+<p><b>Chybějící hodnota</b> (missing value, v Pythonu <code>NaN</code>) je prázdné místo v datové matici: hodnota proměnné, která u daného objektu nebyla změřena, zapsána nebo se ztratila.</p>
+<p class="jinak">v tabulce je „díra“. Většina metod (průměr matice, regrese, PCA, k-means) s dírou neumí počítat, proto ji musíme buď odstranit, nebo něčím zaplnit.</p></div>
+<p>Nejdřív zjisti, <b>kolik</b> jich je a <b>kde</b> (v kterých sloupcích, u kterých pacientů). Důležité je i to, <b>proč</b> hodnoty chybí. Statistika rozlišuje tři mechanismy (nad rámec slidů, ale pomáhá pochopit, kdy je imputace bezpečná):</p>
+<ul>
+<li><b>MCAR</b> (missing completely at random) – chybění je čistě náhodné, nezávisí na ničem (zkumavka se rozbila). Odstranění i jednoduchá imputace jsou zde nejméně nebezpečné.</li>
+<li><b>MAR</b> (missing at random) – chybění závisí na <i>jiných změřených</i> proměnných (starším pacientům se častěji neměří určitý parametr). Lze ho „dopočítat“ z ostatních proměnných.</li>
+<li><b>MNAR</b> (missing not at random) – chybění závisí na <i>samotné chybějící hodnotě</i> (laktát se neměří těm, kteří vypadají zdravě, tedy mají nejspíš nízký laktát). Žádná imputace to plně nenapraví; sama informace „chybí“ nese význam.</li>
+</ul>
+<p>Pak jsou dvě základní cesty:</p>
+<h3>1. Odstranění</h3>
+<p>Smažeme řádky (pacienty) nebo sloupce (příznaky) s chybějícími hodnotami (<code>dropna</code>). Jednoduché, ale <b>ne vždy si můžeme dovolit přicházet o data</b>. Extrémní případ: PhysioNet Challenge 2019 (predikce sepse, cca 50 příznaků) – chybějících hodnot je tolik, že po smazání všech neúplných řádků by nezbylo téměř nic.</p>
+<h3>2. Nahrazení (imputace)</h3>
+<div class="box definice" id="def-imputace"><div class="box-t">Definice: imputace</div>
+<p><b>Imputace</b> je nahrazení chybějící hodnoty odhadem – konstantou, statistikou daného sloupce (průměr, medián, nejčastější hodnota) nebo hodnotou předpovězenou z ostatních proměnných.</p>
+<p class="jinak">díru zalepíme „nejrozumnějším tipem“, abychom nemuseli vyhodit celý řádek. Tip je ale vymyšlený, ne naměřený – proto imputace vždy trochu zkresluje (hlavně zmenšuje rozptyl).</p></div>
+<ul>
+<li><b>Hromadně konstantou</b> (např. 0) – jednoduché, ale nepříliš praktické: nula v BMI je nesmysl a zkreslí rozložení.</li>
+<li><b>Správněji – statistikou daného sloupce</b>: průměrem nebo mediánem sloupce BMI. Medián je robustnější vůči odlehlým hodnotám.</li>
+<li>(Navíc nad rámec přednášky: pokročilé metody odhadují chybějící hodnotu z ostatních proměnných – k nejbližších sousedů, regresní imputace, MICE.)</li>
+</ul>
+<div class="box pozor"><div class="box-t">Na co myslet</div>
+<ul>
+<li>Imputace průměrem „zúží“ rozptyl proměnné (všechny doplněné hodnoty jsou stejné) a oslabí korelace. Příklad: BMI 22, 24, 28, 30 a dvě chybějící hodnoty. Průměr známých hodnot je 26 a jejich \(s = 3{,}16\). Po doplnění dvou hodnot 26 je \(s = 2{,}58\) – data vypadají méně rozptýlená, než ve skutečnosti jsou, a doplněné body nijak „nesledují“ ostatní proměnné, takže korelace slábnou.</li>
+<li>Záleží na tom, <b>proč</b> hodnota chybí. Chybí náhodně? Nebo chybí laktát hlavně u pacientů, kterým ho lékař neměřil, protože jim nic nebylo? Pak je i sama informace „chybí“ diagnosticky cenná.</li>
+<li>Statistiky pro imputaci (průměr, medián) počítej jen z trénovacích dat a stejné hodnoty použij na testovací data.</li>
+</ul></div>
+
+<h2 id="skalovani">Standardizace a normalizace</h2>
+<div class="box definice" id="def-skalovani"><div class="box-t">Definice: škálování příznaků</div>
+<p><b>Škálování</b> (feature scaling) je transformace, která každou proměnnou zvlášť <b>posune a přenásobí</b> (\(x' = (x - a)/b\)) tak, aby všechny proměnné měly srovnatelný rozsah. Dva nejčastější typy jsou standardizace a normalizace.</p>
+<p class="jinak">změníme „jednotky“ každé proměnné tak, aby věk v letech, koncentrace v tisících a odpor v milionech hrály v analýze se stejně velkými čísly. Jde o lineární úpravu – pořadí hodnot i tvar rozdělení zůstanou stejné, mění se jen poloha a „roztažení“ osy.</p></div>
+<p>Cíl: <b>přenést příznaky do stejného rozsahu</b>. Proč:</p>
+<ol>
+  <li>příznaky lze mezi sebou snadněji porovnávat;</li>
+  <li>zvýší se přesnost běžných metod strojového a hlubokého učení (neuronové sítě, SVM) a metod založených na vzdálenostech (k-means, kNN, PCA);</li>
+  <li>u logistické regrese lze porovnávat velikost koeficientů (význam příznaků) a model rychleji konverguje.</li>
+</ol>
+<p>Výjimka: metody založené na <b>rozhodovacích stromech</b> (random forest) standardizaci nepotřebují – strom se ptá jen „je hodnota větší než práh?“ a na měřítku nezáleží.</p>
+
+<h3>Potřebné pojmy</h3>
+<div class="box definice" id="def-prumer-sd"><div class="box-t">Definice: výběrový průměr a směrodatná odchylka</div>
+<p><b>Výběrový průměr</b> \(\bar x\) je součet hodnot vydělený jejich počtem. <b>Výběrová směrodatná odchylka</b> \(s\) je odmocnina z průměrné kvadratické odchylky hodnot od průměru (s dělitelem \(N-1\)): \[ \bar{x} = \frac{1}{N}\sum_{i=1}^{N} x_i, \qquad s = \sqrt{\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2} \]</p>
+<p class="jinak">průměr říká, <b>kde</b> data leží (těžiště), směrodatná odchylka, <b>jak daleko od průměru</b> se hodnoty typicky nacházejí. Má stejné jednotky jako data (roky, kg/m²), proto se dá přímo použít jako „pravítko“.</p></div>
+<p>Proč \(N-1\) a ne \(N\)? Odchylky měříme od průměru spočteného ze stejných dat; ten je k datům „přitažený“, takže odchylky vycházejí systematicky trochu menší. Dělení \(N-1\) to vyrovná (nestranný odhad). Speciální případy z přednášky: pole zcela stejných hodnot má \(s = 0\) (pozor – standardizace by dělila nulou!); data vydělená dvěma mají poloviční průměr i \(s\); přičtení konstanty změní průměr, ale \(s\) ne.</p>
+
+<div class="box definice" id="def-standardizace"><div class="box-t">Definice: standardizace (z-skóre)</div>
+<p><b>Standardizace</b> je transformace proměnné, při které od každé hodnoty odečteme průměr proměnné a výsledek vydělíme její směrodatnou odchylkou: \(z_i = (x_i - \bar x)/s\). Výsledná proměnná (<b>z-skóre</b>) má průměr 0 a směrodatnou odchylku 1 a je <b>bezrozměrná</b>.</p>
+<p class="jinak">každou hodnotu vyjádříme jako „o kolik směrodatných odchylek je nad průměrem (+) nebo pod ním (−)“. Původní jednotky zmizí, takže lze srovnávat věk s BMI. Rozsah výsledku není omezený – typicky zhruba −3 až +3, extrémy klidně dál.</p></div>
+
+<div class="box definice" id="def-normalizace"><div class="box-t">Definice: normalizace (min–max)</div>
+<p><b>Normalizace min–max</b> je transformace proměnné, při které od každé hodnoty odečteme minimum proměnné a výsledek vydělíme rozpětím (maximum − minimum): \(x_i' = (x_i - \min)/(\max - \min)\). Výsledná proměnná leží přesně v intervalu \([0, 1]\): nejmenší hodnota dostane 0, největší 1.</p>
+<p class="jinak">každou hodnotu vyjádříme jako „kolik procent cesty od nejmenší k největší hodnotě urazila“. Měřítko určují jen dva body – minimum a maximum – a proto jedna chybná extrémní hodnota posune měřítko pro všechny ostatní.</p></div>
+
+<div class="box vzorec"><div class="box-t">Dva vzorce vedle sebe</div>
+\[ \text{standardizace (z-skóre):}\quad z_i = \frac{x_i - \bar{x}}{s} \qquad\qquad \text{normalizace (min–max):}\quad x_i' = \frac{x_i - \min(x)}{\max(x) - \min(x)} \]
+<table class="vars">
+<tr><td>\(x_i\)</td><td>původní hodnota \(i\)-tého objektu (např. věk pacienta)</td></tr>
+<tr><td>\(\bar x,\ s\)</td><td>průměr a směrodatná odchylka <b>trénovacích</b> dat dané proměnné – čitatel posune data, aby střed byl v nule; jmenovatel je „smrští/roztáhne“ na jednotkový rozptyl</td></tr>
+<tr><td>\(\min(x),\ \max(x)\)</td><td>nejmenší a největší hodnota proměnné v trénovacích datech</td></tr>
+<tr><td>\(z_i\)</td><td>o kolik směrodatných odchylek je hodnota nad (+) nebo pod (−) průměrem; výsledný sloupec má průměr 0 a \(s = 1\)</td></tr>
+<tr><td>\(x_i'\)</td><td>poloha hodnoty mezi minimem (0) a maximem (1)</td></tr>
+</table>
+<p>Obě úpravy mají stejný tvar „odečti něco a vyděl něčím“ – liší se jen v tom, <b>čím</b>: standardizace používá průměr a \(s\) (počítají se ze všech hodnot), normalizace minimum a rozpětí (určují je dvě krajní hodnoty).</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad krok za krokem</div>
+<p>Hodnoty proměnné: 2, 4, 6, 8, 10.</p>
+<ol>
+<li>Průměr \(\bar x = 30/5 = 6\). Odchylky od průměru: −4, −2, 0, 2, 4. Jejich čtverce 16, 4, 0, 4, 16, součet 40.</li>
+<li>\(s = \sqrt{40/(5-1)} = \sqrt{10} \approx 3{,}16\).</li>
+<li><b>Standardizace:</b> \(z = (x-6)/3{,}16\) → −1,26; −0,63; 0; 0,63; 1,26 (průměr 0, \(s\) = 1).</li>
+<li><b>Normalizace:</b> min = 2, max = 10, rozpětí 8 → \((x-2)/8\) = 0; 0,25; 0,5; 0,75; 1.</li>
+</ol>
+<p>Teď přidej chybnou hodnotu 100. <b>Normalizace:</b> rozpětí je 98, původních pět hodnot se zmáčkne do pásu 0 – 0,08 a hodnota 100 dostane 1. Celé měřítko „spotřebovala“ jediná chyba. <b>Standardizace:</b> průměr vyskočí na 21,7 a \(s\) na 38,5, ostatní hodnoty vyjdou −0,51 až −0,30 a chyba 2,04. Odlehlá hodnota tedy škodí oběma úpravám. U normalizace ale přímo <b>určuje</b> měřítko, u standardizace je jen jedním z mnoha čísel, ze kterých se průměr a \(s\) počítají. Čím víc dat, tím menší vliv má jedna chyba na průměr a \(s\), kdežto maximum určí vždy úplně. Na 60 pacientech to ukazuje obr. 3.1.</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad: srovnání různých jednotek</div>
+<p>Věk pacientů má průměr 50 let a \(s = 15\). Pacient se 80 lety má \(z = (80-50)/15 = 2\): je o dvě směrodatné odchylky starší než průměr. BMI s průměrem 26 a \(s = 4\): BMI 34 dává také \(z = 2\). Po standardizaci jsou oba údaje na stejné škále („stejně neobvyklé“), přestože původně měly úplně jiné jednotky.</p></div>
+<p>Pro interpretaci z-skóre se hodí <b>pravidlo 3 sigma (68–95–99,7)</b>: u normálního rozdělení leží asi 68 % hodnot v \(\pm 1s\), 95 % v \(\pm 2s\) a 99,7 % v \(\pm 3s\). Hodnota se \(|z| &gt; 3\) je podezřelá.</p>
+<div class="box pozor"><div class="box-t">Tři časté omyly</div>
+<ul>
+<li><b>Standardizace neudělá z dat normální rozdělení.</b> Je to lineární posun a změna měřítka – zešikmená data zůstanou zešikmená (jen budou mít průměr 0 a \(s\) = 1). Na změnu tvaru slouží nelineární transformace (log, viz níže).</li>
+<li><b>Slovo „normalizace“ má víc významů.</b> V přednášce a ve skriptech = min–max na interval 0–1. V jiných textech se tak někdy říká i standardizaci nebo úpravě vektoru (řádku) na jednotkovou délku. U zkoušky je dobré vždy říct vzorec.</li>
+<li><b>Odlehlá hodnota ovlivní i standardizaci</b> (posune průměr a zvětší \(s\)), jen méně dramaticky než min–max. Robustní alternativou je škálování mediánem a mezikvartilovým rozpětím (<code>RobustScaler</code>).</li>
+</ul></div>
+
+<h3>Co je výhodnější?</h3>
+<div class="box definice" id="def-odlehla"><div class="box-t">Definice: odlehlá hodnota (outlier)</div>
+<p><b>Odlehlá hodnota</b> je pozorování, které leží neobvykle daleko od ostatních hodnot proměnné (nebo od zbytku mraku bodů ve více rozměrech). Pro jednu proměnnou se v praxi často bere \(|z| &gt; 3\) nebo hodnota dál než 1,5 mezikvartilového rozpětí od kvartilů.</p>
+<p class="jinak">bod, který „nesedí“ k ostatním. Může to být chyba (BMI 94,75 z překlepu ve váze), nebo skutečný, ale vzácný případ. Rozhodnutí, co s ním, dělá analytik – ne vzorec.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig03_skalovani.png" alt="Vliv jedné odlehlé hodnoty na standardizaci a normalizaci" loading="lazy"></div>
+<figcaption><b>Obr. 3.1</b> Jedna chybná hodnota BMI (94,75). Standardizace ji ukáže jako extrém (z ≈ 7) a ostatní body nechá v rozumném rozsahu. Min–max normalizace kvůli ní „stlačí“ všechna ostatní BMI do úzkého pásu u nuly.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p><b>Normalizace je citlivá na odlehlé hodnoty</b>, protože jejich hodnota přímo určuje min a max. Standardizace je robustnější, proto se <b>rutinně používá standardizace</b>. Výjimečně se nepoužije nic (např. EKG v mV pro hluboké učení) – to je ale spíš nebezpečné.</p></div>
+
+<h3>StandardScaler a „pamatování“ transformace</h3>
+<p>Proč použít třídu <code>StandardScaler</code> místo ručního vzorce:</p>
+<ol>
+<li>ošetří všechny sloupce jedním voláním;</li>
+<li>umí pracovat s NaN (při výpočtu je ignoruje, NaN „přežije“);</li>
+<li><b>pamatuje si průměr a směrodatnou odchylku</b> – lze ji opakovaně použít;</li>
+<li>dá se automatizovaně používat v <i>pipelines</i>;</li>
+<li>po standardizaci se chybějící hodnoty rutinně nahrazují nulou (= průměrem).</li>
+</ol>
+<div class="box definice" id="def-uniku"><div class="box-t">Definice: únik informace (data leakage)</div>
+<p><b>Únik informace</b> nastane, když se do učení modelu (včetně předzpracování) dostane informace z dat, na kterých má být model teprve testován, nebo informace, kterou by model v reálném nasazení neměl k dispozici.</p>
+<p class="jinak">model „opisuje z řešení“. Na testu pak vypadá lépe, než ve skutečnosti je. Typický nenápadný případ: průměr a \(s\) pro standardizaci (nebo medián pro imputaci) spočítané z celého datasetu včetně testovací části.</p></div>
+<div class="box pozor"><div class="box-t">Nejčastější chyba</div>
+<p>Standardizovat testovací data jejich vlastním průměrem. Správně: průměr a \(s\) spočítáš <b>jen na trénovacích datech</b> a stejnými čísly transformuješ testovací i nová data (při nasazení modelu). Jinak model dostane data v jiném „měřítku“, než na jakém se učil, a test navíc „vidí“ informaci o testovací množině.</p></div>
+
+<h3>Experiment z přednášky: detekce stimulace tepů</h3>
+<p>3 příznaky, 158 pacientů trénink, 489 pacientů externí test. F1 = úspěšnost klasifikace, Iters = počet iterací do konvergence.</p>
+<div class="box definice" id="def-f1"><div class="box-t">Definice: F1 skóre</div>
+<p><b>F1 skóre</b> je harmonický průměr přesnosti (precision – kolik z objektů označených jako pozitivní opravdu pozitivních je) a senzitivity (recall – kolik ze skutečně pozitivních objektů model našel): \(F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision}+\text{recall}}\). Nabývá hodnot 0 až 1.</p>
+<p class="jinak">jedno číslo pro kvalitu klasifikátoru, které je vysoké jen tehdy, když model zároveň „moc nepřestřeluje“ (málo falešných poplachů) a „moc nepřehlíží“ (málo zmeškaných případů).</p></div>
+<div class="box definice" id="def-konvergence"><div class="box-t">Definice: konvergence a iterace</div>
+<p><b>Iterační algoritmus</b> hledá řešení postupnými kroky (iteracemi), z nichž každý odhad o něco zlepší. Algoritmus <b>konverguje</b>, když se odhady přestanou měnit (změna klesne pod zvolenou toleranci); počet iterací do té doby vyjadřuje rychlost konvergence.</p>
+<p class="jinak">„kolik kroků potřebuje sejít do údolí“. Když jsou proměnné v hodně rozdílných měřítcích, je údolí protáhlé a úzké, algoritmus „klikatí“ a potřebuje víc kroků – nebo se do cíle nedostane vůbec.</p></div>
+<div class="tablewrap"><table>
+<tr><th>Metoda</th><th class="num">neupravená F1 / iter.</th><th class="num">standardizovaná</th><th class="num">normalizovaná</th><th class="num">x₀·1000 + 500</th></tr>
+<tr><td>logistická regrese</td><td class="num">0,924 / 27</td><td class="num">0,924 / 12</td><td class="num">0,889 / 26</td><td class="num">0,245 / nekonverguje</td></tr>
+<tr><td>SVM (RBF)</td><td class="num">0,937 / 6618</td><td class="num">0,928 / 5641</td><td class="num">0,934 / 5805</td><td class="num">0,879 / 8608</td></tr>
+<tr><td>random forest</td><td class="num">0,927 / –</td><td class="num">0,927 / –</td><td class="num">0,915 / –</td><td class="num">0,927 / –</td></tr>
+<tr><td>neuronová síť (MLP)</td><td class="num">0,933 / 278</td><td class="num">0,939 / 134</td><td class="num">0,904 / 193</td><td class="num">0,894 / 101</td></tr>
+</table></div>
+<div class="box odnes"><div class="box-t">Co si z tabulky odnést</div>
+<ul>
+<li>Standardizace výrazně <b>zrychlí konvergenci</b> (LR 27 → 12 iterací, NN 278 → 134) a přesnost neponíží.</li>
+<li>Když jeden příznak „nafoukneme“ do nevhodného rozsahu (×1000 + 500), logistická regrese se zhroutí (F1 0,245) a SVM i síť se zhorší – metody citlivé na měřítko trpí.</li>
+<li>Random forest je na měřítku nezávislý (0,927 pořád).</li>
+</ul></div>
+
+<h2 id="transformace">Další transformace: úprava rozložení</h2>
+<p>Některé příznaky mají „nepříznivé“ rozložení – typicky silně zešikmené doprava (koncentrace, časy, odpory): většina hodnot malá, pár obrovských. Zkusíme je převést na příznivější tvar nelineární funkcí a pak standardizovat.</p>
+<div class="box definice" id="def-sikmost"><div class="box-t">Definice: zešikmené rozdělení</div>
+<p>Rozdělení je <b>zešikmené (asymetrické)</b>, pokud jeden jeho „chvost“ je výrazně delší než druhý. <b>Pravostranně (kladně) zešikmené</b> rozdělení má dlouhý chvost směrem k velkým hodnotám; průměr je pak větší než medián.</p>
+<p class="jinak">většina pacientů má hodnotu malou a „normální“, několik málo pacientů má hodnotu obrovskou. Těch pár velkých hodnot táhne průměr nahoru a dominuje rozptylu.</p></div>
+<div class="box definice" id="def-transformace"><div class="box-t">Definice: nelineární transformace proměnné</div>
+<p><b>Transformace proměnné</b> je nahrazení každé hodnoty \(x\) hodnotou \(f(x)\) pro zvolenou funkci \(f\) (např. \(\log x\), \(1/x\), \(\sqrt x\)). Je-li \(f\) nelineární, změní se <b>tvar</b> rozdělení; je-li monotónní, zachová se <b>pořadí</b> hodnot.</p>
+<p class="jinak">„přeměříme“ osu nerovnoměrně. Logaritmus velké vzdálenosti zkrátí a malé natáhne, takže dlouhý chvost se stáhne a rozdělení zesymetričtí. Na rozdíl od standardizace (která jen posouvá a natahuje rovnoměrně) se tím mění tvar.</p></div>
+<figure><div class="paper"><img src="figures/fig03_log.png" alt="Histogram před a po logaritmické transformaci" loading="lazy"></div>
+<figcaption><b>Obr. 3.2</b> Logaritmus „stlačí“ velké hodnoty a roztáhne malé – zešikmené rozdělení se stane přibližně symetrickým.</figcaption></figure>
+<ul>
+  <li><b>log(x)</b> – pro kladná, doprava zešikmená data (rozdíly v řádech → rozdíly v jednotkách); často přiblíží normalitě.</li>
+  <li><b>1/x</b> – ještě silnější „stlačení“ velkých hodnot.</li>
+  <li><b>√x, x², exp(x)</b> – podle tvaru rozdělení.</li>
+</ul>
+<p>V experimentu s detekcí stimulace (transformovaný příznak R_HC + standardizace) se mírně zlepšila logistická regrese (F1 0,924 → 0,932 s log, 0,936 s 1/x; 10 iterací) a síť (0,938–0,939), random forest zůstal stejný. Přednáška končí „filozofickou otázkou“: <b>která metoda je nejlepší? Z jakého pohledu?</b> – podle přesnosti? rychlosti? interpretovatelnosti? Rozdíly ve třetím desetinném místě nemusí být ani reprodukovatelné.</p>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Před analýzou si nejdřív prohlédnu rozložení všech proměnných, opravím zjevné chyby, převedu kategorie one-hot kódováním a ošetřím chybějící hodnoty – buď odstraněním, nebo imputací mediánem. Zešikmené proměnné zlogaritmuji. Pak standardizuji na průměr 0 a směrodatnou odchylku 1; parametry si uložím z trénovacích dat a stejně transformuji i testovací. Standardizaci preferuji před min–max normalizací, protože ta je citlivá na odlehlé hodnoty. Stromové metody škálování nepotřebují.“</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Předzpracování převádí surová data do podoby vhodné pro analýzu. Kategorické proměnné převádíme na čísla – binární a ordinální stačí očíslovat, nominální s více kategoriemi je třeba <b>one-hot</b> kódovat, jinak vznikne falešné pořadí (prakticky to snižuje výkon modelů). Chybějící hodnoty buď odstraníme (pokud si to můžeme dovolit), nebo <b>imputujeme</b>, nejlépe statistikou daného sloupce. Rozsahy sjednocujeme <b>standardizací</b> (z-skóre: průměr 0, \(s\) = 1), která je robustnější než min–max <b>normalizace</b>; zrychluje konvergenci a je nutná pro metody citlivé na měřítko (LR, SVM, sítě, metody založené na vzdálenosti), ne pro stromy. Transformační parametry se počítají z trénovacích dat a uchovávají pro inferenci. Zešikmená rozdělení upravujeme nelineárními transformacemi (log, 1/x).</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Nejdřív data poznej: typy, rozsahy, rozložení, chybějící hodnoty, nesmyslné hodnoty.</li>
+<li>Nominální kategorie → one-hot; prosté číslování lže o pořadí a vzdálenostech.</li>
+<li>Chybějící hodnoty: mazat jen když si to můžeš dovolit; jinak imputovat (medián / průměr sloupce).</li>
+<li>Standardizace je výchozí volba; normalizace min–max je citlivá na odlehlé hodnoty.</li>
+<li>Parametry škálování a imputace počítej na trénovacích datech a použij je i na testovací.</li>
+<li>Stromové metody škálování nepotřebují; LR, SVM, NN, k-means a PCA ano.</li>
+<li>Log a 1/x „zkrotí“ zešikmená rozdělení.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Proč je potřeba předzpracování dat a jaké kroky zahrnuje?</summary><div>
+<p>Protože surová data obsahují kategorie v textu, chybějící a chybné hodnoty a proměnné v nesrovnatelných rozsazích; většina metod s tím neumí pracovat nebo dá zkreslený výsledek. Kroky: poznat data (typy, rozsahy, rozložení), převést kategorické proměnné (one-hot), upravit rozložení (log…), standardizovat (a uchovat parametry), ošetřit chybějící hodnoty.</p></div></details>
+<details class="q"><summary>Co je one-hot encoding a proč ho používáme?</summary><div>
+<p>Převod kategorické proměnné s \(k\) kategoriemi na \(k\) binárních sloupců (1 = objekt patří do kategorie). Používá se proto, že prosté očíslování kategorií vnáší neexistující pořadí a vzdálenosti (L=0, R=1, Sync=2 by znamenalo, že R je „mezi“). V přednášce chybějící one-hot u dvou proměnných snížil AUC SVM modelu z 0,76 na 0,73.</p></div></details>
+<details class="q"><summary>Jak naložit s chybějícími hodnotami?</summary><div>
+<p>Zjistit rozsah a strukturu chybění. Pak buď odstranit řádky/sloupce (jednoduché, ale ztrácíme data – u datasetů jako PhysioNet 2019 nepoužitelné), nebo nahradit: konstantou (nepraktické), průměrem nebo mediánem sloupce (lepší), případně pokročilejšími metodami z ostatních proměnných. Imputace průměrem snižuje rozptyl; statistiky počítat z trénovacích dat.</p></div></details>
+<details class="q"><summary>Jaký je rozdíl mezi standardizací a normalizací? Kterou zvolíte?</summary><div>
+<p><b>Standardizace</b> je transformace, která od každé hodnoty odečte průměr proměnné a vydělí ji směrodatnou odchylkou, \(z = (x-\bar x)/s\). Výsledek má průměr 0, směrodatnou odchylku 1 a říká, o kolik směrodatných odchylek je hodnota od průměru. <b>Normalizace min–max</b> od hodnoty odečte minimum a vydělí rozpětím, \((x-\min)/(\max-\min)\); výsledek leží v intervalu 0–1. Obě jsou lineární – mění polohu a měřítko, ne tvar rozdělení. Normalizace je citlivá na odlehlé hodnoty, protože měřítko určují jen dvě krajní hodnoty – jedna chyba stlačí ostatní do úzkého pásu. Standardizace počítá se všemi hodnotami, proto je robustnější a rutinně se používá.</p></div></details>
+<details class="q"><summary>Které metody standardizaci potřebují a které ne? Proč?</summary><div>
+<p>Potřebují metody, které počítají se vzdálenostmi, rozptylem nebo gradientní optimalizací: logistická regrese (konvergence, srovnatelnost koeficientů), SVM, neuronové sítě, k-means, kNN, PCA. Nepotřebují stromové metody (rozhodovací strom, random forest), které jen porovnávají hodnotu s prahem v rámci jedné proměnné. Experiment v přednášce: RF měl stejné F1 u všech škálování, LR po „nafouknutí“ příznaku zkolabovala.</p></div></details>
+<details class="q"><summary>Proč se musí parametry standardizace uchovat?</summary><div>
+<p>Model se naučil na datech v určitém měřítku. Nová data (test, nasazení) je nutné transformovat <b>stejným</b> průměrem a směrodatnou odchylkou jako trénovací data, jinak by model dostal hodnoty v jiném měřítku. Počítat je z testovacích dat by navíc znamenalo únik informace. Proto se používá objekt StandardScaler, který si parametry pamatuje.</p></div></details>
+<details class="q"><summary>K čemu jsou transformace jako logaritmus nebo 1/x?</summary><div>
+<p>K úpravě nepříznivého (zešikmeného) rozložení na symetričtější, bližší normálnímu. To pomáhá metodám, které normalitu předpokládají, snižuje vliv extrémních hodnot a může zlepšit i výkon modelů (v přednášce mírné zlepšení LR i NN po log a 1/x transformaci).</p></div></details>
+
+<nav class="pager"><a class="prev" href="02_vicerozmerne_rozdeleni.html"><small>← předchozí</small>Vícerozměrné rozdělení a testy</a><a class="next" href="04_vztahy.html"><small>další →</small>Vztahy mezi proměnnými</a></nav>
+</main>
+</div>
+</body>
+</html>
