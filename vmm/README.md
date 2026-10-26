@@ -11,6 +11,9 @@ Studijní skripta k ústní zkoušce z přednášek 1–11 předmětu VMM (více
   proměnnými, příklady, obrázky, shrnutí, take-home messages, otázky ke zkoušce s odpověďmi)
 - `12_srovnani.html` – rozhodovací schéma, srovnávací tabulky, zaměňované pojmy, tahák vzorců
 - `13_slovnik.html` – všechny definice pohromadě (generuje se automaticky z rámečků definic v kapitolách)
+- `skripta_vse.html` – všechny stránky za sebou (podklad pro PDF celých skript, generuje se)
+- `pdf/` – PDF každé stránky a `skripta_vse.pdf`; vytváří je `_build/make_pdf.py` (headless Chrome) v GitHub Actions,
+  do gitu se neukládají. Lokálně: `python vmm/_build/make_pdf.py` (po `build.py`).
 - `assets/` – styl a skript (téma, navigace, interaktivní ukázky)
 - `figures/` – vygenerované grafy
 

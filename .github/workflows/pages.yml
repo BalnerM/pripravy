@@ -29,6 +29,12 @@ jobs:
             echo "== $f"
             python "$f"
           done
+      - name: PDF verze (headless Chrome, předinstalovaný na runneru)
+        run: |
+          for f in */_build/make_pdf.py; do
+            echo "== $f"
+            python "$f"
+          done
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

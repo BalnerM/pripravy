@@ -336,12 +336,30 @@ details.q > div > :last-child { margin-bottom: 0; }
   table.vars td:first-child { width: auto; white-space: normal; }
 }
 
+.printhead { display: none; }
+.kapitola + .kapitola { margin-top: 72px; padding-top: 24px; border-top: 2px solid var(--line-strong); }
+
+/* ---------- tisk a PDF (tlačítko PDF stahuje PDF vytvořené z této podoby) ---------- */
+@page {
+  size: A4;
+  margin: 15mm 16mm 17mm;
+  @bottom-right { content: counter(page) " / " counter(pages); font: 9pt system-ui, sans-serif; color: #7a7873; }
+}
 @media print {
   .topbar, .sidebar, .pager, .demo, .qtools { display: none !important; }
-  .layout { display: block; }
-  main { max-width: none; padding: 0; }
+  html, body { background: #fff !important; }
+  body { font-size: 10.5pt; line-height: 1.5; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .layout { display: block; max-width: none; }
+  main { max-width: none; padding: 0; margin: 0; }
+  .printhead { display: block; font-size: 8.5pt; color: var(--muted); margin: 0 0 10px;
+    padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  .kapitola + .kapitola { break-before: page; margin-top: 0; padding-top: 0; border-top: 0; }
   details.q > div { display: block !important; }
-  body { background: #fff; color: #000; font-size: 11pt; }
+  details.q summary { font-weight: 650; }
+  .katex-display, table.vars, .tablewrap { overflow: visible !important; }
+  .box, figure, .schema, .tablewrap, details.q, .takehome, table { break-inside: avoid; }
+  h1, h2, h3, .box-t, summary { break-after: avoid; }
+  a { text-decoration: none; }
 }
 
 /* široké vzorce a tabulky nesmí roztáhnout stránku */

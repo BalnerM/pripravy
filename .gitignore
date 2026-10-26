@@ -1,2 +1,4 @@
 __pycache__/
 *.pyc
+# PDF generuje GitHub Actions (make_pdf.py), do gitu nepatří
+*/pdf/

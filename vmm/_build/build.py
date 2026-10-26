@@ -73,6 +73,8 @@ def make_glossary():
     return count
 
 KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist"
+SITE = "https://balnerm.github.io/pripravy/vmm/"
+ALL = "skripta_vse"  # stránka se všemi kapitolami za sebou (podklad pro jedno PDF celých skript)
 
 TEMPLATE = """<!doctype html>
 <html lang="cs">
@@ -94,6 +96,7 @@ TEMPLATE = """<!doctype html>
   <a class="brand" href="index.html">VMM – příprava na zkoušku<small>vícerozměrné metody, principy a postupy</small></a>
   <span class="spacer"></span>
   <a class="iconbtn back" href="../index.html" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  {pdfbtn}
   <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
 </header>
 <div class="layout">
@@ -105,6 +108,7 @@ TEMPLATE = """<!doctype html>
 {toc}
 </nav>
 <main>
+{printhead}
 {kicker}
 {body}
 {pager}
@@ -119,9 +123,47 @@ def strip_tags(s):
     return html.unescape(re.sub(r"<[^>]+>", "", s)).strip()
 
 
+def chrome(slug, page_title):
+    """Tlačítko PDF a tisková hlavička; úvodní stránka odkazuje na PDF celých skript."""
+    if slug in ("index", ALL):
+        pdf, tip = ALL, "Celá skripta v jednom PDF"
+    else:
+        pdf, tip = slug, "Stáhnout tuto stránku jako PDF"
+    pdfbtn = f'<a class="iconbtn" href="pdf/{pdf}.pdf" download title="{tip}">PDF</a>'
+    printhead = f'<p class="printhead">VMM – příprava na zkoušku · {html.escape(page_title)} · {SITE}{slug}.html</p>'
+    return pdfbtn, printhead
+
+
+def make_all(bodies, nav):
+    """Všechny stránky za sebou na jedné stránce: id dostanou předponu kapitoly, odkazy mezi stránkami se
+    přepíšou na kotvy, aby fungovaly i uvnitř jednoho PDF."""
+    slugs = [s for s, *_ in PAGES]
+
+    def pref(s):
+        return "k" + (s[:2] if s[:2].isdigit() else "00")
+
+    link_re = re.compile(r'href="(' + "|".join(map(re.escape, slugs)) + r')\.html(?:#([^"]*))?"')
+    parts = []
+    for slug, num, title, _ in PAGES:
+        p = pref(slug)
+        body = bodies[slug]
+        body = re.sub(r'(?<![\w-])id="', f'id="{p}-', body)
+        body = body.replace('href="#', f'href="#{p}-').replace("url(#", f"url(#{p}-")
+        body = link_re.sub(lambda m: f'href="#{pref(m.group(1))}' + (f'-{m.group(2)}' if m.group(2) else "") + '"',
+                           body)
+        kicker = f'<p class="kicker">Přednáška {num}</p>' if num.isdigit() else ""
+        parts.append(f'<section class="kapitola" id="{p}">\n{kicker}\n{body}\n</section>')
+    page_title = "Celá skripta – VMM"
+    pdfbtn, printhead = chrome(ALL, page_title)
+    return TEMPLATE.format(title=page_title, desc="Všechny kapitoly skript VMM na jedné stránce (tisková verze).",
+                           katex=KATEX, nav=nav, toc="", pdfbtn=pdfbtn, printhead=printhead, kicker="",
+                           body="\n".join(parts), pager="")
+
+
 def build():
     errors = []
     built = {}
+    bodies = {}
     n_defs = make_glossary()
     for i, (slug, num, title, desc) in enumerate(PAGES):
         src = SRC / f"{slug}.html"
@@ -129,6 +171,7 @@ def build():
             print("chybí fragment:", src.name)
             continue
         body = src.read_text(encoding="utf-8")
+        bodies[slug] = body
         nav = "\n".join(
             f'    <li><a href="{s}.html"{" class=\"active\"" if s == slug else ""}>'
             f'<span class="n">{n}</span><span>{t}</span></a></li>'
@@ -148,10 +191,16 @@ def build():
         pager += "</nav>"
         kicker = f'<p class="kicker">Přednáška {num}</p>' if num.isdigit() else ""
         page_title = f"{title} – VMM" if slug != "index" else "VMM – příprava na zkoušku"
+        pdfbtn, printhead = chrome(slug, page_title)
         out = TEMPLATE.format(title=page_title, desc=html.escape(desc), katex=KATEX, nav=nav, toc=toc,
-                              kicker=kicker, body=body, pager=pager)
+                              pdfbtn=pdfbtn, printhead=printhead, kicker=kicker, body=body, pager=pager)
         (ROOT / f"{slug}.html").write_text(out, encoding="utf-8")
         built[slug] = out
+
+    nav = "\n".join(f'    <li><a href="{s}.html"><span class="n">{n}</span><span>{t}</span></a></li>'
+                    for s, n, t, _ in PAGES)
+    built[ALL] = make_all(bodies, nav)
+    (ROOT / f"{ALL}.html").write_text(built[ALL], encoding="utf-8")
 
     # ---- kontroly ----
     ids = {s: set(re.findall(r'id="([^"]+)"', h)) for s, h in built.items()}
@@ -179,7 +228,7 @@ def build():
         dup = [x for x in re.findall(r'id="([^"]+)"', h) if re.findall(rf'id="{re.escape(x)}"', h).__len__() > 1]
         if dup:
             errors.append(f"{slug}: duplicitní id {sorted(set(dup))}")
-    print(f"sestaveno stránek: {len(built)}, definic ve slovníku: {n_defs}")
+    print(f"sestaveno stránek: {len(built)} (včetně {ALL}.html), definic ve slovníku: {n_defs}")
     if errors:
         print("CHYBY:")
         for e in errors:

@@ -9,6 +9,25 @@
   const stored = getStored();
   if (stored === "light" || stored === "dark") root.setAttribute("data-theme", stored);
 
+  // ---------- tisk / PDF ----------
+  // ?pdf (generování PDF skriptem make_pdf.py) i ruční tisk: světlý režim, rozbalené odpovědi, načtené obrázky
+  let themeBeforePrint = null;
+  function preparePrint() {
+    themeBeforePrint = root.getAttribute("data-theme");
+    root.setAttribute("data-theme", "light");
+    document.querySelectorAll("details.q").forEach(d => { d.open = true; });
+    document.querySelectorAll('img[loading="lazy"]').forEach(img => { img.loading = "eager"; });
+  }
+  window.addEventListener("beforeprint", preparePrint);
+  window.addEventListener("afterprint", () => {
+    if (themeBeforePrint) root.setAttribute("data-theme", themeBeforePrint);
+    else root.removeAttribute("data-theme");
+  });
+  if (/[?&]pdf\b/.test(location.search)) {
+    root.setAttribute("data-theme", "light");
+    document.addEventListener("DOMContentLoaded", preparePrint);
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     const tb = document.getElementById("themeBtn");
     if (tb) {

@@ -12,7 +12,8 @@ Studijní materiály k jednotlivým předmětům, zveřejněné přes GitHub Pag
 - Každý předmět má svou složku; stránky se generují skriptem `<předmět>/_build/build.py` ze zdrojů
   v `<předmět>/_build/obsah/` (podrobnosti v `vmm/README.md`).
 - Po každém pushi do větve `main` workflow `.github/workflows/pages.yml` spustí všechny `*/_build/build.py`
-  a nasadí web. Průběh je vidět v záložce **Actions**.
+  a `*/_build/make_pdf.py` (PDF ke každé stránce + celá skripta, tlačítko **PDF** na webu) a nasadí web.
+  Průběh je vidět v záložce **Actions**.
 
 ## Úpravy a verze
 - **Na GitHubu:** otevři zdrojový soubor (např. `vmm/_build/obsah/03_predzpracovani.html`), tužka → uprav →
