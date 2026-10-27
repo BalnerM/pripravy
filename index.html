@@ -49,9 +49,20 @@ a.card {
   background: var(--surface); box-shadow: var(--shadow); color: var(--ink); text-decoration: none;
 }
 a.card:hover { border-color: var(--accent); }
-.card .n { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); }
+.card .n, .mat .n { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); }
 .card .t { font-size: 19px; font-weight: 650; margin: 4px 0 6px; }
 .card .d { color: var(--ink-2); font-size: 14.5px; }
+.crumbs { font-size: 14px; margin: 0 0 16px; }
+.crumbs a { color: var(--accent-ink); text-decoration: none; }
+.crumbs a:hover { text-decoration: underline; }
+.mat { display: block; padding: 18px 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+.mat .t { font-size: 19px; font-weight: 650; margin: 4px 0 6px; }
+.mat .d { color: var(--ink-2); font-size: 14.5px; margin: 0 0 12px; }
+.mat .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.mat .acts a { display: inline-block; padding: 5px 12px; border: 1px solid var(--line); border-radius: 8px; font-size: 14px; color: var(--accent-ink); text-decoration: none; }
+.mat .acts a:first-child { background: var(--accent); border-color: var(--accent); color: #fff; }
+.mat .acts a:hover { border-color: var(--accent); }
+.card .c { color: var(--muted); font-size: 13px; margin-top: 10px; }
 footer { color: var(--muted); font-size: 13.5px; margin-top: 40px; }
 footer a { color: var(--accent-ink); }
 </style>
@@ -63,20 +74,11 @@ footer a { color: var(--accent-ink); }
   <button id="themeBtn" type="button">Tmavý režim</button>
 </header>
 <main>
-  <h1>Přípravy na zkoušky</h1>
-  <p class="lead">Studijní materiály k jednotlivým předmětům: principy, definice, řešené příklady, grafy a otázky ke zkoušce s odpověďmi.</p>
-  <div class="cards">
-    <a class="card" href="vmm/">
-      <div class="n">VMM · ústní zkouška</div>
-      <div class="t">Vícerozměrné metody</div>
-      <div class="d">Přednášky 1–11: předzpracování, korelace, shlukování, PCA, kernel PCA, SVD, faktorová analýza, t-SNE, UMAP. Slovník pojmů a tahák.</div>
-    </a>
-    <a class="card" href="mlr/">
-      <div class="n">MLR · zkouška</div>
-      <div class="t">Strojové učení</div>
-      <div class="d">Přednášky 1–7: optimalizace, hodnocení modelů, redukce dimenze, lineární modely a SVM, stromy a ansámbly, neuronové sítě. U každého modelu co dělají jeho parametry; tahák a slovník. Česky i anglicky (tlačítko EN).</div>
-    </a>
-  </div>
+  <div id="view"></div>
+  <noscript>
+    <h1>Přípravy na zkoušky</h1>
+    <ul><li><a href="vmm/">Vícerozměrné metody (VMM)</a></li><li><a href="mlr/">Strojové učení (MLR)</a></li></ul>
+  </noscript>
   <footer>Zdroje a historie verzí: <a href="https://github.com/BalnerM/pripravy">github.com/BalnerM/pripravy</a></footer>
 </main>
 <script>
@@ -98,3 +100,70 @@ footer a { color: var(--accent-ink); }
 </script>
 </body>
 </html>
+<script>
+// Nový předmět = nový objekt v PREDMETY; nový materiál = nový objekt v jeho "materialy".
+// Každý materiál: typ (štítek), nazev, popis, odkazy [[text, href], ...] (první odkaz je hlavní tlačítko).
+var PREDMETY = [
+  {
+    id: "vmm", zkratka: "VMM", nazev: "Vícerozměrné metody",
+    popis: "Předzpracování, korelace, shlukování, PCA, kernel PCA, SVD, faktorová analýza, t-SNE, UMAP.",
+    materialy: [
+      { typ: "Skripta · ústní zkouška", nazev: "Skripta k ústní zkoušce",
+        popis: "Přednášky 1–11: definice, intuice, řešené příklady, grafy a otázky ke zkoušce s odpověďmi. Slovník pojmů a tahák.",
+        odkazy: [["Otevřít skripta", "vmm/"], ["Celá na jedné stránce", "vmm/skripta_vse.html"], ["PDF", "vmm/pdf/skripta_vse.pdf"]] }
+    ]
+  },
+  {
+    id: "mlr", zkratka: "MLR", nazev: "Strojové učení",
+    popis: "Optimalizace, hodnocení modelů, redukce dimenze, lineární modely a SVM, stromy a ansámbly, neuronové sítě.",
+    materialy: [
+      { typ: "Skripta · zkouška", nazev: "Skripta (česky)",
+        popis: "Přednášky 1–7. U každého modelu co dělají jeho parametry; tahák a slovník.",
+        odkazy: [["Otevřít skripta", "mlr/"], ["Celá na jedné stránce", "mlr/skripta_vse.html"], ["PDF", "mlr/pdf/skripta_vse.pdf"]] },
+      { typ: "Skripta · zkouška", nazev: "Notes (English)",
+        popis: "Anglická verze stejných skript, v jednoduché angličtině.",
+        odkazy: [["Open notes", "mlr/en/"], ["All on one page", "mlr/en/skripta_vse.html"], ["PDF", "mlr/en/pdf/skripta_vse.pdf"]] }
+    ]
+  }
+];
+
+(function () {
+  var view = document.getElementById("view");
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function plural(n) { return n + (n === 1 ? " materiál" : n >= 2 && n <= 4 ? " materiály" : " materiálů"); }
+
+  function home() {
+    document.title = "Přípravy na zkoušky";
+    var h = '<h1>Přípravy na zkoušky</h1>' +
+      '<p class="lead">Vyber předmět. Uvnitř najdeš všechny materiály k němu: skripta, taháky a další.</p><div class="cards">';
+    PREDMETY.forEach(function (p) {
+      h += '<a class="card" href="#' + p.id + '"><div class="n">' + esc(p.zkratka) + '</div>' +
+        '<div class="t">' + esc(p.nazev) + '</div><div class="d">' + esc(p.popis) + '</div>' +
+        '<div class="c">' + plural(p.materialy.length) + ' →</div></a>';
+    });
+    view.innerHTML = h + '</div>';
+  }
+
+  function subject(p) {
+    document.title = p.nazev + " – Přípravy na zkoušky";
+    var h = '<p class="crumbs"><a href="#">← Všechny předměty</a></p>' +
+      '<h1>' + esc(p.nazev) + '</h1><p class="lead">' + esc(p.zkratka) + ' · ' + esc(p.popis) + '</p><div class="cards">';
+    p.materialy.forEach(function (m) {
+      h += '<div class="mat"><div class="n">' + esc(m.typ) + '</div>' +
+        '<div class="t">' + esc(m.nazev) + '</div><p class="d">' + esc(m.popis) + '</p><div class="acts">';
+      m.odkazy.forEach(function (o) { h += '<a href="' + esc(o[1]) + '">' + esc(o[0]) + '</a>'; });
+      h += '</div></div>';
+    });
+    view.innerHTML = h + '</div>';
+  }
+
+  function route() {
+    var id = decodeURIComponent(location.hash.replace(/^#/, "")), p = null;
+    PREDMETY.forEach(function (x) { if (x.id === id) p = x; });
+    if (p) subject(p); else home();
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", route);
+  route();
+})();
+</script>

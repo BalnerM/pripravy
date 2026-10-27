@@ -9,7 +9,8 @@ Studijní materiály k jednotlivým předmětům, zveřejněné přes GitHub Pag
 | `mlr/` | Strojové učení (MPA-MLR), přednášky 1–7; i anglicky | https://balnerm.github.io/pripravy/mlr/ (EN: …/mlr/en/) |
 
 ## Jak to funguje
-- `index.html` v kořeni je rozcestník (píše se ručně).
+- `index.html` v kořeni je rozcestník: úvodní stránka ukazuje předměty, po rozkliknutí se objeví materiály
+  k předmětu (skripta, další materiály). Obsah je v poli `PREDMETY` na začátku skriptu v `index.html`.
 - Každý předmět má svou složku; stránky se generují skriptem `<předmět>/_build/build.py` ze zdrojů
   v `<předmět>/_build/obsah/` (podrobnosti v `vmm/README.md`).
 - Po každém pushi do větve `main` workflow `.github/workflows/pages.yml` spustí všechny `*/_build/build.py`
@@ -36,6 +37,6 @@ claude --add-dir "../ZIZ"
 stačí to agentovi říct („…v angličtině“). Přednášky se jen čtou, do veřejného repozitáře se nekopírují.
 
 Ručně: zkopíruj `_sablona/` do `<zkratka>/`, uprav konfiguraci v `<zkratka>/_build/build.py`, piš kapitoly
-do `<zkratka>/_build/obsah/`, přidej kartu do kořenového `index.html` a řádek do tabulky výše, commit a push
+do `<zkratka>/_build/obsah/`, přidej předmět do pole `PREDMETY` v kořenovém `index.html` a řádek do tabulky výše, commit a push
 (podrobně v `_sablona/README.md`). Grafy: `uv run python <zkratka>/_build/make_figures.py` (prostředí repa,
 po klonu `uv sync`).

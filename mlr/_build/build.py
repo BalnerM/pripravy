@@ -178,7 +178,7 @@ TEMPLATE = """<!doctype html>
   <button class="iconbtn" id="menuBtn" aria-label="{t[menu_aria]}">{t[menu]}</button>
   <a class="brand" href="index.html">{brand}<small>{brand_sub}</small></a>
   <span class="spacer"></span>
-  <a class="iconbtn back" href="{up}../index.html" title="{t[back]}">←<span> {t[back]}</span></a>
+  <a class="iconbtn back" href="{up}../index.html#{short}" title="{t[back]}">←<span> {t[back]}</span></a>
   {langbtn}
   {pdfbtn}
   <button class="iconbtn" id="themeBtn" type="button">{t[theme]}</button>
@@ -216,7 +216,7 @@ def render(s, slug, **kw):
                    f'title="{o["t"]["lang_title"]}">{o["t"]["lang_label"]}</a>')
         alternate = f'<link rel="alternate" hreflang="{o["lang"]}" href="{href}">\n'
     return TEMPLATE.format(lang=s["lang"], t=s["t"], katex=KATEX, brand=s["brand"], brand_sub=s["brand_sub"],
-                           up=s["up"], langbtn=langbtn, alternate=alternate, **kw)
+                           up=s["up"], short=SHORT.lower(), langbtn=langbtn, alternate=alternate, **kw)
 
 
 def chrome(s, slug, page_title):

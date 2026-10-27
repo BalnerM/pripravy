@@ -135,7 +135,7 @@ TEMPLATE = """<!doctype html>
   <button class="iconbtn" id="menuBtn" aria-label="{t[menu_aria]}">{t[menu]}</button>
   <a class="brand" href="index.html">{brand}<small>{brand_sub}</small></a>
   <span class="spacer"></span>
-  <a class="iconbtn back" href="../index.html" title="{t[back]}">←<span> {t[back]}</span></a>
+  <a class="iconbtn back" href="../index.html#{short}" title="{t[back]}">←<span> {t[back]}</span></a>
   {pdfbtn}
   <button class="iconbtn" id="themeBtn" type="button">{t[theme]}</button>
 </header>
@@ -164,7 +164,7 @@ def strip_tags(s):
 
 
 def render(**kw):
-    return TEMPLATE.format(lang=LANG, t=T, katex=KATEX, brand=BRAND, brand_sub=BRAND_SUB, **kw)
+    return TEMPLATE.format(lang=LANG, t=T, katex=KATEX, brand=BRAND, brand_sub=BRAND_SUB, short=SHORT.lower(), **kw)
 
 
 def chrome(slug, page_title):
