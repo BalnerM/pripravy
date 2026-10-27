@@ -15,6 +15,12 @@
 <li><b>Lineárně neseparabilní skupiny</b> (např. soustředné kruhy) – nelze je korektně reprezentovat lineární kombinací příznaků. Jakékoli otočení os je pořád stejné kruhy.</li>
 <li><b>Limitace kriteriální funkce (MSE)</b> – z hlediska střední kvadratické chyby je řešení optimální (směry ortogonální, rozptyly maximální)… ale je to opravdu optimální pro naši úlohu? Ne nutně.</li>
 </ul>
+<figure class="wide"><div class="paper"><img src="figures/fig07_limity.png" alt="Tři typy dat s osami PC1 a PC2 a projekcemi na ně: tři shluky, tvar X, soustředné kruhy" loading="lazy"></div>
+<figcaption><b>Obr. 7.1</b> Limity lineární PCA (podle slidů přednášky). Nahoře data s osami PC1 a PC2, dole projekce objektů na každou z nich.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p><b>Multimodální data:</b> na PC1 jsou tři shluky oddělené, na PC2 se dva z nich překryjí – PCA popisuje data jako jednu „elipsu“ a o shlucích neví. <b>Tvar X:</b> přirozené směry nejsou kolmé, PCA ale musí vrátit kolmé osy, a tak skupiny neoddělí na žádné z nich. <b>Kruhy:</b> ať osy otočím jakkoli, vnitřní kruh se vždy promítne doprostřed vnějšího.</p></div>
+<div class="box intuice"><div class="box-t">Proč je „optimální“ PCA někdy špatně (limitace MSE)</div>
+<p>PCA hledá osu, na kterou se data promítnou s nejmenší střední kvadratickou chybou (MSE): součet čtverců kolmých vzdáleností bodů od osy je minimální, což je totéž jako maximální rozptyl projekce. U kruhů je tedy PC1 z hlediska MSE optimální – směry jsou ortogonální, rozptyly maximální. Kritérium ale o skupinách nic neví: po promítnutí leží body vnitřního i vnějšího kruhu přes sebe. „Optimální podle MSE“ neznamená „optimální pro naši úlohu“.</p></div>
 
 <h2 id="jadro">Jádrová transformace: 1D → 2D</h2>
 <div class="box intuice"><div class="box-t">Myšlenka</div>
@@ -23,13 +29,13 @@
 <p><b>Kernel PCA</b> (jádrová PCA) je nelineární rozšíření PCA, které provede analýzu hlavních komponent v prostoru vzniklém nelineární transformací \(\varphi\) původních dat. Tento prostor se explicitně nepočítá: celý výpočet probíhá přes <b>jádrovou matici</b> podobností objektů.</p>
 <p class="jinak">„PCA na brýlích, které data nelineárně pokřiví“. Pokřivení je zvolené tak, aby se křivé struktury (kruhy, spirály) narovnaly a obyčejná PCA je pak uměla rozdělit.</p></div>
 <div class="box definice" id="def-priznakovy-prostor"><div class="box-t">Definice: zobrazení φ a příznakový prostor</div>
-<p><b>Zobrazení</b> \(\varphi\) je nelineární funkce, která každému objektu \(\mathbf x\) z původního \(p\)-rozměrného prostoru přiřadí vektor \(\varphi(\mathbf x)\) v novém prostoru – <b>příznakovém prostoru</b> (feature space), obvykle s mnohem vyšší (i nekonečnou) dimenzí. Jeho souřadnice jsou nelineární funkce původních proměnných (např. \(x_1^2\), \(x_1x_2\)).</p>
+<p><b>Zobrazení</b> \(\varphi\) je nelineární funkce, která každému objektu \(\mathbf x\) z původního \(p\)-rozměrného prostoru přiřadí vektor \(\varphi(\mathbf x)\) v novém prostoru – <b>příznakovém prostoru</b> (feature space, na přednášce též <b>jádrový prostor</b>), obvykle s mnohem vyšší (i nekonečnou) dimenzí. Jeho souřadnice jsou nelineární funkce původních proměnných (např. \(x_1^2\), \(x_1x_2\)).</p>
 <p class="jinak">k původním příznakům „dopočítám“ nové – mocniny, součiny… V tomto rozšířeném prostoru mohou být původně zamotané skupiny rozdělitelné rovnou nadrovinou.</p></div>
 <div data-demo="kernel"></div>
 <figure><div class="paper"><img src="figures/fig07_kernel_1d.png" alt="Body v 1D neseparovatelné, po zobrazení x na x na druhou separovatelné přímkou" loading="lazy"></div>
-<figcaption><b>Obr. 7.1</b> Nelineární úloha v 1D (vlevo) se po zobrazení \(\varphi(x) = (x, x^2)\) stane lineární úlohou ve 2D (vpravo).</figcaption></figure>
+<figcaption><b>Obr. 7.2</b> Nelineární úloha v 1D (vlevo) se po zobrazení \(\varphi(x) = (x, x^2)\) stane lineární úlohou ve 2D (vpravo).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
-<p>V 1D jsou modré body uprostřed a oranžové po obou stranách – jediný práh je neoddělí. Druhá souřadnice \(x^2\) „vyzvedne“ vzdálené body nahoru a obě třídy rozdělí vodorovná přímka. Nic jsme nevymysleli navíc – jen jsme přidali nelineární funkci původního příznaku.</p></div>
+<p>V 1D jsou modré body uprostřed a oranžové po obou stranách – jediný práh je neoddělí, potřebovali bychom dva. Druhá souřadnice \(x^2\) „vyzvedne“ vzdálené body nahoru a obě třídy rozdělí vodorovná přímka. Nic jsme nevymysleli navíc – jen jsme přidali nelineární funkci původního příznaku.</p></div>
 
 <h3>Jádro (kernel) jako míra podobnosti</h3>
 <p>Cíl: převod do vyšší dimenze, kde je úloha lineární. Objekty transformujeme funkcí \(\varphi: \mathbf{x} \to \varphi(\mathbf{x})\). <b>Jádro</b> je skalární součin dvou objektů v tomto novém prostoru:</p>
@@ -54,16 +60,19 @@ kde \(\theta\) je úhel mezi vektory.</p>
 <div class="box definice" id="def-jadrova-matice"><div class="box-t">Definice: jádrová (Gramova) matice</div>
 <p><b>Jádrová matice</b> \(\mathbf K\) souboru \(n\) objektů je symetrická matice \(n\times n\), jejímž prvkem \(K_{ij}\) je hodnota jádra \(\kappa(\mathbf x_i, \mathbf x_j)\) pro \(i\)-tý a \(j\)-tý objekt.</p>
 <p class="jinak">tabulka „kdo je komu jak podobný“ pro všechny dvojice objektů. Kernel PCA rozkládá tuto tabulku místo kovarianční matice.</p></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky: objekty vs. příznaky</div>
+<p><b>Kernel pracuje v oblasti objektů</b> – transformuji objekty a počítám podobnost každých dvou z nich (matice \(n \times n\), objekty × objekty). <b>PCA pracuje v oblasti příznaků</b> – počítám kovarianci (nebo korelaci) každých dvou příznaků (matice \(p \times p\)). Jádrová matice tedy v kernel PCA nahrazuje kovarianční nebo korelační matici. Její rozměr nezávisí na tom, kolika příznaky je objekt popsán: pro 10 objektů je vždy \(10 \times 10\).</p></div>
 
 <h2 id="polynomialni">Polynomiální jádro a „kernel trick“</h2>
 <div class="box priklad"><div class="box-t">Odvození pro r = 2, p = 2</div>
-<p>Objekty \(\mathbf{a} = (a_1, a_2)\), \(\mathbf{b} = (b_1, b_2)\). Zvolíme zobrazení 2D → 3D:</p>
+<p>Objekty \(\mathbf{a} = (a_1, a_2)\), \(\mathbf{b} = (b_1, b_2)\) jsou dva pacienti popsaní dvěma příznaky (2D prostor = 2 příznaky). Zvolíme zobrazení 2D → 3D:</p>
 \[ \varphi(\mathbf{a}) = \begin{pmatrix} a_1^2\\ \sqrt{2}\,a_1a_2\\ a_2^2\end{pmatrix} \]
+<p>Místo původních 2 příznaků má každý pacient nově 3 příznaky (3D prostor).</p>
 <p><b>Výpočet podle definice</b> (nejdřív transformovat, pak skalární součin):</p>
 \[ \varphi(\mathbf{a})^T\varphi(\mathbf{b}) = a_1^2b_1^2 + 2a_1a_2b_1b_2 + a_2^2b_2^2 \]
 <p><b>Zjednodušíme</b> – je to rozepsaný čtverec dvojčlenu:</p>
 \[ = (a_1b_1 + a_2b_2)^2 = (\mathbf{a}^T\mathbf{b})^2 \]
-<p>Stejný výsledek dostaneme, když spočítáme obyčejný skalární součin v <b>původním</b> 2D prostoru a umocníme ho. To je <b>kernel trick</b>.</p>
+<p>Stejný výsledek dostaneme, když spočítáme obyčejný skalární součin v <b>původním</b> 2D prostoru a umocníme ho. To je <b>kernel trick</b>. Výsledkem je jedno číslo – podobnost pacienta 1 a 2; v kernel PCA ho spočítáme pro všechny dvojice pacientů.</p>
 <p><b>Ověření na číslech:</b> \(\mathbf a = (1, 2)\), \(\mathbf b = (3, 1)\).</p>
 <ul>
 <li>Cesta „přes 3D“: \[ \begin{aligned} \varphi(\mathbf a) &= (1;\ 2\sqrt2;\ 4) \\ \varphi(\mathbf b) &= (9;\ 3\sqrt2;\ 1) \\ \varphi(\mathbf a)^T\varphi(\mathbf b) &= 9 + 2\sqrt2\cdot 3\sqrt2 + 4 \\ &= 9 + 12 + 4 = 25 \end{aligned} \]</li>
@@ -72,11 +81,30 @@ kde \(\theta\) je úhel mezi vektory.</p>
 <div class="box definice" id="def-kernel-trick"><div class="box-t">Definice: kernel trick</div>
 <p><b>Kernel trick</b> (jádrový trik) je postup, při kterém algoritmus, jenž potřebuje jen skalární součiny objektů, provedeme v příznakovém prostoru tak, že každý skalární součin \(\varphi(\mathbf a)^T\varphi(\mathbf b)\) nahradíme hodnotou jádra \(\kappa(\mathbf a, \mathbf b)\) spočtenou v původním prostoru. Transformace \(\varphi\) se tak nikdy explicitně nepočítá.</p>
 <p class="jinak">dostaneme výsledek „jako bychom pracovali ve vysokorozměrném prostoru“, ale počítáme jen v tom původním, malém. Funguje to, protože PCA (i SVM) data potřebuje jen v podobě vzájemných podobností.</p></div>
+<div class="box priklad"><div class="box-t">Odvození pro r = 2, p = 3 (3D → 9D)</div>
+<p>Na přednášce je zobrazení zapsané se všemi součiny \(a_ia_j\) (9 složek, \(a_1a_2\) i \(a_2a_1\) zvlášť):</p>
+\[ \begin{aligned} \varphi(\mathbf a) = (&a_1^2,\ a_1a_2,\ a_1a_3, \\ &a_2a_1,\ a_2^2,\ a_2a_3, \\ &a_3a_1,\ a_3a_2,\ a_3^2) \end{aligned} \]
+<p><b>Podle definice</b> – transformuji \(\mathbf a\), transformuji \(\mathbf b\) a spočítám skalární součin 9 složek:</p>
+\[ \varphi(\mathbf a)^T\varphi(\mathbf b) = \sum_{i,j=1}^{3} a_ia_jb_ib_j \]
+<p><b>Kernel trick</b> – tentýž součet vyjde roznásobením čtverce:</p>
+\[ \begin{aligned} \kappa(\mathbf a, \mathbf b) &= (a_1b_1 + a_2b_2 + a_3b_3)^2 \\ &= (\mathbf a^T\mathbf b)^2 \end{aligned} \]
+<p><b>Na číslech:</b> \(\mathbf a = (1, 2, 0)\), \(\mathbf b = (3, 1, 2)\).</p>
+\[ \begin{aligned} \varphi(\mathbf a) &= (1, 2, 0, 2, 4, 0, 0, 0, 0) \\ \varphi(\mathbf b) &= (9, 3, 6, 3, 1, 2, 6, 2, 4) \\ \varphi(\mathbf a)^T\varphi(\mathbf b) &= 9 + 6 + 6 + 4 = 25 \end{aligned} \]
+<p>Zkratka: \(\mathbf a^T\mathbf b = 3 + 2 + 0 = 5\), \(5^2 = 25\).</p></div>
+<div class="box pozor"><div class="box-t">Dva zápisy φ a značení složitosti</div>
+<ul>
+<li>Ve 2D jsme \(a_1a_2\) a \(a_2a_1\) sloučili do jedné složky \(\sqrt2\,a_1a_2\) (3 složky), ve 3D je necháváme zvlášť (9 složek). Obojí dává stejné jádro \((\mathbf a^T\mathbf b)^2\) – k jednomu jádru může existovat víc zobrazení \(\varphi\), a právě proto \(\varphi\) znát nemusíme.</li>
+<li>Na slidu je složitost zapsaná jako \(O(n^2)\) vs. \(O(n)\); jde o počet příznaků (dimenzi), který je v těchto skriptech \(p\).</li>
+</ul></div>
 <div class="box intuice"><div class="box-t">Proč je kernel trick tak důležitý</div>
-<p>Pro \(p = 3\) a \(r = 2\) má \(\varphi(\mathbf{a})\) už 9 složek (\(a_1^2, a_1a_2, a_1a_3, \dots, a_3^2\)) – výpočet podle definice roste kvadraticky (\(O(p^2)\)), kdežto \((\mathbf{a}^T\mathbf{b})^2\) stojí jen \(O(p)\). Pro vyšší řád a dimenzi exploduje rozměr \(\varphi\) – ale my ho <b>nepotřebujeme znát</b>. Stačí umět spočítat podobnost dvojic, a ta se „dopočítá“ operacemi v původním nízkorozměrném prostoru.</p></div>
+<p>Pro \(p = 3\) a \(r = 2\) má \(\varphi(\mathbf{a})\) už 9 složek (\(a_1^2, a_1a_2, a_1a_3, \dots, a_3^2\)) – výpočet podle definice roste kvadraticky (\(O(p^2)\)), kdežto \((\mathbf{a}^T\mathbf{b})^2\) stojí jen \(O(p)\). Pro vyšší řád a dimenzi exploduje rozměr \(\varphi\) – ale my ho <b>nepotřebujeme znát</b>. Stačí umět spočítat podobnost dvojic, a ta se „dopočítá“ operacemi v původním nízkorozměrném prostoru. Jádrová matice obsahuje všechno, co PCA potřebuje – vyšší dimenze počítat nemusíme, stačí nám matice.</p></div>
 <div class="box definice" id="def-poly-jadro"><div class="box-t">Definice: polynomiální jádro</div>
 <p><b>Polynomiální jádro řádu \(r\)</b> je \(\kappa(\mathbf{a}, \mathbf{b}) = (\mathbf{a}^T\mathbf{b})^r\) (obecněji \((\mathbf a^T\mathbf b + c)^r\)). Odpovídá příznakovému prostoru, jehož souřadnicemi jsou všechny součiny původních proměnných stupně \(r\) (pro \(c &gt; 0\) i nižších stupňů).</p>
 <p class="jinak">umožní metodě „vidět“ kvadratické (nebo kubické…) vztahy a interakce mezi proměnnými – např. hranici ve tvaru elipsy nebo paraboly.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig07_poly.png" alt="Hranice mezi dvěma třídami ve tvaru přímky, kružnice a kubické křivky" loading="lazy"></div>
+<figcaption><b>Obr. 7.3</b> Polynom 1., 2. nebo 3. řádu? Jaký tvar hranice mezi třídami umí popsat polynomiální jádro daného řádu.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Řád jádra \(r\) určuje, jak „křivé“ struktury metoda uvidí: \(r = 1\) je obyčejný skalární součin (kernel PCA = lineární PCA, hranice jen přímka), \(r = 2\) přidá čtverce a součiny (kružnice, elipsa, parabola), \(r = 3\) (s \(c &gt; 0\) i se členy nižších řádů) i kubické křivky. V příznakovém prostoru je každá z těchto hranic rovná nadrovina, v původním prostoru se jeví jako křivka.</p></div>
 
 <h2 id="rbf">RBF jádro</h2>
 <div class="box definice" id="def-rbf"><div class="box-t">Definice: RBF (gaussovské) jádro</div>
@@ -88,19 +116,33 @@ Jeho hodnota závisí jen na vzdálenosti objektů: je 1 pro totožné objekty a
 \[ \kappa(\mathbf{a}, \mathbf{b}) = e^{-\gamma\,\lVert\mathbf{a}-\mathbf{b}\rVert^2}, \qquad \gamma = \frac{1}{2\sigma^2} \]
 <table class="vars">
 <tr><td>\(\lVert\mathbf{a}-\mathbf{b}\rVert^2\)</td><td>čtverec eukleidovské vzdálenosti objektů v původním prostoru</td></tr>
-<tr><td>\(\gamma\) (resp. \(\sigma\))</td><td>šířka jádra – jak rychle podobnost klesá se vzdáleností</td></tr>
+<tr><td>\(\gamma\) (resp. \(\sigma\))</td><td>šířka jádra – jak rychle podobnost klesá se vzdáleností; \(\sigma^2\) je rozptyl gaussovské křivky, jím určíme šířku funkce</td></tr>
 <tr><td>\(\kappa\)</td><td>1 pro totožné objekty, → 0 pro vzdálené; <b>čím dál od sebe, tím menší jádro</b> = míra podobnosti</td></tr>
 </table></div>
-<p>Příznakový prostor RBF jádra je <b>nekonečně rozměrný</b> (rozvoj exponenciály v řadu má nekonečně mnoho členů). Přesto stačí spočítat eukleidovskou vzdálenost a dosadit. (Analogie: RBF neuronová síť.)</p>
+<p>Příznakový prostor RBF jádra je <b>nekonečně rozměrný</b> (rozvoj exponenciály v řadu má nekonečně mnoho členů). Pro \(\sigma = 1\) (tj. \(\gamma = \tfrac12\)) je to na přednášce rozepsané takto:</p>
+\[ \begin{aligned} \kappa(\mathbf a, \mathbf b) &= e^{-\frac12\lVert\mathbf a-\mathbf b\rVert^2} \\ &= \sum_{i=0}^{\infty}\frac{(\mathbf a^T\mathbf b)^i}{i!}\; e^{-\frac12\lVert\mathbf a\rVert^2}\, e^{-\frac12\lVert\mathbf b\rVert^2} \end{aligned} \]
+<p>Každý člen řady je (až na kladný násobek) polynomiální jádro řádu \(i\) – RBF v sobě tedy skrývá polynomy všech řádů. Tuhle řadu ale <b>počítat nemusíme</b>: stačí spočítat eukleidovskou vzdálenost mezi objekty a dosadit. (Analogie: RBF neuronová síť.)</p>
 <div class="box priklad"><div class="box-t">Příklad: jak rychle podobnost klesá</div>
 <p>Pro \(\gamma = 0{,}5\): vzdálenost 0 → \(\kappa = 1\); vzdálenost 1 → \(e^{-0{,}5} = 0{,}61\); vzdálenost 2 → \(e^{-2} = 0{,}14\); vzdálenost 3 → \(e^{-4{,}5} = 0{,}01\). Body vzdálené víc než ~3 jsou si pro jádro „cizí“. Při \(\gamma = 5\) už vzdálenost 1 dává \(e^{-5} = 0{,}007\) – podobní jsou jen nejbližší sousedé.</p></div>
+<div class="box priklad"><div class="box-t">Příklad: jádrová matice pro 3 pacienty</div>
+<p>Každý pacient je popsán dvěma (standardizovanými) příznaky:</p>
+\[ \mathbf x_1 = (0, 0),\quad \mathbf x_2 = (1, 0),\quad \mathbf x_3 = (2, 2) \]
+<p>Použijeme RBF jádro s \(\gamma = 0{,}5\), kde \(d^2\) je čtverec eukleidovské vzdálenosti:</p>
+\[ \kappa = e^{-0{,}5\,d^2} \]
+<p>1. Čtverce vzdáleností dvojic:</p>
+\[ \begin{aligned} d_{12}^2 &= 1^2 + 0^2 = 1 \\ d_{13}^2 &= 2^2 + 2^2 = 8 \\ d_{23}^2 &= 1^2 + 2^2 = 5 \end{aligned} \]
+<p>2. Hodnoty jádra (pro každou dvojici jedno číslo):</p>
+\[ \begin{aligned} \kappa_{12} &= e^{-0{,}5} = 0{,}607 \\ \kappa_{13} &= e^{-4} = 0{,}018 \\ \kappa_{23} &= e^{-2{,}5} = 0{,}082 \end{aligned} \]
+<p>3. Jádrová matice (na diagonále podobnost pacienta se sebou samým, tj. 1):</p>
+\[ \mathbf K = \begin{pmatrix} 1 & 0{,}607 & 0{,}018 \\ 0{,}607 & 1 & 0{,}082 \\ 0{,}018 & 0{,}082 & 1 \end{pmatrix} \]
+<p>Matice je \(3 \times 3\) (pacienti × pacienti) a symetrická. Pacienti 1 a 2 jsou si podobní, pacient 3 je od obou daleko. Kdyby měl každý pacient 50 příznaků místo 2, matice by byla pořád \(3 \times 3\).</p></div>
 <div class="box pozor"><div class="box-t">Parametr se musí ladit</div>
 <p>\(\sigma\) (resp. \(\gamma\)) není univerzální – typ jádra i jeho parametry je třeba vybrat, např. v rámci křížové validace.</p></div>
 <div class="box definice" id="def-hyperparametr"><div class="box-t">Definice: hyperparametr a křížová validace</div>
 <p><b>Hyperparametr</b> je nastavení metody, které se neučí z dat, ale volí ho uživatel předem (typ jádra, \(\gamma\), počet shluků \(K\), perplexita). <b>Křížová validace</b> je postup pro jeho volbu: data se rozdělí na \(k\) částí, model se \(k\)-krát natrénuje na \(k-1\) částech a vyhodnotí na zbývající; vybere se nastavení s nejlepším průměrným výsledkem.</p>
 <p class="jinak">hyperparametr = „knoflík“ na metodě. Křížová validace = poctivé zkoušení různých poloh knoflíku na datech, která model při učení neviděl.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig07_gamma.png" alt="Kernel PCA s malým, vhodným a velkým gamma" loading="lazy"></div>
-<figcaption><b>Obr. 7.2</b> Kernel PCA na soustředných kruzích pro tři hodnoty γ.</figcaption></figure>
+<figcaption><b>Obr. 7.4</b> Kernel PCA na soustředných kruzích pro tři hodnoty γ.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>Malé γ (široké jádro): skoro všechny body jsou si „podobné“ a výsledek se blíží lineární PCA – kruhy zůstanou kruhy. Velké γ (úzké jádro): podobnost je nenulová jen pro nejbližší sousedy, každý bod je „sám“ a struktura se rozpadne. Jen vhodné γ přetaví kruhy na dvě oddělené skupiny.</p></div>
 
@@ -108,17 +150,17 @@ Jeho hodnota závisí jen na vzdálenosti objektů: je 1 pro totožné objekty a
 <p>Lineární PCA dělá spektrální rozklad kovarianční matice \(\mathbf{S} = \frac{1}{n}\mathbf{X}^T\mathbf{X}\) (rozměr \(p \times p\)). Kernel PCA dělá totéž s jádrovou maticí (rozměr \(n \times n\)):</p>
 <div class="box postup"><div class="box-t">Postup</div>
 <ol>
-<li><b>Výpočet jádrové matice</b> \(\mathbf{K}\), \(K_{ij} = \kappa(\mathbf{x}_i, \mathbf{x}_j)\) – pro 10 objektů matice 10 × 10, symetrická.</li>
+<li><b>Výpočet jádrové matice</b> \(\mathbf{K}\), \(K_{ij} = \kappa(\mathbf{x}_i, \mathbf{x}_j)\) – pro 10 objektů matice 10 × 10, symetrická. Je jedno, kolika příznaky je objekt popsán: rozměr je vždy \(N \times N\).</li>
 <li><b>Centralizace</b> (\(\mathbf{1}_N\) je matice \(N \times N\) s prvky \(1/N\)): \[ \mathbf{K}_c = \mathbf{K} - \mathbf{1}_N\mathbf{K} - \mathbf{K}\mathbf{1}_N + \mathbf{1}_N\mathbf{K}\mathbf{1}_N \]</li>
-<li><b>Vlastní čísla a vektory</b> \(\mathbf{K}_c\boldsymbol\alpha_k = \lambda_k\boldsymbol\alpha_k\).</li>
-<li><b>Seřazení</b> od největšího \(\lambda_k\) po nejmenší.</li>
-<li><b>Normalizace</b> vlastních vektorů \(\boldsymbol\alpha_k/\sqrt{\lambda_k}\).</li>
-<li><b>Projekce</b> dat do prostoru vybraných PC: \(\mathbf{Y} = \mathbf{K}_c\,\boldsymbol\alpha^{\text{norm}}\).</li>
+<li><b>Vlastní čísla a vektory</b> (transformační vektory a rozptyly): \(\mathbf{K}_c\mathbf v_i = \lambda_i\mathbf v_i\).</li>
+<li><b>Seřazení</b> od největšího \(\lambda_i\) po nejmenší.</li>
+<li><b>Normalizace</b> vlastních vektorů – vydělíme je odmocninou z vlastního čísla: \(\mathbf v_i^{\text{norm}} = \mathbf v_i/\sqrt{\lambda_i}\).</li>
+<li><b>Projekce</b> dat do prostoru vybraných PC (\(\mathbf K_c\) je centrovaná jádrová matice): \[ \mathbf y_i = \mathbf{K}_c\,\mathbf v_i^{\text{norm}} = \mathbf K_c\,\frac{\mathbf v_i}{\sqrt{\lambda_i}} \]</li>
 </ol></div>
 <div class="box intuice"><div class="box-t">Proč centralizace jádra</div>
 <p>PCA potřebuje centrovaná data. V kernel PCA ale data v novém prostoru \(\varphi(\mathbf{x})\) nikdy explicitně nemáme – máme jen jejich skalární součiny. Vzorec v kroku 2 provede „odečtení průměru“ přímo na jádrové matici: odečte průměry řádků a sloupců a přičte celkový průměr.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig07_kpca.png" alt="Soustředné kruhy, lineární PCA a kernel PCA" loading="lazy"></div>
-<figcaption><b>Obr. 7.3</b> Lineární PCA vs. PCA s RBF jádrem na soustředných kruzích.</figcaption></figure>
+<figcaption><b>Obr. 7.5</b> Lineární PCA vs. PCA s RBF jádrem na soustředných kruzích.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>Lineární PCA data jen otočí – skupiny zůstanou lineárně neseparabilní. Kernel PCA s RBF jádrem je převede do prostoru, kde jsou <b>lineárně separabilní</b>, a dokonce <b>stačí jen PC1</b> (histogram vpravo: dvě oddělené hory).</p></div>
 
@@ -126,9 +168,18 @@ Jeho hodnota závisí jen na vzdálenosti objektů: je 1 pro totožné objekty a
 <p>U lineární PCA nový objekt prostě vynásobíme transformačními vektory. U kernel PCA potřebujeme jeho podobnost se <b>všemi trénovacími objekty</b>:</p>
 <ol>
 <li>jádrová matice test × trénink \(\mathbf{K}^*\), \(K^*_{ij} = \kappa(\mathbf{x}^*_i, \mathbf{x}_j)\);</li>
-<li>centralizace \(\mathbf{K}^*\) <b>pomocí statistik trénovacího jádra</b> (průměry řádků trénovacího jádra, celkový průměr) – stejná logika jako „standardizuj test parametry z tréninku“;</li>
-<li>projekce \(\mathbf{Y}^* = \mathbf{K}^*_c\,\boldsymbol\alpha^{\text{norm}}\).</li>
+<li>centralizace \(\mathbf{K}^*\) <b>pomocí statistik trénovacího jádra</b> (průměry řádků trénovacího jádra, celkový průměr; viz box níže) – stejná logika jako „standardizuj test parametry z tréninku“;</li>
+<li>projekce \(\mathbf{Y}^* = \mathbf{K}^*_c\,\mathbf v^{\text{norm}}\) (normalizované vlastní vektory z trénovacích dat).</li>
 </ol>
+<div class="box vzorec"><div class="box-t">Centralizace testovacího jádra</div>
+\[ (\mathbf K^*_c)_{ij} = K^*_{ij} - \bar K^*_{i\cdot} - \bar K_{\cdot j} + \bar{\bar K} \]
+<table class="vars">
+<tr><td>\(K^*_{ij}\)</td><td>jádro mezi \(i\)-tým testovacím a \(j\)-tým trénovacím objektem; \(\mathbf K^*\) má rozměr \(m \times n\) (\(m\) testovacích, \(n\) trénovacích objektů)</td></tr>
+<tr><td>\(\bar K^*_{i\cdot}\)</td><td>průměr \(i\)-tého řádku train-test jádra = průměrná podobnost testovacího objektu se všemi trénovacími</td></tr>
+<tr><td>\(\bar K_{\cdot j}\)</td><td>průměr \(j\)-tého sloupce (= řádku, matice je symetrická) <b>trénovacího</b> jádra \(\mathbf K\)</td></tr>
+<tr><td>\(\bar{\bar K}\)</td><td>celkový průměr trénovacího jádra, \(\frac{1}{n^2}\sum_{k,l} K_{kl}\)</td></tr>
+</table></div>
+<p>Je to stejný vzorec jako centralizace v kroku 2 algoritmu, jen se průměry trénovacích objektů berou z trénovacího jádra. Na slidu je \(\mathbf K^*\) zapsaná transponovaně (\(n \times m\), řádky = trénovací objekty), proto tam projekce vychází jako \(\mathbf K_c^{*T}\mathbf v^{\text{norm}}\) – výsledek je stejný.</p>
 <p>Důsledek: model si musí <b>pamatovat celá trénovací data</b>, ne jen pár vektorů.</p>
 
 <h3>Poznámky a srovnání s lineární PCA</h3>
@@ -173,5 +224,14 @@ Jeho hodnota závisí jen na vzdálenosti objektů: je 1 pro totožné objekty a
 <li>Vektory normalizuji \(1/\sqrt\lambda\) a projekce získám vynásobením centrované jádrové matice normalizovanými vektory.</li>
 </ol>
 <p>Pro nové objekty spočítám jádro vůči trénovacím objektům a centralizuji ho statistikami trénovacího jádra.</p></div></details>
+<details class="q"><summary>Jak se do kernel PCA promítne nový (testovací) objekt?</summary><div>
+<ol>
+<li>Spočítám jádro mezi novým objektem a <b>všemi trénovacími objekty</b> (matice \(\mathbf K^*\)).</li>
+<li>Centralizuji ho statistikami z tréninku: od každého prvku odečtu průměrnou podobnost nového objektu s trénovacími a průměr příslušného řádku trénovacího jádra, přičtu celkový průměr trénovacího jádra.</li>
+<li>Vynásobím centrované jádro normalizovanými vlastními vektory z tréninku: \(\mathbf Y^* = \mathbf K^*_c\,\mathbf v^{\text{norm}}\).</li>
+</ol>
+<p>Proto si model musí pamatovat celá trénovací data.</p></div></details>
+<details class="q"><summary>Proč je jádrová matice n × n a čím se liší od kovarianční matice?</summary><div>
+<p>Kernel pracuje v oblasti objektů: jádro je podobnost dvou objektů v (neviditelném) příznakovém prostoru, takže matice je objekty × objekty, \(n \times n\), bez ohledu na to, kolika příznaky je objekt popsán. Lineární PCA pracuje v oblasti příznaků: kovarianční matice popisuje vztahy dvojic příznaků, \(p \times p\). Kernel PCA rozkládá jádrovou matici místo kovarianční – vysoká (i nekonečná) dimenze příznakového prostoru tak nevadí, ale pro velký počet objektů je výpočet drahý.</p></div></details>
 <details class="q"><summary>Jaké jsou nevýhody kernel PCA oproti lineární PCA?</summary><div>
 <p>Rozkládá matici \(n \times n\) (drahé pro velký počet objektů), má hyperparametry (typ jádra, γ), které je nutné ladit, komponenty nejsou lineární kombinace původních příznaků (horší interpretace) a pro projekci nových objektů je nutné uchovat celá trénovací data.</p></div></details>

@@ -503,6 +503,67 @@ def fig06_limitace():
 
 
 # =====================================================================  přednáška 7 (kernel PCA)
+def fig07_limity():
+    rng = np.random.default_rng(71)  # vlastní generátor: nemění data ostatních obrázků
+    # multimodální: 3 shluky (jako slide 4)
+    mm = np.vstack([rng.normal(c, .35, (25, 2)) for c in [(1, 3), (4, 4.6), (1.4, .8)]])
+    ymm = np.repeat([0, 1, 2], 25)
+    # tvar X: dva nekolmé směry (slide 5)
+    t = rng.uniform(-2.2, 2.2, 30)
+    xx = np.vstack([np.c_[t, -0.35 * t], np.c_[0.3 * t, -1.6 * t]]) + rng.normal(0, .08, (60, 2))
+    yxx = np.repeat([0, 1], 30)
+    # soustředné kruhy (slide 6)
+    ci, yci = make_circles(120, factor=0.45, noise=0.05, random_state=3)
+    ci = ci * 2
+    fig, axs = plt.subplots(2, 3, figsize=(12.5, 6.2), gridspec_kw={"height_ratios": [3, 1.15]})
+    for c, (X, y, tit, labs) in enumerate([
+            (mm, ymm, "multimodální rozložení", ["shluk 1", "shluk 2", "shluk 3"]),
+            (xx, yxx, "nekolmé „přirozené“ osy", ["směr 1", "směr 2"]),
+            (ci, yci, "lineárně neseparabilní skupiny", ["vnější kruh", "vnitřní kruh"])]):
+        p = PCA(2).fit(X); mu = X.mean(0); Z = p.transform(X)
+        ax = axs[0, c]
+        scatter_groups(ax, X, y, labs, s=22)
+        r = np.abs(X - mu).max() * 1.15
+        for k, nm in enumerate(["PC1", "PC2"]):
+            v = p.components_[k]
+            ax.plot(*np.c_[mu - r * v, mu + r * v], color=INK2, ls="--", lw=1.2)
+            e = mu + r * v
+            ax.text(*e, nm, color=INK2, fontsize=9, fontweight="semibold", ha="left", va="bottom")
+        ax.set_aspect("equal"); ax.set_title(tit)
+        ax.set_xlabel("příznak 1 (x₁)"); ax.set_ylabel("příznak 2 (x₂)")
+        ax.legend(loc="lower right", fontsize=7.5)
+        ax.set_xticks([]); ax.set_yticks([])
+        b = axs[1, c]
+        for k in np.unique(y):
+            m = y == k
+            for row in (0, 1):
+                b.scatter(Z[m, row], np.full(m.sum(), 1 - row) + rng.uniform(-.12, .12, m.sum()),
+                          s=14, c=CAT[k], marker=MARK[k], alpha=.8, edgecolors=SURF, linewidths=.5)
+        b.set_yticks([1, 0], ["PC1", "PC2"]); b.set_ylim(-.5, 1.5); b.set_xticks([])
+        b.set_xlabel("projekce na komponentu")
+    save(fig, "fig07_limity")
+
+
+def fig07_poly():
+    rng = np.random.default_rng(72)
+    P = rng.uniform(-2, 2, (900, 2))
+    fns = [("polynom 1. řádu: přímka", lambda x1, x2: x2 - 0.5 * x1),
+           ("polynom 2. řádu: kružnice / elipsa", lambda x1, x2: x1 ** 2 + x2 ** 2 - 1.4),
+           ("polynom 3. řádu: kubická křivka", lambda x1, x2: x2 - (x1 ** 3 - 2 * x1) / 1.5)]
+    g = np.linspace(-2, 2, 300); G1, G2 = np.meshgrid(g, g)
+    fig, axs = plt.subplots(1, 3, figsize=(12, 4))
+    for ax, (tit, f) in zip(axs, fns):
+        v = f(P[:, 0], P[:, 1]); keep = np.abs(v) > 0.25
+        X = P[keep][:110]; y = (v[keep][:110] > 0).astype(int)
+        scatter_groups(ax, X, y, ["třída A", "třída B"], s=18)
+        ax.contour(G1, G2, f(G1, G2), levels=[0], colors=INK, linestyles="--", linewidths=1.5)
+        ax.set_title(tit, fontsize=10); ax.set_aspect("equal")
+        ax.set_xlabel("x₁"); ax.set_ylabel("x₂"); ax.set_xticks([]); ax.set_yticks([])
+        ax.set_ylim(-2.05, 2.75)
+        ax.legend(loc="upper left", fontsize=8, ncol=2)
+    save(fig, "fig07_poly")
+
+
 def fig07_kernel_1d():
     a = RNG.uniform(-1, 1, 14)
     b = np.r_[RNG.uniform(-3, -1.6, 7), RNG.uniform(1.6, 3, 7)]
@@ -718,7 +779,7 @@ if __name__ == "__main__":
               fig04_korelace_tvary, fig04_regrese, fig04_logit, fig04_anova,
               fig05_vazby, fig05_dendrogram, fig05_pocet_k, fig05_kmeans_dbscan,
               fig06_princip, fig06_scree, fig06_zateze, fig06_biplot, fig06_limitace,
-              fig07_kernel_1d, fig07_kpca, fig07_gamma, fig08_svd, fig09_rotace,
+              fig07_limity, fig07_poly, fig07_kernel_1d, fig07_kpca, fig07_gamma, fig08_svd, fig09_rotace,
               fig10_gauss_t, fig10_perplexita, fig10_swiss, fig11_umap_params, fig11_srovnani]:
         f()
     _, w, V, _ = protein_pca()
