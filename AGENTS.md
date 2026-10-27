@@ -102,6 +102,7 @@ Elektrická schémata (R, C, OZ…) kresli knihovnou `schemdraw` v `make_figures
 8. Ověř (níže), zapiš do `RUNS.md`, a po souhlasu uživatele `git add -A`, `git commit`, `git push`;
    pak `gh run watch` a zkontroluj web a PDF (`curl -sI https://balnerm.github.io/pripravy/<zkratka>/`).
 
+
 ## Ověření
 
 - `build.py` bez chyb a bez upozornění; čísla v příkladech přepočítaná.
