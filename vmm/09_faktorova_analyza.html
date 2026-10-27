@@ -107,7 +107,10 @@
 <tr><td>\(\gamma_{jr}\)</td><td><b>faktorové zátěže</b> – příspěvek faktoru \(r\) do příznaku \(j\); pro standardizovaná data = korelace příznaku s faktorem</td></tr>
 <tr><td>\(\varepsilon_j\)</td><td><b>specifický faktor</b> – vlastní pro každý příznak; jen další zdroj variability (např. chyba měření), korelace nevytváří</td></tr>
 </table>
-<p>Maticově: \(\mathbf{x} - \boldsymbol\mu = \boldsymbol\Gamma\mathbf{F} + \boldsymbol\varepsilon\); pro standardizovaná data \(\mathbf{z} = \boldsymbol\Gamma^*\mathbf{F} + \boldsymbol\varepsilon^*\).</p></div>
+<p>Maticově:</p>
+\[ \mathbf{x} - \boldsymbol\mu = \boldsymbol\Gamma\mathbf{F} + \boldsymbol\varepsilon \]
+<p>Pro standardizovaná data:</p>
+\[ \mathbf{z} = \boldsymbol\Gamma^*\mathbf{F} + \boldsymbol\varepsilon^* \]</div>
 <div class="schema">
 <svg viewBox="0 0 760 260" role="img" aria-label="Diagram modelu faktorové analýzy: dva faktory působí na šest příznaků, každý příznak má vlastní specifický faktor">
   <defs><marker id="ar9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
@@ -141,9 +144,13 @@
 <h2 id="komunalita">Model „trochu jinak“: rozklad kovarianční matice a komunalita</h2>
 <p>Z modelu a vlastností parametrů plyne, jak vypadá kovarianční (korelační) matice příznaků:</p>
 <div class="box vzorec"><div class="box-t">Kovarianční struktura</div>
-\[ \mathbf{S} = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi \qquad\qquad \mathbf{P} = \boldsymbol\Gamma^*\boldsymbol\Gamma^{*T} + \boldsymbol\Psi^* \;\text{(korelační)} \]
+\[ \mathbf{S} = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi \]
+<p>a pro korelační matici:</p>
+\[ \mathbf{P} = \boldsymbol\Gamma^*\boldsymbol\Gamma^{*T} + \boldsymbol\Psi^* \]
 <p>Pro rozptyl jednoho příznaku (diagonála):</p>
-\[ s_j^2 = \underbrace{\sum_{r=1}^{R}\gamma_{jr}^2}_{h_j^2\ \text{komunalita}} + \underbrace{\psi_j}_{\text{specifický rozptyl}} \qquad\xrightarrow{\text{standardizovaná data}}\qquad 1 = h_j^2 + \psi_j \]
+\[ s_j^2 = \underbrace{\sum_{r=1}^{R}\gamma_{jr}^2}_{h_j^2\ \text{komunalita}} + \underbrace{\psi_j}_{\text{specifický rozptyl}} \]
+<p>Pro standardizovaná data je rozptyl každého příznaku 1:</p>
+\[ 1 = h_j^2 + \psi_j \]
 <table class="vars">
 <tr><td>\(\boldsymbol\Gamma\boldsymbol\Gamma^T\)</td><td>část kovariancí vysvětlená společnými faktory – <b>mimo diagonálu je celá korelační struktura</b></td></tr>
 <tr><td>\(\boldsymbol\Psi\)</td><td>diagonální matice specifických rozptylů – přispívá jen na diagonálu</td></tr>
@@ -168,7 +175,8 @@
 <h3>Odhad pomocí PCA</h3>
 <p>Z PCA korelační matice máme vlastní vektory \(\mathbf{V}\) a vlastní čísla \(\boldsymbol\Lambda\). Data lze zpětně rekonstruovat z hlavních komponent. Rozdělíme komponenty na \(R\) nejdůležitějších (→ společné faktory) a zbylých \(p-R\) (→ specifické faktory):</p>
 <div class="box vzorec"><div class="box-t">Výsledek</div>
-\[ \hat{\boldsymbol\Gamma} = \mathbf{V}_1\boldsymbol\Lambda_1^{1/2} \qquad\text{(faktorové zátěže = komponentní zátěže vážené odmocninou vlastních čísel)} \]
+\[ \hat{\boldsymbol\Gamma} = \mathbf{V}_1\boldsymbol\Lambda_1^{1/2} \]
+<p>Faktorové zátěže = komponentní zátěže vážené odmocninou vlastních čísel.</p>
 <table class="vars">
 <tr><td>\(\mathbf{V}_1\)</td><td>prvních \(R\) vlastních vektorů korelační matice</td></tr>
 <tr><td>\(\boldsymbol\Lambda_1^{1/2}\)</td><td>odmocniny prvních \(R\) vlastních čísel – převedou směr na korelaci příznak–faktor</td></tr>
@@ -202,8 +210,10 @@
 
 <h2 id="rotace">Nejednoznačnost řešení a rotace faktorů</h2>
 <div class="box intuice"><div class="box-t">Klíčový problém FA</div>
-<p>Vezmi libovolnou ortogonální matici \(\mathbf{T}\) (rotaci, \(\mathbf{T}\mathbf{T}^T = \mathbf{I}\)) a definuj nové zátěže \(\boldsymbol\Gamma_1 = \boldsymbol\Gamma\mathbf{T}\) a nové faktory \(\mathbf{F}_1 = \mathbf{T}^T\mathbf{F}\). Pak</p>
-\[ \boldsymbol\Gamma_1\boldsymbol\Gamma_1^T + \boldsymbol\Psi = \boldsymbol\Gamma\mathbf{T}\mathbf{T}^T\boldsymbol\Gamma^T + \boldsymbol\Psi = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi = \mathbf{S} \]
+<p>Vezmi libovolnou ortogonální matici \(\mathbf{T}\) (rotaci, \(\mathbf{T}\mathbf{T}^T = \mathbf{I}\)) a definuj nové zátěže a nové faktory:</p>
+\[ \boldsymbol\Gamma_1 = \boldsymbol\Gamma\mathbf{T},\qquad \mathbf{F}_1 = \mathbf{T}^T\mathbf{F} \]
+<p>Pak</p>
+\[ \begin{aligned} \boldsymbol\Gamma_1\boldsymbol\Gamma_1^T + \boldsymbol\Psi &= \boldsymbol\Gamma\mathbf{T}\mathbf{T}^T\boldsymbol\Gamma^T + \boldsymbol\Psi \\ &= \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi = \mathbf{S} \end{aligned} \]
 <p>Různé zátěže generují <b>stejnou</b> kovarianční matici – modely jsou z dat <b>nerozlišitelné</b>. \(\mathbf{S}\) lze vyjádřit nekonečně mnoha modely. Která \(\mathbf{T}\) je „správná“? Geometricky \(\mathbf{T}\) jen <b>otočí faktorové osy</b>.</p></div>
 <div class="box definice" id="def-rotace"><div class="box-t">Definice: rotace faktorů</div>
 <p><b>Rotace faktorů</b> je transformace matice zátěží \(\boldsymbol\Gamma \to \boldsymbol\Gamma\mathbf T\) (a faktorů \(\mathbf F \to \mathbf T^{-1}\mathbf F\)), která nemění vysvětlenou kovarianční strukturu ani komunality, ale mění zátěže tak, aby se faktory daly snáz interpretovat. <b>Ortogonální</b> rotace (\(\mathbf T\) ortogonální) zachovává nekorelovanost faktorů, <b>šikmá</b> (oblique) připouští korelované faktory.</p>
@@ -301,7 +311,10 @@
 <details class="q"><summary>Jaký je princip a cíl faktorové analýzy?</summary><div>
 <p>FA předpokládá, že pozorované korelace mezi příznaky vznikají působením malého počtu neměřitelných společných faktorů. Cílem je odhalit strukturu vztahů mezi příznaky, vysvětlit jejich korelace a získat interpretovatelné latentní proměnné; redukce dimenze je vedlejší. Podmínky: korelované příznaky, ideálně vícerozměrná normalita, žádné odlehlé hodnoty.</p></div></details>
 <details class="q"><summary>Napište a vysvětlete model FA.</summary><div>
-<p>\(x_j - \mu_j = \gamma_{j1}F_1 + \dots + \gamma_{jR}F_R + \varepsilon_j\). Společné faktory \(F\) (nezávislé, průměr 0, rozptyl 1) působí na všechny příznaky a vytvářejí mezi nimi korelace; zátěže \(\gamma\) říkají, jak silně (pro standardizovaná data = korelace příznak–faktor); specifický faktor \(\varepsilon_j\) je vlastní pro každý příznak (chyba měření), nezávislý, s rozptylem \(\psi_j\). Maticově \(\mathbf x - \boldsymbol\mu = \boldsymbol\Gamma\mathbf F + \boldsymbol\varepsilon\), a z toho \(\mathbf S = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi\).</p></div></details>
+<p>Model pro každý příznak:</p>
+\[ x_j - \mu_j = \gamma_{j1}F_1 + \dots + \gamma_{jR}F_R + \varepsilon_j \]
+<p>Společné faktory \(F\) (nezávislé, průměr 0, rozptyl 1) působí na všechny příznaky a vytvářejí mezi nimi korelace; zátěže \(\gamma\) říkají, jak silně (pro standardizovaná data = korelace příznak–faktor); specifický faktor \(\varepsilon_j\) je vlastní pro každý příznak (chyba měření), nezávislý, s rozptylem \(\psi_j\). Maticově a z toho plynoucí rozklad kovarianční matice:</p>
+\[ \mathbf x - \boldsymbol\mu = \boldsymbol\Gamma\mathbf F + \boldsymbol\varepsilon \quad\Rightarrow\quad \mathbf S = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi \]</div></details>
 <details class="q"><summary>Co je komunalita?</summary><div>
 <p>Část rozptylu příznaku vysvětlená společnými faktory: \(h_j^2 = \sum_r \gamma_{jr}^2\). Pro standardizované příznaky \(1 = h_j^2 + \psi_j\). Vysoká komunalita = příznak dobře popsaný faktory; ale nesnažíme se o komunality blízké 1, vedlo by to k triviálním faktorům.</p></div></details>
 <details class="q"><summary>Proč se v FA rotují faktory a jak funguje varimax?</summary><div>

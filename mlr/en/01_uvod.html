@@ -112,10 +112,13 @@
 <div class="box intuice"><div class="box-t">Intuition</div>
 <p>Optimization = we change the inputs to get the best possible output: we minimize costs or maximize a reward. Imagine a landscape and look for the lowest valley; constraints say where you are allowed to step. Example from the lecture: <b>you are mixing hot and cold water</b>. You have two taps (inputs), the output is how pleasant the water is, and there is no formula or graph – only your hand under the stream. Hyperparameter tuning works the same way: you try a setting, measure, adjust.</p></div>
 <div class="box definice" id="def-optimalizace"><div class="box-t">Definition: optimization problem</div>
-<p>An <b>optimization problem</b> is the search for the point \(\mathbf x^\ast = \arg\min_{\mathbf x \in X} f(\mathbf x)\), i.e. the value of the variables \(\mathbf x\) for which the <b>objective function</b> \(f\) is smallest on the <b>feasible set</b> \(X\) given by the constraints. Every problem has three parts: <b>variables</b> (what we may change), the <b>objective function</b> (one number we push down) and <b>constraints</b> (they define the feasible set).</p>
+<p>An <b>optimization problem</b> is the search for the point
+\[ \mathbf x^\ast = \arg\min_{\mathbf x \in X} f(\mathbf x) \]
+i.e. the value of the variables \(\mathbf x\) for which the <b>objective function</b> \(f\) is smallest on the <b>feasible set</b> \(X\) given by the constraints. Every problem has three parts: <b>variables</b> (what we may change), the <b>objective function</b> (one number we push down) and <b>constraints</b> (they define the feasible set).</p>
 <p class="jinak">“what can I change, what do I want to be as small as possible, and what must I not break”. Convention: we always minimize – maximizing \(u(\mathbf x)\) is turned into minimizing \(-u(\mathbf x)\) (same minimizer, opposite value).</p></div>
 <div class="box vzorec"><div class="box-t">Canonical form</div>
-\[ \begin{aligned} \text{minimize}\quad & f(\mathbf x) \\ \text{subject to}\quad & g_i(\mathbf x) \le 0,\ i = 1,\dots,m \\ & h_j(\mathbf x) = 0,\ j = 1,\dots,p \end{aligned} \qquad X = \{\mathbf x \in \mathbb R^n : g_i(\mathbf x) \le 0,\ h_j(\mathbf x) = 0\} \]
+\[ \begin{aligned} \text{minimize}\quad & f(\mathbf x) \\ \text{subject to}\quad & g_i(\mathbf x) \le 0,\ i = 1,\dots,m \\ & h_j(\mathbf x) = 0,\ j = 1,\dots,p \end{aligned} \]
+\[ X = \{\mathbf x \in \mathbb R^n : g_i(\mathbf x) \le 0,\ h_j(\mathbf x) = 0\} \]
 <table class="vars">
 <tr><td>\(\mathbf x\)</td><td>variables – speed of a car, flow rates of taps, <b>model weights</b></td></tr>
 <tr><td>\(f(\mathbf x)\)</td><td>objective (target, cost) function – fuel use, discomfort, <b>model loss</b></td></tr>
@@ -130,19 +133,27 @@
 <p>A constraint is <b>active</b> at the optimum \(\mathbf x^\ast\) if it holds there with equality (\(g_i(\mathbf x^\ast) = 0\)). If the unconstrained minimum lies outside the feasible set, the optimum is “pushed” onto its boundary and the corresponding constraint is active.</p>
 <p class="jinak">an active constraint is what “stopped” the optimum – if you relaxed it, you would get a better result. An inactive constraint does not affect the result at all.</p></div>
 <div class="box priklad"><div class="box-t">Example: mixing water (lecture)</div>
-<p>Flow rates \(H, C\) (l/min), hot water 60 °C, cold 10 °C. Temperature \(T = (60H + 10C)/(H + C)\), flow \(F = H + C\). Objective function \(J = (T - 38.5)^2 + (F - 12)^2\), feasible set \(0 \le H \le 5,\ C \ge 0\).</p>
+<p>Flow rates \(H, C\) (l/min), hot water 60 °C, cold 10 °C. Temperature and flow:</p>
+\[ T = \frac{60H + 10C}{H + C},\qquad F = H + C \]
+<p>Objective function and feasible set:</p>
+\[ J = (T - 38.5)^2 + (F - 12)^2 \]
+\[ 0 \le H \le 5,\qquad C \ge 0 \]
 <ul>
-<li><b>Without constraints:</b> \(H + C = 12\) and \(T = 38.5\) ⇒ \(H = 6.84\), \(C = 5.16\), \(J = 0\).</li>
+<li><b>Without constraints:</b> from \(H + C = 12\) and \(T = 38.5\) we get \[ \begin{aligned} 60H + 10(12 - H) &= 38.5\cdot12 \\ H = 6.84,\quad C &= 5.16,\quad J = 0 \end{aligned} \]</li>
 <li><b>Boiler limited to \(H \le 5\):</b> the unconstrained optimum is infeasible, the optimum moves to the boundary \(H = 5\) and \(C = 4.08\): the water is 37.5 °C and 9.1 l/min, \(J = 9.5\) instead of 0. The constraint \(H \le 5\) is <b>active</b>.</li>
 <li>Fuel-use curve with the constraint \(50 \le v \le 130\) km/h: the optimum \(v^\ast = 89.4\) lies inside, the constraint is <b>inactive</b>.</li>
 </ul></div>
 <h3>Hard constraint or soft penalty?</h3>
-<p><b>Constraint</b> (“must not be broken”): safety limit, budget, physical law – it can make the problem unsolvable. <b>Term in the objective function</b> (“the less, the better”): \(f(\mathbf x) = \text{error} + \lambda\cdot\text{penalty}\); \(\lambda\) says how much we care about it and only shifts the optimum. Both ways are possible and give different answers – e.g. ridge regression (lecture 4) turns the budget \(\|\mathbf w\|_2^2 \le t\) into the penalty \(\lambda\|\mathbf w\|_2^2\).</p>
+<p><b>Constraint</b> (“must not be broken”): safety limit, budget, physical law – it can make the problem unsolvable. <b>Term in the objective function</b> (“the less, the better”):</p>
+\[ f(\mathbf x) = \text{error} + \lambda\cdot\text{penalty} \]
+<p>\(\lambda\) says how much we care about it and only shifts the optimum. Both ways are possible and give different answers – e.g. ridge regression (lecture 4) turns the budget \(\|\mathbf w\|_2^2 \le t\) into the penalty \(\lambda\|\mathbf w\|_2^2\).</p>
 <div class="box pozor"><div class="box-t">The solver optimizes what we wrote, not what we meant</div>
 <p>Minimize only the training error – and the model memorizes the data. Maximize only sensitivity – and everyone will be “sick”. Choosing the objective function is the analyst’s decision.</p></div>
 <h3>Convexity: when optimization is easy</h3>
 <div class="box definice" id="def-konvexni"><div class="box-t">Definition: convex function and convex set</div>
-<p>A function \(f\) is <b>convex</b> if for all \(\mathbf x_1, \mathbf x_2\) and \(\theta \in [0,1]\) it holds that \(f(\theta\mathbf x_1 + (1-\theta)\mathbf x_2) \le \theta f(\mathbf x_1) + (1-\theta) f(\mathbf x_2)\). A set \(C\) is <b>convex</b> if together with any two points it also contains the whole line segment between them.</p>
+<p>A function \(f\) is <b>convex</b> if for all \(\mathbf x_1, \mathbf x_2\) and \(\theta \in [0,1]\) it holds that
+\[ f(\theta\mathbf x_1 + (1-\theta)\mathbf x_2) \le \theta f(\mathbf x_1) + (1-\theta) f(\mathbf x_2) \]
+A set \(C\) is <b>convex</b> if together with any two points it also contains the whole line segment between them.</p>
 <p class="jinak">the graph of a convex function lies below each of its chords (a “bowl”) and has no local minima other than the global one. A convex set has no “bays” where a minimum could hide.</p></div>
 <div class="box definice" id="def-lokalni-globalni"><div class="box-t">Definition: local and global minimum</div>
 <p>A <b>local minimum</b> is a point that is the best in its neighbourhood; a <b>global minimum</b> is the best in the whole feasible set. In a <b>convex problem</b> (convex \(f\) on a convex set) every local minimum is also global.</p>
@@ -161,23 +172,31 @@
 
 <h3>Gradient descent</h3>
 <div class="box definice" id="def-gradient"><div class="box-t">Definition: gradient</div>
-<p>The <b>gradient</b> \(\nabla f(\mathbf x) = \left(\frac{\partial f}{\partial x_1}, \dots, \frac{\partial f}{\partial x_n}\right)\) is the vector of partial derivatives of the function \(f\); it points in the direction of the <b>steepest increase</b> of the function and has the same shape (number of components) as \(\mathbf x\).</p>
+<p>The <b>gradient</b> is the vector of partial derivatives of the function \(f\):
+\[ \nabla f(\mathbf x) = \left(\frac{\partial f}{\partial x_1}, \dots, \frac{\partial f}{\partial x_n}\right) \]
+It points in the direction of the <b>steepest increase</b> of the function and has the same shape (number of components) as \(\mathbf x\).</p>
 <p class="jinak">an arrow pointing “uphill”. When we want to go down, we go against it. The function \(f\) returns a scalar, the gradient is a vector with as many components as there are variables.</p></div>
 <div class="box definice" id="def-gd"><div class="box-t">Definition: gradient descent</div>
-<p><b>Gradient descent</b> is an iterative method that in every step moves the variables against the direction of the gradient: \(\mathbf x^{(t+1)} = \mathbf x^{(t)} - \eta\,\nabla f(\mathbf x^{(t)})\), where \(\eta \gt 0\) is the <b>learning rate</b> (step size).</p>
+<p><b>Gradient descent</b> is an iterative method that in every step moves the variables against the direction of the gradient:
+\[ \mathbf x^{(t+1)} = \mathbf x^{(t)} - \eta\,\nabla f(\mathbf x^{(t)}) \]
+where \(\eta \gt 0\) is the <b>learning rate</b> (step size).</p>
 <p class="jinak">“walk downhill in small steps until the ground flattens out”. We only need to compute the derivative at the current point – we do not need a formula for the solution. This is exactly how neural networks are trained.</p></div>
 <div class="box priklad"><div class="box-t">One problem, three ways: the most fuel-efficient car speed</div>
 <p>At low speed idle losses and a short gear ratio cost fuel, at high speed it is air resistance ⇒ the optimum is somewhere in between. Model: \(\text{Fuel}(v) = A/v + Bv + C\) with \(A = 400\), \(B = 0.05\).</p>
 <ol>
 <li><b>Probing:</b> we measure fuel use at several speeds – blindly, without a formula.</li>
-<li><b>Closed form:</b> \(\text{Fuel}'(v) = -A/v^2 + B = 0\) ⇒ \(v^\ast = \sqrt{A/B} = \sqrt{8000} \approx 89.4\) km/h. Second derivative \(2A/v^3 \gt 0\) ⇒ a single minimum; \(\text{Fuel}(v^\ast) = 2\sqrt{AB} + C\). A luxury – it needs a formula.</li>
-<li><b>Gradient descent:</b> start \(v_0 = 30\) km/h, \(\eta = 200\). \(\text{Fuel}'(30) = -400/900 + 0.05 = -0.394\) ⇒ \(v_1 = 30 + 200\cdot 0.394 = 108.9\) (it overshot the optimum). Then \(\text{Fuel}'(108.9) = +0.016\) ⇒ \(v_2 = 105.6\), \(v_3 = 102.8\)… after 30 steps \(v \approx 89.5\). It only needs the derivative at a point.</li>
+<li><b>Closed form:</b> we set the derivative to zero: \[ \begin{aligned} \text{Fuel}'(v) &= -A/v^2 + B = 0 \\ v^\ast &= \sqrt{A/B} = \sqrt{8000} \approx 89.4\ \text{km/h} \end{aligned} \] Second derivative \(2A/v^3 \gt 0\), so it is a single minimum; \(\text{Fuel}(v^\ast) = 2\sqrt{AB} + C\). A luxury – it needs a formula.</li>
+<li><b>Gradient descent:</b> start \(v_0 = 30\) km/h, \(\eta = 200\), step \(v \leftarrow v - \eta\,\text{Fuel}'(v)\): \[ \begin{aligned} \text{Fuel}'(30) &= -400/900 + 0.05 = -0.394 \\ v_1 &= 30 + 200\cdot0.394 = 108.9 \\ \text{Fuel}'(108.9) &= +0.016 \\ v_2 &= 105.6,\quad v_3 = 102.8,\ \dots \end{aligned} \] The very first step overshoots the optimum (108.9 &gt; 89.4) and descent returns to it from the right. After 30 steps \(v \approx 89.5\). It only needs the derivative at a point.</li>
 </ol></div>
 <p>When to stop? Small gradient \(\|\nabla f\| \lt \varepsilon\), small change of \(f\) or \(\mathbf x\), a cap on the number of iterations; when training a model, the validation error (lecture 2). But a small gradient only means a <b>stationary point</b> – it can also be a saddle or a plateau. Only for a convex problem is it surely the global minimum.</p>
 <figure class="wide"><div class="paper"><img src="../figures/en/fig01_gd_eta.png" alt="Four gradient descent paths on an elliptic function for different learning rates" loading="lazy"></div>
 <figcaption><b>Fig. 1.1</b> The same landscape \(f(\mathbf x) = \tfrac12(x_1^2 + 5x_2^2)\), the same start, 20 steps – only the learning rate \(\eta\) changes. Star = minimum.</figcaption></figure>
 <div class="box odnes"><div class="box-t">What to take from the figure</div>
-<p>The learning rate decides everything. For this function the update per component is \(x_i \leftarrow (1 - \eta q_i)\,x_i\) with \(q_1 = 1\), \(q_2 = 5\): every step multiplies the error by \(|1 - \eta q_i|\). Descent converges exactly when \(|1 - \eta q_i| \lt 1\) for all \(i\), i.e. \(\eta \lt 2/L\), where \(L = \max_i q_i = 5\) is the largest curvature ⇒ \(\eta \lt 0.4\). A small \(\eta\) (0.05) crawls, 0.2 is ideal, 0.38 oscillates in the steep direction, 0.45 diverges.</p></div>
+<p>The learning rate decides everything. For this function the update per component is</p>
+\[ x_i \leftarrow (1 - \eta q_i)\,x_i,\qquad q_1 = 1,\ \ q_2 = 5 \]
+<p>So every step multiplies the error by \(|1 - \eta q_i|\). Descent converges exactly when</p>
+\[ |1 - \eta q_i| \lt 1\ \ \forall i \quad\Leftrightarrow\quad \eta \lt \frac2L = \frac25 = 0.4 \]
+<p>where \(L = \max_i q_i = 5\) is the largest curvature. A small \(\eta\) (0.05) crawls, 0.2 is ideal, 0.38 oscillates in the steep direction, 0.45 diverges.</p></div>
 <div class="box parametry"><div class="box-t">Parameters: gradient descent</div>
 <div class="tablewrap"><table class="params">
 <tr><th>parameter</th><th>what it means</th><th><span class="up">↑</span> when I increase it</th><th><span class="dn">↓</span> when I decrease it</th></tr>
@@ -197,13 +216,15 @@
 <p class="jinak">“tell me who your neighbours are and I will tell you who you are”. It has no training phase (<i>lazy learning</i>) – the whole “model” is the stored training data.</p></div>
 <p>Properties: sensitive to <b>noise, feature scale and outliers</b> (the distance is dominated by the feature with the largest numbers – hence standardization); searching for neighbours is expensive for large \(n\) (a kd-tree helps). An odd \(k\) prevents ties with two classes.</p>
 <div class="box vzorec"><div class="box-t">Distances (norms of the difference \(\mathbf x = \mathbf a - \mathbf b\))</div>
-\[ \|\mathbf x\|_2 = \sqrt{\textstyle\sum_i x_i^2}, \qquad \|\mathbf x\|_1 = \textstyle\sum_i |x_i|, \qquad \|\mathbf x\|_\infty = \max_i |x_i|, \qquad \|\mathbf x\|_p = \left(\textstyle\sum_i |x_i|^p\right)^{1/p} \]
+\[ \|\mathbf x\|_2 = \sqrt{\textstyle\sum_i x_i^2}, \qquad \|\mathbf x\|_1 = \textstyle\sum_i |x_i| \]
+\[ \|\mathbf x\|_\infty = \max_i |x_i|, \qquad \|\mathbf x\|_p = \left(\textstyle\sum_i |x_i|^p\right)^{1/p} \]
 <table class="vars">
 <tr><td>\(\|\cdot\|_2\)</td><td>Euclidean distance (“as the crow flies”)</td></tr>
 <tr><td>\(\|\cdot\|_1\)</td><td>Manhattan distance (sum of differences along the axes)</td></tr>
 <tr><td>\(\|\cdot\|_\infty\)</td><td>Chebyshev distance (the largest difference in one axis)</td></tr>
 </table>
-<p>Example: \(\mathbf a = (1, 1)\), \(\mathbf b = (2, 3)\) ⇒ \(\mathbf x = (-1, -2)\): \(\|\mathbf x\|_2 = \sqrt5 \approx 2.24\), \(\|\mathbf x\|_1 = 3\), \(\|\mathbf x\|_\infty = 2\).</p></div>
+<p>Example: \(\mathbf a = (1, 1)\), \(\mathbf b = (2, 3)\), difference \(\mathbf x = \mathbf a - \mathbf b = (-1, -2)\):</p>
+\[ \begin{aligned} \|\mathbf x\|_2 &= \sqrt{1 + 4} = \sqrt5 \approx 2.24 \\ \|\mathbf x\|_1 &= 1 + 2 = 3 \\ \|\mathbf x\|_\infty &= \max(1, 2) = 2 \end{aligned} \]</div>
 <div class="box priklad"><div class="box-t">By hand: k-NN voting (data from the exercise)</div>
 <p>Class A: (1, 2), (1.5, 1.8), (1, 0.6); class B: (5, 8), (8, 8), (9, 11). New sample (2, 3), Euclidean distance:</p>
 <div class="tablewrap"><table>
@@ -232,7 +253,8 @@
 
 <h2 id="kmeans">Review: k-means and UPGMA</h2>
 <div class="box definice" id="def-kmeans"><div class="box-t">Definition: k-means</div>
-<p><b>k-means</b> is a clustering algorithm that splits \(n\) points into \(k\) clusters, each represented by its mean (centroid) \(\boldsymbol\mu_j\), and minimizes the <b>inertia</b> – the sum of squared distances of the points from the centroid of their cluster: \(J = \sum_{j=1}^{k}\sum_{\mathbf x_i \in C_j}\|\mathbf x_i - \boldsymbol\mu_j\|_2^2\).</p>
+<p><b>k-means</b> is a clustering algorithm that splits \(n\) points into \(k\) clusters, each represented by its mean (centroid) \(\boldsymbol\mu_j\), and minimizes the <b>inertia</b> – the sum of squared distances of the points from the centroid of their cluster:
+\[ J = \sum_{j=1}^{k}\sum_{\mathbf x_i \in C_j}\|\mathbf x_i - \boldsymbol\mu_j\|_2^2 \]</p>
 <p class="jinak">find \(k\) “centres of mass” so that every point has its centre as close as possible. The problem is non-convex – the algorithm finds only a local minimum that depends on the start.</p></div>
 <div class="box postup"><div class="box-t">Lloyd’s algorithm</div>
 <ol>
@@ -243,7 +265,12 @@
 </ol>
 <p>Each assignment and update step can only decrease \(J\), so the algorithm always converges – to a local minimum. That is why it is run several times from different starts.</p></div>
 <div class="box priklad"><div class="box-t">By hand: one step of k-means (lecture)</div>
-<p>The same six points, \(k = 2\), initial centroids \(\boldsymbol\mu_1 = (1, 2)\), \(\boldsymbol\mu_2 = (5, 8)\). Assignment: (1, 2), (1.5, 1.8), (1, 0.6) → cluster 1; (5, 8), (8, 8), (9, 11) → cluster 2; \(J = 36.25\). Update: \(\boldsymbol\mu_1 = (1.17,\ 1.47)\), \(\boldsymbol\mu_2 = (7.33,\ 9.00)\), \(J = 15.98\). The next assignment does not change ⇒ convergence.</p></div>
+<p>The same six points, \(k = 2\), initial centroids \(\boldsymbol\mu_1 = (1, 2)\), \(\boldsymbol\mu_2 = (5, 8)\).</p>
+<ol>
+<li><b>Assignment:</b> (1, 2), (1.5, 1.8), (1, 0.6) → cluster 1; (5, 8), (8, 8), (9, 11) → cluster 2. Inertia \(J = 36.25\).</li>
+<li><b>Centroid update</b> (cluster means): \[ \begin{aligned} \boldsymbol\mu_1 &= (1.17,\ 1.47) \\ \boldsymbol\mu_2 &= (7.33,\ 9.00) \\ J &= 15.98 \end{aligned} \]</li>
+<li><b>The next assignment</b> does not change ⇒ convergence.</li>
+</ol></div>
 <div data-demo="kmeans"></div>
 <div class="box parametry"><div class="box-t">Parameters: k-means</div>
 <div class="tablewrap"><table class="params">
@@ -254,10 +281,16 @@
 <p class="volba">\(k\) cannot be chosen by the minimum of \(J\) (that would lead to \(k = n\)); you look for the “elbow” of the curve \(J(k)\) or another criterion.</p></div>
 <div class="box definice" id="def-upgma"><div class="box-t">Definition: UPGMA</div>
 <p><b>UPGMA</b> (Unweighted Pair Group Method with Arithmetic Mean) is hierarchical agglomerative clustering that starts with every sample as a separate cluster and repeatedly merges the two closest clusters; the distance of clusters is the <b>mean of all pairwise distances</b> between their points. The result is a tree (dendrogram).</p>
-<p class="jinak">“always glue together the two closest groups until only one is left”; after merging \(C_i\) and \(C_j\) the distance to another cluster \(C_k\) is recalculated as the weighted mean \(d(C_{ij}, C_k) = \frac{|C_i|\,d(C_i, C_k) + |C_j|\,d(C_j, C_k)}{|C_i| + |C_j|}\).</p></div>
+<p class="jinak">“always glue together the two closest groups until only one is left”; after merging \(C_i\) and \(C_j\) the distance to another cluster \(C_k\) is recalculated as the weighted mean
+\[ d(C_{ij}, C_k) = \frac{|C_i|\,d(C_i, C_k) + |C_j|\,d(C_j, C_k)}{|C_i| + |C_j|} \]</p></div>
 
 <h2 id="matematika">Mathematical minimum (appendix 1)</h2>
-<p>Concepts the later lectures take for granted. Check questions from the lecture: the minimum of \(f(x) = 3x^2 + 5x + 1\) is at \(x^\ast = -5/6\) (\(f'' = 6 \gt 0\), so it is a minimum); \(\begin{pmatrix}1 & 2\\ 3 & 4\end{pmatrix}\begin{pmatrix}1\\-1\end{pmatrix} = \begin{pmatrix}-1\\-1\end{pmatrix}\); the expected value of a die roll is \((1 + \dots + 6)/6 = 3.5\).</p>
+<p>Concepts the later lectures take for granted. Check questions from the lecture:</p>
+<ul>
+<li>the minimum of \(f(x) = 3x^2 + 5x + 1\): \(f'(x) = 6x + 5 = 0\) ⇒ \(x^\ast = -5/6\) (\(f'' = 6 \gt 0\), so it is a minimum);</li>
+<li>matrix times vector: \[ \begin{pmatrix}1 & 2\\ 3 & 4\end{pmatrix}\begin{pmatrix}1\\-1\end{pmatrix} = \begin{pmatrix}1 - 2\\ 3 - 4\end{pmatrix} = \begin{pmatrix}-1\\-1\end{pmatrix} \]</li>
+<li>the expected value of a die roll is \((1 + \dots + 6)/6 = 3.5\).</li>
+</ul>
 <div class="tablewrap"><table>
 <tr><th>concept</th><th>formula / rule</th><th>where it is used in ML</th></tr>
 <tr><td>dot product</td><td>\(\mathbf a^\top\mathbf b = \sum_i a_i b_i = \|\mathbf a\|\|\mathbf b\|\cos\theta\); cosine similarity \(\cos\theta\), cosine distance \(1 - \cos\theta\)</td><td>linear model \(\mathbf w^\top\mathbf x + b\), projection in PCA, attention</td></tr>
@@ -273,9 +306,16 @@
 <tr><td>variance of a mean</td><td>the mean of \(M\) independent copies has variance \(\sigma^2/M\)</td><td>bagging (lecture 6)</td></tr>
 </table></div>
 <div class="box priklad"><div class="box-t">Bayes and a rare disease</div>
-<p>1 in 1000 people has the disease, the test has sensitivity and specificity of 99 %. \(P(\text{sick}\mid +) = \frac{0.99\cdot0.001}{0.99\cdot0.001 + 0.01\cdot0.999} = 0.090\). Even a very good test gives only 9 % correct positive results for a rare class – a small prior probability “destroys” the precision of positive predictions. (Check question: disease 1 in 100, test 90 % / 90 % ⇒ \(P = 0.009/0.108 = 0.083\).)</p></div>
+<p>1 in 1000 people has the disease, the test has sensitivity and specificity of 99 %. By Bayes’ theorem:</p>
+\[ \begin{aligned} P(\text{sick}\mid +) &= \frac{0.99\cdot0.001}{0.99\cdot0.001 + 0.01\cdot0.999} \\ &= \frac{0.00099}{0.01098} = 0.090 \end{aligned} \]
+<p>Even a very good test gives only 9 % correct positive results for a rare class – a small prior probability “destroys” the precision of positive predictions. (Check question: disease 1 in 100, test 90 % / 90 % ⇒ \(P = 0.009/0.108 = 0.083\).)</p></div>
 <div class="box priklad"><div class="box-t">Cross-entropy as a loss</div>
-<p>For a one-hot target \(H(p, q) = -\ln q_{\text{correct}}\). Softmax of the scores (2, 1, 0.1) gives the probabilities 0.659, 0.242, 0.099. If the first class is correct, the loss is \(-\ln 0.659 = 0.417\); if the third, \(-\ln 0.099 = 2.31\). A probability of 0.5 for the correct class gives \(\ln 2 = 0.693\).</p></div>
+<p>For a one-hot target \(H(p, q) = -\ln q_{\text{correct}}\). Softmax of the scores (2, 1, 0.1) gives the probabilities 0.659, 0.242, 0.099.</p>
+<ul>
+<li>the first class is correct: \(-\ln 0.659 = 0.417\);</li>
+<li>the third class is correct: \(-\ln 0.099 = 2.31\);</li>
+<li>for comparison, probability 0.5 for the correct class: \(-\ln 0.5 = \ln 2 = 0.693\).</li>
+</ul></div>
 
 <div class="box zkouska"><div class="box-t">How to say it at the exam</div>
 <p>“Machine learning is a subset of AI where rules are learned from data and correct answers; deep learning is ML with many-layer networks that find the features themselves. Supervised learning has labels – regression continuous, classification discrete; unsupervised learning looks for structure, reinforcement learning maximizes a reward and self-supervised learning makes its labels from the data. Training a model is optimization: the variables are the weights, the objective function is the average loss. It is usually solved by gradient descent \(\mathbf w \leftarrow \mathbf w - \eta\nabla L\); the learning rate must be smaller than \(2/L\), otherwise descent diverges, and in a non-convex problem we only find a local minimum.”</p></div>

@@ -393,8 +393,8 @@
 <p><b>Kovarianční matice</b> \(\boldsymbol\Sigma\) (výběrově \(\mathbf S\)) náhodného vektoru je čtvercová symetrická matice \(p\times p\), jejímž prvkem na pozici \((j,k)\) je kovariance \(j\)-té a \(k\)-té proměnné. Na diagonále tedy leží rozptyly jednotlivých proměnných.</p>
 <p class="jinak">tabulka, kde jsou pohromadě všechny rozptyly i všechny vztahy dvojic. Geometricky popisuje, jak je mrak bodů <b>roztažený</b> a <b>natočený</b>. Je to vícerozměrná obdoba rozptylu.</p></div>
 <div class="box vzorec"><div class="box-t">Vzorec</div>
-\[ s_{jk} = \frac{1}{n-1}\sum_{i=1}^{n} (x_{ij}-\bar{x}_j)(x_{ik}-\bar{x}_k) \qquad
-\mathbf{S} = \begin{pmatrix} s_{11} & s_{12} & \cdots & s_{1p}\\ s_{21} & s_{22} & \cdots & s_{2p}\\ \vdots & & \ddots & \vdots\\ s_{p1} & s_{p2} & \cdots & s_{pp}\end{pmatrix} \]
+\[ s_{jk} = \frac{1}{n-1}\sum_{i=1}^{n} (x_{ij}-\bar{x}_j)(x_{ik}-\bar{x}_k) \]
+\[ \mathbf{S} = \begin{pmatrix} s_{11} & s_{12} & \cdots & s_{1p}\\ s_{21} & s_{22} & \cdots & s_{2p}\\ \vdots & & \ddots & \vdots\\ s_{p1} & s_{p2} & \cdots & s_{pp}\end{pmatrix} \]
 <table class="vars">
 <tr><td>\(x_{ij}-\bar{x}_j\)</td><td>odchylka objektu \(i\) od průměru v proměnné \(j\)</td></tr>
 <tr><td>\(s_{jk}\)</td><td>kovariance (spoluproměnlivost) proměnných \(j\) a \(k\)</td></tr>
@@ -477,7 +477,9 @@
 <tr><td>\(|\boldsymbol{\Sigma}|\)</td><td>determinant – „objem“ rozptylu; jen normuje, aby plocha pod hustotou byla 1</td></tr>
 <tr><td>\((\mathbf{x}-\boldsymbol{\mu})^T\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})\)</td><td>čtverec <b>Mahalanobisovy vzdálenosti</b> bodu \(\mathbf{x}\) od středu</td></tr>
 </table></div>
-<p>Stačí si uvědomit, že vzorec má <b>úplně stejnou stavbu</b> jako jednorozměrný: „\((x-\mu)^2/\sigma^2\)“ se změnilo na „\((\mathbf{x}-\boldsymbol\mu)^T\boldsymbol\Sigma^{-1}(\mathbf{x}-\boldsymbol\mu)\)“ – dělení rozptylem se změnilo na násobení inverzní kovarianční maticí. Rozdělení je opět plně určeno dvěma parametry: \(\mathbf{X} \sim N_p(\boldsymbol\mu, \boldsymbol\Sigma)\).</p>
+<p>Stačí si uvědomit, že vzorec má <b>úplně stejnou stavbu</b> jako jednorozměrný:</p>
+\[ \frac{(x-\mu)^2}{\sigma^2} \quad\longrightarrow\quad (\mathbf{x}-\boldsymbol\mu)^T\boldsymbol\Sigma^{-1}(\mathbf{x}-\boldsymbol\mu) \]
+<p>Dělení rozptylem se změnilo na násobení inverzní kovarianční maticí. Rozdělení je opět plně určeno dvěma parametry: \(\mathbf{X} \sim N_p(\boldsymbol\mu, \boldsymbol\Sigma)\).</p>
 <p>Ve 2D je hustota „kopec“ (paraboloid v exponentu). Když ho rozřízneme ve stejné výšce, dostaneme <b>elipsu konstantní hustoty</b>:</p>
 <ul>
   <li>nezávislé proměnné → osy elipsy jsou <b>rovnoběžné</b> se souřadnicovými osami;</li>
@@ -497,7 +499,9 @@
 
 <h2 id="k02-mahalanobis">Mahalanobisova vzdálenost</h2>
 <div class="box definice" id="k02-def-mahalanobis"><div class="box-t">Definice: Mahalanobisova vzdálenost</div>
-<p><b>Mahalanobisova vzdálenost</b> bodu \(\mathbf x\) od středu \(\bar{\mathbf x}\) rozdělení s kovarianční maticí \(\mathbf S\) je \(D = \sqrt{(\mathbf{x}-\bar{\mathbf{x}})^T\mathbf{S}^{-1}(\mathbf{x}-\bar{\mathbf{x}})}\). Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi.</p>
+<p><b>Mahalanobisova vzdálenost</b> bodu \(\mathbf x\) od středu \(\bar{\mathbf x}\) rozdělení s kovarianční maticí \(\mathbf S\) je
+\[ D = \sqrt{(\mathbf{x}-\bar{\mathbf{x}})^T\mathbf{S}^{-1}(\mathbf{x}-\bar{\mathbf{x}})} \]
+Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi.</p>
 <p class="jinak">vzdálenost měřená „v jednotkách typické odchylky v daném směru“. Odpovídá na otázku: jak neobvyklý je tento bod vzhledem k tvaru mraku? Pro jednu proměnnou je to prostě \(|z|\) (z-skóre).</p></div>
 <div class="box vzorec"><div class="box-t">Vzorec</div>
 \[ D^2_i = (\mathbf{x}_i-\bar{\mathbf{x}})^T\,\mathbf{S}^{-1}\,(\mathbf{x}_i-\bar{\mathbf{x}}) \]
@@ -555,7 +559,9 @@
 <li>K \(i\)-té nejmenší hodnotě přiřaď teoretický kvantil χ²(p) na úrovni \((i-0{,}5)/n\).</li>
 <li>Vynes body (teoretický kvantil, \(D^2_i\)). Leží-li na přímce \(y = x\), data jsou přibližně vícerozměrně normální.</li>
 </ol></div>
-<p>Souvislost s elipsou: např. pro \(p=2\) a \(q = 0{,}95\) je kvantil \(\chi^2_{0{,}95}(2) = 5{,}99\). Očekáváme tedy, že 95 % bodů bude ležet uvnitř elipsy \((\mathbf{x}-\bar{\mathbf{x}})^T\mathbf{S}^{-1}(\mathbf{x}-\bar{\mathbf{x}}) \le 5{,}99\). Princip ověření normality je tedy vždy stejný: <b>porovnání výběrových kvantilů s modelovými</b>.</p>
+<p>Souvislost s elipsou: např. pro \(p=2\) a \(q = 0{,}95\) je kvantil \(\chi^2_{0{,}95}(2) = 5{,}99\). Očekáváme tedy, že 95 % bodů bude ležet uvnitř elipsy</p>
+\[ (\mathbf{x}-\bar{\mathbf{x}})^T\mathbf{S}^{-1}(\mathbf{x}-\bar{\mathbf{x}}) \le 5{,}99 \]
+<p>Princip ověření normality je tedy vždy stejný: <b>porovnání výběrových kvantilů s modelovými</b>.</p>
 <figure class="wide"><div class="paper"><img src="figures/fig02_chi2.png" alt="Dva chí-kvadrát diagramy, vlevo body na přímce, vpravo odchylky" loading="lazy"></div>
 <figcaption><b>Obr. 2.2</b> χ² diagram. Vlevo data z normálního rozdělení – body sedí na diagonále. Vpravo šikmá proměnná a několik odlehlých objektů – body se v horní části odklánějí nad přímku.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
@@ -566,16 +572,19 @@
 <div class="box definice" id="k02-def-hotelling"><div class="box-t">Definice: Hotellingův T² test</div>
 <p><b>Hotellingův T² test</b> je vícerozměrný statistický test nulové hypotézy, že dvě nezávislé skupiny mají shodné vektory středních hodnot (\(H_0: \boldsymbol\mu_1 = \boldsymbol\mu_2\)). Je to vícerozměrné zobecnění dvouvýběrového t-testu; předpokládá vícerozměrnou normalitu a shodnou kovarianční matici obou skupin.</p>
 <p class="jinak">t-test pro všechny proměnné najednou. Neptá se „liší se skupiny v tepu?“, ale „liší se skupiny v celém profilu (tep, tlak, věk)?“ – a přitom zohlední, jak spolu proměnné souvisejí.</p></div>
-\[ H_0: \boldsymbol\mu_1 = \boldsymbol\mu_2 \quad\text{(vektory středních hodnot obou skupin jsou stejné)} \]
+\[ H_0: \boldsymbol\mu_1 = \boldsymbol\mu_2 \]
+<p>Nulová hypotéza: vektory středních hodnot obou skupin jsou stejné.</p>
 <p>Předpoklad: skupiny jsou <b>nezávislé</b> (různí pacienti, ne tentýž pacient dvakrát).</p>
 
 <h3>Od t-testu k T²</h3>
 <p>Dvouvýběrový t-test pro jednu proměnnou porovnává rozdíl průměrů s jeho nejistotou:</p>
-\[ t = \frac{\bar x_1 - \bar x_2}{s\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}} \quad\Rightarrow\quad t^2 = \frac{n_1 n_2}{n_1+n_2}\,(\bar x_1-\bar x_2)\,(s^2)^{-1}\,(\bar x_1-\bar x_2) \]
+\[ t = \frac{\bar x_1 - \bar x_2}{s\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}} \]
+<p>Po umocnění a přepsání do tvaru „rozdíl × inverze rozptylu × rozdíl“:</p>
+\[ t^2 = \frac{n_1 n_2}{n_1+n_2}\,(\bar x_1-\bar x_2)\,(s^2)^{-1}\,(\bar x_1-\bar x_2) \]
 <p>Když \(t^2\) napíšeme takhle, zobecnění je přímočaré – rozdíl průměrů nahradíme rozdílem vektorů a rozptyl kovarianční maticí:</p>
 <div class="box vzorec"><div class="box-t">Vzorec</div>
-\[ T^2 = \frac{n_1 n_2}{n_1+n_2}\,(\bar{\mathbf{x}}_1-\bar{\mathbf{x}}_2)^T\,\mathbf{S}^{-1}\,(\bar{\mathbf{x}}_1-\bar{\mathbf{x}}_2),
-\qquad \mathbf{S} = \frac{(n_1-1)\mathbf{S}_1 + (n_2-1)\mathbf{S}_2}{n_1+n_2-2} \]
+\[ T^2 = \frac{n_1 n_2}{n_1+n_2}\,(\bar{\mathbf{x}}_1-\bar{\mathbf{x}}_2)^T\,\mathbf{S}^{-1}\,(\bar{\mathbf{x}}_1-\bar{\mathbf{x}}_2) \]
+\[ \mathbf{S} = \frac{(n_1-1)\mathbf{S}_1 + (n_2-1)\mathbf{S}_2}{n_1+n_2-2} \]
 <table class="vars">
 <tr><td>\(\bar{\mathbf{x}}_1, \bar{\mathbf{x}}_2\)</td><td>vektory průměrů obou skupin</td></tr>
 <tr><td>\(\mathbf{S}\)</td><td>společná (sdružená) kovarianční matice – vážený průměr kovariančních matic obou skupin</td></tr>
@@ -639,7 +648,9 @@
 <details class="q"><summary>Popište vícerozměrné normální rozdělení a jeho vlastnosti.</summary><div>
 <p>Zobecnění Gaussovy křivky; je určené vektorem středních hodnot \(\boldsymbol\mu\) a kovarianční maticí \(\boldsymbol\Sigma\). V exponentu je čtverec Mahalanobisovy vzdálenosti, takže vrstevnice hustoty jsou elipsy (elipsoidy) se středem v \(\boldsymbol\mu\); u nezávislých proměnných jsou osy rovnoběžné se souřadnicemi, u korelovaných otočené. Vlastnosti: lineární kombinace jsou normální, nekorelované složky jsou nezávislé, podmíněná rozdělení jsou normální.</p></div></details>
 <details class="q"><summary>Jaký je rozdíl mezi eukleidovskou a Mahalanobisovou vzdáleností?</summary><div>
-<p>Eukleidovská měří přímou vzdálenost a ignoruje rozptyl a korelace. Mahalanobisova \(D^2 = (\mathbf x-\bar{\mathbf x})^T\mathbf S^{-1}(\mathbf x-\bar{\mathbf x})\) měří vzdálenost v jednotkách rozptylu v daném směru – ve směru protažení mraku je „levnější“ být daleko. Dva body se stejnou eukleidovskou vzdáleností mohou mít velmi rozdílnou Mahalanobisovu; pro nekorelovaná standardizovaná data jsou obě stejné.</p></div></details>
+<p>Eukleidovská měří přímou vzdálenost a ignoruje rozptyl a korelace. Mahalanobisova</p>
+\[ D^2 = (\mathbf x-\bar{\mathbf x})^T\mathbf S^{-1}(\mathbf x-\bar{\mathbf x}) \]
+<p>měří vzdálenost v jednotkách rozptylu v daném směru – ve směru protažení mraku je „levnější“ být daleko. Dva body se stejnou eukleidovskou vzdáleností mohou mít velmi rozdílnou Mahalanobisovu; pro nekorelovaná standardizovaná data jsou obě stejné.</p></div></details>
 <details class="q"><summary>Jak ověříte vícerozměrnou normalitu? Proč nestačí jen test?</summary><div>
 <p>Kombinací testů a vizuální kontroly: testy normality jednotlivých proměnných (Shapiro-Wilk aj.), šikmost a špičatost, bodové grafy dvojic (elipsa), χ² diagram. Test sám nestačí, protože u velkých souborů zamítne i nepodstatné odchylky, vícerozměrný test neřekne, která proměnná je problém, a výsledek mohou zkreslit odlehlé hodnoty. Pozor: normalita každé proměnné ještě nezaručuje vícerozměrnou normalitu.</p></div></details>
 <details class="q"><summary>Vysvětlete princip χ² diagramu.</summary><div>
@@ -768,8 +779,11 @@
 <p><b>Normalizace min–max</b> je transformace proměnné, při které od každé hodnoty odečteme minimum proměnné a výsledek vydělíme rozpětím (maximum − minimum): \(x_i' = (x_i - \min)/(\max - \min)\). Výsledná proměnná leží přesně v intervalu \([0, 1]\): nejmenší hodnota dostane 0, největší 1.</p>
 <p class="jinak">každou hodnotu vyjádříme jako „kolik procent cesty od nejmenší k největší hodnotě urazila“. Měřítko určují jen dva body – minimum a maximum – a proto jedna chybná extrémní hodnota posune měřítko pro všechny ostatní.</p></div>
 
-<div class="box vzorec"><div class="box-t">Dva vzorce vedle sebe</div>
-\[ \text{standardizace (z-skóre):}\quad z_i = \frac{x_i - \bar{x}}{s} \qquad\qquad \text{normalizace (min–max):}\quad x_i' = \frac{x_i - \min(x)}{\max(x) - \min(x)} \]
+<div class="box vzorec"><div class="box-t">Standardizace a normalizace</div>
+<p>Standardizace (z-skóre):</p>
+\[ z_i = \frac{x_i - \bar{x}}{s} \]
+<p>Normalizace (min–max):</p>
+\[ x_i' = \frac{x_i - \min(x)}{\max(x) - \min(x)} \]
 <table class="vars">
 <tr><td>\(x_i\)</td><td>původní hodnota \(i\)-tého objektu (např. věk pacienta)</td></tr>
 <tr><td>\(\bar x,\ s\)</td><td>průměr a směrodatná odchylka <b>trénovacích</b> dat dané proměnné – čitatel posune data, aby střed byl v nule; jmenovatel je „smrští/roztáhne“ na jednotkový rozptyl</td></tr>
@@ -826,7 +840,9 @@
 <h3>Experiment z přednášky: detekce stimulace tepů</h3>
 <p>3 příznaky, 158 pacientů trénink, 489 pacientů externí test. F1 = úspěšnost klasifikace, Iters = počet iterací do konvergence.</p>
 <div class="box definice" id="k03-def-f1"><div class="box-t">Definice: F1 skóre</div>
-<p><b>F1 skóre</b> je harmonický průměr přesnosti (precision – kolik z objektů označených jako pozitivní opravdu pozitivních je) a senzitivity (recall – kolik ze skutečně pozitivních objektů model našel): \(F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision}+\text{recall}}\). Nabývá hodnot 0 až 1.</p>
+<p><b>F1 skóre</b> je harmonický průměr přesnosti (precision – kolik z objektů označených jako pozitivní opravdu pozitivních je) a senzitivity (recall – kolik ze skutečně pozitivních objektů model našel):
+\[ F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision}+\text{recall}} \]
+Nabývá hodnot 0 až 1.</p>
 <p class="jinak">jedno číslo pro kvalitu klasifikátoru, které je vysoké jen tehdy, když model zároveň „moc nepřestřeluje“ (málo falešných poplachů) a „moc nepřehlíží“ (málo zmeškaných případů).</p></div>
 <div class="box definice" id="k03-def-konvergence"><div class="box-t">Definice: konvergence a iterace</div>
 <p><b>Iterační algoritmus</b> hledá řešení postupnými kroky (iteracemi), z nichž každý odhad o něco zlepší. Algoritmus <b>konverguje</b>, když se odhady přestanou měnit (změna klesne pod zvolenou toleranci); počet iterací do té doby vyjadřuje rychlost konvergence.</p>
@@ -968,7 +984,9 @@
 <p><b>Šance</b> (odds) jevu je poměr pravděpodobnosti, že nastane, a pravděpodobnosti, že nenastane: \(P/(1-P)\). <b>Poměr šancí</b> (OR) je podíl šancí ve dvou situacích; v logistické regresi \(e^{a_j}\) říká, kolikrát se šance zvýší, když \(x_j\) vzroste o 1 a ostatní vstupy zůstanou stejné.</p>
 <p class="jinak">pravděpodobnost 0,8 = šance 4 : 1. OR = 2 znamená „šance se zdvojnásobí“, OR = 1 „žádný vliv“, OR &lt; 1 „šance klesá“.</p></div>
 <div class="box vzorec"><div class="box-t">Vzorec</div>
-\[ P(y=1\mid x) = \frac{1}{1+e^{-(a x + b)}} \qquad\qquad P(y=1\mid \mathbf{x}) = \frac{1}{1+e^{-(a_1\,\text{věk} + a_2\,\text{pohlaví} + \dots + c)}} \]
+\[ P(y=1\mid x) = \frac{1}{1+e^{-(a x + b)}} \]
+<p>Pro víc vstupních proměnných:</p>
+\[ P(y=1\mid \mathbf{x}) = \frac{1}{1+e^{-(a_1\,\text{věk} + a_2\,\text{pohlaví} + \dots + c)}} \]
 <table class="vars">
 <tr><td>\(a x + b\)</td><td>lineární funkce („skóre“), může být libovolně velká i záporná</td></tr>
 <tr><td>\(1/(1+e^{-z})\)</td><td>převede skóre na pravděpodobnost v intervalu (0, 1); skóre 0 → pravděpodobnost 0,5</td></tr>
@@ -1075,7 +1093,8 @@
 <p>Proč nestačí udělat t-test pro každou dvojici skupin? Pro 3 skupiny jsou to 3 testy, pro 5 skupin už 10 – a s každým testem roste šance na falešně pozitivní výsledek (<a href="#k01-def-mnohonasobne-testovani">problém mnohonásobného testování</a>). ANOVA položí jedinou otázku pro všechny skupiny najednou.</p>
 <div class="box intuice"><div class="box-t">Intuice: proč „analýza rozptylu“, když porovnáváme průměry</div>
 <p>ANOVA porovnává dva rozptyly: <b>jak moc se liší průměry skupin mezi sebou</b> a <b>jak moc kolísají hodnoty uvnitř skupin</b>. Pokud jsou průměry skupin od sebe daleko ve srovnání s rozptylem uvnitř skupin, skupiny se liší.</p></div>
-\[ F = \frac{\text{rozptyl mezi skupinami (průměrů kolem celkového průměru)}}{\text{rozptyl uvnitř skupin (hodnot kolem průměru své skupiny)}} \]
+\[ F = \frac{\text{rozptyl mezi skupinami}}{\text{rozptyl uvnitř skupin}} \]
+<p>Rozptyl mezi skupinami = jak kolísají průměry skupin kolem celkového průměru; rozptyl uvnitř skupin = jak kolísají hodnoty kolem průměru své skupiny.</p>
 <p>\(F \approx 1\) → rozdíly průměrů jsou jen tak velké, jak by odpovídalo náhodě. Velké \(F\) → aspoň jedna skupina se liší.</p>
 <div class="box vzorec"><div class="box-t">Vzorec podrobněji</div>
 \[ F = \frac{\frac{1}{k-1}\sum_{g=1}^{k} n_g(\bar y_g - \bar y)^2}{\frac{1}{N-k}\sum_{g=1}^{k}\sum_{i \in g}(y_i - \bar y_g)^2} \]
@@ -1157,7 +1176,12 @@
 <h2 id="k05-metriky">Metriky vzdálenosti – co znamená „podobné“</h2>
 <p>Shlukování stojí na tom, jak měříme vzdálenost (nepodobnost) dvou objektů. Volba metriky musí odpovídat úloze.</p>
 <div class="box definice" id="k05-def-metrika"><div class="box-t">Definice: metrika (míra vzdálenosti)</div>
-<p><b>Metrika</b> je funkce \(d(\mathbf a, \mathbf b)\), která každé dvojici objektů přiřadí nezáporné číslo – vzdálenost – a splňuje: \(d(\mathbf a,\mathbf b) = 0\) právě když \(\mathbf a = \mathbf b\); symetrii \(d(\mathbf a,\mathbf b) = d(\mathbf b,\mathbf a)\); trojúhelníkovou nerovnost \(d(\mathbf a,\mathbf c) \le d(\mathbf a,\mathbf b) + d(\mathbf b,\mathbf c)\).</p>
+<p><b>Metrika</b> je funkce \(d(\mathbf a, \mathbf b)\), která každé dvojici objektů přiřadí nezáporné číslo – vzdálenost – a splňuje:</p>
+<ul>
+<li>\(d(\mathbf a,\mathbf b) = 0\) právě když \(\mathbf a = \mathbf b\);</li>
+<li>symetrii \(d(\mathbf a,\mathbf b) = d(\mathbf b,\mathbf a)\);</li>
+<li>trojúhelníkovou nerovnost \(d(\mathbf a,\mathbf c) \le d(\mathbf a,\mathbf b) + d(\mathbf b,\mathbf c)\).</li>
+</ul>
 <p class="jinak">pravidlo, jak číslem vyjádřit „jak moc se dva pacienti liší“. Malá vzdálenost = podobní. Různé metriky chápou podobnost různě (pravítkem, po osách, podle úhlu). Kosinová „vzdálenost“ trojúhelníkovou nerovnost obecně nesplňuje, přesto se jako míra nepodobnosti běžně používá.</p></div>
 <div class="box definice" id="k05-def-eukl-manh-kos"><div class="box-t">Definice: eukleidovská, manhattanská a kosinová vzdálenost</div>
 <p><b>Eukleidovská vzdálenost</b> je délka úsečky mezi dvěma body: odmocnina ze součtu čtverců rozdílů souřadnic. <b>Manhattanská vzdálenost</b> je součet absolutních rozdílů souřadnic. <b>Kosinová vzdálenost</b> je \(1 - \cos\theta\), kde \(\theta\) je úhel mezi vektory obou objektů (vedených z počátku).</p>
@@ -1300,7 +1324,7 @@
 <li><b>kombinací</b> výše uvedeného.</li>
 </ol>
 <div class="box vzorec"><div class="box-t">Vnitroshluková vzdálenost (WSS)</div>
-\[ \mathrm{WCSS}_k = \sum_{n=1}^{N_k} d_n^2 \qquad\qquad \mathrm{WSS} = \sum_{k=1}^{K}\mathrm{WCSS}_k \]
+\[ \mathrm{WCSS}_k = \sum_{n=1}^{N_k} d_n^2,\qquad \mathrm{WSS} = \sum_{k=1}^{K}\mathrm{WCSS}_k \]
 <table class="vars">
 <tr><td>\(d_n\)</td><td>vzdálenost \(n\)-tého bodu shluku od jeho těžiště</td></tr>
 <tr><td>\(N_k\)</td><td>počet bodů v \(k\)-tém shluku</td></tr>
@@ -1501,9 +1525,10 @@
 <h3>Příklad z přednášky: výpočet skóre</h3>
 <div class="box priklad"><div class="box-t">Příklad</div>
 <p>Objekt \(\mathbf{x} = [0{,}6;\ 1{,}4]\), transformační vektory (sloupce matice \(\mathbf{V}\)):</p>
-\[ \mathbf{V} = \begin{pmatrix} 0{,}7071 & -0{,}7071\\ 0{,}7071 & 0{,}7071 \end{pmatrix} \qquad
-\begin{aligned} y_1 &= \mathbf{x}\cdot\mathbf{v}_1 = 0{,}6\cdot 0{,}7071 + 1{,}4\cdot 0{,}7071 = 1{,}4\\
-y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071 = 0{,}6 \end{aligned} \]
+\[ \mathbf{V} = \begin{pmatrix} 0{,}7071 & -0{,}7071\\ 0{,}7071 & 0{,}7071 \end{pmatrix} \]
+<p>Skóre = skalární součin objektu s každým sloupcem:</p>
+\[ \begin{aligned} y_1 = \mathbf{x}\cdot\mathbf{v}_1 &= 0{,}6\cdot 0{,}7071 + 1{,}4\cdot 0{,}7071 \approx 1{,}4\\
+y_2 = \mathbf{x}\cdot\mathbf{v}_2 &= 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071 \approx 0{,}6 \end{aligned} \]
 <p>Nové souřadnice objektu jsou \((1{,}4;\ 0{,}6)\) – skalární součin = projekce na novou osu. Osy jsou otočené o 45°. Vektory tvoří <b>ortonormální bázi</b>:</p>
 <div class="box definice" id="k06-def-ortonormalni"><div class="box-t">Definice: ortonormální báze</div>
 <p><b>Ortonormální báze</b> \(p\)-rozměrného prostoru je soustava \(p\) vektorů, které jsou navzájem <b>kolmé</b> (ortogonální: skalární součin každé dvojice je 0) a mají <b>jednotkovou délku</b> (normované: \(\mathbf v^T\mathbf v = 1\)). Každý bod prostoru lze jednoznačně zapsat pomocí souřadnic v této bázi. Matice \(\mathbf V\), jejímiž sloupci jsou, splňuje \(\mathbf V^T\mathbf V = \mathbf I\) (ortogonální matice) a násobení jí je otočení (případně zrcadlení).</p>
@@ -1532,10 +1557,19 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <li>Spočítej kovarianční matici \(\mathbf{S}\) (resp. korelační \(\mathbf{R}\)).</li>
 <li>Najdi \(p\) vlastních čísel \(\lambda_j\) a vlastních vektorů \(\mathbf{v}_j\) (řešením \(\det(\mathbf{S}-\lambda\mathbf{I}) = 0\)).</li>
 <li>Seřaď je podle \(\lambda\) sestupně.</li>
-<li>Komponentní skóre: \(\mathbf{Y} = \mathbf{X}\mathbf{V}\); s podmínkami \(\mathbf{v}_j^T\mathbf{v}_j = 1\) (bez zkreslení měřítka) a \(\mathbf{v}_j\cdot\mathbf{v}_k = 0\) (kolmost).</li>
+<li>Komponentní skóre \(\mathbf{Y} = \mathbf{X}\mathbf{V}\), s podmínkami:
+<ul>
+<li>\(\mathbf{v}_j^T\mathbf{v}_j = 1\) (bez zkreslení měřítka),</li>
+<li>\(\mathbf{v}_j\cdot\mathbf{v}_k = 0\) (kolmost).</li>
+</ul></li>
 </ol></div>
 <div class="box priklad"><div class="box-t">Mini-příklad (podrobně v přednášce 8)</div>
-<p>\(\mathbf{A} = \begin{pmatrix}3&3\\3&7\end{pmatrix}\): \(\det(\mathbf{A}-\lambda\mathbf{I}) = (3-\lambda)(7-\lambda) - 9 = \lambda^2 - 10\lambda + 12 = 0\) → \(\lambda_1 = 8{,}6\), \(\lambda_2 = 1{,}4\). Vlastní vektory \(\mathbf{v}_1 \approx (0{,}47;\ 0{,}88)\), \(\mathbf{v}_2 \approx (-0{,}88;\ 0{,}47)\). Směr \(\mathbf{v}_1\) nese \(8{,}6/10 = 86\) % rozptylu. Celý postup krok za krokem je v <a href="#k08-ed">kapitole o maticových rozkladech</a>.</p></div>
+<p>Matice a její charakteristická rovnice:</p>
+\[ \mathbf{A} = \begin{pmatrix}3&3\\3&7\end{pmatrix} \]
+\[ \begin{aligned} \det(\mathbf{A}-\lambda\mathbf{I}) &= (3-\lambda)(7-\lambda) - 9 \\ &= \lambda^2 - 10\lambda + 12 = 0 \end{aligned} \]
+<p>Vlastní čísla a vektory:</p>
+\[ \begin{aligned} \lambda_1 &= 8{,}6, & \mathbf{v}_1 &\approx (0{,}47;\ 0{,}88) \\ \lambda_2 &= 1{,}4, & \mathbf{v}_2 &\approx (-0{,}88;\ 0{,}47) \end{aligned} \]
+<p>Směr \(\mathbf{v}_1\) nese \(8{,}6/10 = 86\) % rozptylu. Celý postup krok za krokem je v <a href="#k08-ed">kapitole o maticových rozkladech</a>.</p></div>
 <h3>Terminologie (častá zkoušková otázka)</h3>
 <div class="box definice" id="k06-def-zateze"><div class="box-t">Definice: komponentní zátěže (loadings)</div>
 <p><b>Komponentní zátěže</b> jsou koeficienty, kterými jsou původní proměnné vážené v lineární kombinaci tvořící hlavní komponentu, tj. prvky vlastních vektorů \(\mathbf v_k\). V normované podobě (\(v_{kj}\sqrt{\lambda_k}\), při PCA na korelační matici) jsou rovny <b>korelaci</b> \(j\)-té proměnné s \(k\)-tou komponentou.</p>
@@ -1552,7 +1586,8 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p>Pozn.: v grafech se zátěže často kreslí přenásobené \(\sqrt{\lambda}\) – pak jsou to přímo <b>korelace příznaku s komponentou</b> (a leží uvnitř jednotkové kružnice).</p>
 
 <h2 id="k06-predpoklady">Předpoklady a volba S vs. R</h2>
-<p>PCA vychází z kovarianční matice \(\mathbf{S}\) (vyžaduje <b>centrování</b> příznaků) nebo z korelační matice \(\mathbf{R}\). Korelační matice původních dat = kovarianční matice standardizovaných dat: \(\mathbf{R}(\mathbf{x}) = \mathbf{S}(\mathbf{z}),\ \mathbf{z} = (\mathbf{x}-\boldsymbol\mu)/\sigma\).</p>
+<p>PCA vychází z kovarianční matice \(\mathbf{S}\) (vyžaduje <b>centrování</b> příznaků) nebo z korelační matice \(\mathbf{R}\). Korelační matice původních dat = kovarianční matice standardizovaných dat:</p>
+\[ \mathbf{R}(\mathbf{x}) = \mathbf{S}(\mathbf{z}),\qquad \mathbf{z} = \frac{\mathbf{x}-\boldsymbol\mu}{\sigma} \]
 <div class="box pozor"><div class="box-t">Kdy použít korelační matici</div>
 <p>Když mají příznaky <b>nehomogenní rozptyl</b> nebo <b>nesrovnatelné měřítko</b> (jednotky). Jinak PC1 jen „najde“ proměnnou s největšími čísly: koncentrace v tisících by přebila teplotu ve stupních, ne protože je důležitější, ale protože má větší rozptyl v absolutních číslech.</p></div>
 <p>Předpoklady (protože PCA pracuje s \(\mathbf{S}\) a \(\mathbf{R}\)):</p>
@@ -1743,7 +1778,11 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <h3>Jádro (kernel) jako míra podobnosti</h3>
 <p>Cíl: převod do vyšší dimenze, kde je úloha lineární. Objekty transformujeme funkcí \(\varphi: \mathbf{x} \to \varphi(\mathbf{x})\). <b>Jádro</b> je skalární součin dvou objektů v tomto novém prostoru:</p>
 <div class="box definice" id="k07-def-skalarni-soucin"><div class="box-t">Definice: skalární součin</div>
-<p><b>Skalární součin</b> dvou vektorů \(\mathbf a, \mathbf b\) je číslo \(\mathbf a^T\mathbf b = a_1b_1 + a_2b_2 + \dots + a_pb_p\). Platí \(\mathbf a^T\mathbf b = \lVert\mathbf a\rVert\,\lVert\mathbf b\rVert\cos\theta\), kde \(\theta\) je úhel mezi vektory.</p>
+<p><b>Skalární součin</b> dvou vektorů \(\mathbf a, \mathbf b\) je číslo
+\[ \mathbf a^T\mathbf b = a_1b_1 + a_2b_2 + \dots + a_pb_p \]
+Platí
+\[ \mathbf a^T\mathbf b = \lVert\mathbf a\rVert\,\lVert\mathbf b\rVert\cos\theta \]
+kde \(\theta\) je úhel mezi vektory.</p>
 <p class="jinak">míra toho, jak moc dva vektory „míří stejným směrem“ (krát jejich délky). Velký kladný = podobný směr, 0 = kolmé, záporný = opačné. Proto ho lze brát jako míru podobnosti objektů.</p></div>
 <div class="box definice" id="k07-def-jadro"><div class="box-t">Definice: jádro (kernel)</div>
 <p><b>Jádro</b> je funkce \(\kappa(\mathbf a, \mathbf b)\) dvou objektů, která je rovna skalárnímu součinu jejich obrazů v příznakovém prostoru: \(\kappa(\mathbf a, \mathbf b) = \varphi(\mathbf a)^T\varphi(\mathbf b)\), přičemž se dá spočítat přímo z původních vektorů \(\mathbf a, \mathbf b\).</p>
@@ -1771,7 +1810,7 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p>Stejný výsledek dostaneme, když spočítáme obyčejný skalární součin v <b>původním</b> 2D prostoru a umocníme ho. To je <b>kernel trick</b>.</p>
 <p><b>Ověření na číslech:</b> \(\mathbf a = (1, 2)\), \(\mathbf b = (3, 1)\).</p>
 <ul>
-<li>Cesta „přes 3D“: \(\varphi(\mathbf a) = (1;\ 2\sqrt2;\ 4)\), \(\varphi(\mathbf b) = (9;\ 3\sqrt2;\ 1)\), součin \(9 + 2\sqrt2\cdot 3\sqrt2 + 4 = 9 + 12 + 4 = 25\).</li>
+<li>Cesta „přes 3D“: \[ \begin{aligned} \varphi(\mathbf a) &= (1;\ 2\sqrt2;\ 4) \\ \varphi(\mathbf b) &= (9;\ 3\sqrt2;\ 1) \\ \varphi(\mathbf a)^T\varphi(\mathbf b) &= 9 + 2\sqrt2\cdot 3\sqrt2 + 4 \\ &= 9 + 12 + 4 = 25 \end{aligned} \]</li>
 <li>Zkratka: \(\mathbf a^T\mathbf b = 1\cdot 3 + 2\cdot 1 = 5\), \(5^2 = 25\). Stejné číslo, ale bez počítání 3D vektorů.</li>
 </ul></div>
 <div class="box definice" id="k07-def-kernel-trick"><div class="box-t">Definice: kernel trick</div>
@@ -1785,7 +1824,9 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 
 <h2 id="k07-rbf">RBF jádro</h2>
 <div class="box definice" id="k07-def-rbf"><div class="box-t">Definice: RBF (gaussovské) jádro</div>
-<p><b>RBF jádro</b> (radial basis function) je \(\kappa(\mathbf a, \mathbf b) = \exp(-\gamma\lVert\mathbf a - \mathbf b\rVert^2)\), \(\gamma &gt; 0\). Jeho hodnota závisí jen na vzdálenosti objektů: je 1 pro totožné objekty a s rostoucí vzdáleností klesá k 0. Odpovídající příznakový prostor má nekonečnou dimenzi.</p>
+<p><b>RBF jádro</b> (radial basis function) je
+\[ \kappa(\mathbf a, \mathbf b) = \exp(-\gamma\lVert\mathbf a - \mathbf b\rVert^2),\qquad \gamma &gt; 0 \]
+Jeho hodnota závisí jen na vzdálenosti objektů: je 1 pro totožné objekty a s rostoucí vzdáleností klesá k 0. Odpovídající příznakový prostor má nekonečnou dimenzi.</p>
 <p class="jinak">„Gaussova zvonová křivka podobnosti“ kolem každého bodu: blízcí sousedé jsou si podobní, vzdálení skoro vůbec. \(\gamma\) určuje, jak daleko „dosáhne“ – jak široký je zvon.</p></div>
 <div class="box vzorec"><div class="box-t">RBF (radial basis function, gaussovské) jádro</div>
 \[ \kappa(\mathbf{a}, \mathbf{b}) = e^{-\gamma\,\lVert\mathbf{a}-\mathbf{b}\rVert^2}, \qquad \gamma = \frac{1}{2\sigma^2} \]
@@ -1812,7 +1853,7 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <div class="box postup"><div class="box-t">Postup</div>
 <ol>
 <li><b>Výpočet jádrové matice</b> \(\mathbf{K}\), \(K_{ij} = \kappa(\mathbf{x}_i, \mathbf{x}_j)\) – pro 10 objektů matice 10 × 10, symetrická.</li>
-<li><b>Centralizace</b> \(\mathbf{K}_c = \mathbf{K} - \mathbf{1}_N\mathbf{K} - \mathbf{K}\mathbf{1}_N + \mathbf{1}_N\mathbf{K}\mathbf{1}_N\), kde \(\mathbf{1}_N\) je matice \(N \times N\) s prvky \(1/N\).</li>
+<li><b>Centralizace</b> (\(\mathbf{1}_N\) je matice \(N \times N\) s prvky \(1/N\)): \[ \mathbf{K}_c = \mathbf{K} - \mathbf{1}_N\mathbf{K} - \mathbf{K}\mathbf{1}_N + \mathbf{1}_N\mathbf{K}\mathbf{1}_N \]</li>
 <li><b>Vlastní čísla a vektory</b> \(\mathbf{K}_c\boldsymbol\alpha_k = \lambda_k\boldsymbol\alpha_k\).</li>
 <li><b>Seřazení</b> od největšího \(\lambda_k\) po nejmenší.</li>
 <li><b>Normalizace</b> vlastních vektorů \(\boldsymbol\alpha_k/\sqrt{\lambda_k}\).</li>
@@ -1864,11 +1905,18 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <details class="q"><summary>Co je jádro (kernel) a kernel trick?</summary><div>
 <p>Jádro je funkce \(\kappa(\mathbf a,\mathbf b) = \varphi(\mathbf a)^T\varphi(\mathbf b)\) – skalární součin (podobnost) objektů po nelineární transformaci \(\varphi\). Kernel trick znamená, že tuto hodnotu umíme spočítat přímo z původních vektorů, aniž bychom \(\varphi\) počítali – např. pro polynomiální jádro 2. řádu \((\mathbf a^T\mathbf b)^2\) místo součinu dvou 3D (nebo 9D) vektorů. Je to výpočetně levné a umožňuje i nekonečně rozměrné prostory (RBF).</p></div></details>
 <details class="q"><summary>Odvoďte polynomiální jádro 2. řádu pro 2D vektory.</summary><div>
-<p>\(\varphi(\mathbf a) = (a_1^2, \sqrt2 a_1a_2, a_2^2)\). Pak \(\varphi(\mathbf a)^T\varphi(\mathbf b) = a_1^2b_1^2 + 2a_1a_2b_1b_2 + a_2^2b_2^2 = (a_1b_1 + a_2b_2)^2 = (\mathbf a^T\mathbf b)^2\).</p></div></details>
+<p>Zobrazení do 3D: \(\varphi(\mathbf a) = (a_1^2, \sqrt2 a_1a_2, a_2^2)\). Pak</p>
+\[ \begin{aligned} \varphi(\mathbf a)^T\varphi(\mathbf b) &= a_1^2b_1^2 + 2a_1a_2b_1b_2 + a_2^2b_2^2 \\ &= (a_1b_1 + a_2b_2)^2 = (\mathbf a^T\mathbf b)^2 \end{aligned} \]</div></details>
 <details class="q"><summary>Popište RBF jádro a vliv parametru γ.</summary><div>
 <p>\(\kappa = e^{-\gamma\lVert\mathbf a-\mathbf b\rVert^2}\), \(\gamma = 1/(2\sigma^2)\). Pro stejné objekty 1, se vzdáleností klesá k 0 – je to míra podobnosti; odpovídající prostor je nekonečně rozměrný, ale stačí spočítat eukleidovskou vzdálenost. Malé γ (široké jádro) → výsledek se blíží lineární PCA; velké γ (úzké) → podobné jsou jen nejbližší body, struktura se rozpadne. γ se ladí, např. křížovou validací.</p></div></details>
 <details class="q"><summary>Popište algoritmus kernel PCA.</summary><div>
-<p>Spočítám jádrovou matici \(n \times n\) pro všechny dvojice objektů; centralizuji ji (\(\mathbf K - \mathbf 1\mathbf K - \mathbf K\mathbf 1 + \mathbf 1\mathbf K\mathbf 1\)), protože data v novém prostoru musí být centrovaná; spočítám vlastní čísla a vektory, seřadím je sestupně, vektory normalizuji \(1/\sqrt\lambda\) a projekce získám vynásobením centrované jádrové matice normalizovanými vektory. Pro nové objekty spočítám jádro vůči trénovacím objektům a centralizuji ho statistikami trénovacího jádra.</p></div></details>
+<ol>
+<li>Spočítám jádrovou matici \(n \times n\) pro všechny dvojice objektů.</li>
+<li>Centralizuji ji, protože data v novém prostoru musí být centrovaná: \[ \mathbf K_c = \mathbf K - \mathbf 1\mathbf K - \mathbf K\mathbf 1 + \mathbf 1\mathbf K\mathbf 1 \]</li>
+<li>Spočítám vlastní čísla a vektory a seřadím je sestupně.</li>
+<li>Vektory normalizuji \(1/\sqrt\lambda\) a projekce získám vynásobením centrované jádrové matice normalizovanými vektory.</li>
+</ol>
+<p>Pro nové objekty spočítám jádro vůči trénovacím objektům a centralizuji ho statistikami trénovacího jádra.</p></div></details>
 <details class="q"><summary>Jaké jsou nevýhody kernel PCA oproti lineární PCA?</summary><div>
 <p>Rozkládá matici \(n \times n\) (drahé pro velký počet objektů), má hyperparametry (typ jádra, γ), které je nutné ladit, komponenty nejsou lineární kombinace původních příznaků (horší interpretace) a pro projekci nových objektů je nutné uchovat celá trénovací data.</p></div></details>
 
@@ -1884,7 +1932,14 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p class="jinak">rozložím složitou matici na „jednoduché stavební díly“, jejichž význam je jasný (otočení, natažení) a se kterými se snadno počítá – podobně jako 60 = 2·2·3·5.</p></div>
 <p>Rozložit matici znamená napsat ji jako součin jednodušších matic (trojúhelníkových, ortogonálních, diagonálních), se kterými se snáz počítá a které mají jasný význam – podobně jako rozklad čísla na prvočísla. Několik základních pojmů, které rozklady používají:</p>
 <div class="box definice" id="k08-def-maticove-pojmy"><div class="box-t">Definice: základní typy matic</div>
-<p><b>Transponovaná</b> matice \(\mathbf A^T\) vznikne záměnou řádků a sloupců. <b>Symetrická</b> matice splňuje \(\mathbf A = \mathbf A^T\). <b>Diagonální</b> matice má nenulové prvky jen na hlavní diagonále. <b>Jednotková</b> matice \(\mathbf I\) je diagonální s jedničkami na diagonále (\(\mathbf A\mathbf I = \mathbf A\)). <b>Inverzní</b> matice \(\mathbf A^{-1}\) splňuje \(\mathbf A\mathbf A^{-1} = \mathbf I\). <b>Ortogonální</b> matice má ortonormální sloupce, takže \(\mathbf Q^T\mathbf Q = \mathbf I\), tj. \(\mathbf Q^{-1} = \mathbf Q^T\).</p>
+<ul>
+<li><b>Transponovaná</b> matice \(\mathbf A^T\) vznikne záměnou řádků a sloupců.</li>
+<li><b>Symetrická</b> matice splňuje \(\mathbf A = \mathbf A^T\).</li>
+<li><b>Diagonální</b> matice má nenulové prvky jen na hlavní diagonále.</li>
+<li><b>Jednotková</b> matice \(\mathbf I\) je diagonální s jedničkami na diagonále (\(\mathbf A\mathbf I = \mathbf A\)).</li>
+<li><b>Inverzní</b> matice \(\mathbf A^{-1}\) splňuje \(\mathbf A\mathbf A^{-1} = \mathbf I\).</li>
+<li><b>Ortogonální</b> matice má ortonormální sloupce, takže \(\mathbf Q^T\mathbf Q = \mathbf I\), tj. \(\mathbf Q^{-1} = \mathbf Q^T\).</li>
+</ul>
 <p class="jinak">jednotková matice je „jednička“ maticového světa, inverze „dělení“. Ortogonální matice geometricky jen otáčí (či zrcadlí) – nemění délky ani úhly – a její inverzi získáme zadarmo transpozicí.</p></div>
 <div class="box definice" id="k08-def-determinant-stopa-hodnost"><div class="box-t">Definice: determinant, stopa a hodnost matice</div>
 <p><b>Determinant</b> \(\det\mathbf A\) čtvercové matice je číslo, které udává, kolikrát lineární zobrazení \(\mathbf A\) zvětší objem (ve 2D plochu); je roven součinu vlastních čísel a je nulový právě tehdy, když matice nemá inverzi. <b>Stopa</b> je součet prvků na diagonále a je rovna součtu vlastních čísel. <b>Hodnost</b> je maximální počet lineárně nezávislých řádků (sloupců) a je rovna počtu nenulových singulárních čísel.</p>
@@ -1919,24 +1974,33 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 
 <div class="box priklad"><div class="box-t">Příklad z přednášky krok za krokem: \(\mathbf{A} = \begin{pmatrix}3&3\\3&7\end{pmatrix}\)</div>
 <p><b>Krok 1 – vlastní čísla:</b></p>
-\[ \det\begin{pmatrix}3-\lambda & 3\\ 3 & 7-\lambda\end{pmatrix} = (3-\lambda)(7-\lambda) - 3\cdot 3 = \lambda^2 - 10\lambda + 12 = 0 \]
-\[ D = 100 - 4\cdot 12 = 52,\qquad \lambda_{1,2} = \frac{10 \pm \sqrt{52}}{2} \;\Rightarrow\; \lambda_1 \approx 8{,}6,\quad \lambda_2 \approx 1{,}4 \]
+\[ \begin{aligned} \det\begin{pmatrix}3-\lambda & 3\\ 3 & 7-\lambda\end{pmatrix} &= (3-\lambda)(7-\lambda) - 3\cdot 3 \\ &= \lambda^2 - 10\lambda + 12 = 0 \end{aligned} \]
+\[ \begin{aligned} D &= 100 - 4\cdot 12 = 52 \\ \lambda_{1,2} &= \frac{10 \pm \sqrt{52}}{2} \\ \lambda_1 &\approx 8{,}6,\quad \lambda_2 \approx 1{,}4 \end{aligned} \]
 <p><b>Krok 2 – vlastní vektor pro \(\lambda_1 = 8{,}6\):</b></p>
-\[ \begin{pmatrix}3-8{,}6 & 3\\ 3 & 7-8{,}6\end{pmatrix}\begin{pmatrix}v_1\\v_2\end{pmatrix} = \begin{pmatrix}-5{,}6 & 3\\ 3 & -1{,}6\end{pmatrix}\begin{pmatrix}v_1\\v_2\end{pmatrix} = \mathbf{0} \;\Rightarrow\; v_2 = \tfrac{5{,}6}{3}v_1 \approx 1{,}87\,v_1 \]
+\[ \begin{aligned} \begin{pmatrix}3-8{,}6 & 3\\ 3 & 7-8{,}6\end{pmatrix}\begin{pmatrix}v_1\\v_2\end{pmatrix} &= \mathbf{0} \\ \begin{pmatrix}-5{,}6 & 3\\ 3 & -1{,}6\end{pmatrix}\begin{pmatrix}v_1\\v_2\end{pmatrix} &= \mathbf{0} \end{aligned} \]
+<p>Z prvního řádku \(-5{,}6\,v_1 + 3\,v_2 = 0\):</p>
+\[ v_2 = \tfrac{5{,}6}{3}v_1 \approx 1{,}87\,v_1 \]
 <p>Rovnice jsou závislé (proto existuje nenulové řešení) – určují jen <i>směr</i>. Délku zvolíme 1: \(\mathbf{v}_1 \approx (0{,}47;\ 0{,}88)\).</p>
 <p><b>Pro \(\lambda_2 = 1{,}4\):</b> \(1{,}6\,v_1 + 3\,v_2 = 0\) → \(\mathbf{v}_2 \approx (-0{,}88;\ 0{,}47)\).</p>
 <p><b>Výsledek a kontrola:</b></p>
 \[ \mathbf{D} = \begin{pmatrix}8{,}6 & 0\\ 0 & 1{,}4\end{pmatrix},\qquad \mathbf{V} = \begin{pmatrix}0{,}47 & -0{,}88\\ 0{,}88 & 0{,}47\end{pmatrix} \]
 <ul>
-<li>kolmost: \(\mathbf{v}_1\cdot\mathbf{v}_2 = 0{,}47\cdot(-0{,}88) + 0{,}88\cdot 0{,}47 = 0\);</li>
+<li>kolmost: \[ \mathbf{v}_1\cdot\mathbf{v}_2 = 0{,}47\cdot(-0{,}88) + 0{,}88\cdot 0{,}47 = 0 \]</li>
 <li>jednotková délka: \(\sqrt{0{,}47^2 + 0{,}88^2} \approx 1\) → <b>ortonormální báze</b>;</li>
-<li>zpětné složení: \(\mathbf{V}\mathbf{D}\mathbf{V}^T \approx \begin{pmatrix}3&3\\3&7\end{pmatrix}\) ✓ (pro ortonormální \(\mathbf{V}\) platí \(\mathbf{V}^{-1} = \mathbf{V}^T\)).</li>
+<li>zpětné složení (pro ortonormální \(\mathbf{V}\) platí \(\mathbf{V}^{-1} = \mathbf{V}^T\)): \[ \mathbf{V}\mathbf{D}\mathbf{V}^T \approx \begin{pmatrix}3&3\\3&7\end{pmatrix}\ \checkmark \]</li>
 </ul>
 <p>Pro PCA: vlastní vektor největšího vlastního čísla (0,47; 0,88) udává <b>směr největšího rozptylu</b>; ten nese \(8{,}6/(8{,}6+1{,}4) = 86\) % celkového rozptylu (součet vlastních čísel = stopa matice = 3 + 7 = 10).</p></div>
 
 <h2 id="k08-svd">Singulární rozklad (SVD)</h2>
 <div class="box definice" id="k08-def-svd"><div class="box-t">Definice: singulární rozklad (SVD)</div>
-<p><b>Singulární rozklad</b> libovolné matice \(\mathbf A\) typu \(n\times p\) je její vyjádření ve tvaru \(\mathbf A = \mathbf U\boldsymbol\Sigma\mathbf V^T\), kde \(\mathbf U\) (\(n\times n\)) a \(\mathbf V\) (\(p\times p\)) jsou ortogonální matice a \(\boldsymbol\Sigma\) (\(n\times p\)) má na diagonále nezáporná <b>singulární čísla</b> \(\sigma_1 \ge \sigma_2 \ge \dots \ge 0\) a jinde nuly. Sloupce \(\mathbf U\) jsou <b>levé</b> a sloupce \(\mathbf V\) <b>pravé singulární vektory</b>; platí \(\mathbf A\mathbf v_j = \sigma_j\mathbf u_j\).</p>
+<p><b>Singulární rozklad</b> libovolné matice \(\mathbf A\) typu \(n\times p\) je její vyjádření ve tvaru
+\[ \mathbf A = \mathbf U\boldsymbol\Sigma\mathbf V^T \]
+kde:</p>
+<ul>
+<li>\(\mathbf U\) (\(n\times n\)) a \(\mathbf V\) (\(p\times p\)) jsou ortogonální matice,</li>
+<li>\(\boldsymbol\Sigma\) (\(n\times p\)) má na diagonále nezáporná <b>singulární čísla</b> \(\sigma_1 \ge \sigma_2 \ge \dots \ge 0\) a jinde nuly.</li>
+</ul>
+<p>Sloupce \(\mathbf U\) jsou <b>levé</b> a sloupce \(\mathbf V\) <b>pravé singulární vektory</b>; platí \(\mathbf A\mathbf v_j = \sigma_j\mathbf u_j\).</p>
 <p class="jinak">„spektrální rozklad pro jakoukoli matici, i obdélníkovou“. Každé lineární zobrazení = otočení, natažení podél os o \(\sigma_j\), další otočení. Singulární čísla říkají, jak „silný“ je každý směr.</p></div>
 <div class="box vzorec"><div class="box-t">Singulární rozklad</div>
 \[ \mathbf{A}_{(n\times p)} = \mathbf{U}_{(n\times n)}\;\boldsymbol\Sigma_{(n\times p)}\;\mathbf{V}^T_{(p\times p)} \]
@@ -1954,13 +2018,15 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>Kružnice se vždy změní v elipsu. Pravé singulární vektory \(\mathbf{v}_1, \mathbf{v}_2\) jsou směry, které se zobrazí na hlavní osy elipsy; délky poloos jsou singulární čísla; směry poloos jsou levé singulární vektory. Pro PCA: \(\mathbf{v}\) = směry komponent, \(\sigma\) = „síla“ (rozptyl) v těchto směrech, a protože U a V jsou ortonormální, jde o čistou <b>rotaci os bez zkreslení měřítka</b>.</p></div>
 <div class="box priklad"><div class="box-t">Příklad: \(\mathbf{A} = \begin{pmatrix}2&2\\1&1\end{pmatrix}\)</div>
-<p>Druhý řádek je polovina prvního – matice má hodnost 1. SVD: \(\sigma_1 = \sqrt{10}\), \(\sigma_2 = 0\); \(\mathbf{v}_1 = (1/\sqrt2;\ 1/\sqrt2)\), \(\mathbf{u}_1 = (2/\sqrt5;\ 1/\sqrt5)\). Celou matici tedy popisuje jediný směr (\(\mathbf{A} = \sigma_1\mathbf{u}_1\mathbf{v}_1^T\)) – druhé singulární číslo 0 říká, že ve druhém směru „není nic“. Největší σ ↔ nejdůležitější transformační vektor. Přesně tohle dělá PCA při redukci dimenze: zahodí směry s malým σ.</p></div>
+<p>Druhý řádek je polovina prvního – matice má hodnost 1. SVD:</p>
+\[ \begin{aligned} \sigma_1 &= \sqrt{10},\qquad \sigma_2 = 0 \\ \mathbf{v}_1 &= (1/\sqrt2;\ 1/\sqrt2) \\ \mathbf{u}_1 &= (2/\sqrt5;\ 1/\sqrt5) \end{aligned} \]
+<p>Celou matici tedy popisuje jediný směr, \(\mathbf{A} = \sigma_1\mathbf{u}_1\mathbf{v}_1^T\) – druhé singulární číslo 0 říká, že ve druhém směru „není nic“. Největší σ ↔ nejdůležitější transformační vektor. Přesně tohle dělá PCA při redukci dimenze: zahodí směry s malým σ.</p></div>
 
 <h2 id="k08-vztah">ED vs. SVD: jak spolu souvisí</h2>
 <p>Pro centrovanou datovou matici \(\mathbf{X}\,(n\times p)\):</p>
 <div class="box vzorec"><div class="box-t">Odvození (stačí pochopit logiku)</div>
-\[ \text{ED:}\quad \mathbf{S} = \frac{1}{n-1}\mathbf{X}^T\mathbf{X} = \mathbf{V}\mathbf{D}\mathbf{V}^T \qquad\qquad \text{SVD:}\quad \mathbf{X} = \mathbf{U}\boldsymbol\Sigma\mathbf{V}^T \]
-\[ \frac{1}{n-1}\mathbf{X}^T\mathbf{X} = \frac{1}{n-1}(\mathbf{U}\boldsymbol\Sigma\mathbf{V}^T)^T(\mathbf{U}\boldsymbol\Sigma\mathbf{V}^T) = \frac{1}{n-1}\mathbf{V}\boldsymbol\Sigma\underbrace{\mathbf{U}^T\mathbf{U}}_{=\mathbf{I}}\boldsymbol\Sigma\mathbf{V}^T = \mathbf{V}\,\frac{\boldsymbol\Sigma^2}{n-1}\,\mathbf{V}^T \]
+\[ \begin{aligned} \text{ED:}\quad & \mathbf{S} = \frac{1}{n-1}\mathbf{X}^T\mathbf{X} = \mathbf{V}\mathbf{D}\mathbf{V}^T \\ \text{SVD:}\quad & \mathbf{X} = \mathbf{U}\boldsymbol\Sigma\mathbf{V}^T \end{aligned} \]
+\[ \begin{aligned} \frac{1}{n-1}\mathbf{X}^T\mathbf{X} &= \frac{1}{n-1}(\mathbf{U}\boldsymbol\Sigma\mathbf{V}^T)^T(\mathbf{U}\boldsymbol\Sigma\mathbf{V}^T) \\ &= \frac{1}{n-1}\mathbf{V}\boldsymbol\Sigma\underbrace{\mathbf{U}^T\mathbf{U}}_{=\mathbf{I}}\boldsymbol\Sigma\mathbf{V}^T \\ &= \mathbf{V}\,\frac{\boldsymbol\Sigma^2}{n-1}\,\mathbf{V}^T \end{aligned} \]
 <p>Porovnáním obou vyjádření \(\mathbf{S}\):</p>
 <ul>
 <li><b>pravé singulární vektory \(\mathbf{V}\) matice \(\mathbf{X}\) = vlastní vektory \(\mathbf{X}^T\mathbf{X}\)</b> (a tedy kovarianční matice) = <b>transformační vektory PCA</b> (zátěže);</li>
@@ -1995,7 +2061,12 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 
 <section class="souhrn" id="k08-shrnuti">
 <h2 id="k08-shrnuti-h">Shrnutí</h2>
-<p>Transformační vektory PCA lze získat dvěma rozklady. <b>Spektrální rozklad</b> \(\mathbf{A} = \mathbf{P}\mathbf{D}\mathbf{P}^{-1}\) čtvercové matice hledá směry, které matice jen natáhne (\(\mathbf{A}\mathbf{v} = \lambda\mathbf{v}\)); počítá se přes \(\det(\mathbf{A}-\lambda\mathbf{I}) = 0\) a dosazení vlastních čísel zpět. Pro symetrickou kovarianční matici jsou vlastní vektory ortonormální a dávají směry komponent, vlastní čísla jejich rozptyly. <b>Singulární rozklad</b> \(\mathbf{X} = \mathbf{U}\boldsymbol\Sigma\mathbf{V}^T\) funguje pro libovolnou obdélníkovou matici a geometricky znamená rotaci – škálování – rotaci. Pro centrovaná data platí: pravé singulární vektory = vlastní vektory kovarianční matice, \(\lambda = \sigma^2/(n-1)\), skóre \(= \mathbf{U}\boldsymbol\Sigma\). SVD je přesnější, stabilnější a obvykle rychlejší, protože nepočítá kovarianční matici a používá jen ortogonální operace; ED se používá u malých dat a v kernel PCA.</p>
+<p>Transformační vektory PCA lze získat dvěma rozklady.</p>
+<ul>
+<li><b>Spektrální rozklad</b> čtvercové matice \[ \mathbf{A} = \mathbf{P}\mathbf{D}\mathbf{P}^{-1} \] hledá směry, které matice jen natáhne (\(\mathbf{A}\mathbf{v} = \lambda\mathbf{v}\)); počítá se přes \(\det(\mathbf{A}-\lambda\mathbf{I}) = 0\) a dosazení vlastních čísel zpět. Pro symetrickou kovarianční matici jsou vlastní vektory ortonormální a dávají směry komponent, vlastní čísla jejich rozptyly.</li>
+<li><b>Singulární rozklad</b> \(\mathbf{X} = \mathbf{U}\boldsymbol\Sigma\mathbf{V}^T\) funguje pro libovolnou obdélníkovou matici a geometricky znamená rotaci – škálování – rotaci.</li>
+</ul>
+<p>Pro centrovaná data platí: pravé singulární vektory = vlastní vektory kovarianční matice, \(\lambda = \sigma^2/(n-1)\), skóre \(= \mathbf{U}\boldsymbol\Sigma\). SVD je přesnější, stabilnější a obvykle rychlejší, protože nepočítá kovarianční matici a používá jen ortogonální operace; ED se používá u malých dat a v kernel PCA.</p>
 <div class="takehome"><h3>Take-home messages</h3><ol>
 <li>Vlastní vektor = směr, který matice neotočí; vlastní číslo = kolikrát ho natáhne.</li>
 <li>Postup ED: \(\det(\mathbf A - \lambda\mathbf I) = 0\) → vlastní čísla → dosadit → vlastní vektory → normovat na délku 1.</li>
@@ -2008,13 +2079,19 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <h2 id="k08-otazky">Otázky ke zkoušce</h2>
 <div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
 <details class="q"><summary>Co jsou vlastní čísla a vlastní vektory a jak se počítají?</summary><div>
-<p>Vlastní vektor matice \(\mathbf A\) je nenulový vektor, jehož směr \(\mathbf A\) nezmění, jen ho \(\lambda\)-krát natáhne: \(\mathbf A\mathbf v = \lambda\mathbf v\); \(\lambda\) je vlastní číslo. Výpočet: \((\mathbf A - \lambda\mathbf I)\mathbf v = 0\) má netriviální řešení jen když \(\det(\mathbf A-\lambda\mathbf I) = 0\); kořeny charakteristického mnohočlenu jsou vlastní čísla, dosazením do soustavy získám vlastní vektory a normuji je na délku 1.</p></div></details>
+<p>Vlastní vektor matice \(\mathbf A\) je nenulový vektor, jehož směr \(\mathbf A\) nezmění, jen ho \(\lambda\)-krát natáhne: \(\mathbf A\mathbf v = \lambda\mathbf v\); \(\lambda\) je vlastní číslo. Výpočet: soustava</p>
+\[ (\mathbf A - \lambda\mathbf I)\mathbf v = 0 \]
+<p>má netriviální řešení, jen když</p>
+\[ \det(\mathbf A-\lambda\mathbf I) = 0 \]
+<p>Kořeny charakteristického mnohočlenu jsou vlastní čísla, dosazením do soustavy získám vlastní vektory a normuji je na délku 1.</p></div></details>
 <details class="q"><summary>Spočítejte vlastní čísla matice [[3, 3], [3, 7]].</summary><div>
 <p>\((3-\lambda)(7-\lambda) - 9 = \lambda^2 - 10\lambda + 12 = 0\), diskriminant 52, \(\lambda = (10 \pm \sqrt{52})/2\) → 8,6 a 1,4. Vlastní vektory (0,47; 0,88) a (−0,88; 0,47), jsou kolmé a jednotkové. První směr nese 86 % rozptylu.</p></div></details>
 <details class="q"><summary>Co je SVD a jaký má geometrický význam?</summary><div>
 <p>Rozklad libovolné matice \(\mathbf A = \mathbf U\boldsymbol\Sigma\mathbf V^T\): U a V ortonormální (rotace, příp. zrcadlení), Σ diagonální s nezápornými singulárními čísly (natažení podél os). Každé lineární zobrazení je tedy otočení, natažení a další otočení; jednotkovou kružnici zobrazí na elipsu s poloosami σ.</p></div></details>
 <details class="q"><summary>Jak souvisí SVD datové matice s PCA?</summary><div>
-<p>Pro centrovanou \(\mathbf X = \mathbf U\boldsymbol\Sigma\mathbf V^T\) je \(\mathbf X^T\mathbf X/(n-1) = \mathbf V(\boldsymbol\Sigma^2/(n-1))\mathbf V^T\), což je spektrální rozklad kovarianční matice. Proto pravé singulární vektory = transformační vektory (zátěže) PCA, vlastní čísla = \(\sigma^2/(n-1)\) a komponentní skóre \(\mathbf X\mathbf V = \mathbf U\boldsymbol\Sigma\).</p></div></details>
+<p>Pro centrovanou \(\mathbf X = \mathbf U\boldsymbol\Sigma\mathbf V^T\) je</p>
+\[ \frac{\mathbf X^T\mathbf X}{n-1} = \mathbf V\,\frac{\boldsymbol\Sigma^2}{n-1}\,\mathbf V^T \]
+<p>což je spektrální rozklad kovarianční matice. Proto pravé singulární vektory = transformační vektory (zátěže) PCA, vlastní čísla = \(\sigma^2/(n-1)\) a komponentní skóre \(\mathbf X\mathbf V = \mathbf U\boldsymbol\Sigma\).</p></div></details>
 <details class="q"><summary>Proč je SVD výhodnější než ED kovarianční matice?</summary><div>
 <p>Nepočítá kovarianční matici, takže se neztratí přesnost malých hodnot (při \(\mathbf X^T\mathbf X\) se rozdíly řádů umocní); používá jen ortogonální operace zachovávající délky a úhly → numericky stabilní (i znaménka komponent); je výpočetně efektivnější (\(O(\min(p^2n, n^2p))\) vs. \(O(p^2n + p^3)\)) a vektory jsou vždy normované. ED je v pořádku pro malá data a používá se v kernel PCA, kde je jádrová matice čtvercová a symetrická.</p></div></details>
 
@@ -2070,7 +2147,10 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <tr><td>\(\gamma_{jr}\)</td><td><b>faktorové zátěže</b> – příspěvek faktoru \(r\) do příznaku \(j\); pro standardizovaná data = korelace příznaku s faktorem</td></tr>
 <tr><td>\(\varepsilon_j\)</td><td><b>specifický faktor</b> – vlastní pro každý příznak; jen další zdroj variability (např. chyba měření), korelace nevytváří</td></tr>
 </table>
-<p>Maticově: \(\mathbf{x} - \boldsymbol\mu = \boldsymbol\Gamma\mathbf{F} + \boldsymbol\varepsilon\); pro standardizovaná data \(\mathbf{z} = \boldsymbol\Gamma^*\mathbf{F} + \boldsymbol\varepsilon^*\).</p></div>
+<p>Maticově:</p>
+\[ \mathbf{x} - \boldsymbol\mu = \boldsymbol\Gamma\mathbf{F} + \boldsymbol\varepsilon \]
+<p>Pro standardizovaná data:</p>
+\[ \mathbf{z} = \boldsymbol\Gamma^*\mathbf{F} + \boldsymbol\varepsilon^* \]</div>
 <div class="schema">
 <svg viewBox="0 0 760 260" role="img" aria-label="Diagram modelu faktorové analýzy: dva faktory působí na šest příznaků, každý příznak má vlastní specifický faktor">
   <defs><marker id="k09-ar9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
@@ -2104,9 +2184,13 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <h2 id="k09-komunalita">Model „trochu jinak“: rozklad kovarianční matice a komunalita</h2>
 <p>Z modelu a vlastností parametrů plyne, jak vypadá kovarianční (korelační) matice příznaků:</p>
 <div class="box vzorec"><div class="box-t">Kovarianční struktura</div>
-\[ \mathbf{S} = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi \qquad\qquad \mathbf{P} = \boldsymbol\Gamma^*\boldsymbol\Gamma^{*T} + \boldsymbol\Psi^* \;\text{(korelační)} \]
+\[ \mathbf{S} = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi \]
+<p>a pro korelační matici:</p>
+\[ \mathbf{P} = \boldsymbol\Gamma^*\boldsymbol\Gamma^{*T} + \boldsymbol\Psi^* \]
 <p>Pro rozptyl jednoho příznaku (diagonála):</p>
-\[ s_j^2 = \underbrace{\sum_{r=1}^{R}\gamma_{jr}^2}_{h_j^2\ \text{komunalita}} + \underbrace{\psi_j}_{\text{specifický rozptyl}} \qquad\xrightarrow{\text{standardizovaná data}}\qquad 1 = h_j^2 + \psi_j \]
+\[ s_j^2 = \underbrace{\sum_{r=1}^{R}\gamma_{jr}^2}_{h_j^2\ \text{komunalita}} + \underbrace{\psi_j}_{\text{specifický rozptyl}} \]
+<p>Pro standardizovaná data je rozptyl každého příznaku 1:</p>
+\[ 1 = h_j^2 + \psi_j \]
 <table class="vars">
 <tr><td>\(\boldsymbol\Gamma\boldsymbol\Gamma^T\)</td><td>část kovariancí vysvětlená společnými faktory – <b>mimo diagonálu je celá korelační struktura</b></td></tr>
 <tr><td>\(\boldsymbol\Psi\)</td><td>diagonální matice specifických rozptylů – přispívá jen na diagonálu</td></tr>
@@ -2131,7 +2215,8 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <h3>Odhad pomocí PCA</h3>
 <p>Z PCA korelační matice máme vlastní vektory \(\mathbf{V}\) a vlastní čísla \(\boldsymbol\Lambda\). Data lze zpětně rekonstruovat z hlavních komponent. Rozdělíme komponenty na \(R\) nejdůležitějších (→ společné faktory) a zbylých \(p-R\) (→ specifické faktory):</p>
 <div class="box vzorec"><div class="box-t">Výsledek</div>
-\[ \hat{\boldsymbol\Gamma} = \mathbf{V}_1\boldsymbol\Lambda_1^{1/2} \qquad\text{(faktorové zátěže = komponentní zátěže vážené odmocninou vlastních čísel)} \]
+\[ \hat{\boldsymbol\Gamma} = \mathbf{V}_1\boldsymbol\Lambda_1^{1/2} \]
+<p>Faktorové zátěže = komponentní zátěže vážené odmocninou vlastních čísel.</p>
 <table class="vars">
 <tr><td>\(\mathbf{V}_1\)</td><td>prvních \(R\) vlastních vektorů korelační matice</td></tr>
 <tr><td>\(\boldsymbol\Lambda_1^{1/2}\)</td><td>odmocniny prvních \(R\) vlastních čísel – převedou směr na korelaci příznak–faktor</td></tr>
@@ -2165,8 +2250,10 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 
 <h2 id="k09-rotace">Nejednoznačnost řešení a rotace faktorů</h2>
 <div class="box intuice"><div class="box-t">Klíčový problém FA</div>
-<p>Vezmi libovolnou ortogonální matici \(\mathbf{T}\) (rotaci, \(\mathbf{T}\mathbf{T}^T = \mathbf{I}\)) a definuj nové zátěže \(\boldsymbol\Gamma_1 = \boldsymbol\Gamma\mathbf{T}\) a nové faktory \(\mathbf{F}_1 = \mathbf{T}^T\mathbf{F}\). Pak</p>
-\[ \boldsymbol\Gamma_1\boldsymbol\Gamma_1^T + \boldsymbol\Psi = \boldsymbol\Gamma\mathbf{T}\mathbf{T}^T\boldsymbol\Gamma^T + \boldsymbol\Psi = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi = \mathbf{S} \]
+<p>Vezmi libovolnou ortogonální matici \(\mathbf{T}\) (rotaci, \(\mathbf{T}\mathbf{T}^T = \mathbf{I}\)) a definuj nové zátěže a nové faktory:</p>
+\[ \boldsymbol\Gamma_1 = \boldsymbol\Gamma\mathbf{T},\qquad \mathbf{F}_1 = \mathbf{T}^T\mathbf{F} \]
+<p>Pak</p>
+\[ \begin{aligned} \boldsymbol\Gamma_1\boldsymbol\Gamma_1^T + \boldsymbol\Psi &= \boldsymbol\Gamma\mathbf{T}\mathbf{T}^T\boldsymbol\Gamma^T + \boldsymbol\Psi \\ &= \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi = \mathbf{S} \end{aligned} \]
 <p>Různé zátěže generují <b>stejnou</b> kovarianční matici – modely jsou z dat <b>nerozlišitelné</b>. \(\mathbf{S}\) lze vyjádřit nekonečně mnoha modely. Která \(\mathbf{T}\) je „správná“? Geometricky \(\mathbf{T}\) jen <b>otočí faktorové osy</b>.</p></div>
 <div class="box definice" id="k09-def-rotace"><div class="box-t">Definice: rotace faktorů</div>
 <p><b>Rotace faktorů</b> je transformace matice zátěží \(\boldsymbol\Gamma \to \boldsymbol\Gamma\mathbf T\) (a faktorů \(\mathbf F \to \mathbf T^{-1}\mathbf F\)), která nemění vysvětlenou kovarianční strukturu ani komunality, ale mění zátěže tak, aby se faktory daly snáz interpretovat. <b>Ortogonální</b> rotace (\(\mathbf T\) ortogonální) zachovává nekorelovanost faktorů, <b>šikmá</b> (oblique) připouští korelované faktory.</p>
@@ -2264,7 +2351,10 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <details class="q"><summary>Jaký je princip a cíl faktorové analýzy?</summary><div>
 <p>FA předpokládá, že pozorované korelace mezi příznaky vznikají působením malého počtu neměřitelných společných faktorů. Cílem je odhalit strukturu vztahů mezi příznaky, vysvětlit jejich korelace a získat interpretovatelné latentní proměnné; redukce dimenze je vedlejší. Podmínky: korelované příznaky, ideálně vícerozměrná normalita, žádné odlehlé hodnoty.</p></div></details>
 <details class="q"><summary>Napište a vysvětlete model FA.</summary><div>
-<p>\(x_j - \mu_j = \gamma_{j1}F_1 + \dots + \gamma_{jR}F_R + \varepsilon_j\). Společné faktory \(F\) (nezávislé, průměr 0, rozptyl 1) působí na všechny příznaky a vytvářejí mezi nimi korelace; zátěže \(\gamma\) říkají, jak silně (pro standardizovaná data = korelace příznak–faktor); specifický faktor \(\varepsilon_j\) je vlastní pro každý příznak (chyba měření), nezávislý, s rozptylem \(\psi_j\). Maticově \(\mathbf x - \boldsymbol\mu = \boldsymbol\Gamma\mathbf F + \boldsymbol\varepsilon\), a z toho \(\mathbf S = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi\).</p></div></details>
+<p>Model pro každý příznak:</p>
+\[ x_j - \mu_j = \gamma_{j1}F_1 + \dots + \gamma_{jR}F_R + \varepsilon_j \]
+<p>Společné faktory \(F\) (nezávislé, průměr 0, rozptyl 1) působí na všechny příznaky a vytvářejí mezi nimi korelace; zátěže \(\gamma\) říkají, jak silně (pro standardizovaná data = korelace příznak–faktor); specifický faktor \(\varepsilon_j\) je vlastní pro každý příznak (chyba měření), nezávislý, s rozptylem \(\psi_j\). Maticově a z toho plynoucí rozklad kovarianční matice:</p>
+\[ \mathbf x - \boldsymbol\mu = \boldsymbol\Gamma\mathbf F + \boldsymbol\varepsilon \quad\Rightarrow\quad \mathbf S = \boldsymbol\Gamma\boldsymbol\Gamma^T + \boldsymbol\Psi \]</div></details>
 <details class="q"><summary>Co je komunalita?</summary><div>
 <p>Část rozptylu příznaku vysvětlená společnými faktory: \(h_j^2 = \sum_r \gamma_{jr}^2\). Pro standardizované příznaky \(1 = h_j^2 + \psi_j\). Vysoká komunalita = příznak dobře popsaný faktory; ale nesnažíme se o komunality blízké 1, vedlo by to k triviálním faktorům.</p></div></details>
 <details class="q"><summary>Proč se v FA rotují faktory a jak funguje varimax?</summary><div>
@@ -2331,7 +2421,8 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p><b>Podmíněná pravděpodobnost</b> \(p_{j|i}\) je pravděpodobnost, že by bod \(\mathbf x_i\) zvolil bod \(\mathbf x_j\) za svého souseda, kdyby sousedy vybíral náhodně s pravděpodobností úměrnou Gaussově hustotě se středem v \(\mathbf x_i\) a směrodatnou odchylkou \(\sigma_i\). Pro každý bod \(i\) tvoří hodnoty \(p_{j|i}\) rozdělení pravděpodobnosti \(P_i\) (součet přes \(j\) je 1).</p>
 <p class="jinak">vzdálenost převedená na „hlasy“: každý bod rozdělí 100 % svých hlasů mezi ostatní body, nejvíc dá nejbližším, vzdáleným skoro nic.</p></div>
 <div class="box vzorec"><div class="box-t">Podmíněná pravděpodobnost ve vysoké dimenzi</div>
-\[ p_{j|i} = \frac{\exp\!\left(-\lVert\mathbf{x}_i-\mathbf{x}_j\rVert^2 / 2\sigma_i^2\right)}{\sum_{k\ne i}\exp\!\left(-\lVert\mathbf{x}_i-\mathbf{x}_k\rVert^2 / 2\sigma_i^2\right)}, \qquad p_{i|i} = 0,\quad \sum_j p_{j|i} = 1 \]
+\[ p_{j|i} = \frac{\exp\!\left(-\lVert\mathbf{x}_i-\mathbf{x}_j\rVert^2 / 2\sigma_i^2\right)}{\sum_{k\ne i}\exp\!\left(-\lVert\mathbf{x}_i-\mathbf{x}_k\rVert^2 / 2\sigma_i^2\right)} \]
+\[ p_{i|i} = 0,\qquad \sum_j p_{j|i} = 1 \]
 <table class="vars">
 <tr><td>\(p_{j|i}\)</td><td>pravděpodobnost, že si bod \(i\) „vybere“ bod \(j\) za souseda, pokud sousedy vybírá úměrně Gaussově křivce se středem v \(\mathbf{x}_i\)</td></tr>
 <tr><td>\(\lVert\mathbf{x}_i-\mathbf{x}_j\rVert\)</td><td>eukleidovská vzdálenost (validní pro blízké okolí)</td></tr>
@@ -2350,7 +2441,11 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p><b>Perplexita</b> rozdělení \(P_i\) je \(2^{H(P_i)}\). V t-SNE je to hyperparametr: pro každý bod se \(\sigma_i\) nastaví tak, aby perplexita jeho rozdělení sousedů byla rovna zvolené hodnotě.</p>
 <p class="jinak">„efektivní počet sousedů“, se kterými bod počítá. Perplexita 30 ≈ každý bod bere v úvahu zhruba 30 nejbližších sousedů, ať leží v husté, nebo řídké oblasti.</p></div>
 <div class="box priklad"><div class="box-t">Příklad: perplexita jako počet sousedů</div>
-<p>Bod dává pravděpodobnost 0,25 čtyřem sousedům a ostatním 0: \(H = -4\cdot 0{,}25\log_2 0{,}25 = 2\) bity, Perp \(= 2^2 = 4\) – přesně počet sousedů. Rozdělení 0,5; 0,25; 0,25: \(H = 0{,}5 + 0{,}5 + 0{,}5 = 1{,}5\), Perp \(= 2^{1{,}5} \approx 2{,}8\) – „necelí tři“ sousedé, protože jeden dominuje.</p></div>
+<p>Bod dává pravděpodobnost 0,25 čtyřem sousedům a ostatním 0:</p>
+\[ \begin{aligned} H &= -4\cdot 0{,}25\log_2 0{,}25 = 2\ \text{bity} \\ \text{Perp} &= 2^2 = 4 \end{aligned} \]
+<p>– přesně počet sousedů. Rozdělení 0,5; 0,25; 0,25:</p>
+\[ \begin{aligned} H &= 0{,}5\cdot1 + 0{,}25\cdot2 + 0{,}25\cdot2 = 1{,}5 \\ \text{Perp} &= 2^{1{,}5} \approx 2{,}8 \end{aligned} \]
+<p>– „necelí tři“ sousedé, protože jeden dominuje.</p></div>
 <div class="box vzorec"><div class="box-t">Perplexita</div>
 \[ \mathrm{Perp}(P_i) = 2^{H(P_i)}, \qquad H(P_i) = -\sum_j p_{j|i}\log_2 p_{j|i} \]
 <table class="vars">
@@ -2400,7 +2495,8 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <div class="box definice" id="k10-def-gradient"><div class="box-t">Definice: gradientní sestup</div>
 <p><b>Gradientní sestup</b> je iterační metoda hledání minima funkce: v každém kroku se parametry posunou o malý krok (\(\mu\), krok učení) proti směru <b>gradientu</b> – vektoru parciálních derivací, který ukazuje směr nejrychlejšího růstu funkce.</p>
 <p class="jinak">„sestup z kopce v mlze“: rozhlédnu se, kudy to nejvíc klesá, udělám krok tím směrem a opakuji. U funkce, která není <b>konvexní</b> (nemá tvar jediné mísy), můžu skončit v lokálním dolíku, který není nejhlubší – proto je t-SNE citlivé na start.</p></div>
-\[ \frac{\partial C}{\partial\mathbf{y}_i} = 4\sum_j (p_{ij} - q_{ij})(\mathbf{y}_i - \mathbf{y}_j)\left(1 + \lVert\mathbf{y}_i - \mathbf{y}_j\rVert^2\right)^{-1}, \qquad \mathbf{y}_i^{\text{nový}} = \mathbf{y}_i^{\text{starý}} - \mu\,\frac{\partial C}{\partial\mathbf{y}_i} \]
+\[ \frac{\partial C}{\partial\mathbf{y}_i} = 4\sum_j (p_{ij} - q_{ij})\,\frac{\mathbf{y}_i - \mathbf{y}_j}{1 + \lVert\mathbf{y}_i - \mathbf{y}_j\rVert^2} \]
+\[ \mathbf{y}_i^{\text{nový}} = \mathbf{y}_i^{\text{starý}} - \mu\,\frac{\partial C}{\partial\mathbf{y}_i} \]
 <p>Každý bod se v každé iteraci posune proti gradientu (\(\mu\) = krok učení). Vzorec se dá číst jako soustava <b>pružin</b> mezi \(\mathbf{y}_i\) a ostatními body:</p>
 <ul>
 <li>\(p_{ij} &gt; q_{ij}\) (v mapě jsou chybně daleko, ač jsou sousedé) → pružina <b>přitahuje</b>;</li>
@@ -2581,7 +2677,8 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p>Při rychlém poklesu váhy by vzniklo hodně bodů bez spojení (pravděpodobnost ≈ 0). <b>Řešení:</b> každý bod musí být spojen <b>alespoň se svým nejbližším sousedem</b>: do vzdálenosti nejbližšího souseda je pásmo „jisté“ (váha 1), dál „neurčité“ s klesající pravděpodobností.</p>
 <p><b>Bonus:</b> omezení na okolí řeší <b>prokletí dimenzionality</b> – ve vysoké dimenzi jsou vzdálenosti velmi podobné (k nejbližšímu bodu 5, ke dvacátému také ≈ 5). Odečtením vzdálenosti k nejbližšímu sousedovi a prací jen v malém okolí jsou rozdíly zachyceny věrohodněji a v mapě je vidět lokální struktura.</p></div>
 <div class="box vzorec"><div class="box-t">Váha hrany z pohledu bodu i</div>
-\[ w_{i\to j} = \exp\!\left(-\frac{d(\mathbf{x}_i,\mathbf{x}_j) - \rho_i}{\sigma_i}\right) \quad\text{pro } k \text{ nejbližších sousedů } j \]
+\[ w_{i\to j} = \exp\!\left(-\frac{d(\mathbf{x}_i,\mathbf{x}_j) - \rho_i}{\sigma_i}\right) \]
+<p>pro \(k\) nejbližších sousedů \(j\).</p>
 <table class="vars">
 <tr><td>\(\rho_i\)</td><td>vzdálenost k nejbližšímu sousedovi → ten má váhu 1 (problém 3)</td></tr>
 <tr><td>\(\sigma_i\)</td><td>lokální měřítko – zvolené tak, aby součet vah přes \(k\) sousedů byl \(\log_2 k\) (obdoba perplexity v t-SNE)</td></tr>
@@ -2603,7 +2700,7 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p><b>Křížová entropie</b> mezi dvěma fuzzy množinami hran (vahami \(w_h\) ve vysoké a \(w_l\) v nízké dimenzi) je součet přes všechny hrany dvou členů: \(w_h\log(w_h/w_l)\), který je velký, když hrana ve vysoké dimenzi existuje, ale v mapě ne, a \((1-w_h)\log\big((1-w_h)/(1-w_l)\big)\), který je velký, když hrana ve vysoké dimenzi neexistuje, ale v mapě ano.</p>
 <p class="jinak">„trestáme obě chyby“: roztržení sousedů i slepení nesousedů. KL divergence v t-SNE obsahuje jen obdobu prvního členu – proto UMAP lépe drží rozestupy mezi shluky.</p></div>
 <div class="box vzorec"><div class="box-t">Kriteriální funkce: křížová entropie</div>
-\[ C = \sum_{e\in E}\Big[\,\underbrace{w_h(e)\log\frac{w_h(e)}{w_l(e)}}_{\text{přitahování}} + \underbrace{(1-w_h(e))\log\frac{1-w_h(e)}{1-w_l(e)}}_{\text{odpuzování}}\,\Big] \]
+\[ \begin{aligned} C = \sum_{e\in E}\Big[\,&\underbrace{w_h(e)\log\frac{w_h(e)}{w_l(e)}}_{\text{přitahování}} \\ &+ \underbrace{(1-w_h(e))\log\frac{1-w_h(e)}{1-w_l(e)}}_{\text{odpuzování}}\,\Big] \end{aligned} \]
 <table class="vars">
 <tr><td>\(E\)</td><td>množina všech možných hran (1-simplexů)</td></tr>
 <tr><td>\(w_h(e)\)</td><td>váha hrany ve vysoké dimenzi (pravděpodobnost, že hrana existuje)</td></tr>
@@ -2932,7 +3029,9 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p><b>Vícerozměrné normální rozdělení</b> \(N_p(\boldsymbol\mu, \boldsymbol\Sigma)\) je rozdělení \(p\)-rozměrného náhodného vektoru, jehož hustota je dána vzorcem níže a je plně určena středním vektorem \(\boldsymbol\mu\) a kovarianční maticí \(\boldsymbol\Sigma\). Ekvivalentně: vektor má vícerozměrné normální rozdělení, právě když <b>každá</b> lineární kombinace jeho složek má jednorozměrné normální rozdělení.</p>
 <p class="jinak">„kopec“ (ve 2D zvon nad rovinou), jehož vrchol je v \(\boldsymbol\mu\) a vrstevnice jsou elipsy. Tvar a natočení elips určuje kovarianční matice.</p><p class="slovnik-odkaz"><a href="#k02-def-mvn">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="k13-s-mahalanobis"><div class="box-t">Mahalanobisova vzdálenost</div>
-<p><b>Mahalanobisova vzdálenost</b> bodu \(\mathbf x\) od středu \(\bar{\mathbf x}\) rozdělení s kovarianční maticí \(\mathbf S\) je \(D = \sqrt{(\mathbf{x}-\bar{\mathbf{x}})^T\mathbf{S}^{-1}(\mathbf{x}-\bar{\mathbf{x}})}\). Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi.</p>
+<p><b>Mahalanobisova vzdálenost</b> bodu \(\mathbf x\) od středu \(\bar{\mathbf x}\) rozdělení s kovarianční maticí \(\mathbf S\) je
+\[ D = \sqrt{(\mathbf{x}-\bar{\mathbf{x}})^T\mathbf{S}^{-1}(\mathbf{x}-\bar{\mathbf{x}})} \]
+Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi.</p>
 <p class="jinak">vzdálenost měřená „v jednotkách typické odchylky v daném směru“. Odpovídá na otázku: jak neobvyklý je tento bod vzhledem k tvaru mraku? Pro jednu proměnnou je to prostě \(|z|\) (z-skóre).</p><p class="slovnik-odkaz"><a href="#k02-def-mahalanobis">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="k13-s-test"><div class="box-t">statistický test, nulová hypotéza, p-hodnota</div>
 <p><b>Statistický test</b> je postup, který na základě dat rozhoduje mezi <b>nulovou hypotézou</b> \(H_0\) (výchozí tvrzení „nic se neděje“: žádný rozdíl, data jsou normální…) a <b>alternativní hypotézou</b> \(H_1\). <b>p-hodnota</b> je pravděpodobnost, že bychom za platnosti \(H_0\) dostali data stejně nebo ještě víc odporující \(H_0\), než jsou ta naše. Je-li p-hodnota menší než zvolená <b>hladina významnosti</b> \(\alpha\) (obvykle 0,05), \(H_0\) zamítáme.</p>
@@ -2987,7 +3086,9 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p><b>Únik informace</b> nastane, když se do učení modelu (včetně předzpracování) dostane informace z dat, na kterých má být model teprve testován, nebo informace, kterou by model v reálném nasazení neměl k dispozici.</p>
 <p class="jinak">model „opisuje z řešení“. Na testu pak vypadá lépe, než ve skutečnosti je. Typický nenápadný případ: průměr a \(s\) pro standardizaci (nebo medián pro imputaci) spočítané z celého datasetu včetně testovací části.</p><p class="slovnik-odkaz"><a href="#k03-def-uniku">výklad v kapitole 3 →</a></p></div>
 <div class="box definice" id="k13-s-f1"><div class="box-t">F1 skóre</div>
-<p><b>F1 skóre</b> je harmonický průměr přesnosti (precision – kolik z objektů označených jako pozitivní opravdu pozitivních je) a senzitivity (recall – kolik ze skutečně pozitivních objektů model našel): \(F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision}+\text{recall}}\). Nabývá hodnot 0 až 1.</p>
+<p><b>F1 skóre</b> je harmonický průměr přesnosti (precision – kolik z objektů označených jako pozitivní opravdu pozitivních je) a senzitivity (recall – kolik ze skutečně pozitivních objektů model našel):
+\[ F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision}+\text{recall}} \]
+Nabývá hodnot 0 až 1.</p>
 <p class="jinak">jedno číslo pro kvalitu klasifikátoru, které je vysoké jen tehdy, když model zároveň „moc nepřestřeluje“ (málo falešných poplachů) a „moc nepřehlíží“ (málo zmeškaných případů).</p><p class="slovnik-odkaz"><a href="#k03-def-f1">výklad v kapitole 3 →</a></p></div>
 <div class="box definice" id="k13-s-konvergence"><div class="box-t">konvergence a iterace</div>
 <p><b>Iterační algoritmus</b> hledá řešení postupnými kroky (iteracemi), z nichž každý odhad o něco zlepší. Algoritmus <b>konverguje</b>, když se odhady přestanou měnit (změna klesne pod zvolenou toleranci); počet iterací do té doby vyjadřuje rychlost konvergence.</p>
@@ -3049,7 +3150,12 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p><b>Učení s učitelem</b> (supervised) se učí z dat, u kterých známe správnou odpověď (label, třídu) – cílem je předpovídat ji pro nová data (klasifikace, regrese). <b>Učení bez učitele</b> (unsupervised) správné odpovědi nemá a hledá strukturu v datech samotných (shlukování, redukce dimenze).</p>
 <p class="jinak">s učitelem = učím se z vyřešených příkladů; bez učitele = dostanu hromadu neoznačených dat a sám hledám, co v nich je.</p><p class="slovnik-odkaz"><a href="#k05-def-bez-ucitele">výklad v kapitole 5 →</a></p></div>
 <div class="box definice" id="k13-s-metrika"><div class="box-t">metrika (míra vzdálenosti)</div>
-<p><b>Metrika</b> je funkce \(d(\mathbf a, \mathbf b)\), která každé dvojici objektů přiřadí nezáporné číslo – vzdálenost – a splňuje: \(d(\mathbf a,\mathbf b) = 0\) právě když \(\mathbf a = \mathbf b\); symetrii \(d(\mathbf a,\mathbf b) = d(\mathbf b,\mathbf a)\); trojúhelníkovou nerovnost \(d(\mathbf a,\mathbf c) \le d(\mathbf a,\mathbf b) + d(\mathbf b,\mathbf c)\).</p>
+<p><b>Metrika</b> je funkce \(d(\mathbf a, \mathbf b)\), která každé dvojici objektů přiřadí nezáporné číslo – vzdálenost – a splňuje:</p>
+<ul>
+<li>\(d(\mathbf a,\mathbf b) = 0\) právě když \(\mathbf a = \mathbf b\);</li>
+<li>symetrii \(d(\mathbf a,\mathbf b) = d(\mathbf b,\mathbf a)\);</li>
+<li>trojúhelníkovou nerovnost \(d(\mathbf a,\mathbf c) \le d(\mathbf a,\mathbf b) + d(\mathbf b,\mathbf c)\).</li>
+</ul>
 <p class="jinak">pravidlo, jak číslem vyjádřit „jak moc se dva pacienti liší“. Malá vzdálenost = podobní. Různé metriky chápou podobnost různě (pravítkem, po osách, podle úhlu). Kosinová „vzdálenost“ trojúhelníkovou nerovnost obecně nesplňuje, přesto se jako míra nepodobnosti běžně používá.</p><p class="slovnik-odkaz"><a href="#k05-def-metrika">výklad v kapitole 5 →</a></p></div>
 <div class="box definice" id="k13-s-eukl-manh-kos"><div class="box-t">eukleidovská, manhattanská a kosinová vzdálenost</div>
 <p><b>Eukleidovská vzdálenost</b> je délka úsečky mezi dvěma body: odmocnina ze součtu čtverců rozdílů souřadnic. <b>Manhattanská vzdálenost</b> je součet absolutních rozdílů souřadnic. <b>Kosinová vzdálenost</b> je \(1 - \cos\theta\), kde \(\theta\) je úhel mezi vektory obou objektů (vedených z počátku).</p>
@@ -3150,7 +3256,11 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p><b>Zobrazení</b> \(\varphi\) je nelineární funkce, která každému objektu \(\mathbf x\) z původního \(p\)-rozměrného prostoru přiřadí vektor \(\varphi(\mathbf x)\) v novém prostoru – <b>příznakovém prostoru</b> (feature space), obvykle s mnohem vyšší (i nekonečnou) dimenzí. Jeho souřadnice jsou nelineární funkce původních proměnných (např. \(x_1^2\), \(x_1x_2\)).</p>
 <p class="jinak">k původním příznakům „dopočítám“ nové – mocniny, součiny… V tomto rozšířeném prostoru mohou být původně zamotané skupiny rozdělitelné rovnou nadrovinou.</p><p class="slovnik-odkaz"><a href="#k07-def-priznakovy-prostor">výklad v kapitole 7 →</a></p></div>
 <div class="box definice" id="k13-s-skalarni-soucin"><div class="box-t">skalární součin</div>
-<p><b>Skalární součin</b> dvou vektorů \(\mathbf a, \mathbf b\) je číslo \(\mathbf a^T\mathbf b = a_1b_1 + a_2b_2 + \dots + a_pb_p\). Platí \(\mathbf a^T\mathbf b = \lVert\mathbf a\rVert\,\lVert\mathbf b\rVert\cos\theta\), kde \(\theta\) je úhel mezi vektory.</p>
+<p><b>Skalární součin</b> dvou vektorů \(\mathbf a, \mathbf b\) je číslo
+\[ \mathbf a^T\mathbf b = a_1b_1 + a_2b_2 + \dots + a_pb_p \]
+Platí
+\[ \mathbf a^T\mathbf b = \lVert\mathbf a\rVert\,\lVert\mathbf b\rVert\cos\theta \]
+kde \(\theta\) je úhel mezi vektory.</p>
 <p class="jinak">míra toho, jak moc dva vektory „míří stejným směrem“ (krát jejich délky). Velký kladný = podobný směr, 0 = kolmé, záporný = opačné. Proto ho lze brát jako míru podobnosti objektů.</p><p class="slovnik-odkaz"><a href="#k07-def-skalarni-soucin">výklad v kapitole 7 →</a></p></div>
 <div class="box definice" id="k13-s-jadro"><div class="box-t">jádro (kernel)</div>
 <p><b>Jádro</b> je funkce \(\kappa(\mathbf a, \mathbf b)\) dvou objektů, která je rovna skalárnímu součinu jejich obrazů v příznakovém prostoru: \(\kappa(\mathbf a, \mathbf b) = \varphi(\mathbf a)^T\varphi(\mathbf b)\), přičemž se dá spočítat přímo z původních vektorů \(\mathbf a, \mathbf b\).</p>
@@ -3165,7 +3275,9 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p><b>Polynomiální jádro řádu \(r\)</b> je \(\kappa(\mathbf{a}, \mathbf{b}) = (\mathbf{a}^T\mathbf{b})^r\) (obecněji \((\mathbf a^T\mathbf b + c)^r\)). Odpovídá příznakovému prostoru, jehož souřadnicemi jsou všechny součiny původních proměnných stupně \(r\) (pro \(c &gt; 0\) i nižších stupňů).</p>
 <p class="jinak">umožní metodě „vidět“ kvadratické (nebo kubické…) vztahy a interakce mezi proměnnými – např. hranici ve tvaru elipsy nebo paraboly.</p><p class="slovnik-odkaz"><a href="#k07-def-poly-jadro">výklad v kapitole 7 →</a></p></div>
 <div class="box definice" id="k13-s-rbf"><div class="box-t">RBF (gaussovské) jádro</div>
-<p><b>RBF jádro</b> (radial basis function) je \(\kappa(\mathbf a, \mathbf b) = \exp(-\gamma\lVert\mathbf a - \mathbf b\rVert^2)\), \(\gamma &gt; 0\). Jeho hodnota závisí jen na vzdálenosti objektů: je 1 pro totožné objekty a s rostoucí vzdáleností klesá k 0. Odpovídající příznakový prostor má nekonečnou dimenzi.</p>
+<p><b>RBF jádro</b> (radial basis function) je
+\[ \kappa(\mathbf a, \mathbf b) = \exp(-\gamma\lVert\mathbf a - \mathbf b\rVert^2),\qquad \gamma &gt; 0 \]
+Jeho hodnota závisí jen na vzdálenosti objektů: je 1 pro totožné objekty a s rostoucí vzdáleností klesá k 0. Odpovídající příznakový prostor má nekonečnou dimenzi.</p>
 <p class="jinak">„Gaussova zvonová křivka podobnosti“ kolem každého bodu: blízcí sousedé jsou si podobní, vzdálení skoro vůbec. \(\gamma\) určuje, jak daleko „dosáhne“ – jak široký je zvon.</p><p class="slovnik-odkaz"><a href="#k07-def-rbf">výklad v kapitole 7 →</a></p></div>
 <div class="box definice" id="k13-s-hyperparametr"><div class="box-t">hyperparametr a křížová validace</div>
 <p><b>Hyperparametr</b> je nastavení metody, které se neučí z dat, ale volí ho uživatel předem (typ jádra, \(\gamma\), počet shluků \(K\), perplexita). <b>Křížová validace</b> je postup pro jeho volbu: data se rozdělí na \(k\) částí, model se \(k\)-krát natrénuje na \(k-1\) částech a vyhodnotí na zbývající; vybere se nastavení s nejlepším průměrným výsledkem.</p>
@@ -3175,7 +3287,14 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p><b>Maticový rozklad</b> (dekompozice, faktorizace) je vyjádření matice jako součinu dvou nebo více matic se speciálními vlastnostmi (trojúhelníkové, ortogonální, diagonální).</p>
 <p class="jinak">rozložím složitou matici na „jednoduché stavební díly“, jejichž význam je jasný (otočení, natažení) a se kterými se snadno počítá – podobně jako 60 = 2·2·3·5.</p><p class="slovnik-odkaz"><a href="#k08-def-rozklad">výklad v kapitole 8 →</a></p></div>
 <div class="box definice" id="k13-s-maticove-pojmy"><div class="box-t">základní typy matic</div>
-<p><b>Transponovaná</b> matice \(\mathbf A^T\) vznikne záměnou řádků a sloupců. <b>Symetrická</b> matice splňuje \(\mathbf A = \mathbf A^T\). <b>Diagonální</b> matice má nenulové prvky jen na hlavní diagonále. <b>Jednotková</b> matice \(\mathbf I\) je diagonální s jedničkami na diagonále (\(\mathbf A\mathbf I = \mathbf A\)). <b>Inverzní</b> matice \(\mathbf A^{-1}\) splňuje \(\mathbf A\mathbf A^{-1} = \mathbf I\). <b>Ortogonální</b> matice má ortonormální sloupce, takže \(\mathbf Q^T\mathbf Q = \mathbf I\), tj. \(\mathbf Q^{-1} = \mathbf Q^T\).</p>
+<ul>
+<li><b>Transponovaná</b> matice \(\mathbf A^T\) vznikne záměnou řádků a sloupců.</li>
+<li><b>Symetrická</b> matice splňuje \(\mathbf A = \mathbf A^T\).</li>
+<li><b>Diagonální</b> matice má nenulové prvky jen na hlavní diagonále.</li>
+<li><b>Jednotková</b> matice \(\mathbf I\) je diagonální s jedničkami na diagonále (\(\mathbf A\mathbf I = \mathbf A\)).</li>
+<li><b>Inverzní</b> matice \(\mathbf A^{-1}\) splňuje \(\mathbf A\mathbf A^{-1} = \mathbf I\).</li>
+<li><b>Ortogonální</b> matice má ortonormální sloupce, takže \(\mathbf Q^T\mathbf Q = \mathbf I\), tj. \(\mathbf Q^{-1} = \mathbf Q^T\).</li>
+</ul>
 <p class="jinak">jednotková matice je „jednička“ maticového světa, inverze „dělení“. Ortogonální matice geometricky jen otáčí (či zrcadlí) – nemění délky ani úhly – a její inverzi získáme zadarmo transpozicí.</p><p class="slovnik-odkaz"><a href="#k08-def-maticove-pojmy">výklad v kapitole 8 →</a></p></div>
 <div class="box definice" id="k13-s-determinant-stopa-hodnost"><div class="box-t">determinant, stopa a hodnost matice</div>
 <p><b>Determinant</b> \(\det\mathbf A\) čtvercové matice je číslo, které udává, kolikrát lineární zobrazení \(\mathbf A\) zvětší objem (ve 2D plochu); je roven součinu vlastních čísel a je nulový právě tehdy, když matice nemá inverzi. <b>Stopa</b> je součet prvků na diagonále a je rovna součtu vlastních čísel. <b>Hodnost</b> je maximální počet lineárně nezávislých řádků (sloupců) a je rovna počtu nenulových singulárních čísel.</p>
@@ -3184,7 +3303,14 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p><b>Spektrální rozklad</b> (eigendecomposition) čtvercové matice \(\mathbf A\) je její vyjádření ve tvaru \(\mathbf A = \mathbf P\mathbf D\mathbf P^{-1}\), kde sloupce \(\mathbf P\) jsou vlastní vektory \(\mathbf A\) a \(\mathbf D\) je diagonální matice příslušných vlastních čísel. Pro symetrickou matici je \(\mathbf P\) ortogonální, tedy \(\mathbf A = \mathbf P\mathbf D\mathbf P^T\).</p>
 <p class="jinak">matici rozložím na „otoč do vlastních os – natáhni podél nich – otoč zpět“. Pro kovarianční matici: vlastní osy = hlavní komponenty, natažení = rozptyly.</p><p class="slovnik-odkaz"><a href="#k08-def-ed">výklad v kapitole 8 →</a></p></div>
 <div class="box definice" id="k13-s-svd"><div class="box-t">singulární rozklad (SVD)</div>
-<p><b>Singulární rozklad</b> libovolné matice \(\mathbf A\) typu \(n\times p\) je její vyjádření ve tvaru \(\mathbf A = \mathbf U\boldsymbol\Sigma\mathbf V^T\), kde \(\mathbf U\) (\(n\times n\)) a \(\mathbf V\) (\(p\times p\)) jsou ortogonální matice a \(\boldsymbol\Sigma\) (\(n\times p\)) má na diagonále nezáporná <b>singulární čísla</b> \(\sigma_1 \ge \sigma_2 \ge \dots \ge 0\) a jinde nuly. Sloupce \(\mathbf U\) jsou <b>levé</b> a sloupce \(\mathbf V\) <b>pravé singulární vektory</b>; platí \(\mathbf A\mathbf v_j = \sigma_j\mathbf u_j\).</p>
+<p><b>Singulární rozklad</b> libovolné matice \(\mathbf A\) typu \(n\times p\) je její vyjádření ve tvaru
+\[ \mathbf A = \mathbf U\boldsymbol\Sigma\mathbf V^T \]
+kde:</p>
+<ul>
+<li>\(\mathbf U\) (\(n\times n\)) a \(\mathbf V\) (\(p\times p\)) jsou ortogonální matice,</li>
+<li>\(\boldsymbol\Sigma\) (\(n\times p\)) má na diagonále nezáporná <b>singulární čísla</b> \(\sigma_1 \ge \sigma_2 \ge \dots \ge 0\) a jinde nuly.</li>
+</ul>
+<p>Sloupce \(\mathbf U\) jsou <b>levé</b> a sloupce \(\mathbf V\) <b>pravé singulární vektory</b>; platí \(\mathbf A\mathbf v_j = \sigma_j\mathbf u_j\).</p>
 <p class="jinak">„spektrální rozklad pro jakoukoli matici, i obdélníkovou“. Každé lineární zobrazení = otočení, natažení podél os o \(\sigma_j\), další otočení. Singulární čísla říkají, jak „silný“ je každý směr.</p><p class="slovnik-odkaz"><a href="#k08-def-svd">výklad v kapitole 8 →</a></p></div>
 <div class="box definice" id="k13-s-numericka-stabilita"><div class="box-t">numerická přesnost a stabilita</div>
 <p>Počítač ukládá čísla s omezeným počtem platných číslic (~16 v dvojité přesnosti), takže každá operace přidá malou <b>zaokrouhlovací chybu</b>. Algoritmus je <b>numericky stabilní</b>, pokud se tyto drobné chyby během výpočtu nezesilují a výsledek se od přesného liší jen málo.</p>

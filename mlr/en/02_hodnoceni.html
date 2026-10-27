@@ -69,7 +69,10 @@
 <p>The <b>training set</b> is used to learn the model parameters. The <b>validation set</b> is used to tune hyperparameters, select features, compare models and watch for overfitting. The <b>test set</b> is kept aside until the end and used once – it gives an unbiased estimate of the performance on new data.</p>
 <p class="jinak">the training data are the textbook, the validation data a practice test on which you try different ways of learning, and the test data are the real exam that you must not see beforehand. Whoever tunes on the test “cheats” and gets an overly optimistic number.</p></div>
 <div class="box definice" id="def-riziko"><div class="box-t">Definition: population and empirical risk</div>
-<p>The <b>population (expected) risk</b> \(R(\theta) = \mathbb E_{(\mathbf x, y)\sim P}[L(f_\theta(\mathbf x), y)]\) is the expected loss of the model on future samples from the true (unknown) distribution \(P\). The <b>empirical risk</b> is the average loss on a finite sample of data, e.g. on the training set \(\hat R_{\text{train}}(\theta) = \frac{1}{n}\sum_{i} L(f_\theta(\mathbf x_i), y_i)\).</p>
+<p>The <b>population (expected) risk</b> is the expected loss of the model on future samples from the true (unknown) distribution \(P\):
+\[ R(\theta) = \mathbb E_{(\mathbf x, y)\sim P}[L(f_\theta(\mathbf x), y)] \]
+The <b>empirical risk</b> is the average loss on a finite sample of data, e.g. on the training set:
+\[ \hat R_{\text{train}}(\theta) = \frac{1}{n}\sum_{i} L(f_\theta(\mathbf x_i), y_i) \]</p>
 <p class="jinak">we train by minimizing the empirical risk on the training data, but we care about the population risk. We estimate it by the average loss on a held-out test set: \(\hat R_{\text{test}} \approx R(\theta)\). The whole model development is an optimization of <b>generalization</b>.</p></div>
 <div class="box intuice"><div class="box-t">Two optimization problems in supervised learning</div>
 <p><b>Inner problem – training</b> (SGD, backpropagation…): the parameters \(\theta\) are fitted to the training set, \(\theta^\ast = \arg\min_\theta \hat R_{\text{train}}(\theta)\). <b>Outer problem – model development</b>: the whole pipeline \(P\) (features, preprocessing, model, hyperparameters) is evaluated on the validation set, \(P^\ast = \arg\min_{P\in\mathcal H}\hat R_{\text{val}}(P)\). Test \(\hat R_{\text{test}}(P^\ast)\) – once, at the very end. Procedure: train → validate → tune → repeat; after choosing the final model, test once.</p></div>
@@ -81,7 +84,9 @@
 <div class="box intuice"><div class="box-t">One number never describes the whole model</div><p>For every metric ask: what does it measure – and what does it hide?</p></div>
 <h3>Accuracy and regression errors</h3>
 <div class="box vzorec"><div class="box-t">Basic metrics</div>
-\[ \text{Accuracy} = \frac{\#\{\hat y_i = y_i\}}{n} = \frac{TP + TN}{TP + TN + FP + FN},\qquad \text{MSE} = \frac1n\sum_i e_i^2,\qquad \text{MAE} = \frac1n\sum_i |e_i|,\qquad \text{RMSE} = \sqrt{\text{MSE}} \]
+\[ \text{Accuracy} = \frac{\#\{\hat y_i = y_i\}}{n} = \frac{TP + TN}{TP + TN + FP + FN} \]
+\[ \text{MSE} = \frac1n\sum_i e_i^2,\qquad \text{MAE} = \frac1n\sum_i |e_i| \]
+\[ \text{RMSE} = \sqrt{\text{MSE}} \]
 <table class="vars">
 <tr><td>\(e_i = \hat y_i - y_i\)</td><td>error (residual) of the \(i\)-th prediction</td></tr>
 <tr><td>MSE</td><td>mean of squared errors = \(\frac1n\|\mathbf e\|_2^2\); punishes large errors much more</td></tr>
@@ -92,7 +97,10 @@
 <p>Error rate = 1 − accuracy.</p></div>
 <div class="box priklad"><div class="box-t">By hand (lecture)</div>
 <p>Classification: \(\mathbf y = [1, 0, 1, 2, 0]\), \(\hat{\mathbf y} = [1, 1, 1, 0, 0]\) ⇒ accuracy = 3/5 = 0.6.</p>
-<p>Regression: \(\mathbf y = [3,\ -0.5,\ 2,\ 7,\ 4.2]\), \(\hat{\mathbf y} = [2.5,\ 0,\ 2.1,\ 7.8,\ 3.5]\) ⇒ \(\mathbf e = [-0.5,\ 0.5,\ 0.1,\ 0.8,\ -0.7]\); MSE = 1.64/5 = 0.328; MAE = 2.6/5 = 0.52; RMSE = 0.573; \(R^2 = 0.946\).</p></div>
+<p>Regression – true and predicted values and errors \(e_i = \hat y_i - y_i\):</p>
+\[ \begin{aligned} \mathbf y &= [3,\ -0.5,\ 2,\ 7,\ 4.2] \\ \hat{\mathbf y} &= [2.5,\ 0,\ 2.1,\ 7.8,\ 3.5] \\ \mathbf e &= [-0.5,\ 0.5,\ 0.1,\ 0.8,\ -0.7] \end{aligned} \]
+<p>Metrics:</p>
+\[ \begin{aligned} \text{MSE} &= 1.64/5 = 0.328 \\ \text{MAE} &= 2.6/5 = 0.52 \\ \text{RMSE} &= \sqrt{0.328} = 0.573 \\ R^2 &= 1 - 1.64/30.59 = 0.946 \end{aligned} \]</div>
 <h3>Confusion matrix and the metrics from it</h3>
 <div class="box definice" id="def-matice-zamen"><div class="box-t">Definition: confusion matrix</div>
 <p>The <b>confusion matrix</b> is a table of counts that, for binary classification, cross-tabulates the true and the predicted class: <b>TP</b> (truly positive, predicted positive), <b>FN</b> (positive, predicted negative – type II error), <b>FP</b> (negative, predicted positive – type I error) and <b>TN</b> (negative, predicted negative).</p>
@@ -107,7 +115,9 @@
 <p><b>Sensitivity (recall, TPR)</b> is the share of truly positive samples that the model marked as positive: TP/(TP+FN). <b>Precision (PPV)</b> is the share of samples marked as positive that really are positive: TP/(TP+FP). <b>Specificity</b> is the share of truly negative samples marked as negative: TN/(TN+FP).</p>
 <p class="jinak">recall: “how many of the sick did I find?”; precision: “when I say sick, how often am I right?”; specificity: “how many healthy people did I leave alone?” None of them is enough alone – a model that says “positive” to everyone has sensitivity 1.</p></div>
 <div class="box definice" id="def-f1"><div class="box-t">Definition: F1 score (Dice)</div>
-<p>The <b>F1 score</b> is the harmonic mean of precision and sensitivity: \(F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision} + \text{recall}} = \frac{2TP}{2TP + FP + FN}\). It is identical to the Dice coefficient \(2|X\cap Y|/(|X| + |Y|)\) of the sets of predicted and true positives.</p>
+<p>The <b>F1 score</b> is the harmonic mean of precision and sensitivity:
+\[ F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision} + \text{recall}} = \frac{2TP}{2TP + FP + FN} \]
+It is identical to the Dice coefficient \(2|X\cap Y|/(|X| + |Y|)\) of the sets of predicted and true positives.</p>
 <p class="jinak">one number that is high only when the model both misses little and raises few false alarms. It does not depend on TN, so it is useful when there are few positive samples.</p></div>
 <div class="box priklad"><div class="box-t">By hand (lecture)</div>
 <p>10 samples: TP = 4, FP = 2, FN = 1, TN = 3 ⇒ precision 4/6 = 0.67; recall 4/5 = 0.80; \(F_1 = 8/11 = 0.73\) (accuracy 0.7). Model “always positive” (TP = 5, FP = 5): recall 1.0, but \(F_1 = 10/15 = 0.67\).</p></div>
@@ -115,7 +125,9 @@
 <h3>ROC curve, AUC and choosing the threshold</h3>
 <p>Most classifiers return a <b>score</b> (a measure of confidence) and only a <b>threshold</b> decides the class. What the score is: for logistic regression and networks the output of the sigmoid/softmax, for a random forest the share of trees voting for the class, for k-NN the share of the \(k\) neighbours, for SVM the signed distance from the hyperplane, for naive Bayes the posterior probability. Sometimes the threshold is part of the model (SVM).</p>
 <div class="box definice" id="def-roc"><div class="box-t">Definition: ROC curve</div>
-<p>The <b>ROC curve</b> (receiver operating characteristic) is the curve of points \((\text{FPR}, \text{TPR})\) that we get when we move the decision threshold step by step over all score values; \(\text{TPR} = TP/(TP+FN)\), \(\text{FPR} = FP/(FP+TN) = 1 - \text{specificity}\).</p>
+<p>The <b>ROC curve</b> (receiver operating characteristic) is the curve of points \((\text{FPR}, \text{TPR})\) that we get when we move the decision threshold step by step over all score values:
+\[ \text{TPR} = \frac{TP}{TP+FN} \]
+\[ \text{FPR} = \frac{FP}{FP+TN} = 1 - \text{specificity} \]</p>
 <p class="jinak">the whole classifier in one picture: every threshold is one point, choosing a threshold only picks a point on the curve. High threshold ⇒ almost nothing is positive, point (0, 0); low threshold ⇒ everything positive, (1, 1). A perfect classifier touches (0, 1), a random one lies on the diagonal.</p></div>
 <div class="box postup"><div class="box-t">Building the ROC curve</div>
 <ol><li>Compute the score \(s_i\) of all samples.</li><li>Sort the unique score values and use them as thresholds.</li><li>For each threshold binarize the predictions and compute TPR and FPR.</li><li>Plot the points (FPR, TPR) and connect them.</li></ol></div>
@@ -145,7 +157,9 @@
 <p>A classifier is <b>calibrated</b> if its output can be read as a probability: among samples with \(\hat p = 0.8\) about 80 % are positive (checked by bins in a reliability diagram). The <b>Brier score</b> \(\frac1n\sum_i(\hat p_i - y_i)^2\) is the MSE of the probabilities and does capture calibration.</p>
 <p class="jinak">a monotonic transformation of the score keeps the ranking, ROC and AUC – and at the same time it can destroy the probabilities. AUC does not see calibration; Brier does (in the lecture 0.133 vs. 0.153 for the same AUC).</p></div>
 <div class="box definice" id="def-r2"><div class="box-t">Definition: coefficient of determination R²</div>
-<p>The <b>coefficient of determination</b> \(R^2 = 1 - \frac{\sum_i(y_i - \hat y_i)^2}{\sum_i(y_i - \bar y)^2} = 1 - \frac{\text{SSE}}{\text{SST}}\) says how much better the model is than predicting the mean; \(R^2 \in (-\infty, 1]\).</p>
+<p>The <b>coefficient of determination</b> says how much better the model is than predicting the mean:
+\[ R^2 = 1 - \frac{\sum_i(y_i - \hat y_i)^2}{\sum_i(y_i - \bar y)^2} = 1 - \frac{\text{SSE}}{\text{SST}} \]
+\[ R^2 \in (-\infty, 1] \]</p>
 <p class="jinak">1 = perfect fit, 0 = the model is no better than “always the mean”, negative = it is even worse. The numerator is the sum of squared residuals (SSE), the denominator the total sum of squares (SST).</p></div>
 
 <h3>More classes and more labels</h3>
@@ -226,8 +240,12 @@
 <p>Typical steps: <b>cleaning</b> (missing values, outliers, inconsistent categories), <b>scaling</b>, <b>encoding</b> categories, <b>dimensionality reduction</b>. Implement everything inside a <code>Pipeline</code> and evaluate with cross-validation – then the preprocessing fit happens automatically only on the training folds.</p>
 <h3>Scaling</h3>
 <div class="box vzorec"><div class="box-t">Four kinds of scaling (statistics always from the training data)</div>
-\[ x' = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}}\ \ \text{(standardization)},\qquad x' = \frac{x - \text{med}_{\text{train}}}{\text{IQR}_{\text{train}}}\ \ \text{(robust)} \]
-\[ x' = \frac{x - \min_{\text{train}}}{\max_{\text{train}} - \min_{\text{train}}}\ \ \text{(min–max)},\qquad x' = \operatorname{clip}\!\left(\frac{x - P_{1}}{P_{99} - P_{1}}, 0, 1\right)\ \ \text{(percentile min–max)} \]
+<ul>
+<li>standardization: \[ x' = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}} \]</li>
+<li>robust scaling: \[ x' = \frac{x - \text{med}_{\text{train}}}{\text{IQR}_{\text{train}}} \]</li>
+<li>min–max: \[ x' = \frac{x - \min_{\text{train}}}{\max_{\text{train}} - \min_{\text{train}}} \]</li>
+<li>percentile min–max: \[ x' = \operatorname{clip}\!\left(\frac{x - P_{1}}{P_{99} - P_{1}},\ 0,\ 1\right) \]</li>
+</ul>
 <table class="vars">
 <tr><td>standardization (z-score)</td><td>mean 0, sd 1, keeps the shape of the distribution; the default for linear models, SVM, PCA, networks</td></tr>
 <tr><td>robust</td><td>median and interquartile range instead of \(\mu, \sigma\) – outliers do not shift the scale</td></tr>

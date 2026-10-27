@@ -168,8 +168,11 @@
 <p><b>Normalizace min–max</b> je transformace proměnné, při které od každé hodnoty odečteme minimum proměnné a výsledek vydělíme rozpětím (maximum − minimum): \(x_i' = (x_i - \min)/(\max - \min)\). Výsledná proměnná leží přesně v intervalu \([0, 1]\): nejmenší hodnota dostane 0, největší 1.</p>
 <p class="jinak">každou hodnotu vyjádříme jako „kolik procent cesty od nejmenší k největší hodnotě urazila“. Měřítko určují jen dva body – minimum a maximum – a proto jedna chybná extrémní hodnota posune měřítko pro všechny ostatní.</p></div>
 
-<div class="box vzorec"><div class="box-t">Dva vzorce vedle sebe</div>
-\[ \text{standardizace (z-skóre):}\quad z_i = \frac{x_i - \bar{x}}{s} \qquad\qquad \text{normalizace (min–max):}\quad x_i' = \frac{x_i - \min(x)}{\max(x) - \min(x)} \]
+<div class="box vzorec"><div class="box-t">Standardizace a normalizace</div>
+<p>Standardizace (z-skóre):</p>
+\[ z_i = \frac{x_i - \bar{x}}{s} \]
+<p>Normalizace (min–max):</p>
+\[ x_i' = \frac{x_i - \min(x)}{\max(x) - \min(x)} \]
 <table class="vars">
 <tr><td>\(x_i\)</td><td>původní hodnota \(i\)-tého objektu (např. věk pacienta)</td></tr>
 <tr><td>\(\bar x,\ s\)</td><td>průměr a směrodatná odchylka <b>trénovacích</b> dat dané proměnné – čitatel posune data, aby střed byl v nule; jmenovatel je „smrští/roztáhne“ na jednotkový rozptyl</td></tr>
@@ -226,7 +229,9 @@
 <h3>Experiment z přednášky: detekce stimulace tepů</h3>
 <p>3 příznaky, 158 pacientů trénink, 489 pacientů externí test. F1 = úspěšnost klasifikace, Iters = počet iterací do konvergence.</p>
 <div class="box definice" id="def-f1"><div class="box-t">Definice: F1 skóre</div>
-<p><b>F1 skóre</b> je harmonický průměr přesnosti (precision – kolik z objektů označených jako pozitivní opravdu pozitivních je) a senzitivity (recall – kolik ze skutečně pozitivních objektů model našel): \(F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision}+\text{recall}}\). Nabývá hodnot 0 až 1.</p>
+<p><b>F1 skóre</b> je harmonický průměr přesnosti (precision – kolik z objektů označených jako pozitivní opravdu pozitivních je) a senzitivity (recall – kolik ze skutečně pozitivních objektů model našel):
+\[ F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision}+\text{recall}} \]
+Nabývá hodnot 0 až 1.</p>
 <p class="jinak">jedno číslo pro kvalitu klasifikátoru, které je vysoké jen tehdy, když model zároveň „moc nepřestřeluje“ (málo falešných poplachů) a „moc nepřehlíží“ (málo zmeškaných případů).</p></div>
 <div class="box definice" id="def-konvergence"><div class="box-t">Definice: konvergence a iterace</div>
 <p><b>Iterační algoritmus</b> hledá řešení postupnými kroky (iteracemi), z nichž každý odhad o něco zlepší. Algoritmus <b>konverguje</b>, když se odhady přestanou měnit (změna klesne pod zvolenou toleranci); počet iterací do té doby vyjadřuje rychlost konvergence.</p>

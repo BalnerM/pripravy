@@ -183,6 +183,8 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* tabulka „co znamená která proměnná“ */
 table.vars td:first-child { width: 120px; white-space: nowrap; font-weight: 600; }
+table.compact { font-size: 13.5px; }          /* široká srovnávací tabulka (hodně sloupců): menší písmo, ať se vejde bez posuvníku */
+table.compact th, table.compact td { padding: 6px 7px; }
 
 /* ---------- boxy ---------- */
 .box {
@@ -367,6 +369,7 @@ details.q > div > :last-child { margin-bottom: 0; }
 .katex-display { overflow-x: auto; overflow-y: hidden; padding: 2px 0; max-width: 100%; }
 .katex-display > .katex { white-space: nowrap; }
 .katex { white-space: nowrap; }               /* vzorec v textu se neláme mezi řádky */
+.tablewrap, .schema, .katex-display, table.vars { position: relative; }   /* skrytá MathML kopie vzorce nesmí utéct z posuvného boxu */
 table.vars { display: block; overflow-x: auto; }
 main { overflow-wrap: break-word; }
 .demo svg.sq { max-width: 470px; }

@@ -6,7 +6,9 @@
 <p><b>Neuronová síť</b> je parametrické zobrazení vstupu na výstupní vektor \(\hat{\mathbf y} = f_\theta(\mathbf x)\). <b>Trénování</b> hledá parametry \(\theta\), které minimalizují ztrátu \(L(\mathbf y, f_\theta(\mathbf x))\), gradientním sestupem: \(\theta^{(t+1)} = \theta^{(t)} - \eta\nabla_\theta L\).</p>
 <p class="jinak">velká, pružná funkce s mnoha „knoflíky“ (vahami), které se nastavují stejným gradientním sestupem jako v 1. kapitole. Začátek všeho: Rosenblattův Mark I Perceptron (postaven 1959, veřejně 1960) – síť realizovaná hardwarem.</p></div>
 <div class="box definice" id="def-neuron"><div class="box-t">Definice: umělý neuron</div>
-<p><b>Umělý neuron</b> spočítá vážený součet vstupů minus práh a výsledek pošle aktivační funkcí \(f\): \(\hat y = f\left[\sum_{i=1}^dw_ix_i - \vartheta\right] = f\left[\sum_{i=0}^dw_ix_i\right]\), kde \(x_0 = 1\) a \(w_0 = -\vartheta = b\) (bias). Hodnota \(z = \sum_{i=0}^dw_ix_i\) je <b>vnitřní potenciál</b> (pre-aktivace), \(\hat y\) je <b>aktivace</b> (výstup).</p>
+<p><b>Umělý neuron</b> spočítá vážený součet vstupů minus práh a výsledek pošle aktivační funkcí \(f\):
+\[ \hat y = f\Big[\sum_{i=1}^dw_ix_i - \vartheta\Big] = f\Big[\sum_{i=0}^dw_ix_i\Big] \]
+kde \(x_0 = 1\) a \(w_0 = -\vartheta = b\) (bias). Hodnota \(z = \sum_{i=0}^dw_ix_i\) je <b>vnitřní potenciál</b> (pre-aktivace), \(\hat y\) je <b>aktivace</b> (výstup).</p>
 <p class="jinak">neuron = lineární model z 4. kapitoly + nelinearita na výstupu. Práh \(\vartheta\) se stejným bias trickem změní na obyčejnou váhu u konstantního vstupu 1.</p></div>
 <div class="box definice" id="def-aktivace"><div class="box-t">Definice: aktivační funkce</div>
 <p><b>Aktivační funkce</b> je (obvykle nelineární) funkce \(f\), která převádí vnitřní potenciál neuronu \(z\) na jeho výstup.</p>
@@ -36,19 +38,20 @@
 <tr><td>\(\partial z/\partial w_i = x_i\)</td><td>vstup, který váhu násobí</td></tr>
 </table></div>
 <div class="box priklad"><div class="box-t">Jeden neuron ručně (přednáška)</div>
-<p>\(\mathbf x = (1, 2)\), \(\mathbf w = (0{,}5;\ -0{,}25)\), cíl \(y = 1\), \(L = \frac12(\hat y - y)^2\). Vnitřní potenciál \(z = 1\cdot0{,}5 + 2\cdot(-0{,}25) = 0\).</p>
+<p>Vstup \(\mathbf x = (1, 2)\), váhy \(\mathbf w = (0{,}5;\ -0{,}25)\), cíl \(y = 1\), ztráta \(L = \frac12(\hat y - y)^2\). Vnitřní potenciál:</p>
+\[ z = 1\cdot0{,}5 + 2\cdot(-0{,}25) = 0 \]
 <ul>
-<li><b>Lineární aktivace:</b> \(\hat y = 0\), \(L = 0{,}5\); \(\partial L/\partial w_i = (\hat y - y)\cdot1\cdot x_i = -1\cdot x_i\) ⇒ \(\nabla_{\mathbf w}L = (-1, -2)\).</li>
-<li><b>Sigmoida:</b> \(\hat y = \sigma(0) = 0{,}5\), \(L = 0{,}125\); \(\partial L/\partial w_i = (\hat y - y)\,\hat y(1 - \hat y)\,x_i = (-0{,}5)(0{,}25)x_i\) ⇒ \(\nabla_{\mathbf w}L = (-0{,}125;\ -0{,}25)\).</li>
-<li><b>Jeden krok</b> (sigmoida, \(\eta = 1\)): \(\mathbf w \leftarrow (0{,}625;\ 0)\) ⇒ \(z = 0{,}625\), \(\hat y = 0{,}651\), \(L = 0{,}061\) – ztráta klesla z 0,125 na 0,061.</li>
+<li><b>Lineární aktivace</b> (\(f'(z) = 1\)): \[ \begin{aligned} \hat y &= 0,\qquad L = \tfrac12(0 - 1)^2 = 0{,}5 \\ \partial L/\partial w_i &= (\hat y - y)\cdot1\cdot x_i = -1\cdot x_i \\ \nabla_{\mathbf w}L &= (-1,\ -2) \end{aligned} \]</li>
+<li><b>Sigmoida</b> (\(f'(z) = \hat y(1 - \hat y)\)): \[ \begin{aligned} \hat y &= \sigma(0) = 0{,}5,\qquad L = 0{,}125 \\ \partial L/\partial w_i &= (\hat y - y)\,\hat y(1 - \hat y)\,x_i = (-0{,}5)(0{,}25)\,x_i \\ \nabla_{\mathbf w}L &= (-0{,}125;\ -0{,}25) \end{aligned} \]</li>
+<li><b>Jeden krok</b> (sigmoida, \(\eta = 1\)): \[ \begin{aligned} \mathbf w &\leftarrow (0{,}5;\ -0{,}25) - (-0{,}125;\ -0{,}25) \\ &= (0{,}625;\ 0) \\ z &= 0{,}625,\quad \hat y = 0{,}651,\quad L = 0{,}061 \end{aligned} \] Ztráta klesla z 0,125 na 0,061.</li>
 </ul>
 <p>Stejný vstup, stejná ztráta, ale gradient je 8× menší: chyba se zmenšila na polovinu (−1 → −0,5) a \(f'(z)\) kleslo z 1 na 0,25 (maximum sigmoidy).</p></div>
 <div class="box definice" id="def-backprop"><div class="box-t">Definice: backpropagation (zpětné šíření gradientu)</div>
 <p><b>Backpropagation</b> je výpočet gradientu ztráty vůči všem vahám sítě opakovaným použitím řetízkového pravidla od výstupu ke vstupu: v <b>dopředném průchodu</b> se spočítají a uloží vnitřní potenciály a aktivace všech vrstev, ve <b>zpětném průchodu</b> se gradient vrstvu po vrstvě násobí lokálními derivacemi.</p>
 <p class="jinak">chyba na výstupu se „rozpočítá“ zpět na jednotlivé váhy podle toho, jak moc ke chybě přispěly. Každý vstup napájí každý neuron, takže příspěvky k gradientu vstupu se sčítají.</p></div>
 <div class="box vzorec"><div class="box-t">Dopředný a zpětný průchod obecné sítě (\(\mathbf h_0 = \mathbf x\), bias jako sloupec \(W_k\))</div>
-\[ \text{dopředu } (k = 1\dots K):\quad \mathbf z_k = W_k\mathbf h_{k-1},\quad \mathbf h_k = f(\mathbf z_k),\qquad \mathbf h_K = \hat{\mathbf y} \]
-\[ \text{zpět } (k = K\dots1):\quad \nabla_{\mathbf z_k}L = \nabla_{\mathbf h_k}L\odot f'(\mathbf z_k),\quad \nabla_{W_k}L = \nabla_{\mathbf z_k}L\;\mathbf h_{k-1}^\top,\quad \nabla_{\mathbf h_{k-1}}L = W_k^\top\nabla_{\mathbf z_k}L \]
+\[ \begin{aligned} &\text{dopředu } (k = 1\dots K): \\ &\qquad \mathbf z_k = W_k\mathbf h_{k-1} \\ &\qquad \mathbf h_k = f(\mathbf z_k),\qquad \mathbf h_K = \hat{\mathbf y} \end{aligned} \]
+\[ \begin{aligned} &\text{zpět } (k = K\dots1): \\ &\qquad \nabla_{\mathbf z_k}L = \nabla_{\mathbf h_k}L\odot f'(\mathbf z_k) \\ &\qquad \nabla_{W_k}L = \nabla_{\mathbf z_k}L\;\mathbf h_{k-1}^\top \\ &\qquad \nabla_{\mathbf h_{k-1}}L = W_k^\top\nabla_{\mathbf z_k}L \end{aligned} \]
 \[ \text{update (vanilla SGD)}:\quad W_k^{(t+1)} = W_k^{(t)} - \eta\nabla_{W_k}L \]
 <table class="vars">
 <tr><td>\(W_k\)</td><td>matice vah \(k\)-té vrstvy; \(\nabla_{W_k}L\) má stejný tvar (vnější součin vektoru chyb a vstupů vrstvy)</td></tr>
@@ -57,7 +60,8 @@
 </table></div>
 <h3>Tři cesty k témuž gradientu</h3>
 <div class="box definice" id="def-num-gradient"><div class="box-t">Definice: numerický gradient (centrální diference)</div>
-<p><b>Numerický gradient</b> aproximuje parciální derivaci rozdílem hodnot ztráty po malé změně jedné váhy: \(\frac{\partial L}{\partial w_i} \approx \frac{L(\mathbf w + \varepsilon\mathbf e_i) - L(\mathbf w - \varepsilon\mathbf e_i)}{2\varepsilon}\).</p>
+<p><b>Numerický gradient</b> aproximuje parciální derivaci rozdílem hodnot ztráty po malé změně jedné váhy:
+\[ \frac{\partial L}{\partial w_i} \approx \frac{L(\mathbf w + \varepsilon\mathbf e_i) - L(\mathbf w - \varepsilon\mathbf e_i)}{2\varepsilon} \]</p>
 <p class="jinak">potřebuje jen hodnoty ztráty (funguje i pro „černou skříňku“), ale stojí \(2P\) vyhodnocení pro \(P\) vah a je jen přibližný: velké \(\varepsilon\) = chyba useknutí, malé = zaokrouhlovací chyby a odčítání skoro stejných čísel (ve float64 kolem \(10^{-6}\)–\(10^{-5}\)). Používá se ke <b>kontrole</b> (gradient check) analytického gradientu.</p></div>
 <div class="box definice" id="def-autograd"><div class="box-t">Definice: autograd (automatické derivování v reverzním režimu)</div>
 <p><b>Autograd</b> sestaví z programu výpočetní graf elementárních operací se známými lokálními derivacemi, v dopředném průchodu uloží mezivýsledky a ve zpětném aplikuje řetízkové pravidlo – během několika průchodů tak spočítá přesný gradient vůči všem parametrům (<code>loss.backward()</code> naplní <code>w.grad</code>).</p>
@@ -71,26 +75,40 @@
 <tr><td>použití</td><td>malé \(P\), černé skříňky, gradient check</td><td>malé úlohy, teorie</td><td>velké sítě</td></tr>
 </table></div>
 <div class="box priklad"><div class="box-t">Kontrola (přednáška)</div>
-<p>Sigmoidní neuron, \(\mathbf x = (1, 2)\), \(\mathbf w = (0{,}5;\ 0{,}25)\), \(y = 1\): \(z = 1\), \(L \approx 0{,}03616\). Analyticky \(\nabla_{\mathbf w}L = (\sigma(z) - y)\,\sigma'(z)\,\mathbf x \approx (-0{,}05288;\ -0{,}10575)\); numericky s \(\varepsilon = 10^{-5}\) i autogradem vyjde totéž.</p></div>
+<p>Sigmoidní neuron, \(\mathbf x = (1, 2)\), \(\mathbf w = (0{,}5;\ 0{,}25)\), \(y = 1\):</p>
+\[ z = 1\cdot0{,}5 + 2\cdot0{,}25 = 1,\qquad L \approx 0{,}03616 \]
+<p>Analyticky:</p>
+\[ \nabla_{\mathbf w}L = (\sigma(z) - y)\,\sigma'(z)\,\mathbf x \approx (-0{,}05288;\ -0{,}10575) \]
+<p>Numericky s \(\varepsilon = 10^{-5}\) i autogradem vyjde totéž.</p></div>
 
 <h2 id="optimalizatory">Učicí algoritmy (optimalizátory)</h2>
 <div class="box definice" id="def-sgd"><div class="box-t">Definice: GD, SGD a mini-batch GD</div>
-<p><b>(Dávkový) gradientní sestup</b> počítá gradient z průměrné ztráty přes <b>celou</b> trénovací množinu a váhy aktualizuje jednou za epochu. <b>Stochastický gradientní sestup (SGD)</b> aktualizuje váhy po <b>každém jednom</b> vzorku. <b>Mini-batch GD</b> aktualizuje po každé dávce \(b\) vzorků: \(\theta^{(t+1)} = \theta^{(t)} - \eta\nabla_\theta\frac1b\sum_{i\in B_t}L(y^{(i)}, \hat y^{(i)})\).</p>
+<p><b>(Dávkový) gradientní sestup</b> počítá gradient z průměrné ztráty přes <b>celou</b> trénovací množinu a váhy aktualizuje jednou za epochu. <b>Stochastický gradientní sestup (SGD)</b> aktualizuje váhy po <b>každém jednom</b> vzorku. <b>Mini-batch GD</b> aktualizuje po každé dávce \(B_t\) o \(b\) vzorcích:
+\[ \theta^{(t+1)} = \theta^{(t)} - \eta\,\nabla_\theta\frac1b\sum_{i\in B_t}L(y^{(i)}, \hat y^{(i)}) \]</p>
 <p class="jinak">GD: jeden přesný, ale drahý krok za epochu – pomalé, pro velká data neproveditelné, z lokálního minima neuteče. SGD: mnoho levných, hlučných kroků – rychlejší, šum pomáhá vyskočit z mělkých minim, ale může přestřelit (lék: postupně snižovat \(\eta\); data na začátku každé epochy zamíchat). Mini-batch je kompromis: menší rozptyl kroků než SGD, efektivní paralelizace na GPU – nejpoužívanější varianta (\(b\) od desítek po tisíce podle úlohy a paměti). <b>Epocha</b> = jeden průchod celou trénovací množinou.</p></div>
 <div class="box pozor"><div class="box-t">Problémy obyčejného gradientního sestupu</div>
 <ol><li>Jak zvolit krok učení?</li><li>Stále je potřeba plán (schedule) kroku učení.</li><li>Stejný krok pro všechny parametry?</li><li>Sedlové body a plata – (téměř) nulový gradient, přestože ztráta ještě může klesat.</li><li>Lokální minima.</li></ol></div>
 <div class="box definice" id="def-momentum"><div class="box-t">Definice: momentum a Nesterov (NAG)</div>
-<p><b>Momentum</b> přidá „setrvačnost“: rychlost \(\mathbf u\) akumuluje minulé gradienty, \(\mathbf u^{(t+1)} = \gamma\mathbf u^{(t)} + \eta\mathbf g^{(t)}\), \(\theta^{(t+1)} = \theta^{(t)} - \mathbf u^{(t+1)}\) (typicky \(\gamma = 0{,}9\)). <b>NAG</b> (Nesterov) počítá gradient v bodě, kam nás momentum zrovna nese: \(\mathbf g^{(t)} = \nabla_\theta L(\theta^{(t)} - \gamma\mathbf u^{(t)})\) – „podívá se dopředu“.</p>
+<p><b>Momentum</b> přidá „setrvačnost“: rychlost \(\mathbf u\) akumuluje minulé gradienty (typicky \(\gamma = 0{,}9\)):
+\[ \begin{aligned} \mathbf u^{(t+1)} &= \gamma\mathbf u^{(t)} + \eta\mathbf g^{(t)} \\ \theta^{(t+1)} &= \theta^{(t)} - \mathbf u^{(t+1)} \end{aligned} \]
+<b>NAG</b> (Nesterov) počítá gradient v bodě, kam nás momentum zrovna nese – „podívá se dopředu“:
+\[ \mathbf g^{(t)} = \nabla_\theta L(\theta^{(t)} - \gamma\mathbf u^{(t)}) \]</p>
 <p class="jinak">těžká koule kutálející se z kopce: v konzistentním směru zrychluje, kmitání napříč úzkým údolím se tlumí a přejede mělké jamky (lokální minima).</p></div>
 <div class="box definice" id="def-adaptivni"><div class="box-t">Definice: AdaGrad a RMSprop</div>
-<p><b>AdaGrad</b> dá každému parametru vlastní krok podle součtu čtverců jeho minulých gradientů: \(\mathbf s^{(t+1)} = \mathbf s^{(t)} + (\mathbf g^{(t)})^2\), \(\theta^{(t+1)} = \theta^{(t)} - \frac{\eta}{\sqrt{\mathbf s^{(t+1)}} + \epsilon}\odot\mathbf g^{(t)}\). <b>RMSprop</b> místo součtu používá klouzavý průměr čtverců \(\mathbf s^{(t+1)} = \rho\,\mathbf s^{(t)} + (1 - \rho)(\mathbf g^{(t)})^2\), takže krok neodumře (operace po prvcích, \(\rho = 0{,}9\), \(\epsilon = 10^{-8}\)).</p>
+<p><b>AdaGrad</b> dá každému parametru vlastní krok podle součtu čtverců jeho minulých gradientů:
+\[ \begin{aligned} \mathbf s^{(t+1)} &= \mathbf s^{(t)} + (\mathbf g^{(t)})^2 \\ \theta^{(t+1)} &= \theta^{(t)} - \frac{\eta}{\sqrt{\mathbf s^{(t+1)}} + \epsilon}\odot\mathbf g^{(t)} \end{aligned} \]
+<b>RMSprop</b> místo součtu používá klouzavý průměr čtverců, takže krok neodumře (operace po prvcích, \(\rho = 0{,}9\), \(\epsilon = 10^{-8}\)):
+\[ \mathbf s^{(t+1)} = \rho\,\mathbf s^{(t)} + (1 - \rho)(\mathbf g^{(t)})^2 \]</p>
 <p class="jinak">parametry s velkými gradienty dostanou menší krok, s malými větší – krok je „normalizovaný“ velikostí gradientu. AdaGrad ale součet jen roste, takže krok časem skoro zmizí; RMSprop si pamatuje jen nedávnou historii. Varianty: AdaDelta (\(\eta\) nahrazeno RMS minulých kroků), AdaMax (maximum místo RMS), NAdam (Adam + Nesterov).</p></div>
 <div class="box definice" id="def-adam"><div class="box-t">Definice: Adam</div>
-<p><b>Adam</b> (adaptive moment estimation) kombinuje momentum a RMSprop: udržuje klouzavý průměr gradientů \(\mathbf m\) (první moment) a jejich čtverců \(\mathbf v\) (druhý moment), oba opraví o zkreslení počáteční nulou (bias correction) a krok je \(\theta \leftarrow \theta - \eta\,\hat{\mathbf m}/(\sqrt{\hat{\mathbf v}} + \epsilon)\). Je to dnes nejpoužívanější optimalizátor.</p>
+<p><b>Adam</b> (adaptive moment estimation) kombinuje momentum a RMSprop: udržuje klouzavý průměr gradientů \(\mathbf m\) (první moment) a jejich čtverců \(\mathbf v\) (druhý moment), oba opraví o zkreslení počáteční nulou (bias correction) a krok je
+\[ \theta \leftarrow \theta - \eta\,\frac{\hat{\mathbf m}}{\sqrt{\hat{\mathbf v}} + \epsilon} \]
+Je to dnes nejpoužívanější optimalizátor.</p>
 <p class="jinak">„těžká koule s třením“ (momentum) + vlastní krok pro každý parametr (RMSprop). Nezasekne se u malého gradientu (sedlo), přenese se přes mělká lokální minima a je mnohem méně citlivý na počáteční krok učení. Problémy neřeší úplně – jen je dělá mnohem méně bolestivými.</p></div>
 <div class="box vzorec"><div class="box-t">Adam</div>
-\[ \mathbf m^{(t+1)} = \beta_1\mathbf m^{(t)} + (1 - \beta_1)\mathbf g^{(t)},\qquad \mathbf v^{(t+1)} = \beta_2\mathbf v^{(t)} + (1 - \beta_2)(\mathbf g^{(t)})^2 \]
-\[ \hat{\mathbf m} = \frac{\mathbf m^{(t+1)}}{1 - \beta_1^{t+1}},\qquad \hat{\mathbf v} = \frac{\mathbf v^{(t+1)}}{1 - \beta_2^{t+1}},\qquad \theta^{(t+1)} = \theta^{(t)} - \eta\frac{\hat{\mathbf m}}{\sqrt{\hat{\mathbf v}} + \epsilon} \]
+\[ \begin{aligned} \mathbf m^{(t+1)} &= \beta_1\mathbf m^{(t)} + (1 - \beta_1)\mathbf g^{(t)} \\ \mathbf v^{(t+1)} &= \beta_2\mathbf v^{(t)} + (1 - \beta_2)(\mathbf g^{(t)})^2 \end{aligned} \]
+\[ \hat{\mathbf m} = \frac{\mathbf m^{(t+1)}}{1 - \beta_1^{t+1}},\qquad \hat{\mathbf v} = \frac{\mathbf v^{(t+1)}}{1 - \beta_2^{t+1}} \]
+\[ \theta^{(t+1)} = \theta^{(t)} - \eta\frac{\hat{\mathbf m}}{\sqrt{\hat{\mathbf v}} + \epsilon} \]
 <table class="vars">
 <tr><td>\(\beta_1\)</td><td>útlum prvního momentu (průměru gradientů), výchozí 0,9</td></tr>
 <tr><td>\(\beta_2\)</td><td>útlum druhého momentu (průměru čtverců), výchozí 0,999</td></tr>
@@ -98,7 +116,17 @@
 <tr><td>\(\hat{\mathbf m}, \hat{\mathbf v}\)</td><td>momenty opravené o start z nuly</td></tr>
 </table></div>
 <div class="box priklad"><div class="box-t">Proč korekce zkreslení (přednáška)</div>
-<p>Konstantní gradient \(g\), \(\mathbf m^{(0)} = \mathbf v^{(0)} = 0\). První update: \(m = 0{,}1g\), \(v = 0{,}001g^2\) ⇒ bez korekce \(m/\sqrt v = \frac{0{,}1}{\sqrt{0{,}001}}\operatorname{sign}(g) = 3{,}16\operatorname{sign}(g)\) – krok 3,16× větší, než má být. S korekcí \(\hat m = g\), \(\hat v = g^2\) ⇒ \(\hat m/\sqrt{\hat v} = \operatorname{sign}(g)\), krok přesně \(\eta\). Obecně je nekorigovaný krok \(\frac{1 - \beta_1^{t}}{\sqrt{1 - \beta_2^{t}}}\)-krát větší (\(t\) = pořadí updatu): 3,2× v prvním kroku, 6,5× kolem desátého, ještě 1,3× po tisíci krocích. Bez korekce by tedy první kroky byly <b>příliš velké</b>.</p></div>
+<p>Konstantní gradient \(g\), \(\mathbf m^{(0)} = \mathbf v^{(0)} = 0\), \(\beta_1 = 0{,}9\), \(\beta_2 = 0{,}999\).</p>
+<p>1. První update:</p>
+\[ m = 0{,}1g,\qquad v = 0{,}001g^2 \]
+<p>2. Bez korekce je krok 3,16× větší, než má být:</p>
+\[ \frac{m}{\sqrt v} = \frac{0{,}1}{\sqrt{0{,}001}}\operatorname{sign}(g) = 3{,}16\operatorname{sign}(g) \]
+<p>3. S korekcí je krok přesně \(\eta\):</p>
+\[ \hat m = \frac{0{,}1g}{1 - 0{,}9} = g,\qquad \hat v = \frac{0{,}001g^2}{1 - 0{,}999} = g^2 \]
+\[ \frac{\hat m}{\sqrt{\hat v}} = \operatorname{sign}(g) \]
+<p>4. Obecně je nekorigovaný krok tolikrát větší (\(t\) = pořadí updatu):</p>
+\[ \frac{1 - \beta_1^{t}}{\sqrt{1 - \beta_2^{t}}} \]
+<p>– 3,2× v prvním kroku, 6,5× kolem desátého, ještě 1,3× po tisíci krocích. Bez korekce by tedy první kroky byly <b>příliš velké</b>.</p></div>
 <figure><div class="paper"><img src="figures/fig07_optimizers.png" alt="Trajektorie SGD, momentum, RMSprop a Adam na Bealeově funkci" loading="lazy"></div>
 <figcaption><b>Obr. 7.2</b> Bealeova funkce (minimum v (3; 0,5), plochá dolina, extrémně strmé stěny). Čtyři optimalizátory napsané podle vzorců výše, 3000 kroků ze stejného startu (2,4; −2,8); kroky učení jako v playgroundu přednášky.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
@@ -123,7 +151,10 @@
 <p><b>Vážená křížová entropie</b> pro \(C\) tříd v one-hot kódování je \(L_i = -\sum_{c=1}^C\omega_c\,y_{i,c}\log\hat y_{i,c}\), kde \(y_{i,c}\) je skutečná třída (one-hot), \(\hat y_{i,c}\) předpovězená pravděpodobnost (výstup softmaxu) a \(\omega_c\) váha třídy; celková ztráta \(L = \sum_iL_i\). Pro \(\omega_c = 1\) jde o obyčejnou křížovou entropii.</p>
 <p class="jinak">trestá malou pravděpodobnost přiřazenou správné třídě (\(-\log\)). Váhy \(\omega_c\) zvýší cenu chyb na vzácných třídách – řešení nevyváženosti (2. kapitola). Používá se se softmaxem na výstupu.</p></div>
 <div class="box definice" id="def-tversky"><div class="box-t">Definice: Tverského ztráta</div>
-<p><b>Tverského ztráta</b> pro binární segmentaci je \(T = 1 - \frac{TP}{TP + \beta\,FN + \alpha\,FP}\), kde \(TP = \sum_iy_{i,1}\hat y_{i,1}\), \(FN = \sum_iy_{i,1}\hat y_{i,0}\), \(FP = \sum_iy_{i,0}\hat y_{i,1}\) se počítají „měkce“ z pravděpodobností a \(\alpha, \beta\) váží falešně pozitivní a falešně negativní pixely.</p>
+<p><b>Tverského ztráta</b> pro binární segmentaci je
+\[ T = 1 - \frac{TP}{TP + \beta\,FN + \alpha\,FP} \]
+kde \(\alpha, \beta\) váží falešně pozitivní a falešně negativní pixely a počty se počítají „měkce“ z pravděpodobností:
+\[ \begin{aligned} TP &= \textstyle\sum_iy_{i,1}\hat y_{i,1} \\ FN &= \textstyle\sum_iy_{i,1}\hat y_{i,0} \\ FP &= \textstyle\sum_iy_{i,0}\hat y_{i,1} \end{aligned} \]</p>
 <p class="jinak">\(\alpha = \beta = 0{,}5\) ⇒ \(T = 1 - \text{Dice}\) (1 − F1); \(\alpha = \beta = 1\) ⇒ \(1 - \text{Jaccard}\). Při \(\alpha + \beta = 1\): vyšší \(\beta\) = dražší přehlédnutí (FN) = vyšší recall – např. u malých lézí, které nechceme minout.</p></div>
 <div class="box parametry"><div class="box-t">Parametry: ztrátové funkce</div>
 <div class="tablewrap"><table class="params">
@@ -148,15 +179,18 @@
 <div class="box priklad"><div class="box-t">Dropout ručně (přednáška)</div>
 <p>Pět skrytých neuronů s výstupem 1, \(p = 0{,}5\), maska (1, 0, 0, 1, 1) ⇒ (2, 0, 0, 2, 2), součet 6. Zprůměrováno přes všech \(2^5\) masek je součet přesně 5 – stejně jako se všemi neurony zapnutými bez dělení. Síť 3–5–2 s \(p_0 = 0{,}9\) (vstup) a \(p_1 = 0{,}5\) (skrytá): v průměru je aktivních \(3\cdot0{,}9 + 5\cdot0{,}5 + 2 = 7{,}2\) z deseti neuronů (výstupní vrstva se nevypíná nikdy).</p></div>
 <div class="box definice" id="def-batchnorm"><div class="box-t">Definice: batch normalization</div>
-<p><b>Batch normalization</b> je vrstva, která každý příznak (aktivaci) \(j\) v mini-dávce standardizuje průměrem a rozptylem dávky, \(\tilde x_j^{(i)} = (x_j^{(i)} - \mu_{Bj})/\sqrt{\sigma_{Bj}^2 + \epsilon}\), a pak transformuje naučitelným měřítkem a posunem: \(\tilde h_j^{(i)} = \gamma_j\tilde x_j^{(i)} + \beta_j\). Zároveň udržuje klouzavé průměry statistik celého datasetu \(\mu_{Dj} \leftarrow \rho\mu_{Dj} + (1-\rho)\mu_{Bj}\) (obdobně \(\sigma^2_{Dj}\)), které se použijí při predikci.</p>
+<p><b>Batch normalization</b> je vrstva, která každý příznak (aktivaci) \(j\) v mini-dávce standardizuje průměrem a rozptylem dávky a pak transformuje naučitelným měřítkem a posunem:
+\[ \begin{aligned} \tilde x_j^{(i)} &= \frac{x_j^{(i)} - \mu_{Bj}}{\sqrt{\sigma_{Bj}^2 + \epsilon}} \\ \tilde h_j^{(i)} &= \gamma_j\tilde x_j^{(i)} + \beta_j \end{aligned} \]
+Zároveň udržuje klouzavé průměry statistik celého datasetu, které se použijí při predikci:
+\[ \mu_{Dj} \leftarrow \rho\mu_{Dj} + (1-\rho)\mu_{Bj}\quad\text{(obdobně } \sigma^2_{Dj}) \]</p>
 <p class="jinak">rozdělení aktivací se během učení mění, jak se mění váhy; BN ho v každé dávce „srovná“ na průměr 0 a rozptyl 1. Parametry \(\gamma, \beta\) (učí se backpropagací – BN je diferencovatelná) vrací síti svobodu zvolit si vlastní měřítko, když standardizace není optimální. Při predikci je celá vrstva jen jedno násobení a jedno sčítání na příznak.</p></div>
 <div class="box priklad"><div class="box-t">Batch normalization ručně (přednáška)</div>
 <p>Dávka \(b = 4\) aktivací \(x = (2, 4, 6, 8)\), \(\gamma = 2\), \(\beta = 1\), \(\epsilon\) zanedbáme.</p>
 <ol>
 <li>\(\mu_B = 5\), \(\sigma_B^2 = \frac14(9 + 1 + 1 + 9) = 5\).</li>
-<li>\(\tilde x = \frac{1}{\sqrt5}(-3, -1, 1, 3) = (-1{,}342;\ -0{,}447;\ 0{,}447;\ 1{,}342)\) – průměr 0, rozptyl 1.</li>
+<li>Standardizace (průměr 0, rozptyl 1): \[ \begin{aligned} \tilde x &= \tfrac{1}{\sqrt5}(-3, -1, 1, 3) \\ &= (-1{,}342;\ -0{,}447;\ 0{,}447;\ 1{,}342) \end{aligned} \]</li>
 <li>\(\tilde h = 2\tilde x + 1 = (-1{,}68;\ 0{,}11;\ 1{,}89;\ 3{,}68)\).</li>
-<li>Predikce s \(\mu_D = 5\), \(\sigma_D^2 = 5\): \(\gamma^{\text{pred}} = \gamma/\sqrt{\sigma_D^2} = 2/\sqrt5 = 0{,}894\), \(\beta^{\text{pred}} = \beta - \gamma\mu_D/\sqrt{\sigma_D^2} = 1 - 10/\sqrt5 = -3{,}472\); kontrola \(0{,}894\cdot8 - 3{,}472 = 3{,}68\) ✓.</li>
+<li>Predikce s \(\mu_D = 5\), \(\sigma_D^2 = 5\): \[ \begin{aligned} \gamma^{\text{pred}} &= \gamma/\sqrt{\sigma_D^2} = 2/\sqrt5 = 0{,}894 \\ \beta^{\text{pred}} &= \beta - \gamma\mu_D/\sqrt{\sigma_D^2} \\ &= 1 - 10/\sqrt5 = -3{,}472 \\ \text{kontrola:}\ \ & 0{,}894\cdot8 - 3{,}472 = 3{,}68\ \checkmark \end{aligned} \]</li>
 </ol>
 <p>(Kontrolní otázka: dávka (1, 3, 5, 7) ⇒ \(\mu_B = 4\), \(\sigma_B^2 = 5\), \(\tilde x\) = stejné hodnoty ±1,342; ±0,447.)</p></div>
 <div class="tablewrap"><table>
@@ -212,22 +246,49 @@
 <details class="q"><summary>Porovnejte sigmoidu, tanh, softmax a ReLU. Proč jsou skokové funkce pro gradientní učení nepoužitelné?</summary><div>
 <p>Sigmoida: (0, 1), \(f' = f(1-f)\) max 0,25, výstup binární klasifikace. Tanh: (−1, 1), \(f' = 1 - f^2\) max 1, centrovaná, skryté vrstvy. Softmax: vektor pravděpodobností se součtem 1, výstup víceklasové klasifikace. ReLU: \(\max(0, z)\), derivace 0 nebo 1, nesaturuje, standard skrytých vrstev. Skoková funkce má derivaci skoro všude nulovou (Diracův impulz v nule) – gradient nenese informaci, kam váhy posunout.</p></div></details>
 <details class="q"><summary>Napište tři faktory ∂L/∂wᵢ pro jeden neuron a řekněte, na čem každý závisí.</summary><div>
-<p>\(\frac{\partial L}{\partial w_i} = \frac{\partial L}{\partial\hat y}\cdot\frac{\partial\hat y}{\partial z}\cdot\frac{\partial z}{\partial w_i}\): první závisí na ztrátě (pro \(\frac12(\hat y - y)^2\) je to \(\hat y - y\)), druhý na aktivaci (\(f'(z)\)), třetí je vstup \(x_i\). Příklad: \(\mathbf x = (1,2)\), \(\mathbf w = (0{,}5; -0{,}25)\), \(y = 1\): lineární aktivace dá \(\nabla L = (-1, -2)\), sigmoida \((-0{,}125; -0{,}25)\) – 8× menší (chyba poloviční, \(f'\) = 0,25).</p></div></details>
+<p>Řetízkové pravidlo:</p>
+\[ \frac{\partial L}{\partial w_i} = \frac{\partial L}{\partial\hat y}\cdot\frac{\partial\hat y}{\partial z}\cdot\frac{\partial z}{\partial w_i} \]
+<p>První člen závisí na ztrátě (pro \(\frac12(\hat y - y)^2\) je to \(\hat y - y\)), druhý na aktivaci (\(f'(z)\)), třetí je vstup \(x_i\). Příklad: \(\mathbf x = (1, 2)\), \(\mathbf w = (0{,}5; -0{,}25)\), \(y = 1\):</p>
+<ul>
+<li>lineární aktivace: \(\nabla L = (-1, -2)\),</li>
+<li>sigmoida: \(\nabla L = (-0{,}125; -0{,}25)\) – 8× menší (chyba poloviční, \(f'\) = 0,25).</li>
+</ul></div></details>
 <details class="q"><summary>Popište dopředný a zpětný průchod obecné sítě maticově. Jaký tvar má ∇_{W_k}L a proč?</summary><div>
-<p>Dopředu \(\mathbf z_k = W_k\mathbf h_{k-1}\), \(\mathbf h_k = f(\mathbf z_k)\) (uložit). Zpět \(\nabla_{\mathbf z_k}L = \nabla_{\mathbf h_k}L\odot f'(\mathbf z_k)\), \(\nabla_{W_k}L = \nabla_{\mathbf z_k}L\,\mathbf h_{k-1}^\top\), \(\nabla_{\mathbf h_{k-1}}L = W_k^\top\nabla_{\mathbf z_k}L\). \(\nabla_{W_k}L\) má stejný tvar jako \(W_k\) (počet výstupů × počet vstupů vrstvy) – je to vnější součin vektoru chyb vrstvy a jejích vstupů; jinak by se nedalo provést \(W_k - \eta\nabla_{W_k}L\).</p></div></details>
+<p>Dopředu spočítám a uložím:</p>
+\[ \mathbf z_k = W_k\mathbf h_{k-1},\qquad \mathbf h_k = f(\mathbf z_k) \]
+<p>Zpět:</p>
+\[ \begin{aligned} \nabla_{\mathbf z_k}L &= \nabla_{\mathbf h_k}L\odot f'(\mathbf z_k) \\ \nabla_{W_k}L &= \nabla_{\mathbf z_k}L\,\mathbf h_{k-1}^\top \\ \nabla_{\mathbf h_{k-1}}L &= W_k^\top\nabla_{\mathbf z_k}L \end{aligned} \]
+<p>\(\nabla_{W_k}L\) má stejný tvar jako \(W_k\) (počet výstupů × počet vstupů vrstvy) – je to vnější součin vektoru chyb vrstvy a jejích vstupů; jinak by se nedalo provést \(W_k - \eta\nabla_{W_k}L\).</p></div></details>
 <details class="q"><summary>Jak se liší analytický, numerický a autograd gradient? Proč se gradient kontroluje konečnými diferencemi?</summary><div>
-<p>Analytický: odvozený vzorec, přesný, ale pracné a náchylné k chybám v algebře. Numerický: centrální diference \((L(\mathbf w + \varepsilon\mathbf e_i) - L(\mathbf w - \varepsilon\mathbf e_i))/2\varepsilon\), potřebuje jen hodnoty funkce, ale je přibližný (volba \(\varepsilon\)) a stojí \(2P\) vyhodnocení. Autograd: výpočetní graf + řetízkové pravidlo, přesný, cena pár průchodů nezávisle na \(P\). Konečné diference jsou nezávislá, jednoduchá kontrola, že ručně odvozený či implementovaný gradient nemá chybu.</p></div></details>
+<p>Analytický: odvozený vzorec, přesný, ale pracné a náchylné k chybám v algebře. Numerický: centrální diference</p>
+\[ \frac{L(\mathbf w + \varepsilon\mathbf e_i) - L(\mathbf w - \varepsilon\mathbf e_i)}{2\varepsilon} \]
+<p>potřebuje jen hodnoty funkce, ale je přibližný (volba \(\varepsilon\)) a stojí \(2P\) vyhodnocení. Autograd: výpočetní graf + řetízkové pravidlo, přesný, cena pár průchodů nezávisle na \(P\). Konečné diference jsou nezávislá, jednoduchá kontrola, že ručně odvozený či implementovaný gradient nemá chybu.</p></div></details>
 <details class="q"><summary>Porovnejte GD, SGD a mini-batch GD. Uveďte pět problémů obyčejného gradientního sestupu.</summary><div>
 <p>GD: update jednou za epochu z celé množiny – přesný, ale pomalý, neproveditelný pro velká data. SGD: update po každém vzorku – rychlý, hlučný (šum pomáhá z mělkých minim), může přestřelit. Mini-batch: update po \(b\) vzorcích – menší rozptyl než SGD, paralelizace na GPU, nejpoužívanější. Problémy: volba kroku učení; potřeba plánu kroku učení; stejný krok pro všechny parametry; sedla a plata (nulový gradient); lokální minima.</p></div></details>
 <details class="q"><summary>Napište update Adamu včetně korekce zkreslení. Co dělají β₁, β₂ a ε? Byly by první kroky bez korekce příliš malé, nebo velké?</summary><div>
-<p>\(\mathbf m \leftarrow \beta_1\mathbf m + (1-\beta_1)\mathbf g\), \(\mathbf v \leftarrow \beta_2\mathbf v + (1-\beta_2)\mathbf g^2\), \(\hat{\mathbf m} = \mathbf m/(1-\beta_1^t)\), \(\hat{\mathbf v} = \mathbf v/(1-\beta_2^t)\), \(\theta \leftarrow \theta - \eta\hat{\mathbf m}/(\sqrt{\hat{\mathbf v}} + \epsilon)\). \(\beta_1\) (0,9) = paměť průměru gradientů (momentum), \(\beta_2\) (0,999) = paměť průměru čtverců (normalizace kroku), \(\epsilon\) brání dělení nulou. Bez korekce by byly první kroky příliš <b>velké</b> (3,16× v prvním kroku, 6,5× kolem desátého), protože \(\mathbf v\) startující z nuly je podhodnocené víc než \(\mathbf m\).</p></div></details>
+<p>Kroky Adamu:</p>
+\[ \begin{aligned} \mathbf m &\leftarrow \beta_1\mathbf m + (1-\beta_1)\mathbf g \\ \mathbf v &\leftarrow \beta_2\mathbf v + (1-\beta_2)\mathbf g^2 \\ \hat{\mathbf m} &= \mathbf m/(1-\beta_1^t),\qquad \hat{\mathbf v} = \mathbf v/(1-\beta_2^t) \\ \theta &\leftarrow \theta - \eta\,\hat{\mathbf m}/(\sqrt{\hat{\mathbf v}} + \epsilon) \end{aligned} \]
+<p>\(\beta_1\) (0,9) = paměť průměru gradientů (momentum), \(\beta_2\) (0,999) = paměť průměru čtverců (normalizace kroku), \(\epsilon\) brání dělení nulou. Bez korekce by byly první kroky příliš <b>velké</b> (3,16× v prvním kroku, 6,5× kolem desátého), protože \(\mathbf v\) startující z nuly je podhodnocené víc než \(\mathbf m\).</p></div></details>
 <details class="q"><summary>Proč obyčejný SGD uvízne u sedlového bodu a adaptivní metody ne?</summary><div>
 <p>V sedle je gradient téměř nulový, takže krok \(\eta\mathbf g\) je téměř nulový a SGD stojí. Momentum si nese rychlost z předchozích kroků, a adaptivní metody (RMSprop, Adam) dělí gradient jeho typickou velikostí \(\sqrt{\mathbf v}\) – i malý, ale konzistentní gradient tak dá rozumně velký krok a metoda ze sedla odejde.</p></div></details>
 <details class="q"><summary>Napište váženou křížovou entropii. Jakou aktivaci s ní použít? Co v Tverského ztrátě řídí α a β?</summary><div>
-<p>\(L_i = -\sum_c\omega_cy_{i,c}\log\hat y_{i,c}\) s one-hot \(y\) a pravděpodobnostmi \(\hat y\) – na výstupu softmax (u binární úlohy sigmoida). Tversky \(T = 1 - TP/(TP + \beta FN + \alpha FP)\): \(\alpha\) váží falešně pozitivní, \(\beta\) falešně negativní; \(\alpha = \beta = 0{,}5\) dává 1 − Dice (F1), \(\alpha = \beta = 1\) dává 1 − Jaccard; vyšší \(\beta\) (při \(\alpha + \beta = 1\)) zvyšuje recall.</p></div></details>
+<p>Vážená křížová entropie s one-hot \(y\) a pravděpodobnostmi \(\hat y\) – na výstupu softmax (u binární úlohy sigmoida):</p>
+\[ L_i = -\sum_c\omega_cy_{i,c}\log\hat y_{i,c} \]
+<p>Tverského ztráta:</p>
+\[ T = 1 - \frac{TP}{TP + \beta FN + \alpha FP} \]
+<p>\(\alpha\) váží falešně pozitivní, \(\beta\) falešně negativní; \(\alpha = \beta = 0{,}5\) dává 1 − Dice (F1), \(\alpha = \beta = 1\) dává 1 − Jaccard; vyšší \(\beta\) (při \(\alpha + \beta = 1\)) zvyšuje recall.</p></div></details>
 <details class="q"><summary>Vysvětlete dropout při tréninku a při predikci. Proč se výstupy dělí p?</summary><div>
 <p>Při tréninku se pro každý vzorek každý neuron ponechá s pravděpodobností \(p\) (jinak vypne i se spoji), výstupy ponechaných se vydělí \(p\); gradient a update jen pro aktivní neurony; další vzorek má novou masku. Trénují se tak podsítě se sdílenými vahami – aproximace baggingu \(2^M\) podsítí za cenu jedné sítě. Při predikci jsou aktivní všechny neurony. Dělení \(p\) zajistí stejný očekávaný vstup další vrstvy při tréninku i predikci (5 neuronů s výstupem 1, \(p = 0{,}5\): průměrný součet přes masky 5); bez něj by se při predikci musely výstupy násobit \(p\).</p></div></details>
 <details class="q"><summary>Popište kroky batch normalization. Proč potřebuje γ a β a proč při predikci nic nestojí?</summary><div>
-<p>1) průměr a rozptyl dávky pro každý příznak (a klouzavé průměry pro celý dataset); 2) standardizace \((x - \mu_B)/\sqrt{\sigma_B^2 + \epsilon}\); 3) \(\gamma\tilde x + \beta\); 4) předání dalším vrstvám; 5) učení \(\gamma, \beta\) backpropagací; 6) opakování pro každou dávku; 7) po tréninku přepočet na \(\gamma^{\text{pred}}, \beta^{\text{pred}}\) z klouzavých statistik. \(\gamma, \beta\) vrací síti možnost zvolit jiné měřítko a posun než (0, 1), pokud je to výhodnější. Při predikci je vrstva jen \(\gamma^{\text{pred}}x + \beta^{\text{pred}}\) – jedno násobení a sčítání na příznak.</p></div></details>
+<ol>
+<li>průměr a rozptyl dávky pro každý příznak (a klouzavé průměry pro celý dataset);</li>
+<li>standardizace \((x - \mu_B)/\sqrt{\sigma_B^2 + \epsilon}\);</li>
+<li>měřítko a posun \(\gamma\tilde x + \beta\);</li>
+<li>předání dalším vrstvám;</li>
+<li>učení \(\gamma, \beta\) backpropagací;</li>
+<li>opakování pro každou dávku;</li>
+<li>po tréninku přepočet na \(\gamma^{\text{pred}}, \beta^{\text{pred}}\) z klouzavých statistik.</li>
+</ol>
+<p>\(\gamma, \beta\) vrací síti možnost zvolit jiné měřítko a posun než (0, 1), pokud je to výhodnější. Při predikci je vrstva jen \(\gamma^{\text{pred}}x + \beta^{\text{pred}}\) – jedno násobení a sčítání na příznak.</p></div></details>
 <details class="q"><summary>Jak poznat, že je čas zastavit trénování? Proč je random search obvykle lepší než grid search?</summary><div>
 <p>Validační chyba přestane klesat po daný počet kontrol (trpělivost), učicí křivka se zploští, nebo se rozevírá mezera mezi trénovací a validační chybou (přeučení) – ponechám váhy z nejlepší epochy. Random search při stejném rozpočtu zkusí pro každý hyperparametr pokaždé jinou hodnotu; když na některém skoro nezáleží, mřížka by opakovala stejné hodnoty důležitého parametru, kdežto náhodné body prozkoumají jeho rozsah mnohem hustěji.</p></div></details>

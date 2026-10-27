@@ -3,10 +3,14 @@
 
 <h2 id="model">Jedna rovnice, dvě úlohy</h2>
 <div class="box definice" id="def-linearni-model"><div class="box-t">Definice: lineární model</div>
-<p><b>Lineární model</b> předpovídá pomocí skalárního součinu vektoru vah a vektoru příznaků: \(g(\mathbf x) = \mathbf w^\top\mathbf x + b = w_1x_1 + \dots + w_dx_d + b\). V <b>regresi</b> je predikcí přímo \(\hat y = \mathbf w^\top\mathbf x + b \in \mathbb R\), v <b>binární klasifikaci</b> jeho znaménko \(\hat y = \operatorname{sign}(\mathbf w^\top\mathbf x + b) \in \{-1, +1\}\).</p>
+<p><b>Lineární model</b> předpovídá pomocí skalárního součinu vektoru vah a vektoru příznaků:
+\[ g(\mathbf x) = \mathbf w^\top\mathbf x + b = w_1x_1 + \dots + w_dx_d + b \]
+V <b>regresi</b> je predikcí přímo tato hodnota, v <b>binární klasifikaci</b> její znaménko:
+\[ \begin{aligned} \text{regrese:}\quad & \hat y = \mathbf w^\top\mathbf x + b \in \mathbb R \\ \text{klasifikace:}\quad & \hat y = \operatorname{sign}(\mathbf w^\top\mathbf x + b) \in \{-1, +1\} \end{aligned} \]</p>
 <p class="jinak">každý příznak dostane váhu (důležitost a směr vlivu), výsledky se sečtou. Regrese se ptá „kolik“, klasifikace „na které straně nadroviny“.</p></div>
 <div class="box definice" id="def-bias-trick"><div class="box-t">Definice: bias trick (rozšíření příznaků o jedničku)</div>
-<p><b>Bias trick</b> zapíše afinní funkci \(f(\mathbf x) = \mathbf w^\top\mathbf x + b\) jako čistě lineární tím, že k vektoru příznaků přidá konstantní složku 1 a k vahám posun \(b\): \(\tilde{\mathbf x} = (\mathbf x, 1)\), \(\tilde{\mathbf w} = (\mathbf w, b)\) ⇒ \(f(\mathbf x) = \tilde{\mathbf w}^\top\tilde{\mathbf x}\).</p>
+<p><b>Bias trick</b> zapíše afinní funkci \(f(\mathbf x) = \mathbf w^\top\mathbf x + b\) jako čistě lineární tím, že k vektoru příznaků přidá konstantní složku 1 a k vahám posun \(b\):
+\[ \tilde{\mathbf x} = (\mathbf x, 1),\quad \tilde{\mathbf w} = (\mathbf w, b) \quad\Rightarrow\quad f(\mathbf x) = \tilde{\mathbf w}^\top\tilde{\mathbf x} \]</p>
 <p class="jinak">posun přestane být zvláštní parametr – je to jen další váha u příznaku, který má vždy hodnotu 1. Vzorce i kód jsou pak jednodušší (v datové matici \(X\) přibude sloupec jedniček).</p></div>
 <div class="box definice" id="def-rozhodovaci-hranice"><div class="box-t">Definice: rozhodovací hranice</div>
 <p><b>Rozhodovací hranice</b> lineárního klasifikátoru je množina bodů, kde \(\mathbf w^\top\mathbf x + b = 0\) – v 1D bod (práh), ve 2D přímka, obecně nadrovina. Vektor \(\mathbf w\) je na ni kolmý.</p>
@@ -34,12 +38,20 @@
 
 <h2 id="regrese">Lineární regrese</h2>
 <div class="box priklad"><div class="box-t">Přímka dvěma body (přednáška)</div>
-<p>Model \(y = wx + b\), body (1, 2) a (3, 5). Maticově \(\mathbf y = X\tilde{\mathbf w}\) s \(X = \begin{pmatrix}1 & 1\\ 1 & 3\end{pmatrix}\) (sloupec jedniček + \(x\)), \(\det X = 2\) ⇒ \(\tilde{\mathbf w} = X^{-1}\mathbf y = \frac12\begin{pmatrix}3\cdot2 - 5\\ -2 + 5\end{pmatrix} = \begin{pmatrix}0{,}5\\ 1{,}5\end{pmatrix}\), tj. \(b = 0{,}5\), \(w = 1{,}5\). Pro dva body přímka projde přesně oběma; pro víc bodů to obecně nejde – musíme \(\mathbf y\) a \(X\tilde{\mathbf w}\) udělat „co nejpodobnější“.</p></div>
+<p>Model \(y = wx + b\), body (1, 2) a (3, 5). Maticově \(\mathbf y = X\tilde{\mathbf w}\), kde \(X\) má sloupec jedniček a sloupec \(x\):</p>
+\[ X = \begin{pmatrix}1 & 1\\ 1 & 3\end{pmatrix},\qquad \det X = 1\cdot3 - 1\cdot1 = 2 \]
+<p>Řešení soustavy:</p>
+\[ \begin{aligned} \tilde{\mathbf w} = X^{-1}\mathbf y &= \frac12\begin{pmatrix}3 & -1\\ -1 & 1\end{pmatrix}\begin{pmatrix}2\\ 5\end{pmatrix} \\ &= \frac12\begin{pmatrix}3\cdot2 - 5\\ -2 + 5\end{pmatrix} = \begin{pmatrix}0{,}5\\ 1{,}5\end{pmatrix} \end{aligned} \]
+<p>Tedy \(b = 0{,}5\), \(w = 1{,}5\). Pro dva body přímka projde přesně oběma; pro víc bodů to obecně nejde – musíme \(\mathbf y\) a \(X\tilde{\mathbf w}\) udělat „co nejpodobnější“.</p></div>
 <div class="box definice" id="def-ols"><div class="box-t">Definice: metoda nejmenších čtverců (OLS)</div>
-<p><b>Ordinary least squares</b> je lineární regrese, která volí váhy minimalizující součet čtverců reziduí: \(\min_{\mathbf w}\sum_i(\mathbf x_i^\top\mathbf w - y_i)^2 = \|X\mathbf w - \mathbf y\|_2^2\). Je to konvexní úloha bez omezení s uzavřeným řešením \(\mathbf w^\ast = (X^\top X)^{-1}X^\top\mathbf y = X^\dagger\mathbf y\) (\(X^\dagger\) je Moore–Penroseova pseudoinverze).</p>
+<p><b>Ordinary least squares</b> je lineární regrese, která volí váhy minimalizující součet čtverců reziduí:
+\[ \min_{\mathbf w}\sum_i(\mathbf x_i^\top\mathbf w - y_i)^2 = \min_{\mathbf w}\|X\mathbf w - \mathbf y\|_2^2 \]
+Je to konvexní úloha bez omezení s uzavřeným řešením
+\[ \mathbf w^\ast = (X^\top X)^{-1}X^\top\mathbf y = X^\dagger\mathbf y \]
+(\(X^\dagger\) je Moore–Penroseova pseudoinverze).</p>
 <p class="jinak">„prolož body přímkou (rovinou), od které mají v součtu nejmenší čtvercové svislé vzdálenosti“. Lze řešit i gradientním sestupem, ale vzorec je k dispozici.</p></div>
 <div class="box vzorec"><div class="box-t">Odvození OLS ve třech řádcích</div>
-\[ g(\mathbf w) = \|X\mathbf w - \mathbf y\|_2^2 = (X\mathbf w - \mathbf y)^\top(X\mathbf w - \mathbf y),\qquad \nabla g = 2X^\top(X\mathbf w - \mathbf y) = 0\ \Rightarrow\ X^\top X\,\mathbf w = X^\top\mathbf y \]
+\[ \begin{aligned} g(\mathbf w) &= \|X\mathbf w - \mathbf y\|_2^2 = (X\mathbf w - \mathbf y)^\top(X\mathbf w - \mathbf y) \\ \nabla g &= 2X^\top(X\mathbf w - \mathbf y) = 0 \\ &\Rightarrow\ X^\top X\,\mathbf w = X^\top\mathbf y \end{aligned} \]
 <table class="vars">
 <tr><td>\(X \in \mathbb R^{n\times d}\)</td><td>datová matice (řádky vzorky, včetně sloupce jedniček)</td></tr>
 <tr><td>\(\mathbf y \in \mathbb R^n\)</td><td>cílové hodnoty</td></tr>
@@ -47,8 +59,18 @@
 </table>
 <p>V kódu se soustava řeší (<code>np.linalg.solve</code>), inverze se explicitně nepočítá.</p></div>
 <div class="box priklad"><div class="box-t">OLS ručně: tři body (přednáška)</div>
-<p>Body (0, 1), (1, 2), (2, 2) – žádná přímka neprojde všemi. \(X^\top X = \begin{pmatrix}3 & 3\\ 3 & 5\end{pmatrix}\), \(X^\top\mathbf y = \begin{pmatrix}5\\ 6\end{pmatrix}\) ⇒ \(\tilde{\mathbf w} = \frac16\begin{pmatrix}5 & -3\\ -3 & 3\end{pmatrix}\begin{pmatrix}5\\6\end{pmatrix} = \begin{pmatrix}7/6\\ 1/2\end{pmatrix}\), tedy \(\hat y = \frac76 + \frac12x\). Rezidua \((-\frac16, \frac13, -\frac16)\), součet čtverců \(\frac16\) – nejmenší, jakého může přímka dosáhnout.</p>
-<p><b>Ridge s \(\lambda = 1\)</b> (penalizujeme jen sklon, posun se obvykle nepenalizuje): \(\tilde{\mathbf w} = \left(X^\top X + \begin{pmatrix}0 & 0\\ 0 & 1\end{pmatrix}\right)^{-1}X^\top\mathbf y = \frac19\begin{pmatrix}6 & -3\\ -3 & 3\end{pmatrix}\begin{pmatrix}5\\6\end{pmatrix} = \begin{pmatrix}4/3\\ 1/3\end{pmatrix}\). Sklon se zmenší z \(\frac12\) na \(\frac13\) a posun se přesune, aby přímka zůstala u dat. (Vlastní přepočet pro další \(\lambda\): 10 ⇒ sklon 0,083; 100 ⇒ 0,010 – přímka se blíží vodorovné na úrovni průměru \(\bar y = 5/3\).)</p></div>
+<p>Body (0, 1), (1, 2), (2, 2) – žádná přímka neprojde všemi. Matice \(X\) má sloupec jedniček a sloupec \(x = (0, 1, 2)\), cíl \(\mathbf y = (1, 2, 2)\).</p>
+<p>1. Součiny pro normální rovnice:</p>
+\[ X^\top X = \begin{pmatrix}3 & 3\\ 3 & 5\end{pmatrix},\qquad X^\top\mathbf y = \begin{pmatrix}5\\ 6\end{pmatrix} \]
+<p>2. Inverze (\(\det = 3\cdot5 - 3\cdot3 = 6\)) a řešení:</p>
+\[ \tilde{\mathbf w} = \frac16\begin{pmatrix}5 & -3\\ -3 & 3\end{pmatrix}\begin{pmatrix}5\\6\end{pmatrix} = \begin{pmatrix}7/6\\ 1/2\end{pmatrix} \]
+<p>3. Výsledná přímka a rezidua:</p>
+\[ \begin{aligned} \hat y &= \tfrac76 + \tfrac12x \\ y_i - \hat y_i &= \left(-\tfrac16,\ \tfrac13,\ -\tfrac16\right) \\ \textstyle\sum_i(y_i - \hat y_i)^2 &= \tfrac1{36} + \tfrac4{36} + \tfrac1{36} = \tfrac16 \end{aligned} \]
+<p>Součet čtverců \(\frac16\) je nejmenší, jakého může přímka dosáhnout.</p>
+<p><b>Ridge s \(\lambda = 1\)</b> (penalizujeme jen sklon, posun se obvykle nepenalizuje). K \(X^\top X\) přičteme \(\lambda\) jen u sklonu:</p>
+\[ X^\top X + \begin{pmatrix}0 & 0\\ 0 & 1\end{pmatrix} = \begin{pmatrix}3 & 3\\ 3 & 6\end{pmatrix},\qquad \det = 18 - 9 = 9 \]
+\[ \tilde{\mathbf w} = \frac19\begin{pmatrix}6 & -3\\ -3 & 3\end{pmatrix}\begin{pmatrix}5\\6\end{pmatrix} = \begin{pmatrix}4/3\\ 1/3\end{pmatrix} \]
+<p>Sklon se zmenší z \(\frac12\) na \(\frac13\) a posun se přesune, aby přímka zůstala u dat. (Vlastní přepočet pro další \(\lambda\): 10 ⇒ sklon 0,083; 100 ⇒ 0,010 – přímka se blíží vodorovné na úrovni průměru \(\bar y = 5/3\).)</p></div>
 <div class="box definice" id="def-lad"><div class="box-t">Definice: regrese nejmenších absolutních odchylek (LAD)</div>
 <p><b>LAD</b> (least absolute deviations) minimalizuje součet absolutních hodnot reziduí \(\|X\mathbf w - \mathbf y\|_1 = \sum_i|\mathbf x_i^\top\mathbf w - y_i|\). Nemá uzavřené řešení; řeší se optimalizací (lineární programování, IRLS).</p>
 <p class="jinak">L1 je méně citlivá na velké hodnoty – jedna obří chyba se nepočítá na druhou – takže LAD je <b>robustní k odlehlým hodnotám</b>. Naopak je citlivější na velmi malé chyby: kvadrát malé chyby je zanedbatelný (\(0{,}01^2 = 0{,}0001\)), absolutní hodnota ne.</p></div>
@@ -90,34 +112,55 @@
 <div data-demo="poly-ridge"></div>
 
 <h2 id="jadra">Jádra a duální forma</h2>
-<p>Polynomiální rozšíření rychle roste: monomů do stupně \(m\) v \(d\) proměnných je \(\binom{d+m}{m}\) – pro \(d = 2, m = 3\) je to 10, pro \(d = 10, m = 3\) už 286, pro \(d = 100, m = 3\) 176 851; RBF jádro odpovídá dokonce nekonečněrozměrnému \(\Phi\). Klíčová myšlenka: mnoho ML algoritmů má <b>duální formu</b>, ve které se data objevují jen ve skalárních součinech \(\Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\) – a ty umí jádro spočítat levně (viz 3. kapitola: \((\mathbf x_i^\top\mathbf x_j)^2\) pro \(\mathbf x_i = (1,2)\), \(\mathbf x_j = (3,1)\) dá \(5^2 = 25 = 9 + 4 + 12\)).</p>
+<p>Polynomiální rozšíření rychle roste: monomů do stupně \(m\) v \(d\) proměnných je \(\binom{d+m}{m}\). Pro \(m = 3\):</p>
+<ul>
+<li>\(d = 2\): 10 monomů,</li>
+<li>\(d = 10\): 286 monomů,</li>
+<li>\(d = 100\): 176 851 monomů.</li>
+</ul>
+<p>RBF jádro odpovídá dokonce nekonečněrozměrnému \(\Phi\). Klíčová myšlenka: mnoho ML algoritmů má <b>duální formu</b>, ve které se data objevují jen ve skalárních součinech \(\Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\) – a ty umí jádro spočítat levně. Příklad z 3. kapitoly pro \(\mathbf x_i = (1, 2)\), \(\mathbf x_j = (3, 1)\):</p>
+\[ (\mathbf x_i^\top\mathbf x_j)^2 = (1\cdot3 + 2\cdot1)^2 = 5^2 = 25 = \underbrace{9 + 4 + 12}_{\Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)} \]
 <div class="box definice" id="def-jadrova-funkce"><div class="box-t">Definice: jádrová funkce a jádrová (Gramova) matice</div>
 <p><b>Jádrová funkce</b> je funkce \(k: \mathbb R^d\times\mathbb R^d\to\mathbb R\), pro kterou existuje zobrazení \(\Phi\) do (možná vysokodimenzionálního) prostoru takové, že \(k(\mathbf x_i, \mathbf x_j) = \Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\). <b>Jádrová matice</b> \(K\) obsahuje hodnoty \(K_{ij} = k(\mathbf x_i, \mathbf x_j)\) pro všechny dvojice trénovacích vzorků a je pozitivně semidefinitní.</p>
 <p class="jinak">jádro je „míra podobnosti“, která se chová jako skalární součin v jiném prostoru. Jádrová funkce nahradí \(\mathbf x_i^\top\mathbf x_j\) a jádrová matice nahradí \(XX^\top\).</p></div>
 <div class="box vzorec"><div class="box-t">Běžná jádra</div>
-\[ k_{\text{lin}}(\mathbf x_i, \mathbf x_j) = \mathbf x_i^\top\mathbf x_j,\qquad k_{\text{poly}}(\mathbf x_i, \mathbf x_j) = (\mathbf x_i^\top\mathbf x_j + c)^p,\qquad k_{\text{RBF}}(\mathbf x_i, \mathbf x_j) = \exp\!\left(-\frac{\|\mathbf x_i - \mathbf x_j\|^2}{2\sigma^2}\right) = \exp(-\gamma\|\mathbf x_i - \mathbf x_j\|^2) \]
+\[ \begin{aligned} k_{\text{lin}}(\mathbf x_i, \mathbf x_j) &= \mathbf x_i^\top\mathbf x_j \\ k_{\text{poly}}(\mathbf x_i, \mathbf x_j) &= (\mathbf x_i^\top\mathbf x_j + c)^p \\ k_{\text{RBF}}(\mathbf x_i, \mathbf x_j) &= \exp\!\left(-\frac{\|\mathbf x_i - \mathbf x_j\|^2}{2\sigma^2}\right) \\ &= \exp(-\gamma\|\mathbf x_i - \mathbf x_j\|^2) \end{aligned} \]
 <table class="vars">
 <tr><td>\(p\)</td><td>stupeň polynomiálního jádra (vyšší = složitější model)</td></tr>
 <tr><td>\(c\)</td><td>posun – \(c \gt 0\) přidá i monomy nižších stupňů</td></tr>
 <tr><td>\(\sigma\), \(\gamma = 1/2\sigma^2\)</td><td>šířka RBF jádra (gaussovky) a její převrácená hodnota – jak rychle podobnost klesá se vzdáleností</td></tr>
 </table></div>
 <div class="box definice" id="def-dual"><div class="box-t">Definice: primární a duální forma ridge regrese</div>
-<p><b>Primární forma</b> hledá váhy \(\mathbf w = (X^\top X + \lambda I)^{-1}X^\top\mathbf y\) (matice \(d\times d\)); predikce \(\hat y = \mathbf x_{\text{new}}^\top\mathbf w\). <b>Duální forma</b> hledá koeficienty vzorků \(\boldsymbol\alpha = (XX^\top + \lambda I)^{-1}\mathbf y\) (matice \(n\times n\)), přičemž \(\mathbf w = X^\top\boldsymbol\alpha = \sum_i\alpha_i\mathbf x_i\); predikce \(\hat y = \sum_i\alpha_i\mathbf x_i^\top\mathbf x_{\text{new}}\).</p>
+<p><b>Primární forma</b> hledá váhy (řeší soustavu s maticí \(d\times d\)):
+\[ \begin{aligned} \mathbf w &= (X^\top X + \lambda I)^{-1}X^\top\mathbf y \\ \hat y &= \mathbf x_{\text{new}}^\top\mathbf w \end{aligned} \]
+<b>Duální forma</b> hledá koeficienty vzorků (soustava s maticí \(n\times n\)):
+\[ \begin{aligned} \boldsymbol\alpha &= (XX^\top + \lambda I)^{-1}\mathbf y \\ \mathbf w &= X^\top\boldsymbol\alpha = \textstyle\sum_i\alpha_i\mathbf x_i \\ \hat y &= \textstyle\sum_i\alpha_i\,\mathbf x_i^\top\mathbf x_{\text{new}} \end{aligned} \]</p>
 <p class="jinak">váhy jsou lineární kombinací trénovacích vzorků. Primár řeší soustavu velikosti počtu příznaků, duál velikosti počtu vzorků – rychlejší je ta menší. Duál obsahuje data jen ve skalárních součinech, a proto jde „zjádrovat“.</p></div>
 <div class="box definice" id="def-krr"><div class="box-t">Definice: jádrová ridge regrese (KRR)</div>
-<p><b>Kernel ridge regression</b> je duální ridge regrese, v níž jsou skalární součiny nahrazeny jádrem: \(\boldsymbol\alpha^\ast = (K + \lambda I)^{-1}\mathbf y\), predikce \(\hat y_{\text{new}} = \sum_i\alpha_i k(\mathbf x_i, \mathbf x_{\text{new}})\), pro víc vzorků \(\hat{\mathbf y}_{\text{new}} = K_{\text{new}}\boldsymbol\alpha\), \((K_{\text{new}})_{ij} = k(\mathbf x_{\text{new},i}, \mathbf x_j)\).</p>
+<p><b>Kernel ridge regression</b> je duální ridge regrese, v níž jsou skalární součiny nahrazeny jádrem:
+\[ \begin{aligned} \boldsymbol\alpha^\ast &= (K + \lambda I)^{-1}\mathbf y \\ \hat y_{\text{new}} &= \textstyle\sum_i\alpha_i\,k(\mathbf x_i, \mathbf x_{\text{new}}) \end{aligned} \]
+Pro víc nových vzorků najednou \(\hat{\mathbf y}_{\text{new}} = K_{\text{new}}\boldsymbol\alpha\), kde \((K_{\text{new}})_{ij} = k(\mathbf x_{\text{new},i}, \mathbf x_j)\).</p>
 <p class="jinak">implicitní transformace příznaků dá stejný výsledek jako explicitní, ale výpočetní složitost nezávisí na dimenzi rozšířeného prostoru – jen na počtu vzorků.</p></div>
 
 <h2 id="klasifikace">Lineární klasifikace</h2>
 <div class="box definice" id="def-separabilita"><div class="box-t">Definice: lineární separabilita</div>
 <p>Data jsou <b>lineárně separabilní</b>, pokud existuje přímka (obecně nadrovina), která bezchybně oddělí všechny pozitivní vzorky od všech negativních.</p>
 <p class="jinak">reálná data jsou zašuměná, překrývají se nebo mají chybné labely, takže přesná separabilita téměř nikdy neplatí. Je to teoretický pojem potřebný pro hard-margin SVM a pro konvergenci perceptronu.</p></div>
-<p><b>LDA jako klasifikátor</b> (opakování 3. kapitoly): \(\mathbf w = S_W^{-1}(\boldsymbol\mu_1 - \boldsymbol\mu_2)\) a práh \(t^\ast = \frac12(\boldsymbol\mu_1 + \boldsymbol\mu_2)^\top\mathbf w - \ln\frac{\pi_1}{\pi_2}\), kde \(\pi_c\) jsou apriorní pravděpodobnosti tříd. <b>MSE klasifikátor</b>: natrénuj regresi (MSE) na labelech \(\pm1\) a vezmi znaménko – jednoduchý, s uzavřeným tvarem, ale citlivý na odlehlé hodnoty a výkonově špatný (trestá i body „příliš správně“).</p>
+<p><b>LDA jako klasifikátor</b> (opakování 3. kapitoly) – směr a práh:</p>
+\[ \begin{aligned} \mathbf w &= S_W^{-1}(\boldsymbol\mu_1 - \boldsymbol\mu_2) \\ t^\ast &= \tfrac12(\boldsymbol\mu_1 + \boldsymbol\mu_2)^\top\mathbf w - \ln\tfrac{\pi_1}{\pi_2} \end{aligned} \]
+<p>kde \(\pi_c\) jsou apriorní pravděpodobnosti tříd. <b>MSE klasifikátor</b>: natrénuj regresi (MSE) na labelech \(\pm1\) a vezmi znaménko – jednoduchý, s uzavřeným tvarem, ale citlivý na odlehlé hodnoty a výkonově špatný (trestá i body „příliš správně“).</p>
 <div class="box definice" id="def-logreg"><div class="box-t">Definice: logistická regrese</div>
-<p><b>Logistická regrese</b> je pravděpodobnostní lineární klasifikátor: \(p(y = 1\mid\mathbf x) = \sigma(z) = \frac{1}{1 + e^{-z}}\), \(z = \mathbf w^\top\mathbf x + b\); třídu 1 předpoví, když \(\sigma(z) \ge 0{,}5\) (ekvivalentně \(\hat y = \operatorname{sign}(z)\)). Trénuje se minimalizací <b>křížové entropie</b> (log-loss): \(L = -y\log\sigma(z) - (1 - y)\log(1 - \sigma(z))\) pro \(y \in \{0, 1\}\), resp. \(L = \log(1 + e^{-yz})\) pro \(y \in \{-1, +1\}\).</p>
+<p><b>Logistická regrese</b> je pravděpodobnostní lineární klasifikátor:
+\[ p(y = 1\mid\mathbf x) = \sigma(z) = \frac{1}{1 + e^{-z}},\qquad z = \mathbf w^\top\mathbf x + b \]
+Třídu 1 předpoví, když \(\sigma(z) \ge 0{,}5\) (ekvivalentně \(\hat y = \operatorname{sign}(z)\)). Trénuje se minimalizací <b>křížové entropie</b> (log-loss); pro \(y \in \{0, 1\}\):
+\[ L = -y\log\sigma(z) - (1 - y)\log(1 - \sigma(z)) \]
+a ekvivalentně pro \(y \in \{-1, +1\}\):
+\[ L = \log(1 + e^{-yz}) \]</p>
 <p class="jinak">sigmoida „zmáčkne“ lineární skóre do intervalu (0, 1), takže výstup lze číst jako pravděpodobnost. Ztráta je konvexní (řeší se gradientním sestupem), méně citlivá na odlehlé hodnoty než MSE, lze přidat regularizaci a výstupy jsou kalibrované (pokud model odpovídá datům). Stejná ztráta se používá v hlubokém učení – lineární model se jen nahradí sítí.</p></div>
 <div class="box definice" id="def-perceptron"><div class="box-t">Definice: perceptron</div>
-<p><b>Perceptron</b> je lineární klasifikátor \(\hat y = \operatorname{sign}(\tilde{\mathbf w}^\top\tilde{\mathbf x})\) trénovaný iterativním pravidlem: pro každý vzorek, který je zařazen špatně (\(y_i\tilde{\mathbf w}^\top\tilde{\mathbf x}_i \le 0\)), posune váhy směrem k němu: \(\tilde{\mathbf w} \leftarrow \tilde{\mathbf w} + \eta\,y_i\tilde{\mathbf x}_i\). Odpovídá ztrátě \(\max(0, -y\tilde{\mathbf w}^\top\tilde{\mathbf x})\).</p>
+<p><b>Perceptron</b> je lineární klasifikátor \(\hat y = \operatorname{sign}(\tilde{\mathbf w}^\top\tilde{\mathbf x})\) trénovaný iterativním pravidlem: pro každý vzorek, který je zařazen špatně (\(y_i\tilde{\mathbf w}^\top\tilde{\mathbf x}_i \le 0\)), posune váhy směrem k němu:
+\[ \tilde{\mathbf w} \leftarrow \tilde{\mathbf w} + \eta\,y_i\tilde{\mathbf x}_i \]
+Odpovídá ztrátě \(\max(0, -y\tilde{\mathbf w}^\top\tilde{\mathbf x})\).</p>
 <p class="jinak">„když se spleteš, natoč hranici trochu k chybnému bodu“; násobení \(y = \pm1\) automaticky zvolí směr. Prokazatelně konverguje <b>jen pro lineárně separabilní</b> třídy – jinak cyklí donekonečna.</p></div>
 <div class="box postup"><div class="box-t">Perceptron v kódu (přednáška)</div>
 <pre style="margin:0;overflow-x:auto"><code>def train_perceptron(X, y, epochs):
@@ -138,24 +181,57 @@
 <p><b>Okraj</b> je vzdálenost rozhodovací nadroviny od nejbližších trénovacích bodů; vzdálenost bodu od nadroviny \((\mathbf w, b)\) je \(|\mathbf w^\top\mathbf x_i + b|/\|\mathbf w\|\). Při normalizaci \(y_i(\mathbf w^\top\mathbf x_i + b) \ge 1\) leží nejbližší body přesně ve vzdálenosti \(1/\|\mathbf w\|\) (šířka pásu je \(2/\|\mathbf w\|\)). <b>Support vektory</b> jsou trénovací body, které leží na okraji nebo uvnitř něj; jen ony určují \(\mathbf w\) a \(b\).</p>
 <p class="jinak">podmínka „≥ 1“ jen fixuje měřítko: místo \(\|\mathbf w\| = 1\) s proměnným okrajem zafixujeme okraj na 1 a necháme měnit velikost \(\mathbf w\). Maximalizovat \(1/\|\mathbf w\|\) je totéž co minimalizovat \(\frac12\|\mathbf w\|^2\). Kdybychom ostatní body smazali, dostaneme stejnou hranici.</p></div>
 <div class="box definice" id="def-svm-hard"><div class="box-t">Definice: hard-margin SVM</div>
-<p><b>Hard-margin SVM</b> řeší úlohu \(\min_{\mathbf w, b}\frac12\|\mathbf w\|^2\) za podmínek \(y_i(\mathbf w^\top\mathbf x_i + b) \ge 1\) pro všechna \(i\). Duální úloha je konvexní kvadratický program \(\max_{\boldsymbol\alpha}\sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\mathbf x_i^\top\mathbf x_j\) s.t. \(\sum_i\alpha_iy_i = 0\), \(\boldsymbol\alpha \ge 0\); pak \(\mathbf w = \sum_i\alpha_iy_i\mathbf x_i\) a \(\hat y = \operatorname{sign}\left(\sum_{i\in SV}\alpha_iy_i\mathbf x_i^\top\mathbf x + b\right)\).</p>
+<p><b>Hard-margin SVM</b> řeší úlohu
+\[ \min_{\mathbf w, b}\ \tfrac12\|\mathbf w\|^2 \quad\text{za podmínek}\quad y_i(\mathbf w^\top\mathbf x_i + b) \ge 1\ \ \forall i \]
+Duální úloha je konvexní kvadratický program
+\[ \begin{aligned} &\max_{\boldsymbol\alpha}\ \sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\,\mathbf x_i^\top\mathbf x_j \\ &\text{s.t.}\ \ \textstyle\sum_i\alpha_iy_i = 0,\quad \boldsymbol\alpha \ge 0 \end{aligned} \]
+Z jeho řešení dostaneme váhy a rozhodovací pravidlo:
+\[ \begin{aligned} \mathbf w &= \textstyle\sum_i\alpha_iy_i\mathbf x_i \\ \hat y &= \operatorname{sign}\Big(\textstyle\sum_{i\in SV}\alpha_iy_i\,\mathbf x_i^\top\mathbf x + b\Big) \end{aligned} \]</p>
 <p class="jinak">QP má účinné algoritmy se zaručeným globálním optimem. \(\alpha_i \gt 0\) právě u support vektorů (\(y_i(\mathbf w^\top\mathbf x_i + b) = 1\)); pro predikci stačí jen ony – je rychlá. Funguje jen pro separabilní data.</p></div>
 <div class="box priklad"><div class="box-t">Hard-margin SVM ručně: dva body (přednáška)</div>
-<p>\(\mathbf x_1 = (1, 1)\), \(y_1 = +1\); \(\mathbf x_2 = (-1, -1)\), \(y_2 = -1\). <b>Geometrie:</b> hranice je osa úsečky \(x_1 + x_2 = 0\); každý bod je od ní ve vzdálenosti \(\sqrt2\) ⇒ okraj \(1/\|\mathbf w\| = \sqrt2\), \(\|\mathbf w\| = 1/\sqrt2\). <b>Primár:</b> \(\mathbf w = (\frac12, \frac12)\), \(b = 0\); kontrola \(y_i(\mathbf w^\top\mathbf x_i + b) = 1\) pro oba body; účelová funkce \(\frac12\|\mathbf w\|^2 = \frac14\). <b>Duál:</b> \(\mathbf x_1^\top\mathbf x_1 = \mathbf x_2^\top\mathbf x_2 = 2\), \(\mathbf x_1^\top\mathbf x_2 = -2\); podmínka \(\alpha_1y_1 + \alpha_2y_2 = 0\) dává \(\alpha_1 = \alpha_2 = \alpha\); účelová funkce \(\sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\mathbf x_i^\top\mathbf x_j = 2\alpha - \frac12\cdot2(2\alpha)^2 = 2\alpha - 4\alpha^2\) (všechny čtyři členy dvojité sumy jsou \(2\alpha^2\)), derivace \(2 - 8\alpha = 0\) ⇒ \(\alpha = \frac14\); \(\mathbf w = \frac14(1,1) + \frac14(1,1) = (\frac12, \frac12)\) ✓. Duální optimum \(2\cdot\frac14 - 4\cdot\frac1{16} = \frac14\) = primární optimum (silná dualita); oba body jsou support vektory.</p></div>
+<p>\(\mathbf x_1 = (1, 1)\), \(y_1 = +1\); \(\mathbf x_2 = (-1, -1)\), \(y_2 = -1\).</p>
+<p><b>1. Geometrie.</b> Hranice je osa úsečky, přímka \(x_1 + x_2 = 0\). Každý bod je od ní ve vzdálenosti \(\sqrt2\), takže</p>
+\[ \frac{1}{\|\mathbf w\|} = \sqrt2 \quad\Rightarrow\quad \|\mathbf w\| = \frac{1}{\sqrt2} \]
+<p><b>2. Primár.</b> \(\mathbf w = (\frac12, \frac12)\), \(b = 0\). Kontrola podmínek a hodnota účelové funkce:</p>
+\[ \begin{aligned} y_1(\mathbf w^\top\mathbf x_1 + b) &= \tfrac12 + \tfrac12 = 1 \\ y_2(\mathbf w^\top\mathbf x_2 + b) &= (-1)\cdot(-1) = 1 \\ \tfrac12\|\mathbf w\|^2 &= \tfrac12\left(\tfrac14 + \tfrac14\right) = \tfrac14 \end{aligned} \]
+<p><b>3. Duál.</b> Skalární součiny:</p>
+\[ \mathbf x_1^\top\mathbf x_1 = \mathbf x_2^\top\mathbf x_2 = 2,\qquad \mathbf x_1^\top\mathbf x_2 = -2 \]
+<p>Podmínka \(\sum_i\alpha_iy_i = 0\) dává \(\alpha_1 = \alpha_2 = \alpha\). Všechny čtyři členy dvojité sumy jsou \(2\alpha^2\), takže účelová funkce je</p>
+\[ \begin{aligned} &\sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\,\mathbf x_i^\top\mathbf x_j \\ &= 2\alpha - \tfrac12\cdot4\cdot2\alpha^2 = 2\alpha - 4\alpha^2 \end{aligned} \]
+<p><b>4. Maximum.</b> Derivaci položíme rovnou nule a dopočítáme váhy:</p>
+\[ \begin{aligned} 2 - 8\alpha = 0 \quad&\Rightarrow\quad \alpha = \tfrac14 \\ \mathbf w = \textstyle\sum_i\alpha_iy_i\mathbf x_i &= \tfrac14(1, 1) + \tfrac14(1, 1) = \left(\tfrac12, \tfrac12\right)\ \checkmark \end{aligned} \]
+<p><b>5. Silná dualita.</b> Duální optimum se rovná primárnímu:</p>
+\[ 2\cdot\tfrac14 - 4\cdot\tfrac1{16} = \tfrac14 \]
+<p>Oba body jsou support vektory.</p></div>
 <div class="box definice" id="def-svm-soft"><div class="box-t">Definice: soft-margin SVM a hinge ztráta</div>
-<p><b>Soft-margin SVM</b> povolí porušení okraje pomocí <b>slack proměnných</b> \(\xi_i \ge 0\): \(\min_{\mathbf w, b, \boldsymbol\xi}\frac12\|\mathbf w\|^2 + C\sum_i\xi_i\) s.t. \(y_i(\mathbf w^\top\mathbf x_i + b) \ge 1 - \xi_i\). Po dosazení nejmenšího přípustného \(\xi_i = \max(0, 1 - y_i(\mathbf w^\top\mathbf x_i + b))\) dostaneme ekvivalentní úlohu bez omezení \(\min\frac12\|\mathbf w\|^2 + C\sum_i\max(0, 1 - y_i(\mathbf w^\top\mathbf x_i + b))\) – <b>regularizace okraje + hinge ztráta</b>.</p>
+<p><b>Soft-margin SVM</b> povolí porušení okraje pomocí <b>slack proměnných</b> \(\xi_i \ge 0\):
+\[ \begin{aligned} &\min_{\mathbf w, b, \boldsymbol\xi}\ \tfrac12\|\mathbf w\|^2 + C\textstyle\sum_i\xi_i \\ &\text{s.t.}\ \ y_i(\mathbf w^\top\mathbf x_i + b) \ge 1 - \xi_i \end{aligned} \]
+Po dosazení nejmenšího přípustného
+\[ \xi_i = \max\big(0,\ 1 - y_i(\mathbf w^\top\mathbf x_i + b)\big) \]
+dostaneme ekvivalentní úlohu bez omezení – <b>regularizace okraje + hinge ztráta</b>:
+\[ \min_{\mathbf w, b}\ \tfrac12\|\mathbf w\|^2 + C\sum_i\max\big(0,\ 1 - y_i(\mathbf w^\top\mathbf x_i + b)\big) \]</p>
 <p class="jinak">body smějí do pásu i na špatnou stranu, ale každé porušení se platí. \(\xi_i = 0\): správně a s okrajem; \(0 \lt \xi_i \le 1\): správně, ale uvnitř pásu; \(\xi_i \gt 1\): špatně zařazený. Každý bod s \(\xi_i \gt 0\) je support vektor. Hinge ztrátu lze použít i u neuronových sítí.</p></div>
 <div class="box priklad"><div class="box-t">Slack ručně (přednáška)</div>
-<p>Špatně zařazený bod se skóre \(y_i(\mathbf w^\top\mathbf x_i + b) = -0{,}5\) má \(\xi_i = 1 - (-0{,}5) = 1{,}5\); bod uvnitř pásu se skóre 0,6 má \(\xi_i = 0{,}4\); bod za okrajem (skóre ≥ 1) má 0. V obrázku z přednášky (50 bodů): 30 bodů s \(\xi = 0\), 13 uvnitř okraje, 7 špatně; 21 support vektorů, \(\sum\xi_i = 15{,}7\).</p></div>
+<p>Slack je \(\xi_i = \max(0,\ 1 - \text{skóre})\), kde skóre je \(y_i(\mathbf w^\top\mathbf x_i + b)\):</p>
+<ul>
+<li>špatně zařazený bod se skóre −0,5: \(\xi_i = 1 - (-0{,}5) = 1{,}5\);</li>
+<li>bod uvnitř pásu se skóre 0,6: \(\xi_i = 1 - 0{,}6 = 0{,}4\);</li>
+<li>bod za okrajem (skóre ≥ 1): \(\xi_i = 0\).</li>
+</ul>
+<p>V obrázku z přednášky (50 bodů): 30 bodů s \(\xi = 0\), 13 uvnitř okraje, 7 špatně; 21 support vektorů, \(\sum\xi_i = 15{,}7\).</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig04_svm_c.png" alt="Lineární soft-margin SVM pro tři hodnoty C" loading="lazy"></div>
 <figcaption><b>Obr. 4.4</b> Stejná překrývající se data, lineární SVM s \(C\) = 0,01; 1; 100. Plná čára = hranice, čárkovaně okraje (\(\mathbf w^\top\mathbf x + b = \pm1\)), zakroužkované = support vektory.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>\(C\) je cena za porušení okraje. Malé \(C\) (0,01): porušení jsou levná ⇒ široký pás (4,31), skoro všechny body jsou support vektory (39), hranice je „průměrem“ mnoha bodů. Velké \(C\) (100): porušení jsou drahá ⇒ úzký pás (0,71), málo support vektorů (8), hranice se řídí několika body u sebe. (V přednášce: \(C\) od 0,01 do 30 – okraj 2,54 → 0,27, support vektorů 44 → 16.)</p></div>
 <div class="box definice" id="def-nu-svm"><div class="box-t">Definice: ν-SVM</div>
-<p><b>ν-SVM</b> je alternativní parametrizace soft-margin SVM, která místo \(C \in [0, \infty)\) používá \(\nu \in (0, 1]\) s intuitivním významem: \(\nu\) je <b>horní mez podílu chyb na okraji</b> (trénovacích chyb) a <b>dolní mez podílu support vektorů</b>. Úloha: \(\min\frac12\|\mathbf w\|^2 - \nu\rho + \frac1n\sum_i\xi_i\) s.t. \(y_i(\mathbf w^\top\mathbf x_i + b) \ge \rho - \xi_i\), \(\xi_i \ge 0\).</p>
+<p><b>ν-SVM</b> je alternativní parametrizace soft-margin SVM, která místo \(C \in [0, \infty)\) používá \(\nu \in (0, 1]\) s intuitivním významem: \(\nu\) je <b>horní mez podílu chyb na okraji</b> (trénovacích chyb) a <b>dolní mez podílu support vektorů</b>. Úloha:
+\[ \begin{aligned} &\min\ \tfrac12\|\mathbf w\|^2 - \nu\rho + \tfrac1n\textstyle\sum_i\xi_i \\ &\text{s.t.}\ \ y_i(\mathbf w^\top\mathbf x_i + b) \ge \rho - \xi_i,\quad \xi_i \ge 0 \end{aligned} \]</p>
 <p class="jinak">\(\nu = 0{,}1\) zhruba říká „smí být nejvýš 10 % chyb na okraji a support vektorů bude aspoň 10 %“ – snáz se volí než abstraktní \(C\).</p></div>
 <div class="box definice" id="def-kernel-svm"><div class="box-t">Definice: jádrové SVM</div>
-<p><b>Jádrové SVM</b> vznikne nahrazením skalárního součinu v duální úloze soft-margin SVM jádrem: \(\max_{\boldsymbol\alpha}\sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_jk(\mathbf x_i, \mathbf x_j)\) s.t. \(\sum_i\alpha_iy_i = 0\), \(0 \le \alpha_i \le C\); rozhodovací funkce \(f(\mathbf x) = \operatorname{sign}\left(\sum_{i\in SV}\alpha_iy_ik(\mathbf x_i, \mathbf x) + b\right)\).</p>
+<p><b>Jádrové SVM</b> vznikne nahrazením skalárního součinu v duální úloze soft-margin SVM jádrem:
+\[ \begin{aligned} &\max_{\boldsymbol\alpha}\ \sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\,k(\mathbf x_i, \mathbf x_j) \\ &\text{s.t.}\ \ \textstyle\sum_i\alpha_iy_i = 0,\quad 0 \le \alpha_i \le C \end{aligned} \]
+Rozhodovací funkce:
+\[ f(\mathbf x) = \operatorname{sign}\Big(\sum_{i\in SV}\alpha_iy_i\,k(\mathbf x_i, \mathbf x) + b\Big) \]</p>
 <p class="jinak">nelineární hranice v původním prostoru, přitom optimalizační úloha zůstává stejně velká – závisí na \(n\), ne na dimenzi příznaků. Explicitní \(\mathbf w\) v původním prostoru neexistuje; \(\alpha_i\) (nenulové jen u support vektorů) říkají, jak moc který support vektor ovlivňuje hranici.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig04_svm_rbf.png" alt="RBF SVM pro různé hodnoty gamma a C" loading="lazy"></div>
 <figcaption><b>Obr. 4.5</b> RBF SVM na 100 zašuměných bodech „dvou měsíců“. Horní řádek: \(C = 1\), mění se \(\gamma\). Dolní řádek: \(\gamma = 1\), mění se \(C\). V titulcích počet support vektorů a přesnost na trénovacích a na 1000 nových bodech.</figcaption></figure>
@@ -194,9 +270,13 @@
 <h2 id="otazky">Otázky ke zkoušce</h2>
 <div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
 <details class="q"><summary>Vysvětlete bias trick a rozdíl mezi lineární regresí a lineární klasifikací.</summary><div>
-<p>Afinní \(f(\mathbf x) = \mathbf w^\top\mathbf x + b\) zapíšu jako lineární \(\tilde{\mathbf w}^\top\tilde{\mathbf x}\) s \(\tilde{\mathbf x} = (\mathbf x, 1)\), \(\tilde{\mathbf w} = (\mathbf w, b)\) – posun je jen další váha, vzorce a kód se zjednoduší (sloupec jedniček v \(X\)). Regrese vrací přímo \(\mathbf w^\top\mathbf x + b\) (spojitě), klasifikace jeho znaménko; rozhodovací hranice je nadrovina \(\mathbf w^\top\mathbf x + b = 0\).</p></div></details>
+<p>Afinní funkci \(f(\mathbf x) = \mathbf w^\top\mathbf x + b\) zapíšu jako lineární:</p>
+\[ f(\mathbf x) = \tilde{\mathbf w}^\top\tilde{\mathbf x},\qquad \tilde{\mathbf x} = (\mathbf x, 1),\quad \tilde{\mathbf w} = (\mathbf w, b) \]
+<p>Posun je jen další váha, vzorce a kód se zjednoduší (sloupec jedniček v \(X\)). Regrese vrací přímo \(\mathbf w^\top\mathbf x + b\) (spojitě), klasifikace jeho znaménko; rozhodovací hranice je nadrovina \(\mathbf w^\top\mathbf x + b = 0\).</p></div></details>
 <details class="q"><summary>Odvoďte uzavřené řešení OLS.</summary><div>
-<p>\(g(\mathbf w) = \|X\mathbf w - \mathbf y\|^2 = (X\mathbf w - \mathbf y)^\top(X\mathbf w - \mathbf y)\); gradient \(\nabla g = 2X^\top(X\mathbf w - \mathbf y)\); položím roven nule ⇒ normální rovnice \(X^\top X\mathbf w = X^\top\mathbf y\) ⇒ \(\mathbf w^\ast = (X^\top X)^{-1}X^\top\mathbf y = X^\dagger\mathbf y\). Úloha je konvexní, takže jde o globální minimum. Pro body (0,1), (1,2), (2,2): \(\hat y = 7/6 + x/2\).</p></div></details>
+<p>Ztrátu rozepíšu, zderivuji a gradient položím roven nule:</p>
+\[ \begin{aligned} g(\mathbf w) &= \|X\mathbf w - \mathbf y\|^2 = (X\mathbf w - \mathbf y)^\top(X\mathbf w - \mathbf y) \\ \nabla g &= 2X^\top(X\mathbf w - \mathbf y) = 0 \\ X^\top X\,\mathbf w &= X^\top\mathbf y \qquad\text{(normální rovnice)} \\ \mathbf w^\ast &= (X^\top X)^{-1}X^\top\mathbf y = X^\dagger\mathbf y \end{aligned} \]
+<p>Úloha je konvexní, takže jde o globální minimum. Pro body (0,1), (1,2), (2,2): \(\hat y = 7/6 + x/2\).</p></div></details>
 <details class="q"><summary>Proč je MSE citlivá na odlehlé hodnoty a MAE ne? Kdy byste zvolili LAD?</summary><div>
 <p>MSE umocňuje rezidua – chyba 10 přispěje 100, takže jeden odlehlý bod „přitáhne“ přímku. MAE přispěje lineárně (10), velké chyby nepřevažují. Naopak malé chyby MSE téměř ignoruje (\(0{,}01^2\)). LAD volím, když data obsahují odlehlé hodnoty nebo chyby měření, které nechci, aby model sledoval (např. ojedinělé artefakty v signálu).</p></div></details>
 <details class="q"><summary>Porovnejte ridge a LASSO. Jak λ ovlivní bias a rozptyl?</summary><div>

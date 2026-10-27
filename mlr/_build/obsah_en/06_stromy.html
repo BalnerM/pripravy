@@ -3,16 +3,24 @@
 
 <h2 id="bias-variance">Bias, variance and noise</h2>
 <div class="box definice" id="def-ocekavany-model"><div class="box-t">Definition: expected label and expected model</div>
-<p>The training set \(T = \{(\mathbf x_1, y_1), \dots, (\mathbf x_n, y_n)\}\) is a random sample from the distribution \(P(X, Y)\); the algorithm \(\mathcal A\) turns it into a model \(h_T = \mathcal A(T)\). The <b>expected label</b> \(\bar y(\mathbf x) = \mathbb E_{y\mid\mathbf x}[Y]\) is the best possible prediction at the point \(\mathbf x\). The <b>expected model</b> \(\bar h = \mathbb E_{T\sim P^n}[h_T]\) is the average of the models the algorithm would produce from all possible training sets.</p>
+<p>The training set \(T = \{(\mathbf x_1, y_1), \dots, (\mathbf x_n, y_n)\}\) is a random sample from the distribution \(P(X, Y)\); the algorithm \(\mathcal A\) turns it into a model \(h_T = \mathcal A(T)\).</p>
+<ul>
+<li>The <b>expected label</b> is the best possible prediction at the point \(\mathbf x\): \[ \bar y(\mathbf x) = \mathbb E_{y\mid\mathbf x}[Y] \]</li>
+<li>The <b>expected model</b> is the average of the models the algorithm would produce from all possible training sets: \[ \bar h = \mathbb E_{T\sim P^n}[h_T] \]</li>
+</ul>
 <p class="jinak">\(\bar y\) is “the truth without noise”, \(\bar h\) is what our algorithm “can do on average”. If we had infinitely many training sets, we would average the models learned from them and get \(\bar h\).</p></div>
 <div class="box vzorec"><div class="box-t">Decomposition of the expected test error (MSE)</div>
-\[ \underbrace{\mathbb E_{\mathbf x, y, T}\big[(h_T(\mathbf x) - y)^2\big]}_{\text{expected test error}} = \underbrace{\mathbb E_{\mathbf x, T}\big[(h_T(\mathbf x) - \bar h(\mathbf x))^2\big]}_{\text{variance}} + \underbrace{\mathbb E_{\mathbf x}\big[(\bar h(\mathbf x) - \bar y(\mathbf x))^2\big]}_{\text{bias}^2} + \underbrace{\mathbb E_{\mathbf x, y}\big[(\bar y(\mathbf x) - y)^2\big]}_{\text{noise}} \]
+\[ \begin{aligned} &\underbrace{\mathbb E_{\mathbf x, y, T}\big[(h_T(\mathbf x) - y)^2\big]}_{\text{expected test error}} \\ &\quad= \underbrace{\mathbb E_{\mathbf x, T}\big[(h_T(\mathbf x) - \bar h(\mathbf x))^2\big]}_{\text{variance}} \\ &\quad+ \underbrace{\mathbb E_{\mathbf x}\big[(\bar h(\mathbf x) - \bar y(\mathbf x))^2\big]}_{\text{bias}^2} \\ &\quad+ \underbrace{\mathbb E_{\mathbf x, y}\big[(\bar y(\mathbf x) - y)^2\big]}_{\text{noise}} \end{aligned} \]
 <table class="vars">
 <tr><td>variance</td><td>how much the model changes when we change the training data</td></tr>
 <tr><td>bias²</td><td>how far the average model is from the best possible prediction (systematic error of the algorithm)</td></tr>
 <tr><td>noise</td><td>irreducible error of the data – no algorithm and no amount of data removes it</td></tr>
 </table>
-<p>Derivation: “add and subtract” twice – first \(\bar h(\mathbf x)\), then \(\bar y(\mathbf x)\) – and expand \((a + b)^2 = a^2 + 2ab + b^2\). The cross terms drop out: the first because \(\mathbb E_T[h_T(\mathbf x)] = \bar h(\mathbf x)\), the second because \(\mathbb E_{y\mid\mathbf x}[y] = \bar y(\mathbf x)\).</p></div>
+<p>Derivation: “add and subtract” twice – first \(\bar h(\mathbf x)\), then \(\bar y(\mathbf x)\) – and expand \((a + b)^2 = a^2 + 2ab + b^2\). The cross terms drop out:</p>
+<ul>
+<li>the first because \(\mathbb E_T[h_T(\mathbf x)] = \bar h(\mathbf x)\),</li>
+<li>the second because \(\mathbb E_{y\mid\mathbf x}[y] = \bar y(\mathbf x)\).</li>
+</ul></div>
 <div class="box definice" id="def-bias-variance"><div class="box-t">Definition: bias–variance trade-off, underfitting and overfitting</div>
 <p>The <b>bias–variance trade-off</b> is the effect that increasing model complexity usually lowers the bias and raises the variance. <b>Underfitting</b> = the model is too simple, it has high bias (a large error already on the training data). <b>Overfitting</b> = the model is too complex, it has high variance (low training but high test error – it has learned the noise).</p>
 <p class="jinak">a simple model “misses the shape” but is stable; a complex model hits the shape but “jumps around” depending on which data it happened to get. The optimum is in the middle. Noise is the floor we cannot go below.</p></div>
@@ -62,7 +70,8 @@
 <p><b>CART</b> (Classification And Regression Trees, Breiman et al. 1984) is an algorithm that builds a tree by recursive binary splitting: in each node it chooses one feature \(j\) and a threshold \(s\) that reduce the impurity (error) of the two resulting regions the most; it thus splits the feature space into axis-parallel rectangles. It is defined by three rules: the <b>splitting criterion</b>, the <b>stopping rule</b> and the <b>rule for the leaf value</b> (majority class or mean).</p>
 <p class="jinak">“find the question that splits the data most cleanly, and repeat it in each half”.</p></div>
 <div class="box vzorec"><div class="box-t">Splitting criterion (classification)</div>
-\[ E_k = \min_{j\in\{1,\dots,d\},\ s\in\mathbb R}\left[E_{R_k}(j, s) + E_{R_k^C}(j, s)\right],\qquad R_k(j, s) = \{\mathbf x_i: x_{ij} \gt s\},\quad R_k^C(j,s) = \{\mathbf x_i: x_{ij} \le s\},\qquad E_{R} = \sum_{i:\mathbf x_i\in R}I(y_i \ne \hat y_R) \]
+\[ E_k = \min_{j\in\{1,\dots,d\},\ s\in\mathbb R}\left[E_{R_k}(j, s) + E_{R_k^C}(j, s)\right] \]
+\[ \begin{aligned} R_k(j, s) &= \{\mathbf x_i: x_{ij} \gt s\} \\ R_k^C(j,s) &= \{\mathbf x_i: x_{ij} \le s\} \\ E_{R} &= \textstyle\sum_{i:\mathbf x_i\in R}I(y_i \ne \hat y_R) \end{aligned} \]
 <table class="vars">
 <tr><td>\(j, s\)</td><td>feature and threshold – we minimize over both</td></tr>
 <tr><td>\(R_k, R_k^C\)</td><td>the two complementary regions created by splitting the \(k\)-th node</td></tr>
@@ -78,7 +87,13 @@
 </ol>
 <p>“Greedy”, because every split is locally the best and is never undone; searching for the globally best tree would be combinatorially impossible. In the lecture example (19 points) five splits reduce the number of errors 9 → 6 → 5 → 4 → 3 → 1 and the sum \(\sum_R n_RG_R\) from 9.47 to 1.60; the last leaf (4 : 1) stays impure because growth is stopped by <code>max_depth = 3</code>.</p></div>
 <div class="box definice" id="def-necistota"><div class="box-t">Definition: node impurity measures</div>
-<p>For the class proportions \(p_R(y)\) in a region \(R\): <b>error rate</b> \(1 - \max_yp_R(y)\); <b>entropy</b> \(H_R = -\sum_y p_R(y)\log p_R(y)\); <b>Gini impurity</b> \(G_R = \sum_y p_R(y)(1 - p_R(y)) = 1 - \sum_y p_R(y)^2\). All are zero for a pure node (a single class) and maximal when the classes are equally represented.</p>
+<p>For the class proportions \(p_R(y)\) in a region \(R\):</p>
+<ul>
+<li><b>error rate</b> \(1 - \max_yp_R(y)\);</li>
+<li><b>entropy</b> \(H_R = -\sum_y p_R(y)\log p_R(y)\);</li>
+<li><b>Gini impurity</b> \[ G_R = \sum_y p_R(y)(1 - p_R(y)) = 1 - \sum_y p_R(y)^2 \]</li>
+</ul>
+<p>All are zero for a pure node (a single class) and maximal when the classes are equally represented.</p>
 <p class="jinak">“how mixed the node is”. Gini and entropy are smooth and strictly concave, so they also reward a split that does not change the number of errors but makes one of the nodes purer – that is why they are preferred in practice.</p></div>
 <div class="box priklad"><div class="box-t">By hand (lecture, two classes, log₂)</div>
 <p>Leaf 4 : 1 (\(p = 0.8\)): 1 error (error rate 0.2); \(H = -0.8\log_20.8 - 0.2\log_20.2 = 0.72\) bits; \(G = 0.8\cdot0.2 + 0.2\cdot0.8 = 0.32\). Root 10 : 9: \(H = 1.00\) bit, \(G = 0.50\). Pure leaf: all three are zero.</p></div>
@@ -121,7 +136,10 @@
 <p>A <b>bootstrap sample</b> is a random selection of \(n'\) samples from the training set <b>with replacement</b> (usually \(n' = n\)), so some samples appear in it several times and others not at all. <b>Bagging</b> (bootstrap aggregation) trains \(M\) models on \(M\) bootstrap samples and averages their predictions: \(h_{\text{bagg}}(\mathbf x) = \frac1M\sum_{m=1}^Mh_{T_m}(\mathbf x)\) (majority vote for classification).</p>
 <p class="jinak">each tree sees slightly different data and so makes slightly different mistakes; when averaging, the random errors of the individual trees cancel each other out. The bias stays (an average of similarly deep trees), the variance drops.</p></div>
 <div class="box vzorec"><div class="box-t">Variance of the average of M trees</div>
-\[ \operatorname{Var}[h_{\text{bagg}}(\mathbf x)] = \frac{\sigma_1^2}{M}\ \ \text{(independent trees)},\qquad \operatorname{Var}[h_{\text{bagg}}(\mathbf x)] = \rho\,\sigma_1^2 + \frac{1 - \rho}{M}\sigma_1^2\ \ \text{(correlated trees)} \]
+<p>Independent trees:</p>
+\[ \operatorname{Var}[h_{\text{bagg}}(\mathbf x)] = \frac{\sigma_1^2}{M} \]
+<p>Correlated trees (correlation \(\rho\)):</p>
+\[ \operatorname{Var}[h_{\text{bagg}}(\mathbf x)] = \rho\,\sigma_1^2 + \frac{1 - \rho}{M}\sigma_1^2 \]
 <table class="vars">
 <tr><td>\(\sigma_1^2\)</td><td>variance of the prediction of one tree (over training sets)</td></tr>
 <tr><td>\(M\)</td><td>number of trees in the average</td></tr>
@@ -161,7 +179,8 @@
 
 <h2 id="adaboost">Adaptive boosting (AdaBoost)</h2>
 <div class="box definice" id="def-adaboost"><div class="box-t">Definition: AdaBoost</div>
-<p><b>AdaBoost</b> is an ensemble method that trains weak classifiers \(h_m\) <b>one after another</b>, each on reweighted data (misclassified samples get a higher weight), and the result is their weighted vote: \(H(\mathbf x) = \operatorname{sign}\left(\sum_{m=1}^M\alpha_mh_m(\mathbf x)\right)\) for classes \(\pm1\).</p>
+<p><b>AdaBoost</b> is an ensemble method that trains weak classifiers \(h_m\) <b>one after another</b>, each on reweighted data (misclassified samples get a higher weight), and the result is their weighted vote (for classes \(\pm1\)):
+\[ H(\mathbf x) = \operatorname{sign}\Big(\sum_{m=1}^M\alpha_mh_m(\mathbf x)\Big) \]</p>
 <p class="jinak">each next “weak learner” focuses on what the previous ones got wrong, and a better learner has a stronger voice in the final vote. Many simple ones (e.g. stumps) make up a strong, complex classifier – boosting reduces bias.</p></div>
 <div class="box postup"><div class="box-t">AdaBoost algorithm (data \(\mathbf x_i\in\mathbb R^d\), \(y_i\in\{-1,+1\}\))</div>
 <ol>
@@ -245,7 +264,9 @@
 <h2 id="otazky">Exam questions</h2>
 <div class="qtools"><button class="iconbtn" data-qall="open">Expand all answers</button><button class="iconbtn" data-qall="close">Collapse</button></div>
 <details class="q"><summary>Write the decomposition of the expected test error into bias, variance and noise. Which terms can we influence and how?</summary><div>
-<p>\(\mathbb E[(h_T(\mathbf x) - y)^2] = \mathbb E[(h_T - \bar h)^2] + \mathbb E[(\bar h - \bar y)^2] + \mathbb E[(\bar y - y)^2]\) = variance + bias² + noise. \(\bar h\) is the average model over training sets, \(\bar y\) the expected label. The cross terms drop out because \(\mathbb E_T[h_T] = \bar h\) and \(\mathbb E_{y|\mathbf x}[y] = \bar y\). We can influence the variance (more data, a simpler model, bagging, regularization) and the bias (a more complex model, more features, boosting); not the noise.</p></div></details>
+<p>Decomposition of the expected test error:</p>
+\[ \begin{aligned} \mathbb E[(h_T(\mathbf x) - y)^2] &= \mathbb E[(h_T - \bar h)^2] && \text{variance} \\ &+ \mathbb E[(\bar h - \bar y)^2] && \text{bias}^2 \\ &+ \mathbb E[(\bar y - y)^2] && \text{noise} \end{aligned} \]
+<p>\(\bar h\) is the average model over training sets, \(\bar y\) the expected label. The cross terms drop out because \(\mathbb E_T[h_T] = \bar h\) and \(\mathbb E_{y|\mathbf x}[y] = \bar y\). We can influence the variance (more data, a simpler model, bagging, regularization) and the bias (a more complex model, more features, boosting); not the noise.</p></div></details>
 <details class="q"><summary>You see a large gap between training and test error. Which regime is it and what do you do? And when the training error is above ε?</summary><div>
 <p>A large gap (training &lt; ε &lt; test) = high variance: more training data, a simpler model (smaller depth, regularization), bagging. Training error above ε and test error close to it = high bias: more data will not help (the curves have already converged to a bad value); a more complex model, more features or boosting are needed.</p></div></details>
 <details class="q"><summary>Define node, leaf, branch, size and depth of a tree. What is a stump? Write the CART splitting criterion.</summary><div>
@@ -259,6 +280,11 @@
 <details class="q"><summary>What does random forest add to bagging and why does it help? What are OOB samples?</summary><div>
 <p>At each split only a random subset of features is considered (typically √d). The trees are more diverse and less correlated, so averaging reduces the variance more. The OOB samples of a tree are those that did not get into its bootstrap – \((1 - 1/n)^n \to e^{-1} \approx 37\,\%\); they serve as validation data and give an error estimate without CV. Each sample is evaluated by only ≈ 1/3 of the trees, so OOB is slightly pessimistic and should not be mixed with validation scores.</p></div></details>
 <details class="q"><summary>Write the AdaBoost prediction rule and the formula for αₘ. What does αₘ do at εₘ = 0.5? How are the weights updated and what is Zₘ for?</summary><div>
-<p>\(H(\mathbf x) = \operatorname{sign}(\sum_m\alpha_mh_m(\mathbf x))\), \(\alpha_m = \frac12\ln\frac{1-\epsilon_m}{\epsilon_m}\); at \(\epsilon_m = 0.5\) \(\alpha_m = 0\) – a random classifier has no vote, with a small error the weight is large. Weights: \(w_i \leftarrow w_ie^{-\alpha_my_ih_m(\mathbf x_i)}/Z_m\) – misclassified ones grow, correct ones shrink; \(Z_m\) is the normalization constant so that the weights sum to 1. Sensitivity to noise: a mislabelled sample is “always wrong”, its weight grows round after round and the next classifiers try to get it right at any cost.</p></div></details>
+<p>The final classifier and the weight of one classifier:</p>
+\[ H(\mathbf x) = \operatorname{sign}\Big(\sum_m\alpha_mh_m(\mathbf x)\Big) \]
+\[ \alpha_m = \frac12\ln\frac{1-\epsilon_m}{\epsilon_m} \]
+<p>At \(\epsilon_m = 0.5\) we get \(\alpha_m = 0\) – a random classifier has no vote, with a small error the weight is large. Update of the sample weights:</p>
+\[ w_i \leftarrow \frac{w_i\,e^{-\alpha_my_ih_m(\mathbf x_i)}}{Z_m} \]
+<p>Misclassified ones grow, correct ones shrink; \(Z_m\) is the normalization constant so that the weights sum to 1. Sensitivity to noise: a mislabelled sample is “always wrong”, its weight grows round after round and the next classifiers try to get it right at any cost.</p></div></details>
 <details class="q"><summary>Bagging vs. boosting: which error term does each reduce and which can be parallelized?</summary><div>
 <p>Bagging (and random forest) reduces variance by averaging independently trained (deep) trees – parallelizable. Boosting reduces bias by adding weak classifiers one after another, each focused on the mistakes of the previous ones – sequential, it cannot be parallelized.</p></div></details>

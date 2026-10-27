@@ -308,6 +308,43 @@ def check_site(s, built, errors):
                     errors.append(f"{tag}{slug}: id chybí ve verzi {o['lang']}: {sorted(missing)[:8]}")
 
 
+DISPLAY_RE = re.compile(r"\\\[(.*?)\\\]", re.S)
+INLINE_RE = re.compile(r"\\\((.*?)\\\)", re.S)
+REL_RE = re.compile(r"=|\\approx|\\Rightarrow|\\lt|\\gt|\\le|\\ge")
+BIG_RE = re.compile(r"\\frac|\\sum|\\sqrt|\\begin|\\int|\\prod|\\max|\\min|\\left")
+MATRIX_RE = re.compile(r"\\begin\{[a-z]*matrix\}.*?\\end\{[a-z]*matrix\}", re.S)
+
+def check_math_layout(src, skip=()):
+    """Upozornění na nepřehledné vzorce ve zdrojových fragmentech (stejná heuristika jako tools/check_layout.py):
+    odstavec s mnoha vzorci za sebou (výpočet má jít po krocích pod sebou) a příliš dlouhý řádek
+    samostatného vzorce (víc vzorců za sebou v jednom bloku – rozdělit na řádky / aligned)."""
+    warnings = []
+    for f in sorted(src.glob("*.html")):
+        if f.stem in skip:
+            continue
+        text = f.read_text(encoding="utf-8")
+        line = lambda pos: text.count("\n", 0, pos) + 1
+        for m in re.finditer(r"<(p|li)\b[^>]*>(.*?)</\1>", text, re.S):
+            maths = INLINE_RE.findall(DISPLAY_RE.sub("", m.group(2)))
+            if not maths:
+                continue
+            # krátké dosazení („R = 1 kΩ“) nevadí; vadí řetěz delších vzorců nebo jeden dlouhý vzorec v textu
+            rel = sum(len(REL_RE.findall(x)) for x in maths)
+            big = sum(1 for x in maths if len(x) >= 20 or BIG_RE.search(x))
+            longest, total = max(map(len, maths)), sum(map(len, maths))
+            if (big >= 3 and rel >= 3) or longest >= 75 or total >= 170:
+                warnings.append(f"{f.name}:{line(m.start())}: hustý odstavec ({len(maths)} vzorců v textu, "
+                                f"{rel}× vztah, nejdelší {longest} zn.) – výpočet rozepiš po krocích pod sebou")
+        for m in DISPLAY_RE.finditer(text):
+            # přibližná délka řádku: formátovací příkazy (mathbf, frac, text…), závorky a mezery se nepočítají
+            rows = re.split(r"\\\\", MATRIX_RE.sub("M", m.group(1)))
+            wide = max(len(re.sub(r"[{}\s^_&]|\\[,;!]", "", re.sub(r"\\(mathbf|boldsymbol|text|operatorname|tilde|hat|"
+                                                                     r"bar|left|right|big|Big|t?frac|textstyle)\b", "", r)))
+                                                                     for r in rows)
+            if wide > 90:
+                warnings.append(f"{f.name}:{line(m.start())}: dlouhý řádek vzorce (~{wide} zn.) – rozděl na víc řádků")
+    return warnings
+
 def build():
     errors = []
     results = [(s, *build_site(s)) for s in SITES]
@@ -321,6 +358,9 @@ def build():
             print("  -", e)
         sys.exit(1)
     print("kontrola odkazů, obrázků a povinných sekcí: OK")
+    for s in SITES:
+        for w in check_math_layout(s["src"], skip={GLOSSARY}):
+            print(f"UPOZORNĚNÍ{' [' + s['lang'] + '/]' if s['up'] else ''}: {w}")
 
 
 if __name__ == "__main__":

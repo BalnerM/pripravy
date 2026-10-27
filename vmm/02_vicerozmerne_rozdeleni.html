@@ -101,8 +101,8 @@
 <p><b>Kovarianční matice</b> \(\boldsymbol\Sigma\) (výběrově \(\mathbf S\)) náhodného vektoru je čtvercová symetrická matice \(p\times p\), jejímž prvkem na pozici \((j,k)\) je kovariance \(j\)-té a \(k\)-té proměnné. Na diagonále tedy leží rozptyly jednotlivých proměnných.</p>
 <p class="jinak">tabulka, kde jsou pohromadě všechny rozptyly i všechny vztahy dvojic. Geometricky popisuje, jak je mrak bodů <b>roztažený</b> a <b>natočený</b>. Je to vícerozměrná obdoba rozptylu.</p></div>
 <div class="box vzorec"><div class="box-t">Vzorec</div>
-\[ s_{jk} = \frac{1}{n-1}\sum_{i=1}^{n} (x_{ij}-\bar{x}_j)(x_{ik}-\bar{x}_k) \qquad
-\mathbf{S} = \begin{pmatrix} s_{11} & s_{12} & \cdots & s_{1p}\\ s_{21} & s_{22} & \cdots & s_{2p}\\ \vdots & & \ddots & \vdots\\ s_{p1} & s_{p2} & \cdots & s_{pp}\end{pmatrix} \]
+\[ s_{jk} = \frac{1}{n-1}\sum_{i=1}^{n} (x_{ij}-\bar{x}_j)(x_{ik}-\bar{x}_k) \]
+\[ \mathbf{S} = \begin{pmatrix} s_{11} & s_{12} & \cdots & s_{1p}\\ s_{21} & s_{22} & \cdots & s_{2p}\\ \vdots & & \ddots & \vdots\\ s_{p1} & s_{p2} & \cdots & s_{pp}\end{pmatrix} \]
 <table class="vars">
 <tr><td>\(x_{ij}-\bar{x}_j\)</td><td>odchylka objektu \(i\) od průměru v proměnné \(j\)</td></tr>
 <tr><td>\(s_{jk}\)</td><td>kovariance (spoluproměnlivost) proměnných \(j\) a \(k\)</td></tr>
@@ -185,7 +185,9 @@
 <tr><td>\(|\boldsymbol{\Sigma}|\)</td><td>determinant – „objem“ rozptylu; jen normuje, aby plocha pod hustotou byla 1</td></tr>
 <tr><td>\((\mathbf{x}-\boldsymbol{\mu})^T\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})\)</td><td>čtverec <b>Mahalanobisovy vzdálenosti</b> bodu \(\mathbf{x}\) od středu</td></tr>
 </table></div>
-<p>Stačí si uvědomit, že vzorec má <b>úplně stejnou stavbu</b> jako jednorozměrný: „\((x-\mu)^2/\sigma^2\)“ se změnilo na „\((\mathbf{x}-\boldsymbol\mu)^T\boldsymbol\Sigma^{-1}(\mathbf{x}-\boldsymbol\mu)\)“ – dělení rozptylem se změnilo na násobení inverzní kovarianční maticí. Rozdělení je opět plně určeno dvěma parametry: \(\mathbf{X} \sim N_p(\boldsymbol\mu, \boldsymbol\Sigma)\).</p>
+<p>Stačí si uvědomit, že vzorec má <b>úplně stejnou stavbu</b> jako jednorozměrný:</p>
+\[ \frac{(x-\mu)^2}{\sigma^2} \quad\longrightarrow\quad (\mathbf{x}-\boldsymbol\mu)^T\boldsymbol\Sigma^{-1}(\mathbf{x}-\boldsymbol\mu) \]
+<p>Dělení rozptylem se změnilo na násobení inverzní kovarianční maticí. Rozdělení je opět plně určeno dvěma parametry: \(\mathbf{X} \sim N_p(\boldsymbol\mu, \boldsymbol\Sigma)\).</p>
 <p>Ve 2D je hustota „kopec“ (paraboloid v exponentu). Když ho rozřízneme ve stejné výšce, dostaneme <b>elipsu konstantní hustoty</b>:</p>
 <ul>
   <li>nezávislé proměnné → osy elipsy jsou <b>rovnoběžné</b> se souřadnicovými osami;</li>
@@ -205,7 +207,9 @@
 
 <h2 id="mahalanobis">Mahalanobisova vzdálenost</h2>
 <div class="box definice" id="def-mahalanobis"><div class="box-t">Definice: Mahalanobisova vzdálenost</div>
-<p><b>Mahalanobisova vzdálenost</b> bodu \(\mathbf x\) od středu \(\bar{\mathbf x}\) rozdělení s kovarianční maticí \(\mathbf S\) je \(D = \sqrt{(\mathbf{x}-\bar{\mathbf{x}})^T\mathbf{S}^{-1}(\mathbf{x}-\bar{\mathbf{x}})}\). Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi.</p>
+<p><b>Mahalanobisova vzdálenost</b> bodu \(\mathbf x\) od středu \(\bar{\mathbf x}\) rozdělení s kovarianční maticí \(\mathbf S\) je
+\[ D = \sqrt{(\mathbf{x}-\bar{\mathbf{x}})^T\mathbf{S}^{-1}(\mathbf{x}-\bar{\mathbf{x}})} \]
+Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi.</p>
 <p class="jinak">vzdálenost měřená „v jednotkách typické odchylky v daném směru“. Odpovídá na otázku: jak neobvyklý je tento bod vzhledem k tvaru mraku? Pro jednu proměnnou je to prostě \(|z|\) (z-skóre).</p></div>
 <div class="box vzorec"><div class="box-t">Vzorec</div>
 \[ D^2_i = (\mathbf{x}_i-\bar{\mathbf{x}})^T\,\mathbf{S}^{-1}\,(\mathbf{x}_i-\bar{\mathbf{x}}) \]
@@ -263,7 +267,9 @@
 <li>K \(i\)-té nejmenší hodnotě přiřaď teoretický kvantil χ²(p) na úrovni \((i-0{,}5)/n\).</li>
 <li>Vynes body (teoretický kvantil, \(D^2_i\)). Leží-li na přímce \(y = x\), data jsou přibližně vícerozměrně normální.</li>
 </ol></div>
-<p>Souvislost s elipsou: např. pro \(p=2\) a \(q = 0{,}95\) je kvantil \(\chi^2_{0{,}95}(2) = 5{,}99\). Očekáváme tedy, že 95 % bodů bude ležet uvnitř elipsy \((\mathbf{x}-\bar{\mathbf{x}})^T\mathbf{S}^{-1}(\mathbf{x}-\bar{\mathbf{x}}) \le 5{,}99\). Princip ověření normality je tedy vždy stejný: <b>porovnání výběrových kvantilů s modelovými</b>.</p>
+<p>Souvislost s elipsou: např. pro \(p=2\) a \(q = 0{,}95\) je kvantil \(\chi^2_{0{,}95}(2) = 5{,}99\). Očekáváme tedy, že 95 % bodů bude ležet uvnitř elipsy</p>
+\[ (\mathbf{x}-\bar{\mathbf{x}})^T\mathbf{S}^{-1}(\mathbf{x}-\bar{\mathbf{x}}) \le 5{,}99 \]
+<p>Princip ověření normality je tedy vždy stejný: <b>porovnání výběrových kvantilů s modelovými</b>.</p>
 <figure class="wide"><div class="paper"><img src="figures/fig02_chi2.png" alt="Dva chí-kvadrát diagramy, vlevo body na přímce, vpravo odchylky" loading="lazy"></div>
 <figcaption><b>Obr. 2.2</b> χ² diagram. Vlevo data z normálního rozdělení – body sedí na diagonále. Vpravo šikmá proměnná a několik odlehlých objektů – body se v horní části odklánějí nad přímku.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
@@ -274,16 +280,19 @@
 <div class="box definice" id="def-hotelling"><div class="box-t">Definice: Hotellingův T² test</div>
 <p><b>Hotellingův T² test</b> je vícerozměrný statistický test nulové hypotézy, že dvě nezávislé skupiny mají shodné vektory středních hodnot (\(H_0: \boldsymbol\mu_1 = \boldsymbol\mu_2\)). Je to vícerozměrné zobecnění dvouvýběrového t-testu; předpokládá vícerozměrnou normalitu a shodnou kovarianční matici obou skupin.</p>
 <p class="jinak">t-test pro všechny proměnné najednou. Neptá se „liší se skupiny v tepu?“, ale „liší se skupiny v celém profilu (tep, tlak, věk)?“ – a přitom zohlední, jak spolu proměnné souvisejí.</p></div>
-\[ H_0: \boldsymbol\mu_1 = \boldsymbol\mu_2 \quad\text{(vektory středních hodnot obou skupin jsou stejné)} \]
+\[ H_0: \boldsymbol\mu_1 = \boldsymbol\mu_2 \]
+<p>Nulová hypotéza: vektory středních hodnot obou skupin jsou stejné.</p>
 <p>Předpoklad: skupiny jsou <b>nezávislé</b> (různí pacienti, ne tentýž pacient dvakrát).</p>
 
 <h3>Od t-testu k T²</h3>
 <p>Dvouvýběrový t-test pro jednu proměnnou porovnává rozdíl průměrů s jeho nejistotou:</p>
-\[ t = \frac{\bar x_1 - \bar x_2}{s\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}} \quad\Rightarrow\quad t^2 = \frac{n_1 n_2}{n_1+n_2}\,(\bar x_1-\bar x_2)\,(s^2)^{-1}\,(\bar x_1-\bar x_2) \]
+\[ t = \frac{\bar x_1 - \bar x_2}{s\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}} \]
+<p>Po umocnění a přepsání do tvaru „rozdíl × inverze rozptylu × rozdíl“:</p>
+\[ t^2 = \frac{n_1 n_2}{n_1+n_2}\,(\bar x_1-\bar x_2)\,(s^2)^{-1}\,(\bar x_1-\bar x_2) \]
 <p>Když \(t^2\) napíšeme takhle, zobecnění je přímočaré – rozdíl průměrů nahradíme rozdílem vektorů a rozptyl kovarianční maticí:</p>
 <div class="box vzorec"><div class="box-t">Vzorec</div>
-\[ T^2 = \frac{n_1 n_2}{n_1+n_2}\,(\bar{\mathbf{x}}_1-\bar{\mathbf{x}}_2)^T\,\mathbf{S}^{-1}\,(\bar{\mathbf{x}}_1-\bar{\mathbf{x}}_2),
-\qquad \mathbf{S} = \frac{(n_1-1)\mathbf{S}_1 + (n_2-1)\mathbf{S}_2}{n_1+n_2-2} \]
+\[ T^2 = \frac{n_1 n_2}{n_1+n_2}\,(\bar{\mathbf{x}}_1-\bar{\mathbf{x}}_2)^T\,\mathbf{S}^{-1}\,(\bar{\mathbf{x}}_1-\bar{\mathbf{x}}_2) \]
+\[ \mathbf{S} = \frac{(n_1-1)\mathbf{S}_1 + (n_2-1)\mathbf{S}_2}{n_1+n_2-2} \]
 <table class="vars">
 <tr><td>\(\bar{\mathbf{x}}_1, \bar{\mathbf{x}}_2\)</td><td>vektory průměrů obou skupin</td></tr>
 <tr><td>\(\mathbf{S}\)</td><td>společná (sdružená) kovarianční matice – vážený průměr kovariančních matic obou skupin</td></tr>
@@ -347,7 +356,9 @@
 <details class="q"><summary>Popište vícerozměrné normální rozdělení a jeho vlastnosti.</summary><div>
 <p>Zobecnění Gaussovy křivky; je určené vektorem středních hodnot \(\boldsymbol\mu\) a kovarianční maticí \(\boldsymbol\Sigma\). V exponentu je čtverec Mahalanobisovy vzdálenosti, takže vrstevnice hustoty jsou elipsy (elipsoidy) se středem v \(\boldsymbol\mu\); u nezávislých proměnných jsou osy rovnoběžné se souřadnicemi, u korelovaných otočené. Vlastnosti: lineární kombinace jsou normální, nekorelované složky jsou nezávislé, podmíněná rozdělení jsou normální.</p></div></details>
 <details class="q"><summary>Jaký je rozdíl mezi eukleidovskou a Mahalanobisovou vzdáleností?</summary><div>
-<p>Eukleidovská měří přímou vzdálenost a ignoruje rozptyl a korelace. Mahalanobisova \(D^2 = (\mathbf x-\bar{\mathbf x})^T\mathbf S^{-1}(\mathbf x-\bar{\mathbf x})\) měří vzdálenost v jednotkách rozptylu v daném směru – ve směru protažení mraku je „levnější“ být daleko. Dva body se stejnou eukleidovskou vzdáleností mohou mít velmi rozdílnou Mahalanobisovu; pro nekorelovaná standardizovaná data jsou obě stejné.</p></div></details>
+<p>Eukleidovská měří přímou vzdálenost a ignoruje rozptyl a korelace. Mahalanobisova</p>
+\[ D^2 = (\mathbf x-\bar{\mathbf x})^T\mathbf S^{-1}(\mathbf x-\bar{\mathbf x}) \]
+<p>měří vzdálenost v jednotkách rozptylu v daném směru – ve směru protažení mraku je „levnější“ být daleko. Dva body se stejnou eukleidovskou vzdáleností mohou mít velmi rozdílnou Mahalanobisovu; pro nekorelovaná standardizovaná data jsou obě stejné.</p></div></details>
 <details class="q"><summary>Jak ověříte vícerozměrnou normalitu? Proč nestačí jen test?</summary><div>
 <p>Kombinací testů a vizuální kontroly: testy normality jednotlivých proměnných (Shapiro-Wilk aj.), šikmost a špičatost, bodové grafy dvojic (elipsa), χ² diagram. Test sám nestačí, protože u velkých souborů zamítne i nepodstatné odchylky, vícerozměrný test neřekne, která proměnná je problém, a výsledek mohou zkreslit odlehlé hodnoty. Pozor: normalita každé proměnné ještě nezaručuje vícerozměrnou normalitu.</p></div></details>
 <details class="q"><summary>Vysvětlete princip χ² diagramu.</summary><div>

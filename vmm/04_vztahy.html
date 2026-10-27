@@ -125,7 +125,9 @@
 <p><b>Šance</b> (odds) jevu je poměr pravděpodobnosti, že nastane, a pravděpodobnosti, že nenastane: \(P/(1-P)\). <b>Poměr šancí</b> (OR) je podíl šancí ve dvou situacích; v logistické regresi \(e^{a_j}\) říká, kolikrát se šance zvýší, když \(x_j\) vzroste o 1 a ostatní vstupy zůstanou stejné.</p>
 <p class="jinak">pravděpodobnost 0,8 = šance 4 : 1. OR = 2 znamená „šance se zdvojnásobí“, OR = 1 „žádný vliv“, OR &lt; 1 „šance klesá“.</p></div>
 <div class="box vzorec"><div class="box-t">Vzorec</div>
-\[ P(y=1\mid x) = \frac{1}{1+e^{-(a x + b)}} \qquad\qquad P(y=1\mid \mathbf{x}) = \frac{1}{1+e^{-(a_1\,\text{věk} + a_2\,\text{pohlaví} + \dots + c)}} \]
+\[ P(y=1\mid x) = \frac{1}{1+e^{-(a x + b)}} \]
+<p>Pro víc vstupních proměnných:</p>
+\[ P(y=1\mid \mathbf{x}) = \frac{1}{1+e^{-(a_1\,\text{věk} + a_2\,\text{pohlaví} + \dots + c)}} \]
 <table class="vars">
 <tr><td>\(a x + b\)</td><td>lineární funkce („skóre“), může být libovolně velká i záporná</td></tr>
 <tr><td>\(1/(1+e^{-z})\)</td><td>převede skóre na pravděpodobnost v intervalu (0, 1); skóre 0 → pravděpodobnost 0,5</td></tr>
@@ -232,7 +234,8 @@
 <p>Proč nestačí udělat t-test pro každou dvojici skupin? Pro 3 skupiny jsou to 3 testy, pro 5 skupin už 10 – a s každým testem roste šance na falešně pozitivní výsledek (<a href="01_uvod.html#def-mnohonasobne-testovani">problém mnohonásobného testování</a>). ANOVA položí jedinou otázku pro všechny skupiny najednou.</p>
 <div class="box intuice"><div class="box-t">Intuice: proč „analýza rozptylu“, když porovnáváme průměry</div>
 <p>ANOVA porovnává dva rozptyly: <b>jak moc se liší průměry skupin mezi sebou</b> a <b>jak moc kolísají hodnoty uvnitř skupin</b>. Pokud jsou průměry skupin od sebe daleko ve srovnání s rozptylem uvnitř skupin, skupiny se liší.</p></div>
-\[ F = \frac{\text{rozptyl mezi skupinami (průměrů kolem celkového průměru)}}{\text{rozptyl uvnitř skupin (hodnot kolem průměru své skupiny)}} \]
+\[ F = \frac{\text{rozptyl mezi skupinami}}{\text{rozptyl uvnitř skupin}} \]
+<p>Rozptyl mezi skupinami = jak kolísají průměry skupin kolem celkového průměru; rozptyl uvnitř skupin = jak kolísají hodnoty kolem průměru své skupiny.</p>
 <p>\(F \approx 1\) → rozdíly průměrů jsou jen tak velké, jak by odpovídalo náhodě. Velké \(F\) → aspoň jedna skupina se liší.</p>
 <div class="box vzorec"><div class="box-t">Vzorec podrobněji</div>
 \[ F = \frac{\frac{1}{k-1}\sum_{g=1}^{k} n_g(\bar y_g - \bar y)^2}{\frac{1}{N-k}\sum_{g=1}^{k}\sum_{i \in g}(y_i - \bar y_g)^2} \]

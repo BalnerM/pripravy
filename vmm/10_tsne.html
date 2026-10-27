@@ -109,7 +109,8 @@
 <p><b>Podmíněná pravděpodobnost</b> \(p_{j|i}\) je pravděpodobnost, že by bod \(\mathbf x_i\) zvolil bod \(\mathbf x_j\) za svého souseda, kdyby sousedy vybíral náhodně s pravděpodobností úměrnou Gaussově hustotě se středem v \(\mathbf x_i\) a směrodatnou odchylkou \(\sigma_i\). Pro každý bod \(i\) tvoří hodnoty \(p_{j|i}\) rozdělení pravděpodobnosti \(P_i\) (součet přes \(j\) je 1).</p>
 <p class="jinak">vzdálenost převedená na „hlasy“: každý bod rozdělí 100 % svých hlasů mezi ostatní body, nejvíc dá nejbližším, vzdáleným skoro nic.</p></div>
 <div class="box vzorec"><div class="box-t">Podmíněná pravděpodobnost ve vysoké dimenzi</div>
-\[ p_{j|i} = \frac{\exp\!\left(-\lVert\mathbf{x}_i-\mathbf{x}_j\rVert^2 / 2\sigma_i^2\right)}{\sum_{k\ne i}\exp\!\left(-\lVert\mathbf{x}_i-\mathbf{x}_k\rVert^2 / 2\sigma_i^2\right)}, \qquad p_{i|i} = 0,\quad \sum_j p_{j|i} = 1 \]
+\[ p_{j|i} = \frac{\exp\!\left(-\lVert\mathbf{x}_i-\mathbf{x}_j\rVert^2 / 2\sigma_i^2\right)}{\sum_{k\ne i}\exp\!\left(-\lVert\mathbf{x}_i-\mathbf{x}_k\rVert^2 / 2\sigma_i^2\right)} \]
+\[ p_{i|i} = 0,\qquad \sum_j p_{j|i} = 1 \]
 <table class="vars">
 <tr><td>\(p_{j|i}\)</td><td>pravděpodobnost, že si bod \(i\) „vybere“ bod \(j\) za souseda, pokud sousedy vybírá úměrně Gaussově křivce se středem v \(\mathbf{x}_i\)</td></tr>
 <tr><td>\(\lVert\mathbf{x}_i-\mathbf{x}_j\rVert\)</td><td>eukleidovská vzdálenost (validní pro blízké okolí)</td></tr>
@@ -128,7 +129,11 @@
 <p><b>Perplexita</b> rozdělení \(P_i\) je \(2^{H(P_i)}\). V t-SNE je to hyperparametr: pro každý bod se \(\sigma_i\) nastaví tak, aby perplexita jeho rozdělení sousedů byla rovna zvolené hodnotě.</p>
 <p class="jinak">„efektivní počet sousedů“, se kterými bod počítá. Perplexita 30 ≈ každý bod bere v úvahu zhruba 30 nejbližších sousedů, ať leží v husté, nebo řídké oblasti.</p></div>
 <div class="box priklad"><div class="box-t">Příklad: perplexita jako počet sousedů</div>
-<p>Bod dává pravděpodobnost 0,25 čtyřem sousedům a ostatním 0: \(H = -4\cdot 0{,}25\log_2 0{,}25 = 2\) bity, Perp \(= 2^2 = 4\) – přesně počet sousedů. Rozdělení 0,5; 0,25; 0,25: \(H = 0{,}5 + 0{,}5 + 0{,}5 = 1{,}5\), Perp \(= 2^{1{,}5} \approx 2{,}8\) – „necelí tři“ sousedé, protože jeden dominuje.</p></div>
+<p>Bod dává pravděpodobnost 0,25 čtyřem sousedům a ostatním 0:</p>
+\[ \begin{aligned} H &= -4\cdot 0{,}25\log_2 0{,}25 = 2\ \text{bity} \\ \text{Perp} &= 2^2 = 4 \end{aligned} \]
+<p>– přesně počet sousedů. Rozdělení 0,5; 0,25; 0,25:</p>
+\[ \begin{aligned} H &= 0{,}5\cdot1 + 0{,}25\cdot2 + 0{,}25\cdot2 = 1{,}5 \\ \text{Perp} &= 2^{1{,}5} \approx 2{,}8 \end{aligned} \]
+<p>– „necelí tři“ sousedé, protože jeden dominuje.</p></div>
 <div class="box vzorec"><div class="box-t">Perplexita</div>
 \[ \mathrm{Perp}(P_i) = 2^{H(P_i)}, \qquad H(P_i) = -\sum_j p_{j|i}\log_2 p_{j|i} \]
 <table class="vars">
@@ -178,7 +183,8 @@
 <div class="box definice" id="def-gradient"><div class="box-t">Definice: gradientní sestup</div>
 <p><b>Gradientní sestup</b> je iterační metoda hledání minima funkce: v každém kroku se parametry posunou o malý krok (\(\mu\), krok učení) proti směru <b>gradientu</b> – vektoru parciálních derivací, který ukazuje směr nejrychlejšího růstu funkce.</p>
 <p class="jinak">„sestup z kopce v mlze“: rozhlédnu se, kudy to nejvíc klesá, udělám krok tím směrem a opakuji. U funkce, která není <b>konvexní</b> (nemá tvar jediné mísy), můžu skončit v lokálním dolíku, který není nejhlubší – proto je t-SNE citlivé na start.</p></div>
-\[ \frac{\partial C}{\partial\mathbf{y}_i} = 4\sum_j (p_{ij} - q_{ij})(\mathbf{y}_i - \mathbf{y}_j)\left(1 + \lVert\mathbf{y}_i - \mathbf{y}_j\rVert^2\right)^{-1}, \qquad \mathbf{y}_i^{\text{nový}} = \mathbf{y}_i^{\text{starý}} - \mu\,\frac{\partial C}{\partial\mathbf{y}_i} \]
+\[ \frac{\partial C}{\partial\mathbf{y}_i} = 4\sum_j (p_{ij} - q_{ij})\,\frac{\mathbf{y}_i - \mathbf{y}_j}{1 + \lVert\mathbf{y}_i - \mathbf{y}_j\rVert^2} \]
+\[ \mathbf{y}_i^{\text{nový}} = \mathbf{y}_i^{\text{starý}} - \mu\,\frac{\partial C}{\partial\mathbf{y}_i} \]
 <p>Každý bod se v každé iteraci posune proti gradientu (\(\mu\) = krok učení). Vzorec se dá číst jako soustava <b>pružin</b> mezi \(\mathbf{y}_i\) a ostatními body:</p>
 <ul>
 <li>\(p_{ij} &gt; q_{ij}\) (v mapě jsou chybně daleko, ač jsou sousedé) → pružina <b>přitahuje</b>;</li>

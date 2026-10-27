@@ -128,9 +128,10 @@
 <h3>Příklad z přednášky: výpočet skóre</h3>
 <div class="box priklad"><div class="box-t">Příklad</div>
 <p>Objekt \(\mathbf{x} = [0{,}6;\ 1{,}4]\), transformační vektory (sloupce matice \(\mathbf{V}\)):</p>
-\[ \mathbf{V} = \begin{pmatrix} 0{,}7071 & -0{,}7071\\ 0{,}7071 & 0{,}7071 \end{pmatrix} \qquad
-\begin{aligned} y_1 &= \mathbf{x}\cdot\mathbf{v}_1 = 0{,}6\cdot 0{,}7071 + 1{,}4\cdot 0{,}7071 = 1{,}4\\
-y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071 = 0{,}6 \end{aligned} \]
+\[ \mathbf{V} = \begin{pmatrix} 0{,}7071 & -0{,}7071\\ 0{,}7071 & 0{,}7071 \end{pmatrix} \]
+<p>Skóre = skalární součin objektu s každým sloupcem:</p>
+\[ \begin{aligned} y_1 = \mathbf{x}\cdot\mathbf{v}_1 &= 0{,}6\cdot 0{,}7071 + 1{,}4\cdot 0{,}7071 \approx 1{,}4\\
+y_2 = \mathbf{x}\cdot\mathbf{v}_2 &= 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071 \approx 0{,}6 \end{aligned} \]
 <p>Nové souřadnice objektu jsou \((1{,}4;\ 0{,}6)\) – skalární součin = projekce na novou osu. Osy jsou otočené o 45°. Vektory tvoří <b>ortonormální bázi</b>:</p>
 <div class="box definice" id="def-ortonormalni"><div class="box-t">Definice: ortonormální báze</div>
 <p><b>Ortonormální báze</b> \(p\)-rozměrného prostoru je soustava \(p\) vektorů, které jsou navzájem <b>kolmé</b> (ortogonální: skalární součin každé dvojice je 0) a mají <b>jednotkovou délku</b> (normované: \(\mathbf v^T\mathbf v = 1\)). Každý bod prostoru lze jednoznačně zapsat pomocí souřadnic v této bázi. Matice \(\mathbf V\), jejímiž sloupci jsou, splňuje \(\mathbf V^T\mathbf V = \mathbf I\) (ortogonální matice) a násobení jí je otočení (případně zrcadlení).</p>
@@ -159,10 +160,19 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <li>Spočítej kovarianční matici \(\mathbf{S}\) (resp. korelační \(\mathbf{R}\)).</li>
 <li>Najdi \(p\) vlastních čísel \(\lambda_j\) a vlastních vektorů \(\mathbf{v}_j\) (řešením \(\det(\mathbf{S}-\lambda\mathbf{I}) = 0\)).</li>
 <li>Seřaď je podle \(\lambda\) sestupně.</li>
-<li>Komponentní skóre: \(\mathbf{Y} = \mathbf{X}\mathbf{V}\); s podmínkami \(\mathbf{v}_j^T\mathbf{v}_j = 1\) (bez zkreslení měřítka) a \(\mathbf{v}_j\cdot\mathbf{v}_k = 0\) (kolmost).</li>
+<li>Komponentní skóre \(\mathbf{Y} = \mathbf{X}\mathbf{V}\), s podmínkami:
+<ul>
+<li>\(\mathbf{v}_j^T\mathbf{v}_j = 1\) (bez zkreslení měřítka),</li>
+<li>\(\mathbf{v}_j\cdot\mathbf{v}_k = 0\) (kolmost).</li>
+</ul></li>
 </ol></div>
 <div class="box priklad"><div class="box-t">Mini-příklad (podrobně v přednášce 8)</div>
-<p>\(\mathbf{A} = \begin{pmatrix}3&3\\3&7\end{pmatrix}\): \(\det(\mathbf{A}-\lambda\mathbf{I}) = (3-\lambda)(7-\lambda) - 9 = \lambda^2 - 10\lambda + 12 = 0\) → \(\lambda_1 = 8{,}6\), \(\lambda_2 = 1{,}4\). Vlastní vektory \(\mathbf{v}_1 \approx (0{,}47;\ 0{,}88)\), \(\mathbf{v}_2 \approx (-0{,}88;\ 0{,}47)\). Směr \(\mathbf{v}_1\) nese \(8{,}6/10 = 86\) % rozptylu. Celý postup krok za krokem je v <a href="08_maticove_rozklady.html#ed">kapitole o maticových rozkladech</a>.</p></div>
+<p>Matice a její charakteristická rovnice:</p>
+\[ \mathbf{A} = \begin{pmatrix}3&3\\3&7\end{pmatrix} \]
+\[ \begin{aligned} \det(\mathbf{A}-\lambda\mathbf{I}) &= (3-\lambda)(7-\lambda) - 9 \\ &= \lambda^2 - 10\lambda + 12 = 0 \end{aligned} \]
+<p>Vlastní čísla a vektory:</p>
+\[ \begin{aligned} \lambda_1 &= 8{,}6, & \mathbf{v}_1 &\approx (0{,}47;\ 0{,}88) \\ \lambda_2 &= 1{,}4, & \mathbf{v}_2 &\approx (-0{,}88;\ 0{,}47) \end{aligned} \]
+<p>Směr \(\mathbf{v}_1\) nese \(8{,}6/10 = 86\) % rozptylu. Celý postup krok za krokem je v <a href="08_maticove_rozklady.html#ed">kapitole o maticových rozkladech</a>.</p></div>
 <h3>Terminologie (častá zkoušková otázka)</h3>
 <div class="box definice" id="def-zateze"><div class="box-t">Definice: komponentní zátěže (loadings)</div>
 <p><b>Komponentní zátěže</b> jsou koeficienty, kterými jsou původní proměnné vážené v lineární kombinaci tvořící hlavní komponentu, tj. prvky vlastních vektorů \(\mathbf v_k\). V normované podobě (\(v_{kj}\sqrt{\lambda_k}\), při PCA na korelační matici) jsou rovny <b>korelaci</b> \(j\)-té proměnné s \(k\)-tou komponentou.</p>
@@ -179,7 +189,8 @@ y_2 &= \mathbf{x}\cdot\mathbf{v}_2 = 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p>Pozn.: v grafech se zátěže často kreslí přenásobené \(\sqrt{\lambda}\) – pak jsou to přímo <b>korelace příznaku s komponentou</b> (a leží uvnitř jednotkové kružnice).</p>
 
 <h2 id="predpoklady">Předpoklady a volba S vs. R</h2>
-<p>PCA vychází z kovarianční matice \(\mathbf{S}\) (vyžaduje <b>centrování</b> příznaků) nebo z korelační matice \(\mathbf{R}\). Korelační matice původních dat = kovarianční matice standardizovaných dat: \(\mathbf{R}(\mathbf{x}) = \mathbf{S}(\mathbf{z}),\ \mathbf{z} = (\mathbf{x}-\boldsymbol\mu)/\sigma\).</p>
+<p>PCA vychází z kovarianční matice \(\mathbf{S}\) (vyžaduje <b>centrování</b> příznaků) nebo z korelační matice \(\mathbf{R}\). Korelační matice původních dat = kovarianční matice standardizovaných dat:</p>
+\[ \mathbf{R}(\mathbf{x}) = \mathbf{S}(\mathbf{z}),\qquad \mathbf{z} = \frac{\mathbf{x}-\boldsymbol\mu}{\sigma} \]
 <div class="box pozor"><div class="box-t">Kdy použít korelační matici</div>
 <p>Když mají příznaky <b>nehomogenní rozptyl</b> nebo <b>nesrovnatelné měřítko</b> (jednotky). Jinak PC1 jen „najde“ proměnnou s největšími čísly: koncentrace v tisících by přebila teplotu ve stupních, ne protože je důležitější, ale protože má větší rozptyl v absolutních číslech.</p></div>
 <p>Předpoklady (protože PCA pracuje s \(\mathbf{S}\) a \(\mathbf{R}\)):</p>

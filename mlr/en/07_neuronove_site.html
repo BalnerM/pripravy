@@ -61,7 +61,9 @@
 <p>A <b>neural network</b> is a parametric mapping of the input to an output vector \(\hat{\mathbf y} = f_\theta(\mathbf x)\). <b>Training</b> looks for the parameters \(\theta\) that minimize the loss \(L(\mathbf y, f_\theta(\mathbf x))\), using gradient descent: \(\theta^{(t+1)} = \theta^{(t)} - \eta\nabla_\theta L\).</p>
 <p class="jinak">a big, flexible function with many “knobs” (weights) that are set by the same gradient descent as in chapter 1. Where it all started: Rosenblatt’s Mark I Perceptron (built 1959, public 1960) – a network made in hardware.</p></div>
 <div class="box definice" id="def-neuron"><div class="box-t">Definition: artificial neuron</div>
-<p>An <b>artificial neuron</b> computes the weighted sum of its inputs minus a threshold and passes the result through an activation function \(f\): \(\hat y = f\left[\sum_{i=1}^dw_ix_i - \vartheta\right] = f\left[\sum_{i=0}^dw_ix_i\right]\), where \(x_0 = 1\) and \(w_0 = -\vartheta = b\) (bias). The value \(z = \sum_{i=0}^dw_ix_i\) is the <b>inner potential</b> (pre-activation), \(\hat y\) is the <b>activation</b> (output).</p>
+<p>An <b>artificial neuron</b> computes the weighted sum of its inputs minus a threshold and passes the result through an activation function \(f\):
+\[ \hat y = f\Big[\sum_{i=1}^dw_ix_i - \vartheta\Big] = f\Big[\sum_{i=0}^dw_ix_i\Big] \]
+where \(x_0 = 1\) and \(w_0 = -\vartheta = b\) (bias). The value \(z = \sum_{i=0}^dw_ix_i\) is the <b>inner potential</b> (pre-activation), \(\hat y\) is the <b>activation</b> (output).</p>
 <p class="jinak">neuron = the linear model from chapter 4 + a non-linearity at the output. The same bias trick turns the threshold \(\vartheta\) into an ordinary weight for a constant input 1.</p></div>
 <div class="box definice" id="def-aktivace"><div class="box-t">Definition: activation function</div>
 <p>An <b>activation function</b> is a (usually non-linear) function \(f\) that turns the inner potential of a neuron \(z\) into its output.</p>
@@ -91,19 +93,20 @@
 <tr><td>\(\partial z/\partial w_i = x_i\)</td><td>the input that the weight multiplies</td></tr>
 </table></div>
 <div class="box priklad"><div class="box-t">One neuron by hand (lecture)</div>
-<p>\(\mathbf x = (1, 2)\), \(\mathbf w = (0.5,\ -0.25)\), target \(y = 1\), \(L = \frac12(\hat y - y)^2\). Inner potential \(z = 1\cdot0.5 + 2\cdot(-0.25) = 0\).</p>
+<p>Input \(\mathbf x = (1, 2)\), weights \(\mathbf w = (0.5,\ -0.25)\), target \(y = 1\), loss \(L = \frac12(\hat y - y)^2\). Inner potential:</p>
+\[ z = 1\cdot0.5 + 2\cdot(-0.25) = 0 \]
 <ul>
-<li><b>Linear activation:</b> \(\hat y = 0\), \(L = 0.5\); \(\partial L/\partial w_i = (\hat y - y)\cdot1\cdot x_i = -1\cdot x_i\) ⇒ \(\nabla_{\mathbf w}L = (-1, -2)\).</li>
-<li><b>Sigmoid:</b> \(\hat y = \sigma(0) = 0.5\), \(L = 0.125\); \(\partial L/\partial w_i = (\hat y - y)\,\hat y(1 - \hat y)\,x_i = (-0.5)(0.25)x_i\) ⇒ \(\nabla_{\mathbf w}L = (-0.125,\ -0.25)\).</li>
-<li><b>One step</b> (sigmoid, \(\eta = 1\)): \(\mathbf w \leftarrow (0.625,\ 0)\) ⇒ \(z = 0.625\), \(\hat y = 0.651\), \(L = 0.061\) – the loss dropped from 0.125 to 0.061.</li>
+<li><b>Linear activation</b> (\(f'(z) = 1\)): \[ \begin{aligned} \hat y &= 0,\qquad L = \tfrac12(0 - 1)^2 = 0.5 \\ \partial L/\partial w_i &= (\hat y - y)\cdot1\cdot x_i = -1\cdot x_i \\ \nabla_{\mathbf w}L &= (-1,\ -2) \end{aligned} \]</li>
+<li><b>Sigmoid</b> (\(f'(z) = \hat y(1 - \hat y)\)): \[ \begin{aligned} \hat y &= \sigma(0) = 0.5,\qquad L = 0.125 \\ \partial L/\partial w_i &= (\hat y - y)\,\hat y(1 - \hat y)\,x_i = (-0.5)(0.25)\,x_i \\ \nabla_{\mathbf w}L &= (-0.125,\ -0.25) \end{aligned} \]</li>
+<li><b>One step</b> (sigmoid, \(\eta = 1\)): \[ \begin{aligned} \mathbf w &\leftarrow (0.5,\ -0.25) - (-0.125,\ -0.25) \\ &= (0.625,\ 0) \\ z &= 0.625,\quad \hat y = 0.651,\quad L = 0.061 \end{aligned} \] The loss dropped from 0.125 to 0.061.</li>
 </ul>
 <p>Same input, same loss, but the gradient is 8× smaller: the error was halved (−1 → −0.5) and \(f'(z)\) dropped from 1 to 0.25 (the maximum of the sigmoid).</p></div>
 <div class="box definice" id="def-backprop"><div class="box-t">Definition: backpropagation</div>
 <p><b>Backpropagation</b> is the computation of the gradient of the loss with respect to all weights of the network by repeatedly applying the chain rule from the output to the input: in the <b>forward pass</b> the inner potentials and activations of all layers are computed and stored, in the <b>backward pass</b> the gradient is multiplied by the local derivatives layer by layer.</p>
 <p class="jinak">the error at the output is “shared out” back to the individual weights according to how much they contributed to it. Each input feeds every neuron, so the contributions to the gradient of an input add up.</p></div>
 <div class="box vzorec"><div class="box-t">Forward and backward pass of a general network (\(\mathbf h_0 = \mathbf x\), bias as a column of \(W_k\))</div>
-\[ \text{forward } (k = 1\dots K):\quad \mathbf z_k = W_k\mathbf h_{k-1},\quad \mathbf h_k = f(\mathbf z_k),\qquad \mathbf h_K = \hat{\mathbf y} \]
-\[ \text{backward } (k = K\dots1):\quad \nabla_{\mathbf z_k}L = \nabla_{\mathbf h_k}L\odot f'(\mathbf z_k),\quad \nabla_{W_k}L = \nabla_{\mathbf z_k}L\;\mathbf h_{k-1}^\top,\quad \nabla_{\mathbf h_{k-1}}L = W_k^\top\nabla_{\mathbf z_k}L \]
+\[ \begin{aligned} &\text{forward } (k = 1\dots K): \\ &\qquad \mathbf z_k = W_k\mathbf h_{k-1} \\ &\qquad \mathbf h_k = f(\mathbf z_k),\qquad \mathbf h_K = \hat{\mathbf y} \end{aligned} \]
+\[ \begin{aligned} &\text{backward } (k = K\dots1): \\ &\qquad \nabla_{\mathbf z_k}L = \nabla_{\mathbf h_k}L\odot f'(\mathbf z_k) \\ &\qquad \nabla_{W_k}L = \nabla_{\mathbf z_k}L\;\mathbf h_{k-1}^\top \\ &\qquad \nabla_{\mathbf h_{k-1}}L = W_k^\top\nabla_{\mathbf z_k}L \end{aligned} \]
 \[ \text{update (vanilla SGD)}:\quad W_k^{(t+1)} = W_k^{(t)} - \eta\nabla_{W_k}L \]
 <table class="vars">
 <tr><td>\(W_k\)</td><td>weight matrix of the \(k\)-th layer; \(\nabla_{W_k}L\) has the same shape (outer product of the error vector and the layer inputs)</td></tr>
@@ -112,7 +115,8 @@
 </table></div>
 <h3>Three ways to the same gradient</h3>
 <div class="box definice" id="def-num-gradient"><div class="box-t">Definition: numerical gradient (central differences)</div>
-<p>The <b>numerical gradient</b> approximates a partial derivative by the difference of loss values after a small change of one weight: \(\frac{\partial L}{\partial w_i} \approx \frac{L(\mathbf w + \varepsilon\mathbf e_i) - L(\mathbf w - \varepsilon\mathbf e_i)}{2\varepsilon}\).</p>
+<p>The <b>numerical gradient</b> approximates a partial derivative by the difference of loss values after a small change of one weight:
+\[ \frac{\partial L}{\partial w_i} \approx \frac{L(\mathbf w + \varepsilon\mathbf e_i) - L(\mathbf w - \varepsilon\mathbf e_i)}{2\varepsilon} \]</p>
 <p class="jinak">it needs only loss values (it works even for a “black box”), but it costs \(2P\) evaluations for \(P\) weights and is only approximate: a large \(\varepsilon\) = truncation error, a small one = rounding errors and subtracting almost equal numbers (in float64 around \(10^{-6}\)–\(10^{-5}\)). It is used to <b>check</b> (gradient check) an analytical gradient.</p></div>
 <div class="box definice" id="def-autograd"><div class="box-t">Definition: autograd (reverse-mode automatic differentiation)</div>
 <p><b>Autograd</b> builds, from a program, a computational graph of elementary operations with known local derivatives, stores the intermediate results in the forward pass and applies the chain rule in the backward pass – in a few passes it computes the exact gradient with respect to all parameters (<code>loss.backward()</code> fills <code>w.grad</code>).</p>
@@ -126,26 +130,40 @@
 <tr><td>use</td><td>small \(P\), black boxes, gradient check</td><td>small problems, theory</td><td>large networks</td></tr>
 </table></div>
 <div class="box priklad"><div class="box-t">Check (lecture)</div>
-<p>Sigmoid neuron, \(\mathbf x = (1, 2)\), \(\mathbf w = (0.5,\ 0.25)\), \(y = 1\): \(z = 1\), \(L \approx 0.03616\). Analytically \(\nabla_{\mathbf w}L = (\sigma(z) - y)\,\sigma'(z)\,\mathbf x \approx (-0.05288,\ -0.10575)\); numerically with \(\varepsilon = 10^{-5}\) and with autograd we get the same.</p></div>
+<p>Sigmoid neuron, \(\mathbf x = (1, 2)\), \(\mathbf w = (0.5,\ 0.25)\), \(y = 1\):</p>
+\[ z = 1\cdot0.5 + 2\cdot0.25 = 1,\qquad L \approx 0.03616 \]
+<p>Analytically:</p>
+\[ \nabla_{\mathbf w}L = (\sigma(z) - y)\,\sigma'(z)\,\mathbf x \approx (-0.05288,\ -0.10575) \]
+<p>Numerically with \(\varepsilon = 10^{-5}\) and with autograd we get the same.</p></div>
 
 <h2 id="optimalizatory">Learning algorithms (optimizers)</h2>
 <div class="box definice" id="def-sgd"><div class="box-t">Definition: GD, SGD and mini-batch GD</div>
-<p><b>(Batch) gradient descent</b> computes the gradient from the average loss over the <b>whole</b> training set and updates the weights once per epoch. <b>Stochastic gradient descent (SGD)</b> updates the weights after <b>every single</b> sample. <b>Mini-batch GD</b> updates after each batch of \(b\) samples: \(\theta^{(t+1)} = \theta^{(t)} - \eta\nabla_\theta\frac1b\sum_{i\in B_t}L(y^{(i)}, \hat y^{(i)})\).</p>
+<p><b>(Batch) gradient descent</b> computes the gradient from the average loss over the <b>whole</b> training set and updates the weights once per epoch. <b>Stochastic gradient descent (SGD)</b> updates the weights after <b>every single</b> sample. <b>Mini-batch GD</b> updates after each batch \(B_t\) of \(b\) samples:
+\[ \theta^{(t+1)} = \theta^{(t)} - \eta\,\nabla_\theta\frac1b\sum_{i\in B_t}L(y^{(i)}, \hat y^{(i)}) \]</p>
 <p class="jinak">GD: one exact but expensive step per epoch – slow, impossible for large data, it does not escape a local minimum. SGD: many cheap, noisy steps – faster, the noise helps to jump out of shallow minima, but it can overshoot (cure: gradually lower \(\eta\); shuffle the data at the start of each epoch). Mini-batch is a compromise: lower variance of the steps than SGD, efficient parallelization on a GPU – the most used variant (\(b\) from tens to thousands depending on the task and memory). <b>Epoch</b> = one pass through the whole training set.</p></div>
 <div class="box pozor"><div class="box-t">Problems of plain gradient descent</div>
 <ol><li>How to choose the learning rate?</li><li>A learning-rate schedule is still needed.</li><li>The same step for all parameters?</li><li>Saddle points and plateaus – an (almost) zero gradient even though the loss could still decrease.</li><li>Local minima.</li></ol></div>
 <div class="box definice" id="def-momentum"><div class="box-t">Definition: momentum and Nesterov (NAG)</div>
-<p><b>Momentum</b> adds “inertia”: the velocity \(\mathbf u\) accumulates past gradients, \(\mathbf u^{(t+1)} = \gamma\mathbf u^{(t)} + \eta\mathbf g^{(t)}\), \(\theta^{(t+1)} = \theta^{(t)} - \mathbf u^{(t+1)}\) (typically \(\gamma = 0.9\)). <b>NAG</b> (Nesterov) computes the gradient at the point where momentum is currently carrying us: \(\mathbf g^{(t)} = \nabla_\theta L(\theta^{(t)} - \gamma\mathbf u^{(t)})\) – it “looks ahead”.</p>
+<p><b>Momentum</b> adds “inertia”: the velocity \(\mathbf u\) accumulates past gradients (typically \(\gamma = 0.9\)):
+\[ \begin{aligned} \mathbf u^{(t+1)} &= \gamma\mathbf u^{(t)} + \eta\mathbf g^{(t)} \\ \theta^{(t+1)} &= \theta^{(t)} - \mathbf u^{(t+1)} \end{aligned} \]
+<b>NAG</b> (Nesterov) computes the gradient at the point where momentum is currently carrying us – it “looks ahead”:
+\[ \mathbf g^{(t)} = \nabla_\theta L(\theta^{(t)} - \gamma\mathbf u^{(t)}) \]</p>
 <p class="jinak">a heavy ball rolling downhill: it speeds up in a consistent direction, oscillation across a narrow valley is damped and it rolls over shallow dips (local minima).</p></div>
 <div class="box definice" id="def-adaptivni"><div class="box-t">Definition: AdaGrad and RMSprop</div>
-<p><b>AdaGrad</b> gives each parameter its own step according to the sum of squares of its past gradients: \(\mathbf s^{(t+1)} = \mathbf s^{(t)} + (\mathbf g^{(t)})^2\), \(\theta^{(t+1)} = \theta^{(t)} - \frac{\eta}{\sqrt{\mathbf s^{(t+1)}} + \epsilon}\odot\mathbf g^{(t)}\). <b>RMSprop</b> uses a moving average of the squares instead of the sum, \(\mathbf s^{(t+1)} = \rho\,\mathbf s^{(t)} + (1 - \rho)(\mathbf g^{(t)})^2\), so the step does not die out (element-wise operations, \(\rho = 0.9\), \(\epsilon = 10^{-8}\)).</p>
+<p><b>AdaGrad</b> gives each parameter its own step according to the sum of squares of its past gradients:
+\[ \begin{aligned} \mathbf s^{(t+1)} &= \mathbf s^{(t)} + (\mathbf g^{(t)})^2 \\ \theta^{(t+1)} &= \theta^{(t)} - \frac{\eta}{\sqrt{\mathbf s^{(t+1)}} + \epsilon}\odot\mathbf g^{(t)} \end{aligned} \]
+<b>RMSprop</b> uses a moving average of the squares instead of the sum, so the step does not die out (element-wise operations, \(\rho = 0.9\), \(\epsilon = 10^{-8}\)):
+\[ \mathbf s^{(t+1)} = \rho\,\mathbf s^{(t)} + (1 - \rho)(\mathbf g^{(t)})^2 \]</p>
 <p class="jinak">parameters with large gradients get a smaller step, those with small ones a larger step – the step is “normalized” by the size of the gradient. But in AdaGrad the sum only grows, so the step almost disappears over time; RMSprop remembers only the recent history. Variants: AdaDelta (\(\eta\) replaced by the RMS of past steps), AdaMax (maximum instead of RMS), NAdam (Adam + Nesterov).</p></div>
 <div class="box definice" id="def-adam"><div class="box-t">Definition: Adam</div>
-<p><b>Adam</b> (adaptive moment estimation) combines momentum and RMSprop: it keeps a moving average of the gradients \(\mathbf m\) (first moment) and of their squares \(\mathbf v\) (second moment), corrects both for the bias caused by starting at zero (bias correction), and the step is \(\theta \leftarrow \theta - \eta\,\hat{\mathbf m}/(\sqrt{\hat{\mathbf v}} + \epsilon)\). It is the most used optimizer today.</p>
+<p><b>Adam</b> (adaptive moment estimation) combines momentum and RMSprop: it keeps a moving average of the gradients \(\mathbf m\) (first moment) and of their squares \(\mathbf v\) (second moment), corrects both for the bias caused by starting at zero (bias correction), and the step is
+\[ \theta \leftarrow \theta - \eta\,\frac{\hat{\mathbf m}}{\sqrt{\hat{\mathbf v}} + \epsilon} \]
+It is the most used optimizer today.</p>
 <p class="jinak">“a heavy ball with friction” (momentum) + its own step for each parameter (RMSprop). It does not get stuck at a small gradient (saddle), rolls over shallow local minima and is much less sensitive to the initial learning rate. It does not solve the problems completely – it just makes them much less painful.</p></div>
 <div class="box vzorec"><div class="box-t">Adam</div>
-\[ \mathbf m^{(t+1)} = \beta_1\mathbf m^{(t)} + (1 - \beta_1)\mathbf g^{(t)},\qquad \mathbf v^{(t+1)} = \beta_2\mathbf v^{(t)} + (1 - \beta_2)(\mathbf g^{(t)})^2 \]
-\[ \hat{\mathbf m} = \frac{\mathbf m^{(t+1)}}{1 - \beta_1^{t+1}},\qquad \hat{\mathbf v} = \frac{\mathbf v^{(t+1)}}{1 - \beta_2^{t+1}},\qquad \theta^{(t+1)} = \theta^{(t)} - \eta\frac{\hat{\mathbf m}}{\sqrt{\hat{\mathbf v}} + \epsilon} \]
+\[ \begin{aligned} \mathbf m^{(t+1)} &= \beta_1\mathbf m^{(t)} + (1 - \beta_1)\mathbf g^{(t)} \\ \mathbf v^{(t+1)} &= \beta_2\mathbf v^{(t)} + (1 - \beta_2)(\mathbf g^{(t)})^2 \end{aligned} \]
+\[ \hat{\mathbf m} = \frac{\mathbf m^{(t+1)}}{1 - \beta_1^{t+1}},\qquad \hat{\mathbf v} = \frac{\mathbf v^{(t+1)}}{1 - \beta_2^{t+1}} \]
+\[ \theta^{(t+1)} = \theta^{(t)} - \eta\frac{\hat{\mathbf m}}{\sqrt{\hat{\mathbf v}} + \epsilon} \]
 <table class="vars">
 <tr><td>\(\beta_1\)</td><td>decay of the first moment (mean of the gradients), default 0.9</td></tr>
 <tr><td>\(\beta_2\)</td><td>decay of the second moment (mean of the squares), default 0.999</td></tr>
@@ -153,7 +171,17 @@
 <tr><td>\(\hat{\mathbf m}, \hat{\mathbf v}\)</td><td>moments corrected for the start at zero</td></tr>
 </table></div>
 <div class="box priklad"><div class="box-t">Why bias correction (lecture)</div>
-<p>Constant gradient \(g\), \(\mathbf m^{(0)} = \mathbf v^{(0)} = 0\). First update: \(m = 0.1g\), \(v = 0.001g^2\) ⇒ without correction \(m/\sqrt v = \frac{0.1}{\sqrt{0.001}}\operatorname{sign}(g) = 3.16\operatorname{sign}(g)\) – a step 3.16× larger than it should be. With correction \(\hat m = g\), \(\hat v = g^2\) ⇒ \(\hat m/\sqrt{\hat v} = \operatorname{sign}(g)\), a step of exactly \(\eta\). In general the uncorrected step is \(\frac{1 - \beta_1^{t}}{\sqrt{1 - \beta_2^{t}}}\) times larger (\(t\) = number of the update): 3.2× in the first step, 6.5× around the tenth, still 1.3× after a thousand steps. So without correction the first steps would be <b>too large</b>.</p></div>
+<p>Constant gradient \(g\), \(\mathbf m^{(0)} = \mathbf v^{(0)} = 0\), \(\beta_1 = 0.9\), \(\beta_2 = 0.999\).</p>
+<p>1. First update:</p>
+\[ m = 0.1g,\qquad v = 0.001g^2 \]
+<p>2. Without correction the step is 3.16× larger than it should be:</p>
+\[ \frac{m}{\sqrt v} = \frac{0.1}{\sqrt{0.001}}\operatorname{sign}(g) = 3.16\operatorname{sign}(g) \]
+<p>3. With correction the step is exactly \(\eta\):</p>
+\[ \hat m = \frac{0.1g}{1 - 0.9} = g,\qquad \hat v = \frac{0.001g^2}{1 - 0.999} = g^2 \]
+\[ \frac{\hat m}{\sqrt{\hat v}} = \operatorname{sign}(g) \]
+<p>4. In general the uncorrected step is this many times larger (\(t\) = number of the update):</p>
+\[ \frac{1 - \beta_1^{t}}{\sqrt{1 - \beta_2^{t}}} \]
+<p>– 3.2× in the first step, 6.5× around the tenth, still 1.3× after a thousand steps. So without correction the first steps would be <b>too large</b>.</p></div>
 <figure><div class="paper"><img src="../figures/en/fig07_optimizers.png" alt="Paths of SGD, momentum, RMSprop and Adam on the Beale function" loading="lazy"></div>
 <figcaption><b>Fig. 7.2</b> The Beale function (minimum at (3, 0.5), a flat valley, extremely steep walls). Four optimizers written from the formulas above, 3000 steps from the same start (2.4, −2.8); learning rates as in the lecture playground.</figcaption></figure>
 <div class="box odnes"><div class="box-t">What to take from the figure</div>
@@ -178,7 +206,10 @@
 <p>The <b>weighted cross-entropy</b> for \(C\) classes in one-hot encoding is \(L_i = -\sum_{c=1}^C\omega_c\,y_{i,c}\log\hat y_{i,c}\), where \(y_{i,c}\) is the true class (one-hot), \(\hat y_{i,c}\) the predicted probability (softmax output) and \(\omega_c\) the class weight; the total loss is \(L = \sum_iL_i\). For \(\omega_c = 1\) it is ordinary cross-entropy.</p>
 <p class="jinak">it punishes a small probability given to the correct class (\(-\log\)). The weights \(\omega_c\) raise the price of mistakes on rare classes – a remedy for imbalance (chapter 2). It is used with a softmax at the output.</p></div>
 <div class="box definice" id="def-tversky"><div class="box-t">Definition: Tversky loss</div>
-<p>The <b>Tversky loss</b> for binary segmentation is \(T = 1 - \frac{TP}{TP + \beta\,FN + \alpha\,FP}\), where \(TP = \sum_iy_{i,1}\hat y_{i,1}\), \(FN = \sum_iy_{i,1}\hat y_{i,0}\), \(FP = \sum_iy_{i,0}\hat y_{i,1}\) are computed “softly” from probabilities and \(\alpha, \beta\) weight the false positive and false negative pixels.</p>
+<p>The <b>Tversky loss</b> for binary segmentation is
+\[ T = 1 - \frac{TP}{TP + \beta\,FN + \alpha\,FP} \]
+where \(\alpha, \beta\) weight the false positive and false negative pixels and the counts are computed “softly” from probabilities:
+\[ \begin{aligned} TP &= \textstyle\sum_iy_{i,1}\hat y_{i,1} \\ FN &= \textstyle\sum_iy_{i,1}\hat y_{i,0} \\ FP &= \textstyle\sum_iy_{i,0}\hat y_{i,1} \end{aligned} \]</p>
 <p class="jinak">\(\alpha = \beta = 0.5\) ⇒ \(T = 1 - \text{Dice}\) (1 − F1); \(\alpha = \beta = 1\) ⇒ \(1 - \text{Jaccard}\). With \(\alpha + \beta = 1\): a higher \(\beta\) = missing something (FN) is more expensive = higher recall – e.g. for small lesions we do not want to miss.</p></div>
 <div class="box parametry"><div class="box-t">Parameters: loss functions</div>
 <div class="tablewrap"><table class="params">
@@ -203,15 +234,18 @@
 <div class="box priklad"><div class="box-t">Dropout by hand (lecture)</div>
 <p>Five hidden neurons with output 1, \(p = 0.5\), mask (1, 0, 0, 1, 1) ⇒ (2, 0, 0, 2, 2), sum 6. Averaged over all \(2^5\) masks the sum is exactly 5 – the same as with all neurons on and no division. A 3–5–2 network with \(p_0 = 0.9\) (input) and \(p_1 = 0.5\) (hidden): on average \(3\cdot0.9 + 5\cdot0.5 + 2 = 7.2\) of the ten neurons are active (the output layer is never switched off).</p></div>
 <div class="box definice" id="def-batchnorm"><div class="box-t">Definition: batch normalization</div>
-<p><b>Batch normalization</b> is a layer that standardizes each feature (activation) \(j\) in a mini-batch by the batch mean and variance, \(\tilde x_j^{(i)} = (x_j^{(i)} - \mu_{Bj})/\sqrt{\sigma_{Bj}^2 + \epsilon}\), and then transforms it with a learnable scale and shift: \(\tilde h_j^{(i)} = \gamma_j\tilde x_j^{(i)} + \beta_j\). At the same time it keeps moving averages of the statistics of the whole dataset \(\mu_{Dj} \leftarrow \rho\mu_{Dj} + (1-\rho)\mu_{Bj}\) (similarly \(\sigma^2_{Dj}\)), which are used during prediction.</p>
+<p><b>Batch normalization</b> is a layer that standardizes each feature (activation) \(j\) in a mini-batch by the batch mean and variance and then transforms it with a learnable scale and shift:
+\[ \begin{aligned} \tilde x_j^{(i)} &= \frac{x_j^{(i)} - \mu_{Bj}}{\sqrt{\sigma_{Bj}^2 + \epsilon}} \\ \tilde h_j^{(i)} &= \gamma_j\tilde x_j^{(i)} + \beta_j \end{aligned} \]
+At the same time it keeps moving averages of the statistics of the whole dataset, which are used during prediction:
+\[ \mu_{Dj} \leftarrow \rho\mu_{Dj} + (1-\rho)\mu_{Bj}\quad\text{(similarly } \sigma^2_{Dj}) \]</p>
 <p class="jinak">the distribution of activations changes during training as the weights change; BN “resets” it in each batch to mean 0 and variance 1. The parameters \(\gamma, \beta\) (learned by backpropagation – BN is differentiable) give the network back the freedom to choose its own scale when standardization is not optimal. During prediction the whole layer is just one multiplication and one addition per feature.</p></div>
 <div class="box priklad"><div class="box-t">Batch normalization by hand (lecture)</div>
 <p>A batch of \(b = 4\) activations \(x = (2, 4, 6, 8)\), \(\gamma = 2\), \(\beta = 1\), we ignore \(\epsilon\).</p>
 <ol>
 <li>\(\mu_B = 5\), \(\sigma_B^2 = \frac14(9 + 1 + 1 + 9) = 5\).</li>
-<li>\(\tilde x = \frac{1}{\sqrt5}(-3, -1, 1, 3) = (-1.342,\ -0.447,\ 0.447,\ 1.342)\) – mean 0, variance 1.</li>
+<li>Standardization (mean 0, variance 1): \[ \begin{aligned} \tilde x &= \tfrac{1}{\sqrt5}(-3, -1, 1, 3) \\ &= (-1.342,\ -0.447,\ 0.447,\ 1.342) \end{aligned} \]</li>
 <li>\(\tilde h = 2\tilde x + 1 = (-1.68,\ 0.11,\ 1.89,\ 3.68)\).</li>
-<li>Prediction with \(\mu_D = 5\), \(\sigma_D^2 = 5\): \(\gamma^{\text{pred}} = \gamma/\sqrt{\sigma_D^2} = 2/\sqrt5 = 0.894\), \(\beta^{\text{pred}} = \beta - \gamma\mu_D/\sqrt{\sigma_D^2} = 1 - 10/\sqrt5 = -3.472\); check \(0.894\cdot8 - 3.472 = 3.68\) ✓.</li>
+<li>Prediction with \(\mu_D = 5\), \(\sigma_D^2 = 5\): \[ \begin{aligned} \gamma^{\text{pred}} &= \gamma/\sqrt{\sigma_D^2} = 2/\sqrt5 = 0.894 \\ \beta^{\text{pred}} &= \beta - \gamma\mu_D/\sqrt{\sigma_D^2} \\ &= 1 - 10/\sqrt5 = -3.472 \\ \text{check:}\ \ & 0.894\cdot8 - 3.472 = 3.68\ \checkmark \end{aligned} \]</li>
 </ol>
 <p>(Check question: batch (1, 3, 5, 7) ⇒ \(\mu_B = 4\), \(\sigma_B^2 = 5\), \(\tilde x\) = the same values ±1.342, ±0.447.)</p></div>
 <div class="tablewrap"><table>
@@ -267,23 +301,50 @@
 <details class="q"><summary>Compare the sigmoid, tanh, softmax and ReLU. Why are step functions unusable for gradient learning?</summary><div>
 <p>Sigmoid: (0, 1), \(f' = f(1-f)\) max 0.25, binary classification output. Tanh: (−1, 1), \(f' = 1 - f^2\) max 1, centred, hidden layers. Softmax: a vector of probabilities summing to 1, multi-class classification output. ReLU: \(\max(0, z)\), derivative 0 or 1, does not saturate, the standard for hidden layers. A step function has a derivative of zero almost everywhere (a Dirac impulse at zero) – the gradient carries no information about where to move the weights.</p></div></details>
 <details class="q"><summary>Write the three factors of ∂L/∂wᵢ for one neuron and say what each depends on.</summary><div>
-<p>\(\frac{\partial L}{\partial w_i} = \frac{\partial L}{\partial\hat y}\cdot\frac{\partial\hat y}{\partial z}\cdot\frac{\partial z}{\partial w_i}\): the first depends on the loss (for \(\frac12(\hat y - y)^2\) it is \(\hat y - y\)), the second on the activation (\(f'(z)\)), the third is the input \(x_i\). Example: \(\mathbf x = (1,2)\), \(\mathbf w = (0.5, -0.25)\), \(y = 1\): a linear activation gives \(\nabla L = (-1, -2)\), the sigmoid \((-0.125, -0.25)\) – 8× smaller (half the error, \(f'\) = 0.25).</p></div></details>
+<p>Chain rule:</p>
+\[ \frac{\partial L}{\partial w_i} = \frac{\partial L}{\partial\hat y}\cdot\frac{\partial\hat y}{\partial z}\cdot\frac{\partial z}{\partial w_i} \]
+<p>The first term depends on the loss (for \(\frac12(\hat y - y)^2\) it is \(\hat y - y\)), the second on the activation (\(f'(z)\)), the third is the input \(x_i\). Example: \(\mathbf x = (1, 2)\), \(\mathbf w = (0.5, -0.25)\), \(y = 1\):</p>
+<ul>
+<li>linear activation: \(\nabla L = (-1, -2)\),</li>
+<li>sigmoid: \(\nabla L = (-0.125, -0.25)\) – 8× smaller (half the error, \(f'\) = 0.25).</li>
+</ul></div></details>
 <details class="q"><summary>Describe the forward and backward pass of a general network in matrix form. What shape does ∇_{W_k}L have and why?</summary><div>
-<p>Forward \(\mathbf z_k = W_k\mathbf h_{k-1}\), \(\mathbf h_k = f(\mathbf z_k)\) (store them). Backward \(\nabla_{\mathbf z_k}L = \nabla_{\mathbf h_k}L\odot f'(\mathbf z_k)\), \(\nabla_{W_k}L = \nabla_{\mathbf z_k}L\,\mathbf h_{k-1}^\top\), \(\nabla_{\mathbf h_{k-1}}L = W_k^\top\nabla_{\mathbf z_k}L\). \(\nabla_{W_k}L\) has the same shape as \(W_k\) (number of outputs × number of inputs of the layer) – it is the outer product of the layer’s error vector and its inputs; otherwise \(W_k - \eta\nabla_{W_k}L\) could not be computed.</p></div></details>
+<p>Forward, I compute and store:</p>
+\[ \mathbf z_k = W_k\mathbf h_{k-1},\qquad \mathbf h_k = f(\mathbf z_k) \]
+<p>Backward:</p>
+\[ \begin{aligned} \nabla_{\mathbf z_k}L &= \nabla_{\mathbf h_k}L\odot f'(\mathbf z_k) \\ \nabla_{W_k}L &= \nabla_{\mathbf z_k}L\,\mathbf h_{k-1}^\top \\ \nabla_{\mathbf h_{k-1}}L &= W_k^\top\nabla_{\mathbf z_k}L \end{aligned} \]
+<p>\(\nabla_{W_k}L\) has the same shape as \(W_k\) (number of outputs × number of inputs of the layer) – it is the outer product of the layer’s error vector and its inputs; otherwise \(W_k - \eta\nabla_{W_k}L\) could not be computed.</p></div></details>
 <details class="q"><summary>How do the analytical, numerical and autograd gradients differ? Why is the gradient checked with finite differences?</summary><div>
-<p>Analytical: a derived formula, exact, but laborious and prone to algebra mistakes. Numerical: central differences \((L(\mathbf w + \varepsilon\mathbf e_i) - L(\mathbf w - \varepsilon\mathbf e_i))/2\varepsilon\), needs only function values, but is approximate (choice of \(\varepsilon\)) and costs \(2P\) evaluations. Autograd: computational graph + chain rule, exact, costs a few passes independent of \(P\). Finite differences are an independent, simple check that a hand-derived or implemented gradient has no mistake.</p></div></details>
+<p>Analytical: a derived formula, exact, but laborious and prone to algebra mistakes. Numerical: central differences</p>
+\[ \frac{L(\mathbf w + \varepsilon\mathbf e_i) - L(\mathbf w - \varepsilon\mathbf e_i)}{2\varepsilon} \]
+<p>needs only function values, but is approximate (choice of \(\varepsilon\)) and costs \(2P\) evaluations. Autograd: computational graph + chain rule, exact, costs a few passes independent of \(P\). Finite differences are an independent, simple check that a hand-derived or implemented gradient has no mistake.</p></div></details>
 <details class="q"><summary>Compare GD, SGD and mini-batch GD. Name five problems of plain gradient descent.</summary><div>
 <p>GD: an update once per epoch from the whole set – exact but slow, impossible for large data. SGD: an update after every sample – fast, noisy (the noise helps out of shallow minima), can overshoot. Mini-batch: an update after \(b\) samples – lower variance than SGD, parallelization on a GPU, the most used. Problems: choosing the learning rate; the need for a learning-rate schedule; the same step for all parameters; saddles and plateaus (zero gradient); local minima.</p></div></details>
 <details class="q"><summary>Write the Adam update including bias correction. What do β₁, β₂ and ε do? Would the first steps without correction be too small or too large?</summary><div>
-<p>\(\mathbf m \leftarrow \beta_1\mathbf m + (1-\beta_1)\mathbf g\), \(\mathbf v \leftarrow \beta_2\mathbf v + (1-\beta_2)\mathbf g^2\), \(\hat{\mathbf m} = \mathbf m/(1-\beta_1^t)\), \(\hat{\mathbf v} = \mathbf v/(1-\beta_2^t)\), \(\theta \leftarrow \theta - \eta\hat{\mathbf m}/(\sqrt{\hat{\mathbf v}} + \epsilon)\). \(\beta_1\) (0.9) = memory of the mean of the gradients (momentum), \(\beta_2\) (0.999) = memory of the mean of the squares (step normalization), \(\epsilon\) prevents division by zero. Without correction the first steps would be too <b>large</b> (3.16× in the first step, 6.5× around the tenth), because \(\mathbf v\) starting from zero is underestimated more than \(\mathbf m\).</p></div></details>
+<p>Adam steps:</p>
+\[ \begin{aligned} \mathbf m &\leftarrow \beta_1\mathbf m + (1-\beta_1)\mathbf g \\ \mathbf v &\leftarrow \beta_2\mathbf v + (1-\beta_2)\mathbf g^2 \\ \hat{\mathbf m} &= \mathbf m/(1-\beta_1^t),\qquad \hat{\mathbf v} = \mathbf v/(1-\beta_2^t) \\ \theta &\leftarrow \theta - \eta\,\hat{\mathbf m}/(\sqrt{\hat{\mathbf v}} + \epsilon) \end{aligned} \]
+<p>\(\beta_1\) (0.9) = memory of the mean of the gradients (momentum), \(\beta_2\) (0.999) = memory of the mean of the squares (step normalization), \(\epsilon\) prevents division by zero. Without correction the first steps would be too <b>large</b> (3.16× in the first step, 6.5× around the tenth), because \(\mathbf v\) starting from zero is underestimated more than \(\mathbf m\).</p></div></details>
 <details class="q"><summary>Why does plain SGD get stuck at a saddle point while adaptive methods do not?</summary><div>
 <p>At a saddle the gradient is almost zero, so the step \(\eta\mathbf g\) is almost zero and SGD stands still. Momentum carries velocity from previous steps, and adaptive methods (RMSprop, Adam) divide the gradient by its typical size \(\sqrt{\mathbf v}\) – so even a small but consistent gradient gives a reasonably large step and the method leaves the saddle.</p></div></details>
 <details class="q"><summary>Write the weighted cross-entropy. Which activation is used with it? What do α and β control in the Tversky loss?</summary><div>
-<p>\(L_i = -\sum_c\omega_cy_{i,c}\log\hat y_{i,c}\) with one-hot \(y\) and probabilities \(\hat y\) – softmax at the output (sigmoid for a binary task). Tversky \(T = 1 - TP/(TP + \beta FN + \alpha FP)\): \(\alpha\) weights false positives, \(\beta\) false negatives; \(\alpha = \beta = 0.5\) gives 1 − Dice (F1), \(\alpha = \beta = 1\) gives 1 − Jaccard; a higher \(\beta\) (with \(\alpha + \beta = 1\)) increases recall.</p></div></details>
+<p>Weighted cross-entropy with one-hot \(y\) and probabilities \(\hat y\) – softmax at the output (sigmoid for a binary task):</p>
+\[ L_i = -\sum_c\omega_cy_{i,c}\log\hat y_{i,c} \]
+<p>Tversky loss:</p>
+\[ T = 1 - \frac{TP}{TP + \beta FN + \alpha FP} \]
+<p>\(\alpha\) weights false positives, \(\beta\) false negatives; \(\alpha = \beta = 0.5\) gives 1 − Dice (F1), \(\alpha = \beta = 1\) gives 1 − Jaccard; a higher \(\beta\) (with \(\alpha + \beta = 1\)) increases recall.</p></div></details>
 <details class="q"><summary>Explain dropout during training and during prediction. Why are the outputs divided by p?</summary><div>
 <p>During training, for each sample every neuron is kept with probability \(p\) (otherwise switched off together with its connections), and the outputs of the kept ones are divided by \(p\); the gradient and update only for active neurons; the next sample has a new mask. This trains subnetworks with shared weights – an approximation of bagging \(2^M\) subnetworks for the price of one network. During prediction all neurons are active. Dividing by \(p\) keeps the expected input of the next layer the same in training and prediction (5 neurons with output 1, \(p = 0.5\): the average sum over the masks is 5); without it the outputs would have to be multiplied by \(p\) during prediction.</p></div></details>
 <details class="q"><summary>Describe the steps of batch normalization. Why does it need γ and β and why does it cost nothing during prediction?</summary><div>
-<p>1) batch mean and variance for each feature (and moving averages for the whole dataset); 2) standardization \((x - \mu_B)/\sqrt{\sigma_B^2 + \epsilon}\); 3) \(\gamma\tilde x + \beta\); 4) passing on to the next layers; 5) learning \(\gamma, \beta\) by backpropagation; 6) repeating for each batch; 7) after training, recomputing to \(\gamma^{\text{pred}}, \beta^{\text{pred}}\) from the moving statistics. \(\gamma, \beta\) give the network back the option to choose a scale and shift other than (0, 1) if that is better. During prediction the layer is just \(\gamma^{\text{pred}}x + \beta^{\text{pred}}\) – one multiplication and one addition per feature.</p></div></details>
+<ol>
+<li>batch mean and variance for each feature (and moving averages for the whole dataset);</li>
+<li>standardization \((x - \mu_B)/\sqrt{\sigma_B^2 + \epsilon}\);</li>
+<li>scale and shift \(\gamma\tilde x + \beta\);</li>
+<li>passing on to the next layers;</li>
+<li>learning \(\gamma, \beta\) by backpropagation;</li>
+<li>repeating for each batch;</li>
+<li>after training, recomputing to \(\gamma^{\text{pred}}, \beta^{\text{pred}}\) from the moving statistics.</li>
+</ol>
+<p>\(\gamma, \beta\) give the network back the option to choose a scale and shift other than (0, 1) if that is better. During prediction the layer is just \(\gamma^{\text{pred}}x + \beta^{\text{pred}}\) – one multiplication and one addition per feature.</p></div></details>
 <details class="q"><summary>How do you know it is time to stop training? Why is random search usually better than grid search?</summary><div>
 <p>The validation error stops decreasing for a given number of checks (patience), the learning curve flattens, or the gap between training and validation error opens up (overfitting) – I keep the weights from the best epoch. With the same budget random search tries a different value of each hyperparameter every time; when one hardly matters, a grid would repeat the same values of the important parameter, whereas random points explore its range much more densely.</p></div></details>
 

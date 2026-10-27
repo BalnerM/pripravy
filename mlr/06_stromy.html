@@ -59,16 +59,24 @@
 
 <h2 id="bias-variance">Bias, rozptyl a šum</h2>
 <div class="box definice" id="def-ocekavany-model"><div class="box-t">Definice: očekávaný label a očekávaný model</div>
-<p>Trénovací množina \(T = \{(\mathbf x_1, y_1), \dots, (\mathbf x_n, y_n)\}\) je náhodný výběr z rozdělení \(P(X, Y)\); algoritmus \(\mathcal A\) z ní vyrobí model \(h_T = \mathcal A(T)\). <b>Očekávaný label</b> \(\bar y(\mathbf x) = \mathbb E_{y\mid\mathbf x}[Y]\) je nejlepší možná predikce v bodě \(\mathbf x\). <b>Očekávaný model</b> \(\bar h = \mathbb E_{T\sim P^n}[h_T]\) je průměr modelů, které by algoritmus vyrobil ze všech možných trénovacích množin.</p>
+<p>Trénovací množina \(T = \{(\mathbf x_1, y_1), \dots, (\mathbf x_n, y_n)\}\) je náhodný výběr z rozdělení \(P(X, Y)\); algoritmus \(\mathcal A\) z ní vyrobí model \(h_T = \mathcal A(T)\).</p>
+<ul>
+<li><b>Očekávaný label</b> je nejlepší možná predikce v bodě \(\mathbf x\): \[ \bar y(\mathbf x) = \mathbb E_{y\mid\mathbf x}[Y] \]</li>
+<li><b>Očekávaný model</b> je průměr modelů, které by algoritmus vyrobil ze všech možných trénovacích množin: \[ \bar h = \mathbb E_{T\sim P^n}[h_T] \]</li>
+</ul>
 <p class="jinak">\(\bar y\) je „pravda bez šumu“, \(\bar h\) je to, co náš algoritmus „v průměru umí“. Kdybychom měli nekonečně mnoho trénovacích sad, zprůměrovali bychom z nich naučené modely a dostali \(\bar h\).</p></div>
 <div class="box vzorec"><div class="box-t">Rozklad očekávané testové chyby (MSE)</div>
-\[ \underbrace{\mathbb E_{\mathbf x, y, T}\big[(h_T(\mathbf x) - y)^2\big]}_{\text{očekávaná testová chyba}} = \underbrace{\mathbb E_{\mathbf x, T}\big[(h_T(\mathbf x) - \bar h(\mathbf x))^2\big]}_{\text{rozptyl}} + \underbrace{\mathbb E_{\mathbf x}\big[(\bar h(\mathbf x) - \bar y(\mathbf x))^2\big]}_{\text{bias}^2} + \underbrace{\mathbb E_{\mathbf x, y}\big[(\bar y(\mathbf x) - y)^2\big]}_{\text{šum}} \]
+\[ \begin{aligned} &\underbrace{\mathbb E_{\mathbf x, y, T}\big[(h_T(\mathbf x) - y)^2\big]}_{\text{očekávaná testová chyba}} \\ &\quad= \underbrace{\mathbb E_{\mathbf x, T}\big[(h_T(\mathbf x) - \bar h(\mathbf x))^2\big]}_{\text{rozptyl}} \\ &\quad+ \underbrace{\mathbb E_{\mathbf x}\big[(\bar h(\mathbf x) - \bar y(\mathbf x))^2\big]}_{\text{bias}^2} \\ &\quad+ \underbrace{\mathbb E_{\mathbf x, y}\big[(\bar y(\mathbf x) - y)^2\big]}_{\text{šum}} \end{aligned} \]
 <table class="vars">
 <tr><td>rozptyl (variance)</td><td>jak moc se model změní, když změníme trénovací data</td></tr>
 <tr><td>bias²</td><td>jak daleko je průměrný model od nejlepší možné predikce (systematická chyba algoritmu)</td></tr>
 <tr><td>šum (noise)</td><td>neodstranitelná chyba dat – žádný algoritmus ani víc dat ji neodstraní</td></tr>
 </table>
-<p>Odvození: dvakrát „přičti a odečti“ – nejdřív \(\bar h(\mathbf x)\), pak \(\bar y(\mathbf x)\) – a roznásob \((a + b)^2 = a^2 + 2ab + b^2\). Smíšené členy vypadnou: první proto, že \(\mathbb E_T[h_T(\mathbf x)] = \bar h(\mathbf x)\), druhý proto, že \(\mathbb E_{y\mid\mathbf x}[y] = \bar y(\mathbf x)\).</p></div>
+<p>Odvození: dvakrát „přičti a odečti“ – nejdřív \(\bar h(\mathbf x)\), pak \(\bar y(\mathbf x)\) – a roznásob \((a + b)^2 = a^2 + 2ab + b^2\). Smíšené členy vypadnou:</p>
+<ul>
+<li>první proto, že \(\mathbb E_T[h_T(\mathbf x)] = \bar h(\mathbf x)\),</li>
+<li>druhý proto, že \(\mathbb E_{y\mid\mathbf x}[y] = \bar y(\mathbf x)\).</li>
+</ul></div>
 <div class="box definice" id="def-bias-variance"><div class="box-t">Definice: kompromis bias–rozptyl, podučení a přeučení</div>
 <p><b>Kompromis bias–rozptyl</b> je jev, že zvyšováním složitosti modelu obvykle klesá bias a roste rozptyl. <b>Podučení</b> (underfitting) = model je příliš jednoduchý, má vysoký bias (velká chyba už na trénovacích datech). <b>Přeučení</b> (overfitting) = model je příliš složitý, má vysoký rozptyl (nízká trénovací, ale vysoká testová chyba – naučil se šum).</p>
 <p class="jinak">jednoduchý model „netrefí tvar“, ale je stabilní; složitý model tvar trefí, ale „poskakuje“ podle toho, jaká data zrovna dostal. Optimum je uprostřed. Šum je podlaha, pod kterou se nedostaneme.</p></div>
@@ -118,7 +126,8 @@
 <p><b>CART</b> (Classification And Regression Trees, Breiman a kol. 1984) je algoritmus, který strom staví rekurzivním binárním dělením: v každém uzlu zvolí jeden příznak \(j\) a práh \(s\), které nejvíce sníží nečistotu (chybu) dvou vzniklých oblastí; prostor příznaků tak rozdělí na osově rovnoběžné obdélníky. Je určen třemi pravidly: <b>kritériem dělení</b>, <b>pravidlem zastavení</b> a <b>pravidlem přiřazení hodnoty listu</b> (většinová třída, resp. průměr).</p>
 <p class="jinak">„najdi otázku, která data rozdělí nejčistěji, a opakuj to v každé půlce“.</p></div>
 <div class="box vzorec"><div class="box-t">Kritérium dělení (klasifikace)</div>
-\[ E_k = \min_{j\in\{1,\dots,d\},\ s\in\mathbb R}\left[E_{R_k}(j, s) + E_{R_k^C}(j, s)\right],\qquad R_k(j, s) = \{\mathbf x_i: x_{ij} \gt s\},\quad R_k^C(j,s) = \{\mathbf x_i: x_{ij} \le s\},\qquad E_{R} = \sum_{i:\mathbf x_i\in R}I(y_i \ne \hat y_R) \]
+\[ E_k = \min_{j\in\{1,\dots,d\},\ s\in\mathbb R}\left[E_{R_k}(j, s) + E_{R_k^C}(j, s)\right] \]
+\[ \begin{aligned} R_k(j, s) &= \{\mathbf x_i: x_{ij} \gt s\} \\ R_k^C(j,s) &= \{\mathbf x_i: x_{ij} \le s\} \\ E_{R} &= \textstyle\sum_{i:\mathbf x_i\in R}I(y_i \ne \hat y_R) \end{aligned} \]
 <table class="vars">
 <tr><td>\(j, s\)</td><td>příznak a práh – minimalizuje se přes obojí</td></tr>
 <tr><td>\(R_k, R_k^C\)</td><td>dvě doplňkové oblasti vzniklé dělením \(k\)-tého uzlu</td></tr>
@@ -134,7 +143,13 @@
 </ol>
 <p>„Hladové“, protože každé dělení je lokálně nejlepší a nevrací se; hledat globálně nejlepší strom by bylo kombinatoricky neúnosné. V příkladu z přednášky (19 bodů) pět dělení sníží počet chyb 9 → 6 → 5 → 4 → 3 → 1 a součet \(\sum_R n_RG_R\) z 9,47 na 1,60; poslední list (4 : 1) zůstane nečistý, protože růst zastaví <code>max_depth = 3</code>.</p></div>
 <div class="box definice" id="def-necistota"><div class="box-t">Definice: míry nečistoty uzlu</div>
-<p>Pro podíly tříd \(p_R(y)\) v oblasti \(R\): <b>chybovost</b> \(1 - \max_yp_R(y)\); <b>entropie</b> \(H_R = -\sum_y p_R(y)\log p_R(y)\); <b>Giniho nečistota</b> \(G_R = \sum_y p_R(y)(1 - p_R(y)) = 1 - \sum_y p_R(y)^2\). Všechny jsou nulové pro čistý uzel (jediná třída) a maximální pro rovnoměrné zastoupení tříd.</p>
+<p>Pro podíly tříd \(p_R(y)\) v oblasti \(R\):</p>
+<ul>
+<li><b>chybovost</b> \(1 - \max_yp_R(y)\);</li>
+<li><b>entropie</b> \(H_R = -\sum_y p_R(y)\log p_R(y)\);</li>
+<li><b>Giniho nečistota</b> \[ G_R = \sum_y p_R(y)(1 - p_R(y)) = 1 - \sum_y p_R(y)^2 \]</li>
+</ul>
+<p>Všechny jsou nulové pro čistý uzel (jediná třída) a maximální pro rovnoměrné zastoupení tříd.</p>
 <p class="jinak">„jak moc je uzel promíchaný“. Gini a entropie jsou hladké a ostře konkávní, takže odmění i dělení, které počet chyb nezmění, ale udělá jeden z uzlů čistším – proto se v praxi preferují.</p></div>
 <div class="box priklad"><div class="box-t">Ručně (přednáška, dvě třídy, log₂)</div>
 <p>List 4 : 1 (\(p = 0{,}8\)): chyba 1 (chybovost 0,2); \(H = -0{,}8\log_20{,}8 - 0{,}2\log_20{,}2 = 0{,}72\) bitu; \(G = 0{,}8\cdot0{,}2 + 0{,}2\cdot0{,}8 = 0{,}32\). Kořen 10 : 9: \(H = 1{,}00\) bit, \(G = 0{,}50\). Čistý list: všechny tři nulové.</p></div>
@@ -177,7 +192,10 @@
 <p><b>Bootstrap výběr</b> je náhodný výběr \(n'\) vzorků z trénovací množiny <b>s vracením</b> (obvykle \(n' = n\)), takže některé vzorky jsou v něm víckrát a jiné vůbec. <b>Bagging</b> (bootstrap aggregation) natrénuje \(M\) modelů na \(M\) bootstrap výběrech a jejich predikce zprůměruje: \(h_{\text{bagg}}(\mathbf x) = \frac1M\sum_{m=1}^Mh_{T_m}(\mathbf x)\) (u klasifikace většinové hlasování).</p>
 <p class="jinak">každý strom vidí trochu jiná data, a proto se trochu jinak plete; při průměrování se náhodné chyby jednotlivých stromů navzájem ruší. Bias zůstává (průměr podobně hlubokých stromů), klesá rozptyl.</p></div>
 <div class="box vzorec"><div class="box-t">Rozptyl průměru M stromů</div>
-\[ \operatorname{Var}[h_{\text{bagg}}(\mathbf x)] = \frac{\sigma_1^2}{M}\ \ \text{(nezávislé stromy)},\qquad \operatorname{Var}[h_{\text{bagg}}(\mathbf x)] = \rho\,\sigma_1^2 + \frac{1 - \rho}{M}\sigma_1^2\ \ \text{(korelované stromy)} \]
+<p>Nezávislé stromy:</p>
+\[ \operatorname{Var}[h_{\text{bagg}}(\mathbf x)] = \frac{\sigma_1^2}{M} \]
+<p>Korelované stromy (korelace \(\rho\)):</p>
+\[ \operatorname{Var}[h_{\text{bagg}}(\mathbf x)] = \rho\,\sigma_1^2 + \frac{1 - \rho}{M}\sigma_1^2 \]
 <table class="vars">
 <tr><td>\(\sigma_1^2\)</td><td>rozptyl predikce jednoho stromu (přes trénovací množiny)</td></tr>
 <tr><td>\(M\)</td><td>počet stromů v průměru</td></tr>
@@ -217,7 +235,8 @@
 
 <h2 id="adaboost">Adaptivní boosting (AdaBoost)</h2>
 <div class="box definice" id="def-adaboost"><div class="box-t">Definice: AdaBoost</div>
-<p><b>AdaBoost</b> je ansámblová metoda, která trénuje slabé klasifikátory \(h_m\) <b>postupně</b>, každý na převážených datech (chybně klasifikované vzorky dostanou vyšší váhu), a výsledek je jejich váženým hlasováním: \(H(\mathbf x) = \operatorname{sign}\left(\sum_{m=1}^M\alpha_mh_m(\mathbf x)\right)\) pro třídy \(\pm1\).</p>
+<p><b>AdaBoost</b> je ansámblová metoda, která trénuje slabé klasifikátory \(h_m\) <b>postupně</b>, každý na převážených datech (chybně klasifikované vzorky dostanou vyšší váhu), a výsledek je jejich váženým hlasováním (pro třídy \(\pm1\)):
+\[ H(\mathbf x) = \operatorname{sign}\Big(\sum_{m=1}^M\alpha_mh_m(\mathbf x)\Big) \]</p>
 <p class="jinak">každý další „slabý žák“ se soustředí na to, co předchozí pokazili, a lepší žák má ve finálním hlasování silnější hlas. Z mnoha jednoduchých (např. pahýlů) vznikne silný, složitý klasifikátor – boosting snižuje bias.</p></div>
 <div class="box postup"><div class="box-t">Algoritmus AdaBoost (data \(\mathbf x_i\in\mathbb R^d\), \(y_i\in\{-1,+1\}\))</div>
 <ol>
@@ -301,7 +320,9 @@
 <h2 id="otazky">Otázky ke zkoušce</h2>
 <div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
 <details class="q"><summary>Napište rozklad očekávané testové chyby na bias, rozptyl a šum. Které členy ovlivníme a jak?</summary><div>
-<p>\(\mathbb E[(h_T(\mathbf x) - y)^2] = \mathbb E[(h_T - \bar h)^2] + \mathbb E[(\bar h - \bar y)^2] + \mathbb E[(\bar y - y)^2]\) = rozptyl + bias² + šum. \(\bar h\) je průměrný model přes trénovací množiny, \(\bar y\) očekávaný label. Smíšené členy vypadnou, protože \(\mathbb E_T[h_T] = \bar h\) a \(\mathbb E_{y|\mathbf x}[y] = \bar y\). Ovlivníme rozptyl (víc dat, jednodušší model, bagging, regularizace) a bias (složitější model, víc příznaků, boosting); šum ne.</p></div></details>
+<p>Rozklad očekávané testové chyby:</p>
+\[ \begin{aligned} \mathbb E[(h_T(\mathbf x) - y)^2] &= \mathbb E[(h_T - \bar h)^2] && \text{rozptyl} \\ &+ \mathbb E[(\bar h - \bar y)^2] && \text{bias}^2 \\ &+ \mathbb E[(\bar y - y)^2] && \text{šum} \end{aligned} \]
+<p>\(\bar h\) je průměrný model přes trénovací množiny, \(\bar y\) očekávaný label. Smíšené členy vypadnou, protože \(\mathbb E_T[h_T] = \bar h\) a \(\mathbb E_{y|\mathbf x}[y] = \bar y\). Ovlivníme rozptyl (víc dat, jednodušší model, bagging, regularizace) a bias (složitější model, víc příznaků, boosting); šum ne.</p></div></details>
 <details class="q"><summary>Vidíte velkou mezeru mezi trénovací a testovou chybou. Který je to režim a co s tím? A když je trénovací chyba nad ε?</summary><div>
 <p>Velká mezera (trénovací &lt; ε &lt; testovací) = vysoký rozptyl: víc trénovacích dat, jednodušší model (menší hloubka, regularizace), bagging. Trénovací chyba nad ε a testová blízko ní = vysoký bias: víc dat nepomůže (křivky už zkonvergovaly na špatné hodnotě), je potřeba složitější model, víc příznaků nebo boosting.</p></div></details>
 <details class="q"><summary>Definujte uzel, list, větev, velikost a hloubku stromu. Co je pahýl? Napište kritérium dělení CART.</summary><div>
@@ -315,7 +336,12 @@
 <details class="q"><summary>Co přidává random forest k baggingu a proč to pomáhá? Co jsou OOB vzorky?</summary><div>
 <p>Při každém dělení se zvažuje jen náhodná podmnožina příznaků (typicky √d). Stromy jsou různorodější a méně korelované, takže průměrování víc sníží rozptyl. OOB vzorky stromu jsou ty, které se do jeho bootstrapu nedostaly – \((1 - 1/n)^n \to e^{-1} \approx 37\,\%\); slouží jako validační data a dávají odhad chyby bez CV. Každý vzorek hodnotí jen ≈ 1/3 stromů, takže OOB je mírně pesimistické a nemá se míchat s validačními skóre.</p></div></details>
 <details class="q"><summary>Napište predikční pravidlo AdaBoostu a vzorec pro αₘ. Co dělá αₘ při εₘ = 0,5? Jak se aktualizují váhy a k čemu je Zₘ?</summary><div>
-<p>\(H(\mathbf x) = \operatorname{sign}(\sum_m\alpha_mh_m(\mathbf x))\), \(\alpha_m = \frac12\ln\frac{1-\epsilon_m}{\epsilon_m}\); při \(\epsilon_m = 0{,}5\) je \(\alpha_m = 0\) – náhodný klasifikátor nemá hlas, při malé chybě je váha velká. Váhy: \(w_i \leftarrow w_ie^{-\alpha_my_ih_m(\mathbf x_i)}/Z_m\) – chybně zařazené rostou, správné klesají; \(Z_m\) je normalizační konstanta, aby váhy dávaly součet 1. Citlivost na šum: chybně označený vzorek je „vždy špatně“, jeho váha roste kolo od kola a další klasifikátory se ho snaží za každou cenu trefit.</p></div></details>
+<p>Výsledný klasifikátor a váha jednoho klasifikátoru:</p>
+\[ H(\mathbf x) = \operatorname{sign}\Big(\sum_m\alpha_mh_m(\mathbf x)\Big) \]
+\[ \alpha_m = \frac12\ln\frac{1-\epsilon_m}{\epsilon_m} \]
+<p>Při \(\epsilon_m = 0{,}5\) je \(\alpha_m = 0\) – náhodný klasifikátor nemá hlas, při malé chybě je váha velká. Aktualizace vah vzorků:</p>
+\[ w_i \leftarrow \frac{w_i\,e^{-\alpha_my_ih_m(\mathbf x_i)}}{Z_m} \]
+<p>Chybně zařazené rostou, správné klesají; \(Z_m\) je normalizační konstanta, aby váhy dávaly součet 1. Citlivost na šum: chybně označený vzorek je „vždy špatně“, jeho váha roste kolo od kola a další klasifikátory se ho snaží za každou cenu trefit.</p></div></details>
 <details class="q"><summary>Bagging vs. boosting: který člen chyby každý z nich snižuje a který lze paralelizovat?</summary><div>
 <p>Bagging (a random forest) snižuje rozptyl průměrováním nezávisle natrénovaných (hlubokých) stromů – paralelizovatelný. Boosting snižuje bias postupným přidáváním slabých klasifikátorů zaměřených na chyby předchozích – sekvenční, paralelizovat nejde.</p></div></details>
 

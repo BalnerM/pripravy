@@ -82,7 +82,8 @@
 <p>Při rychlém poklesu váhy by vzniklo hodně bodů bez spojení (pravděpodobnost ≈ 0). <b>Řešení:</b> každý bod musí být spojen <b>alespoň se svým nejbližším sousedem</b>: do vzdálenosti nejbližšího souseda je pásmo „jisté“ (váha 1), dál „neurčité“ s klesající pravděpodobností.</p>
 <p><b>Bonus:</b> omezení na okolí řeší <b>prokletí dimenzionality</b> – ve vysoké dimenzi jsou vzdálenosti velmi podobné (k nejbližšímu bodu 5, ke dvacátému také ≈ 5). Odečtením vzdálenosti k nejbližšímu sousedovi a prací jen v malém okolí jsou rozdíly zachyceny věrohodněji a v mapě je vidět lokální struktura.</p></div>
 <div class="box vzorec"><div class="box-t">Váha hrany z pohledu bodu i</div>
-\[ w_{i\to j} = \exp\!\left(-\frac{d(\mathbf{x}_i,\mathbf{x}_j) - \rho_i}{\sigma_i}\right) \quad\text{pro } k \text{ nejbližších sousedů } j \]
+\[ w_{i\to j} = \exp\!\left(-\frac{d(\mathbf{x}_i,\mathbf{x}_j) - \rho_i}{\sigma_i}\right) \]
+<p>pro \(k\) nejbližších sousedů \(j\).</p>
 <table class="vars">
 <tr><td>\(\rho_i\)</td><td>vzdálenost k nejbližšímu sousedovi → ten má váhu 1 (problém 3)</td></tr>
 <tr><td>\(\sigma_i\)</td><td>lokální měřítko – zvolené tak, aby součet vah přes \(k\) sousedů byl \(\log_2 k\) (obdoba perplexity v t-SNE)</td></tr>
@@ -104,7 +105,7 @@
 <p><b>Křížová entropie</b> mezi dvěma fuzzy množinami hran (vahami \(w_h\) ve vysoké a \(w_l\) v nízké dimenzi) je součet přes všechny hrany dvou členů: \(w_h\log(w_h/w_l)\), který je velký, když hrana ve vysoké dimenzi existuje, ale v mapě ne, a \((1-w_h)\log\big((1-w_h)/(1-w_l)\big)\), který je velký, když hrana ve vysoké dimenzi neexistuje, ale v mapě ano.</p>
 <p class="jinak">„trestáme obě chyby“: roztržení sousedů i slepení nesousedů. KL divergence v t-SNE obsahuje jen obdobu prvního členu – proto UMAP lépe drží rozestupy mezi shluky.</p></div>
 <div class="box vzorec"><div class="box-t">Kriteriální funkce: křížová entropie</div>
-\[ C = \sum_{e\in E}\Big[\,\underbrace{w_h(e)\log\frac{w_h(e)}{w_l(e)}}_{\text{přitahování}} + \underbrace{(1-w_h(e))\log\frac{1-w_h(e)}{1-w_l(e)}}_{\text{odpuzování}}\,\Big] \]
+\[ \begin{aligned} C = \sum_{e\in E}\Big[\,&\underbrace{w_h(e)\log\frac{w_h(e)}{w_l(e)}}_{\text{přitahování}} \\ &+ \underbrace{(1-w_h(e))\log\frac{1-w_h(e)}{1-w_l(e)}}_{\text{odpuzování}}\,\Big] \end{aligned} \]
 <table class="vars">
 <tr><td>\(E\)</td><td>množina všech možných hran (1-simplexů)</td></tr>
 <tr><td>\(w_h(e)\)</td><td>váha hrany ve vysoké dimenzi (pravděpodobnost, že hrana existuje)</td></tr>

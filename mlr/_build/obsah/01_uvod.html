@@ -57,10 +57,13 @@
 <div class="box intuice"><div class="box-t">Intuice</div>
 <p>Optimalizace = měníme vstupy tak, abychom dostali co nejlepší výstup: minimalizujeme náklady nebo maximalizujeme odměnu. Představ si krajinu a hledej nejnižší údolí; omezení říkají, kam smíš vstoupit. Příklad z přednášky: <b>mícháš teplou a studenou vodu</b>. Máš dvě kohoutky (vstupy), výstupem je, jak příjemná je voda, a žádný vzorec ani graf – jen ruku pod proudem. Tak funguje i ladění hyperparametrů: zkusíš nastavení, změříš, upravíš.</p></div>
 <div class="box definice" id="def-optimalizace"><div class="box-t">Definice: optimalizační úloha</div>
-<p><b>Optimalizační úloha</b> je hledání bodu \(\mathbf x^\ast = \arg\min_{\mathbf x \in X} f(\mathbf x)\), tj. hodnoty proměnných \(\mathbf x\), pro kterou je <b>účelová funkce</b> \(f\) nejmenší na <b>přípustné množině</b> \(X\) dané omezeními. Každá úloha má tři části: <b>proměnné</b> (co smíme měnit), <b>účelovou funkci</b> (jedno číslo, které tlačíme dolů) a <b>omezení</b> (vymezují přípustnou množinu).</p>
+<p><b>Optimalizační úloha</b> je hledání bodu
+\[ \mathbf x^\ast = \arg\min_{\mathbf x \in X} f(\mathbf x) \]
+tj. hodnoty proměnných \(\mathbf x\), pro kterou je <b>účelová funkce</b> \(f\) nejmenší na <b>přípustné množině</b> \(X\) dané omezeními. Každá úloha má tři části: <b>proměnné</b> (co smíme měnit), <b>účelovou funkci</b> (jedno číslo, které tlačíme dolů) a <b>omezení</b> (vymezují přípustnou množinu).</p>
 <p class="jinak">„co můžu měnit, co chci, aby bylo co nejmenší, a co nesmím porušit“. Konvence: vždy minimalizujeme – maximalizaci \(u(\mathbf x)\) převedeme na minimalizaci \(-u(\mathbf x)\) (stejný minimizér, opačná hodnota).</p></div>
 <div class="box vzorec"><div class="box-t">Kanonický tvar</div>
-\[ \begin{aligned} \text{minimalizuj}\quad & f(\mathbf x) \\ \text{za podmínek}\quad & g_i(\mathbf x) \le 0,\ i = 1,\dots,m \\ & h_j(\mathbf x) = 0,\ j = 1,\dots,p \end{aligned} \qquad X = \{\mathbf x \in \mathbb R^n : g_i(\mathbf x) \le 0,\ h_j(\mathbf x) = 0\} \]
+\[ \begin{aligned} \text{minimalizuj}\quad & f(\mathbf x) \\ \text{za podmínek}\quad & g_i(\mathbf x) \le 0,\ i = 1,\dots,m \\ & h_j(\mathbf x) = 0,\ j = 1,\dots,p \end{aligned} \]
+\[ X = \{\mathbf x \in \mathbb R^n : g_i(\mathbf x) \le 0,\ h_j(\mathbf x) = 0\} \]
 <table class="vars">
 <tr><td>\(\mathbf x\)</td><td>proměnné – rychlost auta, průtoky kohoutků, <b>váhy modelu</b></td></tr>
 <tr><td>\(f(\mathbf x)\)</td><td>účelová (cílová, nákladová) funkce – spotřeba, nepohodlí, <b>ztráta modelu</b></td></tr>
@@ -75,19 +78,27 @@
 <p>Omezení je v optimu \(\mathbf x^\ast\) <b>aktivní</b>, pokud v něm platí s rovností (\(g_i(\mathbf x^\ast) = 0\)). Pokud neomezené minimum leží mimo přípustnou množinu, optimum se „přitlačí“ na její hranici a příslušné omezení je aktivní.</p>
 <p class="jinak">aktivní omezení je to, co optimum „zastavilo“ – kdybys ho uvolnil, dostaneš lepší výsledek. Neaktivní omezení výsledek vůbec neovlivňuje.</p></div>
 <div class="box priklad"><div class="box-t">Příklad: míchání vody (přednáška)</div>
-<p>Průtoky \(H, C\) (l/min), teplá voda 60 °C, studená 10 °C. Teplota \(T = (60H + 10C)/(H + C)\), průtok \(F = H + C\). Účelová funkce \(J = (T - 38{,}5)^2 + (F - 12)^2\), přípustná množina \(0 \le H \le 5,\ C \ge 0\).</p>
+<p>Průtoky \(H, C\) (l/min), teplá voda 60 °C, studená 10 °C. Teplota a průtok:</p>
+\[ T = \frac{60H + 10C}{H + C},\qquad F = H + C \]
+<p>Účelová funkce a přípustná množina:</p>
+\[ J = (T - 38{,}5)^2 + (F - 12)^2 \]
+\[ 0 \le H \le 5,\qquad C \ge 0 \]
 <ul>
-<li><b>Bez omezení:</b> \(H + C = 12\) a \(T = 38{,}5\) ⇒ \(H = 6{,}84\), \(C = 5{,}16\), \(J = 0\).</li>
+<li><b>Bez omezení:</b> z podmínek \(H + C = 12\) a \(T = 38{,}5\) vyjde \[ \begin{aligned} 60H + 10(12 - H) &= 38{,}5\cdot12 \\ H = 6{,}84,\quad C &= 5{,}16,\quad J = 0 \end{aligned} \]</li>
 <li><b>Bojler omezený na \(H \le 5\):</b> neomezené optimum je nepřípustné, optimum se posune na hranici \(H = 5\) a \(C = 4{,}08\): voda má 37,5 °C a 9,1 l/min, \(J = 9{,}5\) místo 0. Omezení \(H \le 5\) je <b>aktivní</b>.</li>
 <li>Křivka spotřeby s omezením \(50 \le v \le 130\) km/h: optimum \(v^\ast = 89{,}4\) leží uvnitř, omezení je <b>neaktivní</b>.</li>
 </ul></div>
 <h3>Tvrdé omezení, nebo měkká penalizace?</h3>
-<p><b>Omezení</b> („nesmí se porušit“): bezpečnostní limit, rozpočet, fyzikální zákon – může udělat úlohu neřešitelnou. <b>Člen v účelové funkci</b> („čím méně, tím lépe“): \(f(\mathbf x) = \text{chyba} + \lambda\cdot\text{penalizace}\); \(\lambda\) říká, jak moc nám na tom záleží, a jen posouvá optimum. Obě cesty jsou možné a dávají různé odpovědi – např. ridge regrese (4. přednáška) převádí rozpočet \(\|\mathbf w\|_2^2 \le t\) na penalizaci \(\lambda\|\mathbf w\|_2^2\).</p>
+<p><b>Omezení</b> („nesmí se porušit“): bezpečnostní limit, rozpočet, fyzikální zákon – může udělat úlohu neřešitelnou. <b>Člen v účelové funkci</b> („čím méně, tím lépe“):</p>
+\[ f(\mathbf x) = \text{chyba} + \lambda\cdot\text{penalizace} \]
+<p>\(\lambda\) říká, jak moc nám na tom záleží, a jen posouvá optimum. Obě cesty jsou možné a dávají různé odpovědi – např. ridge regrese (4. přednáška) převádí rozpočet \(\|\mathbf w\|_2^2 \le t\) na penalizaci \(\lambda\|\mathbf w\|_2^2\).</p>
 <div class="box pozor"><div class="box-t">Solver optimalizuje, co jsme napsali, ne co jsme mysleli</div>
 <p>Minimalizuj jen trénovací chybu – a model si data zapamatuje. Maximalizuj jen senzitivitu – a všichni budou „nemocní“. Volba účelové funkce je rozhodnutí analytika.</p></div>
 <h3>Konvexita: kdy je optimalizace snadná</h3>
 <div class="box definice" id="def-konvexni"><div class="box-t">Definice: konvexní funkce a konvexní množina</div>
-<p>Funkce \(f\) je <b>konvexní</b>, pokud pro všechna \(\mathbf x_1, \mathbf x_2\) a \(\theta \in [0,1]\) platí \(f(\theta\mathbf x_1 + (1-\theta)\mathbf x_2) \le \theta f(\mathbf x_1) + (1-\theta) f(\mathbf x_2)\). Množina \(C\) je <b>konvexní</b>, pokud s každými dvěma body obsahuje i celou úsečku mezi nimi.</p>
+<p>Funkce \(f\) je <b>konvexní</b>, pokud pro všechna \(\mathbf x_1, \mathbf x_2\) a \(\theta \in [0,1]\) platí
+\[ f(\theta\mathbf x_1 + (1-\theta)\mathbf x_2) \le \theta f(\mathbf x_1) + (1-\theta) f(\mathbf x_2) \]
+Množina \(C\) je <b>konvexní</b>, pokud s každými dvěma body obsahuje i celou úsečku mezi nimi.</p>
 <p class="jinak">graf konvexní funkce leží pod každou svou tětivou („miska“) a nemá žádná jiná lokální minima než globální. Konvexní množina nemá „zálivy“, za kterými by se minimum schovávalo.</p></div>
 <div class="box definice" id="def-lokalni-globalni"><div class="box-t">Definice: lokální a globální minimum</div>
 <p><b>Lokální minimum</b> je bod, který je nejlepší ve svém okolí; <b>globální minimum</b> je nejlepší v celé přípustné množině. V <b>konvexní úloze</b> (konvexní \(f\) na konvexní množině) je každé lokální minimum zároveň globální.</p>
@@ -106,23 +117,31 @@
 
 <h3>Gradientní sestup</h3>
 <div class="box definice" id="def-gradient"><div class="box-t">Definice: gradient</div>
-<p><b>Gradient</b> \(\nabla f(\mathbf x) = \left(\frac{\partial f}{\partial x_1}, \dots, \frac{\partial f}{\partial x_n}\right)\) je vektor parciálních derivací funkce \(f\); ukazuje směr <b>nejstrmějšího růstu</b> funkce a má stejný tvar (počet složek) jako \(\mathbf x\).</p>
+<p><b>Gradient</b> je vektor parciálních derivací funkce \(f\):
+\[ \nabla f(\mathbf x) = \left(\frac{\partial f}{\partial x_1}, \dots, \frac{\partial f}{\partial x_n}\right) \]
+Ukazuje směr <b>nejstrmějšího růstu</b> funkce a má stejný tvar (počet složek) jako \(\mathbf x\).</p>
 <p class="jinak">šipka „do kopce“. Když chceme jít dolů, jdeme proti ní. Funkce \(f\) vrací skalár, gradient je vektor s tolika složkami, kolik je proměnných.</p></div>
 <div class="box definice" id="def-gd"><div class="box-t">Definice: gradientní sestup (gradient descent)</div>
-<p><b>Gradientní sestup</b> je iterační metoda, která v každém kroku posune proměnné proti směru gradientu: \(\mathbf x^{(t+1)} = \mathbf x^{(t)} - \eta\,\nabla f(\mathbf x^{(t)})\), kde \(\eta \gt 0\) je <b>krok učení</b> (learning rate).</p>
+<p><b>Gradientní sestup</b> je iterační metoda, která v každém kroku posune proměnné proti směru gradientu:
+\[ \mathbf x^{(t+1)} = \mathbf x^{(t)} - \eta\,\nabla f(\mathbf x^{(t)}) \]
+kde \(\eta \gt 0\) je <b>krok učení</b> (learning rate).</p>
 <p class="jinak">„jdi z kopce po malých krocích, dokud se terén nezploští“. Stačí umět spočítat derivaci v aktuálním bodě – vzorec pro řešení nepotřebujeme. Přesně takhle se trénují neuronové sítě.</p></div>
 <div class="box priklad"><div class="box-t">Jedna úloha, tři cesty: nejúspornější rychlost auta</div>
 <p>Při nízké rychlosti brzdí ztráty volnoběhu a krátký převod, při vysoké odpor vzduchu ⇒ optimum je někde mezi. Model: \(\text{Fuel}(v) = A/v + Bv + C\) s \(A = 400\), \(B = 0{,}05\).</p>
 <ol>
 <li><b>Zkoušení (probing):</b> měříme spotřebu v několika rychlostech – naslepo, bez vzorce.</li>
-<li><b>Uzavřený tvar:</b> \(\text{Fuel}'(v) = -A/v^2 + B = 0\) ⇒ \(v^\ast = \sqrt{A/B} = \sqrt{8000} \approx 89{,}4\) km/h. Druhá derivace \(2A/v^3 \gt 0\) ⇒ jediné minimum; \(\text{Fuel}(v^\ast) = 2\sqrt{AB} + C\). Luxus – potřebuje vzorec.</li>
-<li><b>Gradientní sestup:</b> start \(v_0 = 30\) km/h, \(\eta = 200\). \(\text{Fuel}'(30) = -400/900 + 0{,}05 = -0{,}394\) ⇒ \(v_1 = 30 + 200\cdot 0{,}394 = 108{,}9\) (přestřelil optimum). Pak \(\text{Fuel}'(108{,}9) = +0{,}016\) ⇒ \(v_2 = 105{,}6\), \(v_3 = 102{,}8\)… po 30 krocích \(v \approx 89{,}5\). Potřebuje jen derivaci v bodě.</li>
+<li><b>Uzavřený tvar:</b> derivaci položíme rovnou nule: \[ \begin{aligned} \text{Fuel}'(v) &= -A/v^2 + B = 0 \\ v^\ast &= \sqrt{A/B} = \sqrt{8000} \approx 89{,}4\ \text{km/h} \end{aligned} \] Druhá derivace \(2A/v^3 \gt 0\), takže jde o jediné minimum; \(\text{Fuel}(v^\ast) = 2\sqrt{AB} + C\). Luxus – potřebuje vzorec.</li>
+<li><b>Gradientní sestup:</b> start \(v_0 = 30\) km/h, \(\eta = 200\), krok \(v \leftarrow v - \eta\,\text{Fuel}'(v)\): \[ \begin{aligned} \text{Fuel}'(30) &= -400/900 + 0{,}05 = -0{,}394 \\ v_1 &= 30 + 200\cdot0{,}394 = 108{,}9 \\ \text{Fuel}'(108{,}9) &= +0{,}016 \\ v_2 &= 105{,}6,\quad v_3 = 102{,}8,\ \dots \end{aligned} \] Už první krok přestřelil optimum (108,9 &gt; 89,4) a sestup se k němu vrací zprava. Po 30 krocích \(v \approx 89{,}5\). Potřebuje jen derivaci v bodě.</li>
 </ol></div>
 <p>Kdy skončit? Malý gradient \(\|\nabla f\| \lt \varepsilon\), malá změna \(f\) nebo \(\mathbf x\), strop na počet iterací; při trénování modelu validační chyba (2. přednáška). Malý gradient ale znamená jen <b>stacionární bod</b> – může to být i sedlo nebo plató. Jen u konvexní úlohy je to jistě globální minimum.</p>
 <figure class="wide"><div class="paper"><img src="figures/fig01_gd_eta.png" alt="Čtyři trajektorie gradientního sestupu na eliptické funkci pro různé kroky učení" loading="lazy"></div>
 <figcaption><b>Obr. 1.1</b> Stejná krajina \(f(\mathbf x) = \tfrac12(x_1^2 + 5x_2^2)\), stejný start, 20 kroků – mění se jen krok učení \(\eta\). Hvězda = minimum.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
-<p>Krok učení rozhoduje o všem. Pro tuto funkci je update po složkách \(x_i \leftarrow (1 - \eta q_i)\,x_i\) s \(q_1 = 1\), \(q_2 = 5\): každý krok vynásobí chybu číslem \(|1 - \eta q_i|\). Sestup konverguje právě tehdy, když \(|1 - \eta q_i| \lt 1\) pro všechna \(i\), tj. \(\eta \lt 2/L\), kde \(L = \max_i q_i = 5\) je největší křivost ⇒ \(\eta \lt 0{,}4\). Malé \(\eta\) (0,05) se plíží, 0,2 je ideální, 0,38 kmitá ve strmém směru, 0,45 diverguje.</p></div>
+<p>Krok učení rozhoduje o všem. Pro tuto funkci je update po složkách</p>
+\[ x_i \leftarrow (1 - \eta q_i)\,x_i,\qquad q_1 = 1,\ \ q_2 = 5 \]
+<p>Každý krok tedy vynásobí chybu číslem \(|1 - \eta q_i|\). Sestup konverguje právě tehdy, když</p>
+\[ |1 - \eta q_i| \lt 1\ \ \forall i \quad\Leftrightarrow\quad \eta \lt \frac2L = \frac25 = 0{,}4 \]
+<p>kde \(L = \max_i q_i = 5\) je největší křivost. Malé \(\eta\) (0,05) se plíží, 0,2 je ideální, 0,38 kmitá ve strmém směru, 0,45 diverguje.</p></div>
 <div class="box parametry"><div class="box-t">Parametry: gradientní sestup</div>
 <div class="tablewrap"><table class="params">
 <tr><th>parametr</th><th>co znamená</th><th><span class="up">↑</span> když ho zvětším</th><th><span class="dn">↓</span> když ho zmenším</th></tr>
@@ -142,13 +161,15 @@
 <p class="jinak">„řekni mi, kdo jsou tví sousedé, a já ti řeknu, kdo jsi“. Nemá trénovací fázi (<i>lazy learning</i>) – celý „model“ jsou uložená trénovací data.</p></div>
 <p>Vlastnosti: citlivý na <b>šum, měřítko příznaků a odlehlé hodnoty</b> (vzdálenost dominuje příznak s největšími čísly – proto standardizace); hledání sousedů je pro velké \(n\) drahé (pomůže kd-strom). Liché \(k\) brání remíze ve dvou třídách.</p>
 <div class="box vzorec"><div class="box-t">Vzdálenosti (normy rozdílu \(\mathbf x = \mathbf a - \mathbf b\))</div>
-\[ \|\mathbf x\|_2 = \sqrt{\textstyle\sum_i x_i^2}, \qquad \|\mathbf x\|_1 = \textstyle\sum_i |x_i|, \qquad \|\mathbf x\|_\infty = \max_i |x_i|, \qquad \|\mathbf x\|_p = \left(\textstyle\sum_i |x_i|^p\right)^{1/p} \]
+\[ \|\mathbf x\|_2 = \sqrt{\textstyle\sum_i x_i^2}, \qquad \|\mathbf x\|_1 = \textstyle\sum_i |x_i| \]
+\[ \|\mathbf x\|_\infty = \max_i |x_i|, \qquad \|\mathbf x\|_p = \left(\textstyle\sum_i |x_i|^p\right)^{1/p} \]
 <table class="vars">
 <tr><td>\(\|\cdot\|_2\)</td><td>eukleidovská vzdálenost („vzdušnou čarou“)</td></tr>
 <tr><td>\(\|\cdot\|_1\)</td><td>manhattanská vzdálenost (součet rozdílů po osách)</td></tr>
 <tr><td>\(\|\cdot\|_\infty\)</td><td>Čebyševova vzdálenost (největší rozdíl v jedné ose)</td></tr>
 </table>
-<p>Příklad: \(\mathbf a = (1, 1)\), \(\mathbf b = (2, 3)\) ⇒ \(\mathbf x = (-1, -2)\): \(\|\mathbf x\|_2 = \sqrt5 \approx 2{,}24\), \(\|\mathbf x\|_1 = 3\), \(\|\mathbf x\|_\infty = 2\).</p></div>
+<p>Příklad: \(\mathbf a = (1, 1)\), \(\mathbf b = (2, 3)\), rozdíl \(\mathbf x = \mathbf a - \mathbf b = (-1, -2)\):</p>
+\[ \begin{aligned} \|\mathbf x\|_2 &= \sqrt{1 + 4} = \sqrt5 \approx 2{,}24 \\ \|\mathbf x\|_1 &= 1 + 2 = 3 \\ \|\mathbf x\|_\infty &= \max(1, 2) = 2 \end{aligned} \]</div>
 <div class="box priklad"><div class="box-t">Ručně: hlasování k-NN (data z cvičení)</div>
 <p>Třída A: (1, 2), (1,5; 1,8), (1; 0,6); třída B: (5, 8), (8, 8), (9, 11). Nový vzorek (2, 3), eukleidovská vzdálenost:</p>
 <div class="tablewrap"><table>
@@ -177,7 +198,8 @@
 
 <h2 id="kmeans">Opakování: k-means a UPGMA</h2>
 <div class="box definice" id="def-kmeans"><div class="box-t">Definice: k-means</div>
-<p><b>k-means</b> je shlukovací algoritmus, který rozdělí \(n\) bodů do \(k\) shluků, z nichž každý je reprezentován svým průměrem (centroidem) \(\boldsymbol\mu_j\), a minimalizuje přitom <b>inercii</b> – součet čtverců vzdáleností bodů od centroidu jejich shluku: \(J = \sum_{j=1}^{k}\sum_{\mathbf x_i \in C_j}\|\mathbf x_i - \boldsymbol\mu_j\|_2^2\).</p>
+<p><b>k-means</b> je shlukovací algoritmus, který rozdělí \(n\) bodů do \(k\) shluků, z nichž každý je reprezentován svým průměrem (centroidem) \(\boldsymbol\mu_j\), a minimalizuje přitom <b>inercii</b> – součet čtverců vzdáleností bodů od centroidu jejich shluku:
+\[ J = \sum_{j=1}^{k}\sum_{\mathbf x_i \in C_j}\|\mathbf x_i - \boldsymbol\mu_j\|_2^2 \]</p>
 <p class="jinak">najdi \(k\) „těžišť“ tak, aby každý bod měl své těžiště co nejblíž. Úloha je nekonvexní – algoritmus najde jen lokální minimum, které závisí na startu.</p></div>
 <div class="box postup"><div class="box-t">Lloydův algoritmus</div>
 <ol>
@@ -188,7 +210,12 @@
 </ol>
 <p>Každý krok přiřazení i aktualizace může \(J\) jen snížit, proto algoritmus vždy zkonverguje – do lokálního minima. Proto se spouští několikrát z různých startů.</p></div>
 <div class="box priklad"><div class="box-t">Ručně: jeden krok k-means (přednáška)</div>
-<p>Stejných šest bodů, \(k = 2\), počáteční centroidy \(\boldsymbol\mu_1 = (1, 2)\), \(\boldsymbol\mu_2 = (5, 8)\). Přiřazení: (1, 2), (1,5; 1,8), (1; 0,6) → shluk 1; (5, 8), (8, 8), (9, 11) → shluk 2; \(J = 36{,}25\). Aktualizace: \(\boldsymbol\mu_1 = (1{,}17;\ 1{,}47)\), \(\boldsymbol\mu_2 = (7{,}33;\ 9{,}00)\), \(J = 15{,}98\). Další přiřazení se nezmění ⇒ konvergence.</p></div>
+<p>Stejných šest bodů, \(k = 2\), počáteční centroidy \(\boldsymbol\mu_1 = (1, 2)\), \(\boldsymbol\mu_2 = (5, 8)\).</p>
+<ol>
+<li><b>Přiřazení:</b> (1, 2), (1,5; 1,8), (1; 0,6) → shluk 1; (5, 8), (8, 8), (9, 11) → shluk 2. Inercie \(J = 36{,}25\).</li>
+<li><b>Aktualizace centroidů</b> (průměry shluků): \[ \begin{aligned} \boldsymbol\mu_1 &= (1{,}17;\ 1{,}47) \\ \boldsymbol\mu_2 &= (7{,}33;\ 9{,}00) \\ J &= 15{,}98 \end{aligned} \]</li>
+<li><b>Další přiřazení</b> se nezmění ⇒ konvergence.</li>
+</ol></div>
 <div data-demo="kmeans"></div>
 <div class="box parametry"><div class="box-t">Parametry: k-means</div>
 <div class="tablewrap"><table class="params">
@@ -199,10 +226,16 @@
 <p class="volba">\(k\) nelze volit podle minima \(J\) (to by vedlo na \(k = n\)); hledá se „koleno“ křivky \(J(k)\) nebo jiné kritérium.</p></div>
 <div class="box definice" id="def-upgma"><div class="box-t">Definice: UPGMA</div>
 <p><b>UPGMA</b> (Unweighted Pair Group Method with Arithmetic Mean) je hierarchické aglomerativní shlukování, které na začátku považuje každý vzorek za samostatný shluk a opakovaně slučuje dva nejbližší shluky; vzdálenost shluků je <b>průměr všech párových vzdáleností</b> mezi jejich body. Výsledkem je strom (dendrogram).</p>
-<p class="jinak">„slepuj vždy dvě nejbližší skupiny, dokud nezbude jedna“; po sloučení \(C_i\) a \(C_j\) se vzdálenost k jinému shluku \(C_k\) přepočítá jako vážený průměr \(d(C_{ij}, C_k) = \frac{|C_i|\,d(C_i, C_k) + |C_j|\,d(C_j, C_k)}{|C_i| + |C_j|}\).</p></div>
+<p class="jinak">„slepuj vždy dvě nejbližší skupiny, dokud nezbude jedna“; po sloučení \(C_i\) a \(C_j\) se vzdálenost k jinému shluku \(C_k\) přepočítá jako vážený průměr
+\[ d(C_{ij}, C_k) = \frac{|C_i|\,d(C_i, C_k) + |C_j|\,d(C_j, C_k)}{|C_i| + |C_j|} \]</p></div>
 
 <h2 id="matematika">Matematické minimum (příloha 1)</h2>
-<p>Pojmy, které další přednášky berou jako samozřejmé. Kontrolní otázky z přednášky: minimum \(f(x) = 3x^2 + 5x + 1\) je v \(x^\ast = -5/6\) (\(f'' = 6 \gt 0\), takže je to minimum); \(\begin{pmatrix}1 & 2\\ 3 & 4\end{pmatrix}\begin{pmatrix}1\\-1\end{pmatrix} = \begin{pmatrix}-1\\-1\end{pmatrix}\); střední hodnota hodu kostkou \((1 + \dots + 6)/6 = 3{,}5\).</p>
+<p>Pojmy, které další přednášky berou jako samozřejmé. Kontrolní otázky z přednášky:</p>
+<ul>
+<li>minimum \(f(x) = 3x^2 + 5x + 1\): \(f'(x) = 6x + 5 = 0\) ⇒ \(x^\ast = -5/6\) (\(f'' = 6 \gt 0\), takže je to minimum);</li>
+<li>součin matice a vektoru: \[ \begin{pmatrix}1 & 2\\ 3 & 4\end{pmatrix}\begin{pmatrix}1\\-1\end{pmatrix} = \begin{pmatrix}1 - 2\\ 3 - 4\end{pmatrix} = \begin{pmatrix}-1\\-1\end{pmatrix} \]</li>
+<li>střední hodnota hodu kostkou \((1 + \dots + 6)/6 = 3{,}5\).</li>
+</ul>
 <div class="tablewrap"><table>
 <tr><th>pojem</th><th>vzorec / pravidlo</th><th>kde se v ML použije</th></tr>
 <tr><td>skalární součin</td><td>\(\mathbf a^\top\mathbf b = \sum_i a_i b_i = \|\mathbf a\|\|\mathbf b\|\cos\theta\); kosinová podobnost \(\cos\theta\), kosinová vzdálenost \(1 - \cos\theta\)</td><td>lineární model \(\mathbf w^\top\mathbf x + b\), projekce v PCA, attention</td></tr>
@@ -218,9 +251,16 @@
 <tr><td>rozptyl průměru</td><td>průměr \(M\) nezávislých kopií má rozptyl \(\sigma^2/M\)</td><td>bagging (6. přednáška)</td></tr>
 </table></div>
 <div class="box priklad"><div class="box-t">Bayes a vzácná nemoc</div>
-<p>Nemoc má 1 z 1000 lidí, test má senzitivitu i specificitu 99 %. \(P(\text{nemocný}\mid +) = \frac{0{,}99\cdot0{,}001}{0{,}99\cdot0{,}001 + 0{,}01\cdot0{,}999} = 0{,}090\). I velmi dobrý test má u vzácné třídy jen 9 % správných pozitivních výsledků – malá apriorní pravděpodobnost „zničí“ přesnost pozitivních predikcí. (Kontrolní otázka: nemoc 1 ze 100, test 90 % / 90 % ⇒ \(P = 0{,}009/0{,}108 = 0{,}083\).)</p></div>
+<p>Nemoc má 1 z 1000 lidí, test má senzitivitu i specificitu 99 %. Podle Bayesovy věty:</p>
+\[ \begin{aligned} P(\text{nemocný}\mid +) &= \frac{0{,}99\cdot0{,}001}{0{,}99\cdot0{,}001 + 0{,}01\cdot0{,}999} \\ &= \frac{0{,}00099}{0{,}01098} = 0{,}090 \end{aligned} \]
+<p>I velmi dobrý test má u vzácné třídy jen 9 % správných pozitivních výsledků – malá apriorní pravděpodobnost „zničí“ přesnost pozitivních predikcí. (Kontrolní otázka: nemoc 1 ze 100, test 90 % / 90 % ⇒ \(P = 0{,}009/0{,}108 = 0{,}083\).)</p></div>
 <div class="box priklad"><div class="box-t">Křížová entropie jako ztráta</div>
-<p>Pro one-hot cíl je \(H(p, q) = -\ln q_{\text{správná}}\). Softmax skóre (2; 1; 0,1) dá pravděpodobnosti 0,659; 0,242; 0,099. Pokud je správná první třída, ztráta je \(-\ln 0{,}659 = 0{,}417\); pokud třetí, \(-\ln 0{,}099 = 2{,}31\). Pravděpodobnost 0,5 pro správnou třídu dává \(\ln 2 = 0{,}693\).</p></div>
+<p>Pro one-hot cíl je \(H(p, q) = -\ln q_{\text{správná}}\). Softmax skóre (2; 1; 0,1) dá pravděpodobnosti 0,659; 0,242; 0,099.</p>
+<ul>
+<li>správná je první třída: \(-\ln 0{,}659 = 0{,}417\);</li>
+<li>správná je třetí třída: \(-\ln 0{,}099 = 2{,}31\);</li>
+<li>pro srovnání pravděpodobnost 0,5 pro správnou třídu: \(-\ln 0{,}5 = \ln 2 = 0{,}693\).</li>
+</ul></div>
 
 <div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
 <p>„Strojové učení je podmnožina AI, kde se pravidla učí z dat a správných odpovědí, hluboké učení je ML s mnohavrstvými sítěmi, které si příznaky najdou samy. Učení s učitelem má labely – regrese spojité, klasifikace diskrétní; bez učitele hledá strukturu, posilované učení maximalizuje odměnu a self-supervised si labely vyrobí z dat. Trénování modelu je optimalizace: proměnné jsou váhy, účelová funkce je průměrná ztráta. Řeší se většinou gradientním sestupem \(\mathbf w \leftarrow \mathbf w - \eta\nabla L\); krok učení musí být menší než \(2/L\), jinak sestup diverguje, a v nekonvexní úloze najdeme jen lokální minimum.“</p></div>

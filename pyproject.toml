@@ -12,3 +12,8 @@ dependencies = [
     "scipy>=1.18.1",
     "umap-learn>=0.5.12",
 ]
+
+[dependency-groups]
+dev = [
+    "playwright>=1.64.1",
+]

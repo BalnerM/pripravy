@@ -20,7 +20,12 @@
 <h2 id="metriky">Metriky vzdálenosti – co znamená „podobné“</h2>
 <p>Shlukování stojí na tom, jak měříme vzdálenost (nepodobnost) dvou objektů. Volba metriky musí odpovídat úloze.</p>
 <div class="box definice" id="def-metrika"><div class="box-t">Definice: metrika (míra vzdálenosti)</div>
-<p><b>Metrika</b> je funkce \(d(\mathbf a, \mathbf b)\), která každé dvojici objektů přiřadí nezáporné číslo – vzdálenost – a splňuje: \(d(\mathbf a,\mathbf b) = 0\) právě když \(\mathbf a = \mathbf b\); symetrii \(d(\mathbf a,\mathbf b) = d(\mathbf b,\mathbf a)\); trojúhelníkovou nerovnost \(d(\mathbf a,\mathbf c) \le d(\mathbf a,\mathbf b) + d(\mathbf b,\mathbf c)\).</p>
+<p><b>Metrika</b> je funkce \(d(\mathbf a, \mathbf b)\), která každé dvojici objektů přiřadí nezáporné číslo – vzdálenost – a splňuje:</p>
+<ul>
+<li>\(d(\mathbf a,\mathbf b) = 0\) právě když \(\mathbf a = \mathbf b\);</li>
+<li>symetrii \(d(\mathbf a,\mathbf b) = d(\mathbf b,\mathbf a)\);</li>
+<li>trojúhelníkovou nerovnost \(d(\mathbf a,\mathbf c) \le d(\mathbf a,\mathbf b) + d(\mathbf b,\mathbf c)\).</li>
+</ul>
 <p class="jinak">pravidlo, jak číslem vyjádřit „jak moc se dva pacienti liší“. Malá vzdálenost = podobní. Různé metriky chápou podobnost různě (pravítkem, po osách, podle úhlu). Kosinová „vzdálenost“ trojúhelníkovou nerovnost obecně nesplňuje, přesto se jako míra nepodobnosti běžně používá.</p></div>
 <div class="box definice" id="def-eukl-manh-kos"><div class="box-t">Definice: eukleidovská, manhattanská a kosinová vzdálenost</div>
 <p><b>Eukleidovská vzdálenost</b> je délka úsečky mezi dvěma body: odmocnina ze součtu čtverců rozdílů souřadnic. <b>Manhattanská vzdálenost</b> je součet absolutních rozdílů souřadnic. <b>Kosinová vzdálenost</b> je \(1 - \cos\theta\), kde \(\theta\) je úhel mezi vektory obou objektů (vedených z počátku).</p>
@@ -163,7 +168,7 @@
 <li><b>kombinací</b> výše uvedeného.</li>
 </ol>
 <div class="box vzorec"><div class="box-t">Vnitroshluková vzdálenost (WSS)</div>
-\[ \mathrm{WCSS}_k = \sum_{n=1}^{N_k} d_n^2 \qquad\qquad \mathrm{WSS} = \sum_{k=1}^{K}\mathrm{WCSS}_k \]
+\[ \mathrm{WCSS}_k = \sum_{n=1}^{N_k} d_n^2,\qquad \mathrm{WSS} = \sum_{k=1}^{K}\mathrm{WCSS}_k \]
 <table class="vars">
 <tr><td>\(d_n\)</td><td>vzdálenost \(n\)-tého bodu shluku od jeho těžiště</td></tr>
 <tr><td>\(N_k\)</td><td>počet bodů v \(k\)-tém shluku</td></tr>

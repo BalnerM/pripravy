@@ -63,7 +63,14 @@
 <p class="jinak">rozložím složitou matici na „jednoduché stavební díly“, jejichž význam je jasný (otočení, natažení) a se kterými se snadno počítá – podobně jako 60 = 2·2·3·5.</p></div>
 <p>Rozložit matici znamená napsat ji jako součin jednodušších matic (trojúhelníkových, ortogonálních, diagonálních), se kterými se snáz počítá a které mají jasný význam – podobně jako rozklad čísla na prvočísla. Několik základních pojmů, které rozklady používají:</p>
 <div class="box definice" id="def-maticove-pojmy"><div class="box-t">Definice: základní typy matic</div>
-<p><b>Transponovaná</b> matice \(\mathbf A^T\) vznikne záměnou řádků a sloupců. <b>Symetrická</b> matice splňuje \(\mathbf A = \mathbf A^T\). <b>Diagonální</b> matice má nenulové prvky jen na hlavní diagonále. <b>Jednotková</b> matice \(\mathbf I\) je diagonální s jedničkami na diagonále (\(\mathbf A\mathbf I = \mathbf A\)). <b>Inverzní</b> matice \(\mathbf A^{-1}\) splňuje \(\mathbf A\mathbf A^{-1} = \mathbf I\). <b>Ortogonální</b> matice má ortonormální sloupce, takže \(\mathbf Q^T\mathbf Q = \mathbf I\), tj. \(\mathbf Q^{-1} = \mathbf Q^T\).</p>
+<ul>
+<li><b>Transponovaná</b> matice \(\mathbf A^T\) vznikne záměnou řádků a sloupců.</li>
+<li><b>Symetrická</b> matice splňuje \(\mathbf A = \mathbf A^T\).</li>
+<li><b>Diagonální</b> matice má nenulové prvky jen na hlavní diagonále.</li>
+<li><b>Jednotková</b> matice \(\mathbf I\) je diagonální s jedničkami na diagonále (\(\mathbf A\mathbf I = \mathbf A\)).</li>
+<li><b>Inverzní</b> matice \(\mathbf A^{-1}\) splňuje \(\mathbf A\mathbf A^{-1} = \mathbf I\).</li>
+<li><b>Ortogonální</b> matice má ortonormální sloupce, takže \(\mathbf Q^T\mathbf Q = \mathbf I\), tj. \(\mathbf Q^{-1} = \mathbf Q^T\).</li>
+</ul>
 <p class="jinak">jednotková matice je „jednička“ maticového světa, inverze „dělení“. Ortogonální matice geometricky jen otáčí (či zrcadlí) – nemění délky ani úhly – a její inverzi získáme zadarmo transpozicí.</p></div>
 <div class="box definice" id="def-determinant-stopa-hodnost"><div class="box-t">Definice: determinant, stopa a hodnost matice</div>
 <p><b>Determinant</b> \(\det\mathbf A\) čtvercové matice je číslo, které udává, kolikrát lineární zobrazení \(\mathbf A\) zvětší objem (ve 2D plochu); je roven součinu vlastních čísel a je nulový právě tehdy, když matice nemá inverzi. <b>Stopa</b> je součet prvků na diagonále a je rovna součtu vlastních čísel. <b>Hodnost</b> je maximální počet lineárně nezávislých řádků (sloupců) a je rovna počtu nenulových singulárních čísel.</p>
@@ -98,24 +105,33 @@
 
 <div class="box priklad"><div class="box-t">Příklad z přednášky krok za krokem: \(\mathbf{A} = \begin{pmatrix}3&3\\3&7\end{pmatrix}\)</div>
 <p><b>Krok 1 – vlastní čísla:</b></p>
-\[ \det\begin{pmatrix}3-\lambda & 3\\ 3 & 7-\lambda\end{pmatrix} = (3-\lambda)(7-\lambda) - 3\cdot 3 = \lambda^2 - 10\lambda + 12 = 0 \]
-\[ D = 100 - 4\cdot 12 = 52,\qquad \lambda_{1,2} = \frac{10 \pm \sqrt{52}}{2} \;\Rightarrow\; \lambda_1 \approx 8{,}6,\quad \lambda_2 \approx 1{,}4 \]
+\[ \begin{aligned} \det\begin{pmatrix}3-\lambda & 3\\ 3 & 7-\lambda\end{pmatrix} &= (3-\lambda)(7-\lambda) - 3\cdot 3 \\ &= \lambda^2 - 10\lambda + 12 = 0 \end{aligned} \]
+\[ \begin{aligned} D &= 100 - 4\cdot 12 = 52 \\ \lambda_{1,2} &= \frac{10 \pm \sqrt{52}}{2} \\ \lambda_1 &\approx 8{,}6,\quad \lambda_2 \approx 1{,}4 \end{aligned} \]
 <p><b>Krok 2 – vlastní vektor pro \(\lambda_1 = 8{,}6\):</b></p>
-\[ \begin{pmatrix}3-8{,}6 & 3\\ 3 & 7-8{,}6\end{pmatrix}\begin{pmatrix}v_1\\v_2\end{pmatrix} = \begin{pmatrix}-5{,}6 & 3\\ 3 & -1{,}6\end{pmatrix}\begin{pmatrix}v_1\\v_2\end{pmatrix} = \mathbf{0} \;\Rightarrow\; v_2 = \tfrac{5{,}6}{3}v_1 \approx 1{,}87\,v_1 \]
+\[ \begin{aligned} \begin{pmatrix}3-8{,}6 & 3\\ 3 & 7-8{,}6\end{pmatrix}\begin{pmatrix}v_1\\v_2\end{pmatrix} &= \mathbf{0} \\ \begin{pmatrix}-5{,}6 & 3\\ 3 & -1{,}6\end{pmatrix}\begin{pmatrix}v_1\\v_2\end{pmatrix} &= \mathbf{0} \end{aligned} \]
+<p>Z prvního řádku \(-5{,}6\,v_1 + 3\,v_2 = 0\):</p>
+\[ v_2 = \tfrac{5{,}6}{3}v_1 \approx 1{,}87\,v_1 \]
 <p>Rovnice jsou závislé (proto existuje nenulové řešení) – určují jen <i>směr</i>. Délku zvolíme 1: \(\mathbf{v}_1 \approx (0{,}47;\ 0{,}88)\).</p>
 <p><b>Pro \(\lambda_2 = 1{,}4\):</b> \(1{,}6\,v_1 + 3\,v_2 = 0\) → \(\mathbf{v}_2 \approx (-0{,}88;\ 0{,}47)\).</p>
 <p><b>Výsledek a kontrola:</b></p>
 \[ \mathbf{D} = \begin{pmatrix}8{,}6 & 0\\ 0 & 1{,}4\end{pmatrix},\qquad \mathbf{V} = \begin{pmatrix}0{,}47 & -0{,}88\\ 0{,}88 & 0{,}47\end{pmatrix} \]
 <ul>
-<li>kolmost: \(\mathbf{v}_1\cdot\mathbf{v}_2 = 0{,}47\cdot(-0{,}88) + 0{,}88\cdot 0{,}47 = 0\);</li>
+<li>kolmost: \[ \mathbf{v}_1\cdot\mathbf{v}_2 = 0{,}47\cdot(-0{,}88) + 0{,}88\cdot 0{,}47 = 0 \]</li>
 <li>jednotková délka: \(\sqrt{0{,}47^2 + 0{,}88^2} \approx 1\) → <b>ortonormální báze</b>;</li>
-<li>zpětné složení: \(\mathbf{V}\mathbf{D}\mathbf{V}^T \approx \begin{pmatrix}3&3\\3&7\end{pmatrix}\) ✓ (pro ortonormální \(\mathbf{V}\) platí \(\mathbf{V}^{-1} = \mathbf{V}^T\)).</li>
+<li>zpětné složení (pro ortonormální \(\mathbf{V}\) platí \(\mathbf{V}^{-1} = \mathbf{V}^T\)): \[ \mathbf{V}\mathbf{D}\mathbf{V}^T \approx \begin{pmatrix}3&3\\3&7\end{pmatrix}\ \checkmark \]</li>
 </ul>
 <p>Pro PCA: vlastní vektor největšího vlastního čísla (0,47; 0,88) udává <b>směr největšího rozptylu</b>; ten nese \(8{,}6/(8{,}6+1{,}4) = 86\) % celkového rozptylu (součet vlastních čísel = stopa matice = 3 + 7 = 10).</p></div>
 
 <h2 id="svd">Singulární rozklad (SVD)</h2>
 <div class="box definice" id="def-svd"><div class="box-t">Definice: singulární rozklad (SVD)</div>
-<p><b>Singulární rozklad</b> libovolné matice \(\mathbf A\) typu \(n\times p\) je její vyjádření ve tvaru \(\mathbf A = \mathbf U\boldsymbol\Sigma\mathbf V^T\), kde \(\mathbf U\) (\(n\times n\)) a \(\mathbf V\) (\(p\times p\)) jsou ortogonální matice a \(\boldsymbol\Sigma\) (\(n\times p\)) má na diagonále nezáporná <b>singulární čísla</b> \(\sigma_1 \ge \sigma_2 \ge \dots \ge 0\) a jinde nuly. Sloupce \(\mathbf U\) jsou <b>levé</b> a sloupce \(\mathbf V\) <b>pravé singulární vektory</b>; platí \(\mathbf A\mathbf v_j = \sigma_j\mathbf u_j\).</p>
+<p><b>Singulární rozklad</b> libovolné matice \(\mathbf A\) typu \(n\times p\) je její vyjádření ve tvaru
+\[ \mathbf A = \mathbf U\boldsymbol\Sigma\mathbf V^T \]
+kde:</p>
+<ul>
+<li>\(\mathbf U\) (\(n\times n\)) a \(\mathbf V\) (\(p\times p\)) jsou ortogonální matice,</li>
+<li>\(\boldsymbol\Sigma\) (\(n\times p\)) má na diagonále nezáporná <b>singulární čísla</b> \(\sigma_1 \ge \sigma_2 \ge \dots \ge 0\) a jinde nuly.</li>
+</ul>
+<p>Sloupce \(\mathbf U\) jsou <b>levé</b> a sloupce \(\mathbf V\) <b>pravé singulární vektory</b>; platí \(\mathbf A\mathbf v_j = \sigma_j\mathbf u_j\).</p>
 <p class="jinak">„spektrální rozklad pro jakoukoli matici, i obdélníkovou“. Každé lineární zobrazení = otočení, natažení podél os o \(\sigma_j\), další otočení. Singulární čísla říkají, jak „silný“ je každý směr.</p></div>
 <div class="box vzorec"><div class="box-t">Singulární rozklad</div>
 \[ \mathbf{A}_{(n\times p)} = \mathbf{U}_{(n\times n)}\;\boldsymbol\Sigma_{(n\times p)}\;\mathbf{V}^T_{(p\times p)} \]
@@ -133,13 +149,15 @@
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>Kružnice se vždy změní v elipsu. Pravé singulární vektory \(\mathbf{v}_1, \mathbf{v}_2\) jsou směry, které se zobrazí na hlavní osy elipsy; délky poloos jsou singulární čísla; směry poloos jsou levé singulární vektory. Pro PCA: \(\mathbf{v}\) = směry komponent, \(\sigma\) = „síla“ (rozptyl) v těchto směrech, a protože U a V jsou ortonormální, jde o čistou <b>rotaci os bez zkreslení měřítka</b>.</p></div>
 <div class="box priklad"><div class="box-t">Příklad: \(\mathbf{A} = \begin{pmatrix}2&2\\1&1\end{pmatrix}\)</div>
-<p>Druhý řádek je polovina prvního – matice má hodnost 1. SVD: \(\sigma_1 = \sqrt{10}\), \(\sigma_2 = 0\); \(\mathbf{v}_1 = (1/\sqrt2;\ 1/\sqrt2)\), \(\mathbf{u}_1 = (2/\sqrt5;\ 1/\sqrt5)\). Celou matici tedy popisuje jediný směr (\(\mathbf{A} = \sigma_1\mathbf{u}_1\mathbf{v}_1^T\)) – druhé singulární číslo 0 říká, že ve druhém směru „není nic“. Největší σ ↔ nejdůležitější transformační vektor. Přesně tohle dělá PCA při redukci dimenze: zahodí směry s malým σ.</p></div>
+<p>Druhý řádek je polovina prvního – matice má hodnost 1. SVD:</p>
+\[ \begin{aligned} \sigma_1 &= \sqrt{10},\qquad \sigma_2 = 0 \\ \mathbf{v}_1 &= (1/\sqrt2;\ 1/\sqrt2) \\ \mathbf{u}_1 &= (2/\sqrt5;\ 1/\sqrt5) \end{aligned} \]
+<p>Celou matici tedy popisuje jediný směr, \(\mathbf{A} = \sigma_1\mathbf{u}_1\mathbf{v}_1^T\) – druhé singulární číslo 0 říká, že ve druhém směru „není nic“. Největší σ ↔ nejdůležitější transformační vektor. Přesně tohle dělá PCA při redukci dimenze: zahodí směry s malým σ.</p></div>
 
 <h2 id="vztah">ED vs. SVD: jak spolu souvisí</h2>
 <p>Pro centrovanou datovou matici \(\mathbf{X}\,(n\times p)\):</p>
 <div class="box vzorec"><div class="box-t">Odvození (stačí pochopit logiku)</div>
-\[ \text{ED:}\quad \mathbf{S} = \frac{1}{n-1}\mathbf{X}^T\mathbf{X} = \mathbf{V}\mathbf{D}\mathbf{V}^T \qquad\qquad \text{SVD:}\quad \mathbf{X} = \mathbf{U}\boldsymbol\Sigma\mathbf{V}^T \]
-\[ \frac{1}{n-1}\mathbf{X}^T\mathbf{X} = \frac{1}{n-1}(\mathbf{U}\boldsymbol\Sigma\mathbf{V}^T)^T(\mathbf{U}\boldsymbol\Sigma\mathbf{V}^T) = \frac{1}{n-1}\mathbf{V}\boldsymbol\Sigma\underbrace{\mathbf{U}^T\mathbf{U}}_{=\mathbf{I}}\boldsymbol\Sigma\mathbf{V}^T = \mathbf{V}\,\frac{\boldsymbol\Sigma^2}{n-1}\,\mathbf{V}^T \]
+\[ \begin{aligned} \text{ED:}\quad & \mathbf{S} = \frac{1}{n-1}\mathbf{X}^T\mathbf{X} = \mathbf{V}\mathbf{D}\mathbf{V}^T \\ \text{SVD:}\quad & \mathbf{X} = \mathbf{U}\boldsymbol\Sigma\mathbf{V}^T \end{aligned} \]
+\[ \begin{aligned} \frac{1}{n-1}\mathbf{X}^T\mathbf{X} &= \frac{1}{n-1}(\mathbf{U}\boldsymbol\Sigma\mathbf{V}^T)^T(\mathbf{U}\boldsymbol\Sigma\mathbf{V}^T) \\ &= \frac{1}{n-1}\mathbf{V}\boldsymbol\Sigma\underbrace{\mathbf{U}^T\mathbf{U}}_{=\mathbf{I}}\boldsymbol\Sigma\mathbf{V}^T \\ &= \mathbf{V}\,\frac{\boldsymbol\Sigma^2}{n-1}\,\mathbf{V}^T \end{aligned} \]
 <p>Porovnáním obou vyjádření \(\mathbf{S}\):</p>
 <ul>
 <li><b>pravé singulární vektory \(\mathbf{V}\) matice \(\mathbf{X}\) = vlastní vektory \(\mathbf{X}^T\mathbf{X}\)</b> (a tedy kovarianční matice) = <b>transformační vektory PCA</b> (zátěže);</li>
@@ -174,7 +192,12 @@
 
 <section class="souhrn" id="shrnuti">
 <h2 id="shrnuti-h">Shrnutí</h2>
-<p>Transformační vektory PCA lze získat dvěma rozklady. <b>Spektrální rozklad</b> \(\mathbf{A} = \mathbf{P}\mathbf{D}\mathbf{P}^{-1}\) čtvercové matice hledá směry, které matice jen natáhne (\(\mathbf{A}\mathbf{v} = \lambda\mathbf{v}\)); počítá se přes \(\det(\mathbf{A}-\lambda\mathbf{I}) = 0\) a dosazení vlastních čísel zpět. Pro symetrickou kovarianční matici jsou vlastní vektory ortonormální a dávají směry komponent, vlastní čísla jejich rozptyly. <b>Singulární rozklad</b> \(\mathbf{X} = \mathbf{U}\boldsymbol\Sigma\mathbf{V}^T\) funguje pro libovolnou obdélníkovou matici a geometricky znamená rotaci – škálování – rotaci. Pro centrovaná data platí: pravé singulární vektory = vlastní vektory kovarianční matice, \(\lambda = \sigma^2/(n-1)\), skóre \(= \mathbf{U}\boldsymbol\Sigma\). SVD je přesnější, stabilnější a obvykle rychlejší, protože nepočítá kovarianční matici a používá jen ortogonální operace; ED se používá u malých dat a v kernel PCA.</p>
+<p>Transformační vektory PCA lze získat dvěma rozklady.</p>
+<ul>
+<li><b>Spektrální rozklad</b> čtvercové matice \[ \mathbf{A} = \mathbf{P}\mathbf{D}\mathbf{P}^{-1} \] hledá směry, které matice jen natáhne (\(\mathbf{A}\mathbf{v} = \lambda\mathbf{v}\)); počítá se přes \(\det(\mathbf{A}-\lambda\mathbf{I}) = 0\) a dosazení vlastních čísel zpět. Pro symetrickou kovarianční matici jsou vlastní vektory ortonormální a dávají směry komponent, vlastní čísla jejich rozptyly.</li>
+<li><b>Singulární rozklad</b> \(\mathbf{X} = \mathbf{U}\boldsymbol\Sigma\mathbf{V}^T\) funguje pro libovolnou obdélníkovou matici a geometricky znamená rotaci – škálování – rotaci.</li>
+</ul>
+<p>Pro centrovaná data platí: pravé singulární vektory = vlastní vektory kovarianční matice, \(\lambda = \sigma^2/(n-1)\), skóre \(= \mathbf{U}\boldsymbol\Sigma\). SVD je přesnější, stabilnější a obvykle rychlejší, protože nepočítá kovarianční matici a používá jen ortogonální operace; ED se používá u malých dat a v kernel PCA.</p>
 <div class="takehome"><h3>Take-home messages</h3><ol>
 <li>Vlastní vektor = směr, který matice neotočí; vlastní číslo = kolikrát ho natáhne.</li>
 <li>Postup ED: \(\det(\mathbf A - \lambda\mathbf I) = 0\) → vlastní čísla → dosadit → vlastní vektory → normovat na délku 1.</li>
@@ -187,13 +210,19 @@
 <h2 id="otazky">Otázky ke zkoušce</h2>
 <div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
 <details class="q"><summary>Co jsou vlastní čísla a vlastní vektory a jak se počítají?</summary><div>
-<p>Vlastní vektor matice \(\mathbf A\) je nenulový vektor, jehož směr \(\mathbf A\) nezmění, jen ho \(\lambda\)-krát natáhne: \(\mathbf A\mathbf v = \lambda\mathbf v\); \(\lambda\) je vlastní číslo. Výpočet: \((\mathbf A - \lambda\mathbf I)\mathbf v = 0\) má netriviální řešení jen když \(\det(\mathbf A-\lambda\mathbf I) = 0\); kořeny charakteristického mnohočlenu jsou vlastní čísla, dosazením do soustavy získám vlastní vektory a normuji je na délku 1.</p></div></details>
+<p>Vlastní vektor matice \(\mathbf A\) je nenulový vektor, jehož směr \(\mathbf A\) nezmění, jen ho \(\lambda\)-krát natáhne: \(\mathbf A\mathbf v = \lambda\mathbf v\); \(\lambda\) je vlastní číslo. Výpočet: soustava</p>
+\[ (\mathbf A - \lambda\mathbf I)\mathbf v = 0 \]
+<p>má netriviální řešení, jen když</p>
+\[ \det(\mathbf A-\lambda\mathbf I) = 0 \]
+<p>Kořeny charakteristického mnohočlenu jsou vlastní čísla, dosazením do soustavy získám vlastní vektory a normuji je na délku 1.</p></div></details>
 <details class="q"><summary>Spočítejte vlastní čísla matice [[3, 3], [3, 7]].</summary><div>
 <p>\((3-\lambda)(7-\lambda) - 9 = \lambda^2 - 10\lambda + 12 = 0\), diskriminant 52, \(\lambda = (10 \pm \sqrt{52})/2\) → 8,6 a 1,4. Vlastní vektory (0,47; 0,88) a (−0,88; 0,47), jsou kolmé a jednotkové. První směr nese 86 % rozptylu.</p></div></details>
 <details class="q"><summary>Co je SVD a jaký má geometrický význam?</summary><div>
 <p>Rozklad libovolné matice \(\mathbf A = \mathbf U\boldsymbol\Sigma\mathbf V^T\): U a V ortonormální (rotace, příp. zrcadlení), Σ diagonální s nezápornými singulárními čísly (natažení podél os). Každé lineární zobrazení je tedy otočení, natažení a další otočení; jednotkovou kružnici zobrazí na elipsu s poloosami σ.</p></div></details>
 <details class="q"><summary>Jak souvisí SVD datové matice s PCA?</summary><div>
-<p>Pro centrovanou \(\mathbf X = \mathbf U\boldsymbol\Sigma\mathbf V^T\) je \(\mathbf X^T\mathbf X/(n-1) = \mathbf V(\boldsymbol\Sigma^2/(n-1))\mathbf V^T\), což je spektrální rozklad kovarianční matice. Proto pravé singulární vektory = transformační vektory (zátěže) PCA, vlastní čísla = \(\sigma^2/(n-1)\) a komponentní skóre \(\mathbf X\mathbf V = \mathbf U\boldsymbol\Sigma\).</p></div></details>
+<p>Pro centrovanou \(\mathbf X = \mathbf U\boldsymbol\Sigma\mathbf V^T\) je</p>
+\[ \frac{\mathbf X^T\mathbf X}{n-1} = \mathbf V\,\frac{\boldsymbol\Sigma^2}{n-1}\,\mathbf V^T \]
+<p>což je spektrální rozklad kovarianční matice. Proto pravé singulární vektory = transformační vektory (zátěže) PCA, vlastní čísla = \(\sigma^2/(n-1)\) a komponentní skóre \(\mathbf X\mathbf V = \mathbf U\boldsymbol\Sigma\).</p></div></details>
 <details class="q"><summary>Proč je SVD výhodnější než ED kovarianční matice?</summary><div>
 <p>Nepočítá kovarianční matici, takže se neztratí přesnost malých hodnot (při \(\mathbf X^T\mathbf X\) se rozdíly řádů umocní); používá jen ortogonální operace zachovávající délky a úhly → numericky stabilní (i znaménka komponent); je výpočetně efektivnější (\(O(\min(p^2n, n^2p))\) vs. \(O(p^2n + p^3)\)) a vektory jsou vždy normované. ED je v pořádku pro malá data a používá se v kernel PCA, kde je jádrová matice čtvercová a symetrická.</p></div></details>
 

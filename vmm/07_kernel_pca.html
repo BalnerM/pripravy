@@ -90,7 +90,11 @@
 <h3>Jádro (kernel) jako míra podobnosti</h3>
 <p>Cíl: převod do vyšší dimenze, kde je úloha lineární. Objekty transformujeme funkcí \(\varphi: \mathbf{x} \to \varphi(\mathbf{x})\). <b>Jádro</b> je skalární součin dvou objektů v tomto novém prostoru:</p>
 <div class="box definice" id="def-skalarni-soucin"><div class="box-t">Definice: skalární součin</div>
-<p><b>Skalární součin</b> dvou vektorů \(\mathbf a, \mathbf b\) je číslo \(\mathbf a^T\mathbf b = a_1b_1 + a_2b_2 + \dots + a_pb_p\). Platí \(\mathbf a^T\mathbf b = \lVert\mathbf a\rVert\,\lVert\mathbf b\rVert\cos\theta\), kde \(\theta\) je úhel mezi vektory.</p>
+<p><b>Skalární součin</b> dvou vektorů \(\mathbf a, \mathbf b\) je číslo
+\[ \mathbf a^T\mathbf b = a_1b_1 + a_2b_2 + \dots + a_pb_p \]
+Platí
+\[ \mathbf a^T\mathbf b = \lVert\mathbf a\rVert\,\lVert\mathbf b\rVert\cos\theta \]
+kde \(\theta\) je úhel mezi vektory.</p>
 <p class="jinak">míra toho, jak moc dva vektory „míří stejným směrem“ (krát jejich délky). Velký kladný = podobný směr, 0 = kolmé, záporný = opačné. Proto ho lze brát jako míru podobnosti objektů.</p></div>
 <div class="box definice" id="def-jadro"><div class="box-t">Definice: jádro (kernel)</div>
 <p><b>Jádro</b> je funkce \(\kappa(\mathbf a, \mathbf b)\) dvou objektů, která je rovna skalárnímu součinu jejich obrazů v příznakovém prostoru: \(\kappa(\mathbf a, \mathbf b) = \varphi(\mathbf a)^T\varphi(\mathbf b)\), přičemž se dá spočítat přímo z původních vektorů \(\mathbf a, \mathbf b\).</p>
@@ -118,7 +122,7 @@
 <p>Stejný výsledek dostaneme, když spočítáme obyčejný skalární součin v <b>původním</b> 2D prostoru a umocníme ho. To je <b>kernel trick</b>.</p>
 <p><b>Ověření na číslech:</b> \(\mathbf a = (1, 2)\), \(\mathbf b = (3, 1)\).</p>
 <ul>
-<li>Cesta „přes 3D“: \(\varphi(\mathbf a) = (1;\ 2\sqrt2;\ 4)\), \(\varphi(\mathbf b) = (9;\ 3\sqrt2;\ 1)\), součin \(9 + 2\sqrt2\cdot 3\sqrt2 + 4 = 9 + 12 + 4 = 25\).</li>
+<li>Cesta „přes 3D“: \[ \begin{aligned} \varphi(\mathbf a) &= (1;\ 2\sqrt2;\ 4) \\ \varphi(\mathbf b) &= (9;\ 3\sqrt2;\ 1) \\ \varphi(\mathbf a)^T\varphi(\mathbf b) &= 9 + 2\sqrt2\cdot 3\sqrt2 + 4 \\ &= 9 + 12 + 4 = 25 \end{aligned} \]</li>
 <li>Zkratka: \(\mathbf a^T\mathbf b = 1\cdot 3 + 2\cdot 1 = 5\), \(5^2 = 25\). Stejné číslo, ale bez počítání 3D vektorů.</li>
 </ul></div>
 <div class="box definice" id="def-kernel-trick"><div class="box-t">Definice: kernel trick</div>
@@ -132,7 +136,9 @@
 
 <h2 id="rbf">RBF jádro</h2>
 <div class="box definice" id="def-rbf"><div class="box-t">Definice: RBF (gaussovské) jádro</div>
-<p><b>RBF jádro</b> (radial basis function) je \(\kappa(\mathbf a, \mathbf b) = \exp(-\gamma\lVert\mathbf a - \mathbf b\rVert^2)\), \(\gamma &gt; 0\). Jeho hodnota závisí jen na vzdálenosti objektů: je 1 pro totožné objekty a s rostoucí vzdáleností klesá k 0. Odpovídající příznakový prostor má nekonečnou dimenzi.</p>
+<p><b>RBF jádro</b> (radial basis function) je
+\[ \kappa(\mathbf a, \mathbf b) = \exp(-\gamma\lVert\mathbf a - \mathbf b\rVert^2),\qquad \gamma &gt; 0 \]
+Jeho hodnota závisí jen na vzdálenosti objektů: je 1 pro totožné objekty a s rostoucí vzdáleností klesá k 0. Odpovídající příznakový prostor má nekonečnou dimenzi.</p>
 <p class="jinak">„Gaussova zvonová křivka podobnosti“ kolem každého bodu: blízcí sousedé jsou si podobní, vzdálení skoro vůbec. \(\gamma\) určuje, jak daleko „dosáhne“ – jak široký je zvon.</p></div>
 <div class="box vzorec"><div class="box-t">RBF (radial basis function, gaussovské) jádro</div>
 \[ \kappa(\mathbf{a}, \mathbf{b}) = e^{-\gamma\,\lVert\mathbf{a}-\mathbf{b}\rVert^2}, \qquad \gamma = \frac{1}{2\sigma^2} \]
@@ -159,7 +165,7 @@
 <div class="box postup"><div class="box-t">Postup</div>
 <ol>
 <li><b>Výpočet jádrové matice</b> \(\mathbf{K}\), \(K_{ij} = \kappa(\mathbf{x}_i, \mathbf{x}_j)\) – pro 10 objektů matice 10 × 10, symetrická.</li>
-<li><b>Centralizace</b> \(\mathbf{K}_c = \mathbf{K} - \mathbf{1}_N\mathbf{K} - \mathbf{K}\mathbf{1}_N + \mathbf{1}_N\mathbf{K}\mathbf{1}_N\), kde \(\mathbf{1}_N\) je matice \(N \times N\) s prvky \(1/N\).</li>
+<li><b>Centralizace</b> (\(\mathbf{1}_N\) je matice \(N \times N\) s prvky \(1/N\)): \[ \mathbf{K}_c = \mathbf{K} - \mathbf{1}_N\mathbf{K} - \mathbf{K}\mathbf{1}_N + \mathbf{1}_N\mathbf{K}\mathbf{1}_N \]</li>
 <li><b>Vlastní čísla a vektory</b> \(\mathbf{K}_c\boldsymbol\alpha_k = \lambda_k\boldsymbol\alpha_k\).</li>
 <li><b>Seřazení</b> od největšího \(\lambda_k\) po nejmenší.</li>
 <li><b>Normalizace</b> vlastních vektorů \(\boldsymbol\alpha_k/\sqrt{\lambda_k}\).</li>
@@ -211,11 +217,18 @@
 <details class="q"><summary>Co je jádro (kernel) a kernel trick?</summary><div>
 <p>Jádro je funkce \(\kappa(\mathbf a,\mathbf b) = \varphi(\mathbf a)^T\varphi(\mathbf b)\) – skalární součin (podobnost) objektů po nelineární transformaci \(\varphi\). Kernel trick znamená, že tuto hodnotu umíme spočítat přímo z původních vektorů, aniž bychom \(\varphi\) počítali – např. pro polynomiální jádro 2. řádu \((\mathbf a^T\mathbf b)^2\) místo součinu dvou 3D (nebo 9D) vektorů. Je to výpočetně levné a umožňuje i nekonečně rozměrné prostory (RBF).</p></div></details>
 <details class="q"><summary>Odvoďte polynomiální jádro 2. řádu pro 2D vektory.</summary><div>
-<p>\(\varphi(\mathbf a) = (a_1^2, \sqrt2 a_1a_2, a_2^2)\). Pak \(\varphi(\mathbf a)^T\varphi(\mathbf b) = a_1^2b_1^2 + 2a_1a_2b_1b_2 + a_2^2b_2^2 = (a_1b_1 + a_2b_2)^2 = (\mathbf a^T\mathbf b)^2\).</p></div></details>
+<p>Zobrazení do 3D: \(\varphi(\mathbf a) = (a_1^2, \sqrt2 a_1a_2, a_2^2)\). Pak</p>
+\[ \begin{aligned} \varphi(\mathbf a)^T\varphi(\mathbf b) &= a_1^2b_1^2 + 2a_1a_2b_1b_2 + a_2^2b_2^2 \\ &= (a_1b_1 + a_2b_2)^2 = (\mathbf a^T\mathbf b)^2 \end{aligned} \]</div></details>
 <details class="q"><summary>Popište RBF jádro a vliv parametru γ.</summary><div>
 <p>\(\kappa = e^{-\gamma\lVert\mathbf a-\mathbf b\rVert^2}\), \(\gamma = 1/(2\sigma^2)\). Pro stejné objekty 1, se vzdáleností klesá k 0 – je to míra podobnosti; odpovídající prostor je nekonečně rozměrný, ale stačí spočítat eukleidovskou vzdálenost. Malé γ (široké jádro) → výsledek se blíží lineární PCA; velké γ (úzké) → podobné jsou jen nejbližší body, struktura se rozpadne. γ se ladí, např. křížovou validací.</p></div></details>
 <details class="q"><summary>Popište algoritmus kernel PCA.</summary><div>
-<p>Spočítám jádrovou matici \(n \times n\) pro všechny dvojice objektů; centralizuji ji (\(\mathbf K - \mathbf 1\mathbf K - \mathbf K\mathbf 1 + \mathbf 1\mathbf K\mathbf 1\)), protože data v novém prostoru musí být centrovaná; spočítám vlastní čísla a vektory, seřadím je sestupně, vektory normalizuji \(1/\sqrt\lambda\) a projekce získám vynásobením centrované jádrové matice normalizovanými vektory. Pro nové objekty spočítám jádro vůči trénovacím objektům a centralizuji ho statistikami trénovacího jádra.</p></div></details>
+<ol>
+<li>Spočítám jádrovou matici \(n \times n\) pro všechny dvojice objektů.</li>
+<li>Centralizuji ji, protože data v novém prostoru musí být centrovaná: \[ \mathbf K_c = \mathbf K - \mathbf 1\mathbf K - \mathbf K\mathbf 1 + \mathbf 1\mathbf K\mathbf 1 \]</li>
+<li>Spočítám vlastní čísla a vektory a seřadím je sestupně.</li>
+<li>Vektory normalizuji \(1/\sqrt\lambda\) a projekce získám vynásobením centrované jádrové matice normalizovanými vektory.</li>
+</ol>
+<p>Pro nové objekty spočítám jádro vůči trénovacím objektům a centralizuji ho statistikami trénovacího jádra.</p></div></details>
 <details class="q"><summary>Jaké jsou nevýhody kernel PCA oproti lineární PCA?</summary><div>
 <p>Rozkládá matici \(n \times n\) (drahé pro velký počet objektů), má hyperparametry (typ jádra, γ), které je nutné ladit, komponenty nejsou lineární kombinace původních příznaků (horší interpretace) a pro projekci nových objektů je nutné uchovat celá trénovací data.</p></div></details>
 

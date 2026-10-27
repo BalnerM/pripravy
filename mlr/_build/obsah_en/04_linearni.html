@@ -3,10 +3,14 @@
 
 <h2 id="model">One equation, two tasks</h2>
 <div class="box definice" id="def-linearni-model"><div class="box-t">Definition: linear model</div>
-<p>A <b>linear model</b> predicts using the dot product of a weight vector and a feature vector: \(g(\mathbf x) = \mathbf w^\top\mathbf x + b = w_1x_1 + \dots + w_dx_d + b\). In <b>regression</b> the prediction is directly \(\hat y = \mathbf w^\top\mathbf x + b \in \mathbb R\), in <b>binary classification</b> its sign \(\hat y = \operatorname{sign}(\mathbf w^\top\mathbf x + b) \in \{-1, +1\}\).</p>
+<p>A <b>linear model</b> predicts using the dot product of a weight vector and a feature vector:
+\[ g(\mathbf x) = \mathbf w^\top\mathbf x + b = w_1x_1 + \dots + w_dx_d + b \]
+In <b>regression</b> the prediction is directly this value, in <b>binary classification</b> its sign:
+\[ \begin{aligned} \text{regression:}\quad & \hat y = \mathbf w^\top\mathbf x + b \in \mathbb R \\ \text{classification:}\quad & \hat y = \operatorname{sign}(\mathbf w^\top\mathbf x + b) \in \{-1, +1\} \end{aligned} \]</p>
 <p class="jinak">each feature gets a weight (importance and direction of influence) and the results are added up. Regression asks “how much”, classification “on which side of the hyperplane”.</p></div>
 <div class="box definice" id="def-bias-trick"><div class="box-t">Definition: bias trick (extending the features with a one)</div>
-<p>The <b>bias trick</b> writes the affine function \(f(\mathbf x) = \mathbf w^\top\mathbf x + b\) as purely linear by adding a constant component 1 to the feature vector and the offset \(b\) to the weights: \(\tilde{\mathbf x} = (\mathbf x, 1)\), \(\tilde{\mathbf w} = (\mathbf w, b)\) ⇒ \(f(\mathbf x) = \tilde{\mathbf w}^\top\tilde{\mathbf x}\).</p>
+<p>The <b>bias trick</b> writes the affine function \(f(\mathbf x) = \mathbf w^\top\mathbf x + b\) as purely linear by adding a constant component 1 to the feature vector and the offset \(b\) to the weights:
+\[ \tilde{\mathbf x} = (\mathbf x, 1),\quad \tilde{\mathbf w} = (\mathbf w, b) \quad\Rightarrow\quad f(\mathbf x) = \tilde{\mathbf w}^\top\tilde{\mathbf x} \]</p>
 <p class="jinak">the offset stops being a special parameter – it is just another weight for a feature that is always 1. Formulas and code become simpler (the data matrix \(X\) gets a column of ones).</p></div>
 <div class="box definice" id="def-rozhodovaci-hranice"><div class="box-t">Definition: decision boundary</div>
 <p>The <b>decision boundary</b> of a linear classifier is the set of points where \(\mathbf w^\top\mathbf x + b = 0\) – in 1D a point (threshold), in 2D a line, in general a hyperplane. The vector \(\mathbf w\) is perpendicular to it.</p>
@@ -34,12 +38,20 @@
 
 <h2 id="regrese">Linear regression</h2>
 <div class="box priklad"><div class="box-t">A line through two points (lecture)</div>
-<p>Model \(y = wx + b\), points (1, 2) and (3, 5). In matrix form \(\mathbf y = X\tilde{\mathbf w}\) with \(X = \begin{pmatrix}1 & 1\\ 1 & 3\end{pmatrix}\) (column of ones + \(x\)), \(\det X = 2\) ⇒ \(\tilde{\mathbf w} = X^{-1}\mathbf y = \frac12\begin{pmatrix}3\cdot2 - 5\\ -2 + 5\end{pmatrix} = \begin{pmatrix}0.5\\ 1.5\end{pmatrix}\), i.e. \(b = 0.5\), \(w = 1.5\). For two points the line passes exactly through both; for more points this is in general not possible – we have to make \(\mathbf y\) and \(X\tilde{\mathbf w}\) “as similar as possible”.</p></div>
+<p>Model \(y = wx + b\), points (1, 2) and (3, 5). In matrix form \(\mathbf y = X\tilde{\mathbf w}\), where \(X\) has a column of ones and a column \(x\):</p>
+\[ X = \begin{pmatrix}1 & 1\\ 1 & 3\end{pmatrix},\qquad \det X = 1\cdot3 - 1\cdot1 = 2 \]
+<p>Solving the system:</p>
+\[ \begin{aligned} \tilde{\mathbf w} = X^{-1}\mathbf y &= \frac12\begin{pmatrix}3 & -1\\ -1 & 1\end{pmatrix}\begin{pmatrix}2\\ 5\end{pmatrix} \\ &= \frac12\begin{pmatrix}3\cdot2 - 5\\ -2 + 5\end{pmatrix} = \begin{pmatrix}0.5\\ 1.5\end{pmatrix} \end{aligned} \]
+<p>So \(b = 0.5\), \(w = 1.5\). For two points the line passes exactly through both; for more points this is in general not possible – we have to make \(\mathbf y\) and \(X\tilde{\mathbf w}\) “as similar as possible”.</p></div>
 <div class="box definice" id="def-ols"><div class="box-t">Definition: ordinary least squares (OLS)</div>
-<p><b>Ordinary least squares</b> is linear regression that chooses the weights minimizing the sum of squared residuals: \(\min_{\mathbf w}\sum_i(\mathbf x_i^\top\mathbf w - y_i)^2 = \|X\mathbf w - \mathbf y\|_2^2\). It is a convex problem without constraints with a closed-form solution \(\mathbf w^\ast = (X^\top X)^{-1}X^\top\mathbf y = X^\dagger\mathbf y\) (\(X^\dagger\) is the Moore–Penrose pseudoinverse).</p>
+<p><b>Ordinary least squares</b> is linear regression that chooses the weights minimizing the sum of squared residuals:
+\[ \min_{\mathbf w}\sum_i(\mathbf x_i^\top\mathbf w - y_i)^2 = \min_{\mathbf w}\|X\mathbf w - \mathbf y\|_2^2 \]
+It is a convex problem without constraints with a closed-form solution
+\[ \mathbf w^\ast = (X^\top X)^{-1}X^\top\mathbf y = X^\dagger\mathbf y \]
+(\(X^\dagger\) is the Moore–Penrose pseudoinverse).</p>
 <p class="jinak">“fit a line (plane) through the points so that the sum of their squared vertical distances from it is smallest”. It can also be solved by gradient descent, but a formula is available.</p></div>
 <div class="box vzorec"><div class="box-t">Deriving OLS in three lines</div>
-\[ g(\mathbf w) = \|X\mathbf w - \mathbf y\|_2^2 = (X\mathbf w - \mathbf y)^\top(X\mathbf w - \mathbf y),\qquad \nabla g = 2X^\top(X\mathbf w - \mathbf y) = 0\ \Rightarrow\ X^\top X\,\mathbf w = X^\top\mathbf y \]
+\[ \begin{aligned} g(\mathbf w) &= \|X\mathbf w - \mathbf y\|_2^2 = (X\mathbf w - \mathbf y)^\top(X\mathbf w - \mathbf y) \\ \nabla g &= 2X^\top(X\mathbf w - \mathbf y) = 0 \\ &\Rightarrow\ X^\top X\,\mathbf w = X^\top\mathbf y \end{aligned} \]
 <table class="vars">
 <tr><td>\(X \in \mathbb R^{n\times d}\)</td><td>data matrix (rows are samples, including the column of ones)</td></tr>
 <tr><td>\(\mathbf y \in \mathbb R^n\)</td><td>target values</td></tr>
@@ -47,8 +59,18 @@
 </table>
 <p>In code the system is solved (<code>np.linalg.solve</code>); the inverse is not computed explicitly.</p></div>
 <div class="box priklad"><div class="box-t">OLS by hand: three points (lecture)</div>
-<p>Points (0, 1), (1, 2), (2, 2) – no line passes through all of them. \(X^\top X = \begin{pmatrix}3 & 3\\ 3 & 5\end{pmatrix}\), \(X^\top\mathbf y = \begin{pmatrix}5\\ 6\end{pmatrix}\) ⇒ \(\tilde{\mathbf w} = \frac16\begin{pmatrix}5 & -3\\ -3 & 3\end{pmatrix}\begin{pmatrix}5\\6\end{pmatrix} = \begin{pmatrix}7/6\\ 1/2\end{pmatrix}\), so \(\hat y = \frac76 + \frac12x\). Residuals \((-\frac16, \frac13, -\frac16)\), sum of squares \(\frac16\) – the smallest any line can reach.</p>
-<p><b>Ridge with \(\lambda = 1\)</b> (we penalize only the slope, the offset is usually not penalized): \(\tilde{\mathbf w} = \left(X^\top X + \begin{pmatrix}0 & 0\\ 0 & 1\end{pmatrix}\right)^{-1}X^\top\mathbf y = \frac19\begin{pmatrix}6 & -3\\ -3 & 3\end{pmatrix}\begin{pmatrix}5\\6\end{pmatrix} = \begin{pmatrix}4/3\\ 1/3\end{pmatrix}\). The slope shrinks from \(\frac12\) to \(\frac13\) and the offset moves so that the line stays close to the data. (Own recalculation for other \(\lambda\): 10 ⇒ slope 0.083; 100 ⇒ 0.010 – the line approaches a horizontal one at the level of the mean \(\bar y = 5/3\).)</p></div>
+<p>Points (0, 1), (1, 2), (2, 2) – no line passes through all of them. The matrix \(X\) has a column of ones and a column \(x = (0, 1, 2)\), the target is \(\mathbf y = (1, 2, 2)\).</p>
+<p>1. Products for the normal equations:</p>
+\[ X^\top X = \begin{pmatrix}3 & 3\\ 3 & 5\end{pmatrix},\qquad X^\top\mathbf y = \begin{pmatrix}5\\ 6\end{pmatrix} \]
+<p>2. Inverse (\(\det = 3\cdot5 - 3\cdot3 = 6\)) and solution:</p>
+\[ \tilde{\mathbf w} = \frac16\begin{pmatrix}5 & -3\\ -3 & 3\end{pmatrix}\begin{pmatrix}5\\6\end{pmatrix} = \begin{pmatrix}7/6\\ 1/2\end{pmatrix} \]
+<p>3. The resulting line and residuals:</p>
+\[ \begin{aligned} \hat y &= \tfrac76 + \tfrac12x \\ y_i - \hat y_i &= \left(-\tfrac16,\ \tfrac13,\ -\tfrac16\right) \\ \textstyle\sum_i(y_i - \hat y_i)^2 &= \tfrac1{36} + \tfrac4{36} + \tfrac1{36} = \tfrac16 \end{aligned} \]
+<p>The sum of squares \(\frac16\) is the smallest any line can reach.</p>
+<p><b>Ridge with \(\lambda = 1\)</b> (we penalize only the slope, the offset is usually not penalized). We add \(\lambda\) to \(X^\top X\) only for the slope:</p>
+\[ X^\top X + \begin{pmatrix}0 & 0\\ 0 & 1\end{pmatrix} = \begin{pmatrix}3 & 3\\ 3 & 6\end{pmatrix},\qquad \det = 18 - 9 = 9 \]
+\[ \tilde{\mathbf w} = \frac19\begin{pmatrix}6 & -3\\ -3 & 3\end{pmatrix}\begin{pmatrix}5\\6\end{pmatrix} = \begin{pmatrix}4/3\\ 1/3\end{pmatrix} \]
+<p>The slope shrinks from \(\frac12\) to \(\frac13\) and the offset moves so that the line stays close to the data. (Own recalculation for other \(\lambda\): 10 ⇒ slope 0.083; 100 ⇒ 0.010 – the line approaches a horizontal one at the level of the mean \(\bar y = 5/3\).)</p></div>
 <div class="box definice" id="def-lad"><div class="box-t">Definition: least absolute deviations regression (LAD)</div>
 <p><b>LAD</b> (least absolute deviations) minimizes the sum of absolute values of the residuals \(\|X\mathbf w - \mathbf y\|_1 = \sum_i|\mathbf x_i^\top\mathbf w - y_i|\). It has no closed-form solution; it is solved by optimization (linear programming, IRLS).</p>
 <p class="jinak">L1 is less sensitive to large values – one huge error is not squared – so LAD is <b>robust to outliers</b>. On the other hand it is more sensitive to very small errors: the square of a small error is negligible (\(0.01^2 = 0.0001\)), the absolute value is not.</p></div>
@@ -90,34 +112,55 @@
 <div data-demo="poly-ridge"></div>
 
 <h2 id="jadra">Kernels and the dual form</h2>
-<p>Polynomial expansion grows fast: the number of monomials up to degree \(m\) in \(d\) variables is \(\binom{d+m}{m}\) – for \(d = 2, m = 3\) it is 10, for \(d = 10, m = 3\) already 286, for \(d = 100, m = 3\) 176,851; the RBF kernel even corresponds to an infinite-dimensional \(\Phi\). Key idea: many ML algorithms have a <b>dual form</b> in which the data appear only in dot products \(\Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\) – and a kernel can compute those cheaply (see chapter 3: \((\mathbf x_i^\top\mathbf x_j)^2\) for \(\mathbf x_i = (1,2)\), \(\mathbf x_j = (3,1)\) gives \(5^2 = 25 = 9 + 4 + 12\)).</p>
+<p>Polynomial expansion grows fast: the number of monomials up to degree \(m\) in \(d\) variables is \(\binom{d+m}{m}\). For \(m = 3\):</p>
+<ul>
+<li>\(d = 2\): 10 monomials,</li>
+<li>\(d = 10\): 286 monomials,</li>
+<li>\(d = 100\): 176,851 monomials.</li>
+</ul>
+<p>The RBF kernel even corresponds to an infinite-dimensional \(\Phi\). Key idea: many ML algorithms have a <b>dual form</b> in which the data appear only in dot products \(\Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\) – and a kernel can compute those cheaply. Example from chapter 3 for \(\mathbf x_i = (1, 2)\), \(\mathbf x_j = (3, 1)\):</p>
+\[ (\mathbf x_i^\top\mathbf x_j)^2 = (1\cdot3 + 2\cdot1)^2 = 5^2 = 25 = \underbrace{9 + 4 + 12}_{\Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)} \]
 <div class="box definice" id="def-jadrova-funkce"><div class="box-t">Definition: kernel function and kernel (Gram) matrix</div>
 <p>A <b>kernel function</b> is a function \(k: \mathbb R^d\times\mathbb R^d\to\mathbb R\) for which there exists a mapping \(\Phi\) into a (possibly high-dimensional) space such that \(k(\mathbf x_i, \mathbf x_j) = \Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\). The <b>kernel matrix</b> \(K\) contains the values \(K_{ij} = k(\mathbf x_i, \mathbf x_j)\) for all pairs of training samples and is positive semidefinite.</p>
 <p class="jinak">a kernel is a “measure of similarity” that behaves like a dot product in another space. The kernel function replaces \(\mathbf x_i^\top\mathbf x_j\) and the kernel matrix replaces \(XX^\top\).</p></div>
 <div class="box vzorec"><div class="box-t">Common kernels</div>
-\[ k_{\text{lin}}(\mathbf x_i, \mathbf x_j) = \mathbf x_i^\top\mathbf x_j,\qquad k_{\text{poly}}(\mathbf x_i, \mathbf x_j) = (\mathbf x_i^\top\mathbf x_j + c)^p,\qquad k_{\text{RBF}}(\mathbf x_i, \mathbf x_j) = \exp\!\left(-\frac{\|\mathbf x_i - \mathbf x_j\|^2}{2\sigma^2}\right) = \exp(-\gamma\|\mathbf x_i - \mathbf x_j\|^2) \]
+\[ \begin{aligned} k_{\text{lin}}(\mathbf x_i, \mathbf x_j) &= \mathbf x_i^\top\mathbf x_j \\ k_{\text{poly}}(\mathbf x_i, \mathbf x_j) &= (\mathbf x_i^\top\mathbf x_j + c)^p \\ k_{\text{RBF}}(\mathbf x_i, \mathbf x_j) &= \exp\!\left(-\frac{\|\mathbf x_i - \mathbf x_j\|^2}{2\sigma^2}\right) \\ &= \exp(-\gamma\|\mathbf x_i - \mathbf x_j\|^2) \end{aligned} \]
 <table class="vars">
 <tr><td>\(p\)</td><td>degree of the polynomial kernel (higher = more complex model)</td></tr>
 <tr><td>\(c\)</td><td>offset – \(c \gt 0\) also adds monomials of lower degrees</td></tr>
 <tr><td>\(\sigma\), \(\gamma = 1/2\sigma^2\)</td><td>width of the RBF kernel (Gaussian) and its inverse – how fast similarity drops with distance</td></tr>
 </table></div>
 <div class="box definice" id="def-dual"><div class="box-t">Definition: primal and dual form of ridge regression</div>
-<p>The <b>primal form</b> looks for the weights \(\mathbf w = (X^\top X + \lambda I)^{-1}X^\top\mathbf y\) (a \(d\times d\) matrix); prediction \(\hat y = \mathbf x_{\text{new}}^\top\mathbf w\). The <b>dual form</b> looks for coefficients of the samples \(\boldsymbol\alpha = (XX^\top + \lambda I)^{-1}\mathbf y\) (an \(n\times n\) matrix), where \(\mathbf w = X^\top\boldsymbol\alpha = \sum_i\alpha_i\mathbf x_i\); prediction \(\hat y = \sum_i\alpha_i\mathbf x_i^\top\mathbf x_{\text{new}}\).</p>
+<p>The <b>primal form</b> looks for the weights (it solves a system with a \(d\times d\) matrix):
+\[ \begin{aligned} \mathbf w &= (X^\top X + \lambda I)^{-1}X^\top\mathbf y \\ \hat y &= \mathbf x_{\text{new}}^\top\mathbf w \end{aligned} \]
+The <b>dual form</b> looks for coefficients of the samples (a system with an \(n\times n\) matrix):
+\[ \begin{aligned} \boldsymbol\alpha &= (XX^\top + \lambda I)^{-1}\mathbf y \\ \mathbf w &= X^\top\boldsymbol\alpha = \textstyle\sum_i\alpha_i\mathbf x_i \\ \hat y &= \textstyle\sum_i\alpha_i\,\mathbf x_i^\top\mathbf x_{\text{new}} \end{aligned} \]</p>
 <p class="jinak">the weights are a linear combination of the training samples. The primal solves a system the size of the number of features, the dual one the size of the number of samples – the smaller one is faster. The dual contains the data only in dot products, and that is why it can be “kernelized”.</p></div>
 <div class="box definice" id="def-krr"><div class="box-t">Definition: kernel ridge regression (KRR)</div>
-<p><b>Kernel ridge regression</b> is dual ridge regression in which the dot products are replaced by a kernel: \(\boldsymbol\alpha^\ast = (K + \lambda I)^{-1}\mathbf y\), prediction \(\hat y_{\text{new}} = \sum_i\alpha_i k(\mathbf x_i, \mathbf x_{\text{new}})\), for more samples \(\hat{\mathbf y}_{\text{new}} = K_{\text{new}}\boldsymbol\alpha\), \((K_{\text{new}})_{ij} = k(\mathbf x_{\text{new},i}, \mathbf x_j)\).</p>
+<p><b>Kernel ridge regression</b> is dual ridge regression in which the dot products are replaced by a kernel:
+\[ \begin{aligned} \boldsymbol\alpha^\ast &= (K + \lambda I)^{-1}\mathbf y \\ \hat y_{\text{new}} &= \textstyle\sum_i\alpha_i\,k(\mathbf x_i, \mathbf x_{\text{new}}) \end{aligned} \]
+For more new samples at once \(\hat{\mathbf y}_{\text{new}} = K_{\text{new}}\boldsymbol\alpha\), where \((K_{\text{new}})_{ij} = k(\mathbf x_{\text{new},i}, \mathbf x_j)\).</p>
 <p class="jinak">an implicit feature transformation gives the same result as an explicit one, but the computational cost does not depend on the dimension of the expanded space – only on the number of samples.</p></div>
 
 <h2 id="klasifikace">Linear classification</h2>
 <div class="box definice" id="def-separabilita"><div class="box-t">Definition: linear separability</div>
 <p>Data are <b>linearly separable</b> if there is a line (in general a hyperplane) that separates all positive samples from all negative ones without error.</p>
 <p class="jinak">real data are noisy, overlap or have wrong labels, so exact separability almost never holds. It is a theoretical concept needed for the hard-margin SVM and for the convergence of the perceptron.</p></div>
-<p><b>LDA as a classifier</b> (review of chapter 3): \(\mathbf w = S_W^{-1}(\boldsymbol\mu_1 - \boldsymbol\mu_2)\) and threshold \(t^\ast = \frac12(\boldsymbol\mu_1 + \boldsymbol\mu_2)^\top\mathbf w - \ln\frac{\pi_1}{\pi_2}\), where \(\pi_c\) are the prior probabilities of the classes. <b>MSE classifier</b>: train a regression (MSE) on labels \(\pm1\) and take the sign – simple, with a closed form, but sensitive to outliers and performing poorly (it also punishes points that are “too correct”).</p>
+<p><b>LDA as a classifier</b> (review of chapter 3) – direction and threshold:</p>
+\[ \begin{aligned} \mathbf w &= S_W^{-1}(\boldsymbol\mu_1 - \boldsymbol\mu_2) \\ t^\ast &= \tfrac12(\boldsymbol\mu_1 + \boldsymbol\mu_2)^\top\mathbf w - \ln\tfrac{\pi_1}{\pi_2} \end{aligned} \]
+<p>where \(\pi_c\) are the prior probabilities of the classes. <b>MSE classifier</b>: train a regression (MSE) on labels \(\pm1\) and take the sign – simple, with a closed form, but sensitive to outliers and performing poorly (it also punishes points that are “too correct”).</p>
 <div class="box definice" id="def-logreg"><div class="box-t">Definition: logistic regression</div>
-<p><b>Logistic regression</b> is a probabilistic linear classifier: \(p(y = 1\mid\mathbf x) = \sigma(z) = \frac{1}{1 + e^{-z}}\), \(z = \mathbf w^\top\mathbf x + b\); it predicts class 1 when \(\sigma(z) \ge 0.5\) (equivalently \(\hat y = \operatorname{sign}(z)\)). It is trained by minimizing the <b>cross-entropy</b> (log-loss): \(L = -y\log\sigma(z) - (1 - y)\log(1 - \sigma(z))\) for \(y \in \{0, 1\}\), or \(L = \log(1 + e^{-yz})\) for \(y \in \{-1, +1\}\).</p>
+<p><b>Logistic regression</b> is a probabilistic linear classifier:
+\[ p(y = 1\mid\mathbf x) = \sigma(z) = \frac{1}{1 + e^{-z}},\qquad z = \mathbf w^\top\mathbf x + b \]
+It predicts class 1 when \(\sigma(z) \ge 0.5\) (equivalently \(\hat y = \operatorname{sign}(z)\)). It is trained by minimizing the <b>cross-entropy</b> (log-loss); for \(y \in \{0, 1\}\):
+\[ L = -y\log\sigma(z) - (1 - y)\log(1 - \sigma(z)) \]
+and equivalently for \(y \in \{-1, +1\}\):
+\[ L = \log(1 + e^{-yz}) \]</p>
 <p class="jinak">the sigmoid “squeezes” the linear score into the interval (0, 1), so the output can be read as a probability. The loss is convex (solved by gradient descent), less sensitive to outliers than MSE, regularization can be added and the outputs are calibrated (if the model fits the data). The same loss is used in deep learning – the linear model is just replaced by a network.</p></div>
 <div class="box definice" id="def-perceptron"><div class="box-t">Definition: perceptron</div>
-<p>The <b>perceptron</b> is a linear classifier \(\hat y = \operatorname{sign}(\tilde{\mathbf w}^\top\tilde{\mathbf x})\) trained by an iterative rule: for every sample that is misclassified (\(y_i\tilde{\mathbf w}^\top\tilde{\mathbf x}_i \le 0\)) it moves the weights towards it: \(\tilde{\mathbf w} \leftarrow \tilde{\mathbf w} + \eta\,y_i\tilde{\mathbf x}_i\). It corresponds to the loss \(\max(0, -y\tilde{\mathbf w}^\top\tilde{\mathbf x})\).</p>
+<p>The <b>perceptron</b> is a linear classifier \(\hat y = \operatorname{sign}(\tilde{\mathbf w}^\top\tilde{\mathbf x})\) trained by an iterative rule: for every sample that is misclassified (\(y_i\tilde{\mathbf w}^\top\tilde{\mathbf x}_i \le 0\)) it moves the weights towards it:
+\[ \tilde{\mathbf w} \leftarrow \tilde{\mathbf w} + \eta\,y_i\tilde{\mathbf x}_i \]
+It corresponds to the loss \(\max(0, -y\tilde{\mathbf w}^\top\tilde{\mathbf x})\).</p>
 <p class="jinak">“when you make a mistake, turn the boundary a little towards the wrong point”; multiplying by \(y = \pm1\) picks the direction automatically. It provably converges <b>only for linearly separable</b> classes – otherwise it cycles forever.</p></div>
 <div class="box postup"><div class="box-t">Perceptron in code (lecture)</div>
 <pre style="margin:0;overflow-x:auto"><code>def train_perceptron(X, y, epochs):
@@ -138,24 +181,57 @@
 <p>The <b>margin</b> is the distance of the decision hyperplane from the nearest training points; the distance of a point from the hyperplane \((\mathbf w, b)\) is \(|\mathbf w^\top\mathbf x_i + b|/\|\mathbf w\|\). With the normalization \(y_i(\mathbf w^\top\mathbf x_i + b) \ge 1\) the nearest points lie exactly at the distance \(1/\|\mathbf w\|\) (the band width is \(2/\|\mathbf w\|\)). <b>Support vectors</b> are the training points that lie on the margin or inside it; only they determine \(\mathbf w\) and \(b\).</p>
 <p class="jinak">the condition “≥ 1” only fixes the scale: instead of \(\|\mathbf w\| = 1\) with a variable margin we fix the margin to 1 and let the size of \(\mathbf w\) change. Maximizing \(1/\|\mathbf w\|\) is the same as minimizing \(\frac12\|\mathbf w\|^2\). If we deleted the other points, we would get the same boundary.</p></div>
 <div class="box definice" id="def-svm-hard"><div class="box-t">Definition: hard-margin SVM</div>
-<p><b>Hard-margin SVM</b> solves the problem \(\min_{\mathbf w, b}\frac12\|\mathbf w\|^2\) subject to \(y_i(\mathbf w^\top\mathbf x_i + b) \ge 1\) for all \(i\). The dual problem is a convex quadratic program \(\max_{\boldsymbol\alpha}\sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\mathbf x_i^\top\mathbf x_j\) s.t. \(\sum_i\alpha_iy_i = 0\), \(\boldsymbol\alpha \ge 0\); then \(\mathbf w = \sum_i\alpha_iy_i\mathbf x_i\) and \(\hat y = \operatorname{sign}\left(\sum_{i\in SV}\alpha_iy_i\mathbf x_i^\top\mathbf x + b\right)\).</p>
+<p><b>Hard-margin SVM</b> solves the problem
+\[ \min_{\mathbf w, b}\ \tfrac12\|\mathbf w\|^2 \quad\text{subject to}\quad y_i(\mathbf w^\top\mathbf x_i + b) \ge 1\ \ \forall i \]
+The dual problem is a convex quadratic program
+\[ \begin{aligned} &\max_{\boldsymbol\alpha}\ \sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\,\mathbf x_i^\top\mathbf x_j \\ &\text{s.t.}\ \ \textstyle\sum_i\alpha_iy_i = 0,\quad \boldsymbol\alpha \ge 0 \end{aligned} \]
+From its solution we get the weights and the decision rule:
+\[ \begin{aligned} \mathbf w &= \textstyle\sum_i\alpha_iy_i\mathbf x_i \\ \hat y &= \operatorname{sign}\Big(\textstyle\sum_{i\in SV}\alpha_iy_i\,\mathbf x_i^\top\mathbf x + b\Big) \end{aligned} \]</p>
 <p class="jinak">QP has efficient algorithms with a guaranteed global optimum. \(\alpha_i \gt 0\) exactly for the support vectors (\(y_i(\mathbf w^\top\mathbf x_i + b) = 1\)); only they are needed for prediction – it is fast. It works only for separable data.</p></div>
 <div class="box priklad"><div class="box-t">Hard-margin SVM by hand: two points (lecture)</div>
-<p>\(\mathbf x_1 = (1, 1)\), \(y_1 = +1\); \(\mathbf x_2 = (-1, -1)\), \(y_2 = -1\). <b>Geometry:</b> the boundary is the perpendicular bisector \(x_1 + x_2 = 0\); each point is at distance \(\sqrt2\) from it ⇒ margin \(1/\|\mathbf w\| = \sqrt2\), \(\|\mathbf w\| = 1/\sqrt2\). <b>Primal:</b> \(\mathbf w = (\frac12, \frac12)\), \(b = 0\); check \(y_i(\mathbf w^\top\mathbf x_i + b) = 1\) for both points; objective \(\frac12\|\mathbf w\|^2 = \frac14\). <b>Dual:</b> \(\mathbf x_1^\top\mathbf x_1 = \mathbf x_2^\top\mathbf x_2 = 2\), \(\mathbf x_1^\top\mathbf x_2 = -2\); the condition \(\alpha_1y_1 + \alpha_2y_2 = 0\) gives \(\alpha_1 = \alpha_2 = \alpha\); objective \(\sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\mathbf x_i^\top\mathbf x_j = 2\alpha - \frac12\cdot2(2\alpha)^2 = 2\alpha - 4\alpha^2\) (all four terms of the double sum are \(2\alpha^2\)), derivative \(2 - 8\alpha = 0\) ⇒ \(\alpha = \frac14\); \(\mathbf w = \frac14(1,1) + \frac14(1,1) = (\frac12, \frac12)\) ✓. Dual optimum \(2\cdot\frac14 - 4\cdot\frac1{16} = \frac14\) = primal optimum (strong duality); both points are support vectors.</p></div>
+<p>\(\mathbf x_1 = (1, 1)\), \(y_1 = +1\); \(\mathbf x_2 = (-1, -1)\), \(y_2 = -1\).</p>
+<p><b>1. Geometry.</b> The boundary is the perpendicular bisector, the line \(x_1 + x_2 = 0\). Each point is at distance \(\sqrt2\) from it, so</p>
+\[ \frac{1}{\|\mathbf w\|} = \sqrt2 \quad\Rightarrow\quad \|\mathbf w\| = \frac{1}{\sqrt2} \]
+<p><b>2. Primal.</b> \(\mathbf w = (\frac12, \frac12)\), \(b = 0\). Check of the constraints and the value of the objective:</p>
+\[ \begin{aligned} y_1(\mathbf w^\top\mathbf x_1 + b) &= \tfrac12 + \tfrac12 = 1 \\ y_2(\mathbf w^\top\mathbf x_2 + b) &= (-1)\cdot(-1) = 1 \\ \tfrac12\|\mathbf w\|^2 &= \tfrac12\left(\tfrac14 + \tfrac14\right) = \tfrac14 \end{aligned} \]
+<p><b>3. Dual.</b> Dot products:</p>
+\[ \mathbf x_1^\top\mathbf x_1 = \mathbf x_2^\top\mathbf x_2 = 2,\qquad \mathbf x_1^\top\mathbf x_2 = -2 \]
+<p>The condition \(\sum_i\alpha_iy_i = 0\) gives \(\alpha_1 = \alpha_2 = \alpha\). All four terms of the double sum are \(2\alpha^2\), so the objective is</p>
+\[ \begin{aligned} &\sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\,\mathbf x_i^\top\mathbf x_j \\ &= 2\alpha - \tfrac12\cdot4\cdot2\alpha^2 = 2\alpha - 4\alpha^2 \end{aligned} \]
+<p><b>4. Maximum.</b> We set the derivative to zero and compute the weights:</p>
+\[ \begin{aligned} 2 - 8\alpha = 0 \quad&\Rightarrow\quad \alpha = \tfrac14 \\ \mathbf w = \textstyle\sum_i\alpha_iy_i\mathbf x_i &= \tfrac14(1, 1) + \tfrac14(1, 1) = \left(\tfrac12, \tfrac12\right)\ \checkmark \end{aligned} \]
+<p><b>5. Strong duality.</b> The dual optimum equals the primal one:</p>
+\[ 2\cdot\tfrac14 - 4\cdot\tfrac1{16} = \tfrac14 \]
+<p>Both points are support vectors.</p></div>
 <div class="box definice" id="def-svm-soft"><div class="box-t">Definition: soft-margin SVM and hinge loss</div>
-<p><b>Soft-margin SVM</b> allows violations of the margin using <b>slack variables</b> \(\xi_i \ge 0\): \(\min_{\mathbf w, b, \boldsymbol\xi}\frac12\|\mathbf w\|^2 + C\sum_i\xi_i\) s.t. \(y_i(\mathbf w^\top\mathbf x_i + b) \ge 1 - \xi_i\). After plugging in the smallest allowed \(\xi_i = \max(0, 1 - y_i(\mathbf w^\top\mathbf x_i + b))\) we get an equivalent problem without constraints \(\min\frac12\|\mathbf w\|^2 + C\sum_i\max(0, 1 - y_i(\mathbf w^\top\mathbf x_i + b))\) – <b>margin regularization + hinge loss</b>.</p>
+<p><b>Soft-margin SVM</b> allows violations of the margin using <b>slack variables</b> \(\xi_i \ge 0\):
+\[ \begin{aligned} &\min_{\mathbf w, b, \boldsymbol\xi}\ \tfrac12\|\mathbf w\|^2 + C\textstyle\sum_i\xi_i \\ &\text{s.t.}\ \ y_i(\mathbf w^\top\mathbf x_i + b) \ge 1 - \xi_i \end{aligned} \]
+After plugging in the smallest allowed
+\[ \xi_i = \max\big(0,\ 1 - y_i(\mathbf w^\top\mathbf x_i + b)\big) \]
+we get an equivalent problem without constraints – <b>margin regularization + hinge loss</b>:
+\[ \min_{\mathbf w, b}\ \tfrac12\|\mathbf w\|^2 + C\sum_i\max\big(0,\ 1 - y_i(\mathbf w^\top\mathbf x_i + b)\big) \]</p>
 <p class="jinak">points may enter the band and even go to the wrong side, but every violation has a price. \(\xi_i = 0\): correct and with a margin; \(0 \lt \xi_i \le 1\): correct but inside the band; \(\xi_i \gt 1\): misclassified. Every point with \(\xi_i \gt 0\) is a support vector. The hinge loss can also be used in neural networks.</p></div>
 <div class="box priklad"><div class="box-t">Slack by hand (lecture)</div>
-<p>A misclassified point with the score \(y_i(\mathbf w^\top\mathbf x_i + b) = -0.5\) has \(\xi_i = 1 - (-0.5) = 1.5\); a point inside the band with score 0.6 has \(\xi_i = 0.4\); a point beyond the margin (score ≥ 1) has 0. In the figure from the lecture (50 points): 30 points with \(\xi = 0\), 13 inside the margin, 7 wrong; 21 support vectors, \(\sum\xi_i = 15.7\).</p></div>
+<p>The slack is \(\xi_i = \max(0,\ 1 - \text{score})\), where the score is \(y_i(\mathbf w^\top\mathbf x_i + b)\):</p>
+<ul>
+<li>a misclassified point with score −0.5: \(\xi_i = 1 - (-0.5) = 1.5\);</li>
+<li>a point inside the band with score 0.6: \(\xi_i = 1 - 0.6 = 0.4\);</li>
+<li>a point beyond the margin (score ≥ 1): \(\xi_i = 0\).</li>
+</ul>
+<p>In the figure from the lecture (50 points): 30 points with \(\xi = 0\), 13 inside the margin, 7 wrong; 21 support vectors, \(\sum\xi_i = 15.7\).</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig04_svm_c.png" alt="Linear soft-margin SVM for three values of C" loading="lazy"></div>
 <figcaption><b>Fig. 4.4</b> The same overlapping data, linear SVM with \(C\) = 0.01, 1, 100. Solid line = boundary, dashed = margins (\(\mathbf w^\top\mathbf x + b = \pm1\)), circled = support vectors.</figcaption></figure>
 <div class="box odnes"><div class="box-t">What to take from the figure</div>
 <p>\(C\) is the price for violating the margin. Small \(C\) (0.01): violations are cheap ⇒ wide band (4.31), almost all points are support vectors (39), the boundary is an “average” of many points. Large \(C\) (100): violations are expensive ⇒ narrow band (0.71), few support vectors (8), the boundary follows a few points close to it. (In the lecture: \(C\) from 0.01 to 30 – margin 2.54 → 0.27, support vectors 44 → 16.)</p></div>
 <div class="box definice" id="def-nu-svm"><div class="box-t">Definition: ν-SVM</div>
-<p><b>ν-SVM</b> is an alternative parametrization of the soft-margin SVM that instead of \(C \in [0, \infty)\) uses \(\nu \in (0, 1]\) with an intuitive meaning: \(\nu\) is an <b>upper bound on the fraction of margin errors</b> (training errors) and a <b>lower bound on the fraction of support vectors</b>. Problem: \(\min\frac12\|\mathbf w\|^2 - \nu\rho + \frac1n\sum_i\xi_i\) s.t. \(y_i(\mathbf w^\top\mathbf x_i + b) \ge \rho - \xi_i\), \(\xi_i \ge 0\).</p>
+<p><b>ν-SVM</b> is an alternative parametrization of the soft-margin SVM that instead of \(C \in [0, \infty)\) uses \(\nu \in (0, 1]\) with an intuitive meaning: \(\nu\) is an <b>upper bound on the fraction of margin errors</b> (training errors) and a <b>lower bound on the fraction of support vectors</b>. Problem:
+\[ \begin{aligned} &\min\ \tfrac12\|\mathbf w\|^2 - \nu\rho + \tfrac1n\textstyle\sum_i\xi_i \\ &\text{s.t.}\ \ y_i(\mathbf w^\top\mathbf x_i + b) \ge \rho - \xi_i,\quad \xi_i \ge 0 \end{aligned} \]</p>
 <p class="jinak">\(\nu = 0.1\) roughly says “at most 10 % margin errors are allowed and at least 10 % of the points will be support vectors” – easier to choose than an abstract \(C\).</p></div>
 <div class="box definice" id="def-kernel-svm"><div class="box-t">Definition: kernel SVM</div>
-<p>A <b>kernel SVM</b> is obtained by replacing the dot product in the dual problem of the soft-margin SVM with a kernel: \(\max_{\boldsymbol\alpha}\sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_jk(\mathbf x_i, \mathbf x_j)\) s.t. \(\sum_i\alpha_iy_i = 0\), \(0 \le \alpha_i \le C\); decision function \(f(\mathbf x) = \operatorname{sign}\left(\sum_{i\in SV}\alpha_iy_ik(\mathbf x_i, \mathbf x) + b\right)\).</p>
+<p>A <b>kernel SVM</b> is obtained by replacing the dot product in the dual problem of the soft-margin SVM with a kernel:
+\[ \begin{aligned} &\max_{\boldsymbol\alpha}\ \sum_i\alpha_i - \frac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\,k(\mathbf x_i, \mathbf x_j) \\ &\text{s.t.}\ \ \textstyle\sum_i\alpha_iy_i = 0,\quad 0 \le \alpha_i \le C \end{aligned} \]
+Decision function:
+\[ f(\mathbf x) = \operatorname{sign}\Big(\sum_{i\in SV}\alpha_iy_i\,k(\mathbf x_i, \mathbf x) + b\Big) \]</p>
 <p class="jinak">a non-linear boundary in the original space, while the optimization problem stays the same size – it depends on \(n\), not on the feature dimension. An explicit \(\mathbf w\) in the original space does not exist; the \(\alpha_i\) (non-zero only for support vectors) say how much each support vector influences the boundary.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig04_svm_rbf.png" alt="RBF SVM for different values of gamma and C" loading="lazy"></div>
 <figcaption><b>Fig. 4.5</b> RBF SVM on 100 noisy “two moons” points. Top row: \(C = 1\), \(\gamma\) changes. Bottom row: \(\gamma = 1\), \(C\) changes. The titles give the number of support vectors and the accuracy on the training points and on 1000 new points.</figcaption></figure>
@@ -194,9 +270,13 @@
 <h2 id="otazky">Exam questions</h2>
 <div class="qtools"><button class="iconbtn" data-qall="open">Expand all answers</button><button class="iconbtn" data-qall="close">Collapse</button></div>
 <details class="q"><summary>Explain the bias trick and the difference between linear regression and linear classification.</summary><div>
-<p>I write the affine \(f(\mathbf x) = \mathbf w^\top\mathbf x + b\) as the linear \(\tilde{\mathbf w}^\top\tilde{\mathbf x}\) with \(\tilde{\mathbf x} = (\mathbf x, 1)\), \(\tilde{\mathbf w} = (\mathbf w, b)\) – the offset is just another weight, formulas and code become simpler (a column of ones in \(X\)). Regression returns \(\mathbf w^\top\mathbf x + b\) directly (continuous), classification its sign; the decision boundary is the hyperplane \(\mathbf w^\top\mathbf x + b = 0\).</p></div></details>
+<p>I write the affine function \(f(\mathbf x) = \mathbf w^\top\mathbf x + b\) as a linear one:</p>
+\[ f(\mathbf x) = \tilde{\mathbf w}^\top\tilde{\mathbf x},\qquad \tilde{\mathbf x} = (\mathbf x, 1),\quad \tilde{\mathbf w} = (\mathbf w, b) \]
+<p>The offset is just another weight, formulas and code become simpler (a column of ones in \(X\)). Regression returns \(\mathbf w^\top\mathbf x + b\) directly (continuous), classification its sign; the decision boundary is the hyperplane \(\mathbf w^\top\mathbf x + b = 0\).</p></div></details>
 <details class="q"><summary>Derive the closed-form solution of OLS.</summary><div>
-<p>\(g(\mathbf w) = \|X\mathbf w - \mathbf y\|^2 = (X\mathbf w - \mathbf y)^\top(X\mathbf w - \mathbf y)\); gradient \(\nabla g = 2X^\top(X\mathbf w - \mathbf y)\); I set it to zero ⇒ normal equations \(X^\top X\mathbf w = X^\top\mathbf y\) ⇒ \(\mathbf w^\ast = (X^\top X)^{-1}X^\top\mathbf y = X^\dagger\mathbf y\). The problem is convex, so it is the global minimum. For the points (0,1), (1,2), (2,2): \(\hat y = 7/6 + x/2\).</p></div></details>
+<p>I expand the loss, take the derivative and set the gradient to zero:</p>
+\[ \begin{aligned} g(\mathbf w) &= \|X\mathbf w - \mathbf y\|^2 = (X\mathbf w - \mathbf y)^\top(X\mathbf w - \mathbf y) \\ \nabla g &= 2X^\top(X\mathbf w - \mathbf y) = 0 \\ X^\top X\,\mathbf w &= X^\top\mathbf y \qquad\text{(normal equations)} \\ \mathbf w^\ast &= (X^\top X)^{-1}X^\top\mathbf y = X^\dagger\mathbf y \end{aligned} \]
+<p>The problem is convex, so it is the global minimum. For the points (0,1), (1,2), (2,2): \(\hat y = 7/6 + x/2\).</p></div></details>
 <details class="q"><summary>Why is MSE sensitive to outliers and MAE not? When would you choose LAD?</summary><div>
 <p>MSE squares the residuals – an error of 10 contributes 100, so one outlier “pulls” the line. MAE contributes linearly (10), large errors do not dominate. On the other hand MSE almost ignores small errors (\(0.01^2\)). I choose LAD when the data contain outliers or measurement errors that I do not want the model to follow (e.g. occasional artefacts in a signal).</p></div></details>
 <details class="q"><summary>Compare ridge and LASSO. How does λ affect bias and variance?</summary><div>

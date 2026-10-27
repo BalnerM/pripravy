@@ -15,7 +15,10 @@
 <p><b>Trénovací množina</b> slouží k naučení parametrů modelu. <b>Validační množina</b> slouží k ladění hyperparametrů, výběru příznaků, porovnání modelů a hlídání přeučení. <b>Testovací množina</b> se odloží až na konec a použije se jednou – dává nestranný odhad výkonu na nových datech.</p>
 <p class="jinak">trénovací data jsou učebnice, validační zkušební test, na kterém si zkoušíš různé způsoby učení, a testovací data jsou ostrá zkouška, kterou nesmíš předem vidět. Kdo ladí na testu, „podvádí“ a dostane přehnaně optimistické číslo.</p></div>
 <div class="box definice" id="def-riziko"><div class="box-t">Definice: populační a empirické riziko</div>
-<p><b>Populační (očekávané) riziko</b> \(R(\theta) = \mathbb E_{(\mathbf x, y)\sim P}[L(f_\theta(\mathbf x), y)]\) je očekávaná ztráta modelu na budoucích vzorcích ze skutečného (neznámého) rozdělení \(P\). <b>Empirické riziko</b> je průměrná ztráta na konečném vzorku dat, např. na trénovací množině \(\hat R_{\text{train}}(\theta) = \frac{1}{n}\sum_{i} L(f_\theta(\mathbf x_i), y_i)\).</p>
+<p><b>Populační (očekávané) riziko</b> je očekávaná ztráta modelu na budoucích vzorcích ze skutečného (neznámého) rozdělení \(P\):
+\[ R(\theta) = \mathbb E_{(\mathbf x, y)\sim P}[L(f_\theta(\mathbf x), y)] \]
+<b>Empirické riziko</b> je průměrná ztráta na konečném vzorku dat, např. na trénovací množině:
+\[ \hat R_{\text{train}}(\theta) = \frac{1}{n}\sum_{i} L(f_\theta(\mathbf x_i), y_i) \]</p>
 <p class="jinak">trénujeme minimalizací empirického rizika na trénovacích datech, ale záleží nám na populačním riziku. Odhadujeme ho průměrnou ztrátou na odložené testovací množině: \(\hat R_{\text{test}} \approx R(\theta)\). Celý vývoj modelu je optimalizace <b>zobecnění</b>.</p></div>
 <div class="box intuice"><div class="box-t">Dvě optimalizační úlohy v učení s učitelem</div>
 <p><b>Vnitřní úloha – trénování</b> (SGD, backpropagation…): parametry \(\theta\) se přizpůsobí trénovací množině, \(\theta^\ast = \arg\min_\theta \hat R_{\text{train}}(\theta)\). <b>Vnější úloha – vývoj modelu</b>: celá pipeline \(P\) (příznaky, předzpracování, model, hyperparametry) se hodnotí na validační množině, \(P^\ast = \arg\min_{P\in\mathcal H}\hat R_{\text{val}}(P)\). Test \(\hat R_{\text{test}}(P^\ast)\) – jednou, úplně na konci. Postup: trénuj → validuj → laď → opakuj; po výběru finálního modelu jednou test.</p></div>
@@ -27,7 +30,9 @@
 <div class="box intuice"><div class="box-t">Jedno číslo nikdy nepopíše model celý</div><p>Ke každé metrice si polož otázku: co měří – a co skrývá?</p></div>
 <h3>Accuracy a regresní chyby</h3>
 <div class="box vzorec"><div class="box-t">Základní metriky</div>
-\[ \text{Accuracy} = \frac{\#\{\hat y_i = y_i\}}{n} = \frac{TP + TN}{TP + TN + FP + FN},\qquad \text{MSE} = \frac1n\sum_i e_i^2,\qquad \text{MAE} = \frac1n\sum_i |e_i|,\qquad \text{RMSE} = \sqrt{\text{MSE}} \]
+\[ \text{Accuracy} = \frac{\#\{\hat y_i = y_i\}}{n} = \frac{TP + TN}{TP + TN + FP + FN} \]
+\[ \text{MSE} = \frac1n\sum_i e_i^2,\qquad \text{MAE} = \frac1n\sum_i |e_i| \]
+\[ \text{RMSE} = \sqrt{\text{MSE}} \]
 <table class="vars">
 <tr><td>\(e_i = \hat y_i - y_i\)</td><td>chyba (reziduum) \(i\)-té predikce</td></tr>
 <tr><td>MSE</td><td>průměr čtverců chyb = \(\frac1n\|\mathbf e\|_2^2\); velké chyby trestá výrazně víc</td></tr>
@@ -38,7 +43,10 @@
 <p>Chybovost (error rate) = 1 − accuracy.</p></div>
 <div class="box priklad"><div class="box-t">Ručně (přednáška)</div>
 <p>Klasifikace: \(\mathbf y = [1, 0, 1, 2, 0]\), \(\hat{\mathbf y} = [1, 1, 1, 0, 0]\) ⇒ accuracy = 3/5 = 0,6.</p>
-<p>Regrese: \(\mathbf y = [3;\ -0{,}5;\ 2;\ 7;\ 4{,}2]\), \(\hat{\mathbf y} = [2{,}5;\ 0;\ 2{,}1;\ 7{,}8;\ 3{,}5]\) ⇒ \(\mathbf e = [-0{,}5;\ 0{,}5;\ 0{,}1;\ 0{,}8;\ -0{,}7]\); MSE = 1,64/5 = 0,328; MAE = 2,6/5 = 0,52; RMSE = 0,573; \(R^2 = 0{,}946\).</p></div>
+<p>Regrese – skutečné a předpovězené hodnoty a chyby \(e_i = \hat y_i - y_i\):</p>
+\[ \begin{aligned} \mathbf y &= [3;\ -0{,}5;\ 2;\ 7;\ 4{,}2] \\ \hat{\mathbf y} &= [2{,}5;\ 0;\ 2{,}1;\ 7{,}8;\ 3{,}5] \\ \mathbf e &= [-0{,}5;\ 0{,}5;\ 0{,}1;\ 0{,}8;\ -0{,}7] \end{aligned} \]
+<p>Metriky:</p>
+\[ \begin{aligned} \text{MSE} &= 1{,}64/5 = 0{,}328 \\ \text{MAE} &= 2{,}6/5 = 0{,}52 \\ \text{RMSE} &= \sqrt{0{,}328} = 0{,}573 \\ R^2 &= 1 - 1{,}64/30{,}59 = 0{,}946 \end{aligned} \]</div>
 <h3>Matice záměn a metriky z ní</h3>
 <div class="box definice" id="def-matice-zamen"><div class="box-t">Definice: matice záměn (confusion matrix)</div>
 <p><b>Matice záměn</b> je tabulka počtů, která pro binární klasifikaci křížově třídí skutečnou a předpovězenou třídu: <b>TP</b> (skutečně pozitivní, předpovězeno pozitivní), <b>FN</b> (pozitivní, předpovězeno negativní – chyba II. druhu), <b>FP</b> (negativní, předpovězeno pozitivní – chyba I. druhu) a <b>TN</b> (negativní, předpovězeno negativní).</p>
@@ -53,7 +61,9 @@
 <p><b>Senzitivita (recall, TPR)</b> je podíl skutečně pozitivních vzorků, které model označil jako pozitivní: TP/(TP+FN). <b>Přesnost (precision, PPV)</b> je podíl vzorků označených jako pozitivní, které jsou opravdu pozitivní: TP/(TP+FP). <b>Specificita</b> je podíl skutečně negativních označených jako negativní: TN/(TN+FP).</p>
 <p class="jinak">recall: „kolik nemocných jsem našel?“; precision: „když řeknu nemocný, kolikrát mám pravdu?“; specificita: „kolik zdravých jsem nechal na pokoji?“ Žádná z nich sama nestačí – model, který řekne každému „pozitivní“, má senzitivitu 1.</p></div>
 <div class="box definice" id="def-f1"><div class="box-t">Definice: F1 skóre (Dice)</div>
-<p><b>F1 skóre</b> je harmonický průměr přesnosti a senzitivity: \(F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision} + \text{recall}} = \frac{2TP}{2TP + FP + FN}\). Je totožné s Diceovým koeficientem \(2|X\cap Y|/(|X| + |Y|)\) množiny předpovězených a skutečných pozitiv.</p>
+<p><b>F1 skóre</b> je harmonický průměr přesnosti a senzitivity:
+\[ F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision} + \text{recall}} = \frac{2TP}{2TP + FP + FN} \]
+Je totožné s Diceovým koeficientem \(2|X\cap Y|/(|X| + |Y|)\) množiny předpovězených a skutečných pozitiv.</p>
 <p class="jinak">jedno číslo, které je vysoké jen tehdy, když model zároveň málo přehlíží i málo plaše poplašuje. Nezávisí na TN, proto je užitečné, když je pozitivních vzorků málo.</p></div>
 <div class="box priklad"><div class="box-t">Ručně (přednáška)</div>
 <p>10 vzorků: TP = 4, FP = 2, FN = 1, TN = 3 ⇒ precision 4/6 = 0,67; recall 4/5 = 0,80; \(F_1 = 8/11 = 0{,}73\) (accuracy 0,7). Model „vždy pozitivní“ (TP = 5, FP = 5): recall 1,0, ale \(F_1 = 10/15 = 0{,}67\).</p></div>
@@ -61,7 +71,9 @@
 <h3>ROC křivka, AUC a volba prahu</h3>
 <p>Většina klasifikátorů vrací <b>skóre</b> (míru jistoty) a o třídě rozhoduje až <b>práh</b>. Co je skóre: u logistické regrese a sítí výstup sigmoidy/softmaxu, u random forestu podíl stromů hlasujících pro třídu, u k-NN podíl \(k\) sousedů, u SVM znaménková vzdálenost od nadroviny, u naivního Bayese aposteriorní pravděpodobnost. Někdy je práh součástí modelu (SVM).</p>
 <div class="box definice" id="def-roc"><div class="box-t">Definice: ROC křivka</div>
-<p><b>ROC křivka</b> (receiver operating characteristic) je křivka bodů \((\text{FPR}, \text{TPR})\), které dostaneme, když postupně posouváme rozhodovací práh přes všechny hodnoty skóre; \(\text{TPR} = TP/(TP+FN)\), \(\text{FPR} = FP/(FP+TN) = 1 - \text{specificita}\).</p>
+<p><b>ROC křivka</b> (receiver operating characteristic) je křivka bodů \((\text{FPR}, \text{TPR})\), které dostaneme, když postupně posouváme rozhodovací práh přes všechny hodnoty skóre:
+\[ \text{TPR} = \frac{TP}{TP+FN} \]
+\[ \text{FPR} = \frac{FP}{FP+TN} = 1 - \text{specificita} \]</p>
 <p class="jinak">celý klasifikátor v jednom obrázku: každý práh je jeden bod, volba prahu jen vybírá bod na křivce. Vysoký práh ⇒ skoro nic není pozitivní, bod (0, 0); nízký práh ⇒ vše pozitivní, (1, 1). Dokonalý klasifikátor se dotkne (0, 1), náhodný leží na diagonále.</p></div>
 <div class="box postup"><div class="box-t">Konstrukce ROC křivky</div>
 <ol><li>Spočítej skóre \(s_i\) všech vzorků.</li><li>Seřaď unikátní hodnoty skóre a použij je jako prahy.</li><li>Pro každý práh binarizuj predikce a spočítej TPR a FPR.</li><li>Vynes body (FPR, TPR) a spoj je.</li></ol></div>
@@ -91,7 +103,9 @@
 <p>Klasifikátor je <b>kalibrovaný</b>, pokud jeho výstup lze číst jako pravděpodobnost: mezi vzorky s \(\hat p = 0{,}8\) je asi 80 % pozitivních (kontroluje se po intervalech v reliability diagramu). <b>Brierovo skóre</b> \(\frac1n\sum_i(\hat p_i - y_i)^2\) je MSE pravděpodobností a kalibraci zachytí.</p>
 <p class="jinak">monotónní transformace skóre zachová pořadí, ROC i AUC – a přitom může zničit pravděpodobnosti. AUC kalibraci nevidí; Brier ano (v přednášce 0,133 vs. 0,153 pro stejné AUC).</p></div>
 <div class="box definice" id="def-r2"><div class="box-t">Definice: koeficient determinace R²</div>
-<p><b>Koeficient determinace</b> \(R^2 = 1 - \frac{\sum_i(y_i - \hat y_i)^2}{\sum_i(y_i - \bar y)^2} = 1 - \frac{\text{SSE}}{\text{SST}}\) udává, o kolik je model lepší než predikce průměrem; \(R^2 \in (-\infty, 1]\).</p>
+<p><b>Koeficient determinace</b> udává, o kolik je model lepší než predikce průměrem:
+\[ R^2 = 1 - \frac{\sum_i(y_i - \hat y_i)^2}{\sum_i(y_i - \bar y)^2} = 1 - \frac{\text{SSE}}{\text{SST}} \]
+\[ R^2 \in (-\infty, 1] \]</p>
 <p class="jinak">1 = dokonalá shoda, 0 = model není lepší než „vždy průměr“, záporné = je ještě horší. Čitatel je součet čtverců reziduí (SSE), jmenovatel celkový součet čtverců (SST).</p></div>
 
 <h3>Více tříd a více labelů</h3>
@@ -172,8 +186,12 @@
 <p>Typické kroky: <b>čištění</b> (chybějící hodnoty, odlehlé hodnoty, nekonzistentní kategorie), <b>škálování</b>, <b>kódování</b> kategorií, <b>redukce dimenze</b>. Vše implementuj uvnitř <code>Pipeline</code> a hodnoť křížovou validací – pak se fit předzpracování automaticky děje jen na trénovacích foldech.</p>
 <h3>Škálování</h3>
 <div class="box vzorec"><div class="box-t">Čtyři varianty škálování (statistiky vždy z trénovacích dat)</div>
-\[ x' = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}}\ \ \text{(standardizace)},\qquad x' = \frac{x - \text{med}_{\text{train}}}{\text{IQR}_{\text{train}}}\ \ \text{(robustní)} \]
-\[ x' = \frac{x - \min_{\text{train}}}{\max_{\text{train}} - \min_{\text{train}}}\ \ \text{(min–max)},\qquad x' = \operatorname{clip}\!\left(\frac{x - P_{1}}{P_{99} - P_{1}}, 0, 1\right)\ \ \text{(percentilové min–max)} \]
+<ul>
+<li>standardizace: \[ x' = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}} \]</li>
+<li>robustní škálování: \[ x' = \frac{x - \text{med}_{\text{train}}}{\text{IQR}_{\text{train}}} \]</li>
+<li>min–max: \[ x' = \frac{x - \min_{\text{train}}}{\max_{\text{train}} - \min_{\text{train}}} \]</li>
+<li>percentilové min–max: \[ x' = \operatorname{clip}\!\left(\frac{x - P_{1}}{P_{99} - P_{1}},\ 0,\ 1\right) \]</li>
+</ul>
 <table class="vars">
 <tr><td>standardizace (z-skóre)</td><td>průměr 0, sd 1, zachová tvar rozdělení; výchozí pro lineární modely, SVM, PCA, sítě</td></tr>
 <tr><td>robustní</td><td>medián a mezikvartilové rozpětí místo \(\mu, \sigma\) – odlehlé hodnoty měřítko neposunou</td></tr>
