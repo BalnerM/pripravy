@@ -1,0 +1,162 @@
+<h1>Napěťový sledovač, integrátor a derivátor</h1>
+<p class="lead">Tři další zapojení s operačním zesilovačem, u kterých stačí znát <b>princip a schéma</b>. Sledovač nic nezesiluje, ale řeší problém zatěžování z kap. 1. Integrátor a derivátor vzniknou z invertujícího zesilovače, když jeden z rezistorů nahradíme kondenzátorem – a z frekvenčního pohledu jsou to aktivní dolní a horní propust z kap. 2.</p>
+
+<h2 id="sledovac">Napěťový sledovač</h2>
+<div class="box definice" id="def-sledovac"><div class="box-t">Definice: napěťový sledovač</div>
+<p><b>Napěťový sledovač</b> (impedanční oddělovač, buffer) je zapojení OZ, ve kterém je vstupní signál přiveden na neinvertující vstup a výstup je přímo spojen s invertujícím vstupem (100% záporná zpětná vazba). Výstupní napětí je rovno vstupnímu (\(A = 1\)), vstupní odpor je velmi velký a výstupní odpor velmi malý.</p>
+<p class="jinak">výstup „kopíruje“ vstup, ale proud pro zátěž dodává OZ ze svého napájení, ne zdroj signálu. Zdroj tak není zatěžován a zátěž dostane plné napětí.</p></div>
+
+<figure><div class="paper"><img src="figures/fig04_sledovac.png" alt="Schéma napěťového sledovače: vstup na plus, výstup spojený s minus" loading="lazy"></div>
+<figcaption><b>Obr. 4.1</b> Napěťový sledovač. Žádné rezistory – výstup je přímo spojen s invertujícím vstupem.</figcaption></figure>
+
+<div class="box intuice"><div class="box-t">Princip</div>
+<ul>
+<li><b>Virtuální zkrat:</b> \(U_- = U_+\). Invertující vstup je spojen s výstupem, tedy \(U_\text{výst} = U_- = U_+ = U_\text{vst}\).</li>
+<li><b>Jako speciální případ</b> neinvertujícího zesilovače: \(R_2 = 0\) (zkrat ve zpětné vazbě) a \(R_1 = \infty\) (chybí), takže \(A = 1 + 0/\infty = 1\).</li>
+<li><b>Proč je užitečný, když nezesiluje?</b> Zesiluje <b>proud</b> (výkon), ne napětí. Do vstupu neteče prakticky žádný proud (vstupní odpor MΩ–TΩ), výstup se chová jako ideální zdroj napětí (výstupní odpor ≈ 0).</li>
+</ul></div>
+
+<div class="box vzorec"><div class="box-t">Napěťový sledovač</div>
+\[ U_\text{výst} = U_\text{vst} \]
+\[ A = 1 \]
+<table class="vars">
+<tr><td>\(A\)</td><td>napěťové zesílení = 1 (0 dB), bez inverze</td></tr>
+<tr><td>\(R_\text{vst}\)</td><td>vstupní odpor – velmi velký (vstupní odpor OZ)</td></tr>
+<tr><td>\(R_\text{výst}\)</td><td>výstupní odpor – velmi malý (zlomky Ω díky zpětné vazbě)</td></tr>
+</table></div>
+
+<figure><div class="paper"><img src="figures/fig04_sledovac_delic.png" alt="Dělič 10 kΩ / 10 kΩ, za ním napěťový sledovač a zátěž 1 kΩ" loading="lazy"></div>
+<figcaption><b>Obr. 4.2</b> Sledovač jako oddělovač mezi děličem a malou zátěží 1 kΩ.</figcaption></figure>
+
+<div class="box priklad"><div class="box-t">Příklad: dělič se zátěží s oddělovačem a bez něj</div>
+<p>Dělič 10 kΩ / 10 kΩ z 10 V, zátěž \(R_\text{z} = 1\) kΩ. <b>Bez sledovače</b> (zatížený dělič, kap. 1):</p>
+\[ R_2 \parallel R_\text{z} = \frac{10 \cdot 1}{10 + 1} \approx 0{,}909\ \text{k}\Omega \]
+\[ U_{2\text{z}} = 10 \cdot \frac{0{,}909}{10 + 0{,}909} \approx 0{,}83\ \text{V} \]
+<p><b>Se sledovačem:</b> do vstupu sledovače neteče proud, dělič zůstane nezatížený (5 V) a sledovač přenese 5 V na zátěž. Proud zátěží 5 mA dodá OZ.</p>
+\[ U_\text{z} = U_2 = 5\ \text{V} \]</div>
+
+<div class="box odnes"><div class="box-t">K čemu se sledovač používá</div>
+<ul>
+<li><b>Oddělení zdroje s velkým vnitřním odporem</b> (elektrody, senzor, dělič) od zátěže s malým odporem.</li>
+<li><b>Oddělení stupňů filtru</b> – v kaskádě (pásmová propust, kap. 2) se články přestanou navzájem zatěžovat a mezní frekvence platí přesně.</li>
+<li><b>Aktivní stínění</b> vstupních kabelů, buffer před A/D převodníkem.</li>
+</ul></div>
+
+<h2 id="integrator">Integrátor</h2>
+<div class="box definice" id="def-integrator"><div class="box-t">Definice: integrační zesilovač (integrátor)</div>
+<p><b>Integrátor</b> je zapojení OZ odvozené z invertujícího zesilovače, ve kterém je rezistor ve zpětné vazbě nahrazen kondenzátorem \(C\) (na vstupu zůstává rezistor \(R\)). Výstupní napětí je úměrné časovému integrálu vstupního napětí: \(u_\text{výst}(t) = -\frac{1}{RC}\int u_\text{vst}\,dt\).</p>
+<p class="jinak">výstup „sčítá“ vstup v čase. Stálé vstupní napětí dá na výstupu lineárně rostoucí (klesající) rampu; obdélník se změní na trojúhelník.</p></div>
+
+<figure><div class="paper"><img src="figures/fig04_integrator.png" alt="Schéma integrátoru: R na vstupu, kondenzátor C ve zpětné vazbě" loading="lazy"></div>
+<figcaption><b>Obr. 4.3</b> Integrátor: rezistor \(R\) na vstupu, kondenzátor \(C\) ve zpětné vazbě.</figcaption></figure>
+
+<div class="box intuice"><div class="box-t">Princip</div>
+<ol>
+<li>Invertující vstup je na <b>virtuální nule</b>, takže rezistorem teče proud \(i = u_\text{vst}/R\) – úměrný vstupu, nezávisle na tom, co je na výstupu.</li>
+<li>Do vstupu OZ proud neteče → celý proud <b>nabíjí kondenzátor</b>.</li>
+<li>Napětí na kondenzátoru je úměrné nahromaděnému náboji, tedy integrálu proudu: \(u_C = \frac{1}{C}\int i\,dt\).</li>
+<li>Jedna strana kondenzátoru je na 0 V, druhá na výstupu: \(u_\text{výst} = -u_C\). Odtud vzorec (se znaménkem minus, protože zapojení je invertující).</li>
+</ol>
+<p>Proti obyčejnému RC článku je výhoda v tom, že nabíjecí proud je přesně \(u_\text{vst}/R\) (virtuální nula), takže integrace je přesná a lineární.</p></div>
+
+<div class="box vzorec"><div class="box-t">Integrátor</div>
+\[ u_\text{výst}(t) = -\frac{1}{RC} \int_0^t u_\text{vst}\,dt + u_\text{výst}(0) \]
+\[ |A| = \frac{1}{\omega R C} \]
+<table class="vars">
+<tr><td>\(RC\)</td><td>integrační časová konstanta [s]</td></tr>
+<tr><td>\(u_\text{výst}(0)\)</td><td>počáteční napětí (náboj kondenzátoru na začátku)</td></tr>
+<tr><td>\(|A|\)</td><td>zesílení pro sinusový signál: klesá s frekvencí, −20 dB/dek – chová se jako <b>dolní propust</b></td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad</div>
+<p>\(R = 10\) kΩ, \(C = 1\) µF (\(RC = 10\) ms), na vstupu stálé napětí 1 V. Výstup klesá rychlostí</p>
+\[ \frac{du_\text{výst}}{dt} = -\frac{u_\text{vst}}{RC} = -\frac{1\ \text{V}}{0{,}01\ \text{s}} = -100\ \text{V/s} \]
+<p>Po 50 ms je na výstupu</p>
+\[ u_\text{výst} = -100 \cdot 0{,}05 = -5\ \text{V} \]
+<p>a za dalších asi 80 ms narazí na saturaci (≈ −13 V).</p></div>
+
+<div class="box pozor"><div class="box-t">Praktický problém: drift do saturace</div>
+<p>Integrátor integruje i nepatrné stejnosměrné napětí (offset OZ, mV) – výstup pomalu „ujede“ až do saturace. V praxi se proto paralelně ke kondenzátoru dává velký rezistor \(R_p\), který omezí stejnosměrné zesílení na \(-R_p/R\). Zapojení se tím stane <b>aktivní dolní propustí</b> s mezní frekvencí \(1/(2\pi R_p C)\), která nad touto frekvencí integruje.</p></div>
+
+<h2 id="derivator">Derivátor</h2>
+<div class="box definice" id="def-derivator"><div class="box-t">Definice: derivační zesilovač (derivátor)</div>
+<p><b>Derivátor</b> je zapojení OZ odvozené z invertujícího zesilovače, ve kterém je vstupní rezistor nahrazen kondenzátorem \(C\) (ve zpětné vazbě zůstává rezistor \(R\)). Výstupní napětí je úměrné časové derivaci vstupního napětí: \(u_\text{výst}(t) = -RC\,\frac{du_\text{vst}}{dt}\).</p>
+<p class="jinak">výstup ukazuje, <b>jak rychle</b> se vstup mění. Stálé napětí dá nulu, rampa dá stálé napětí, trojúhelník se změní na obdélník.</p></div>
+
+<figure><div class="paper"><img src="figures/fig04_derivator.png" alt="Schéma derivátoru: kondenzátor C na vstupu, R ve zpětné vazbě" loading="lazy"></div>
+<figcaption><b>Obr. 4.4</b> Derivátor: kondenzátor \(C\) na vstupu, rezistor \(R\) ve zpětné vazbě – oproti integrátoru prohozené součástky.</figcaption></figure>
+
+<div class="box intuice"><div class="box-t">Princip</div>
+<ol>
+<li>Invertující vstup je na virtuální nule, napětí na kondenzátoru je tedy přímo \(u_\text{vst}\).</li>
+<li>Proud kondenzátorem je úměrný rychlosti změny napětí: \(i = C\,\frac{du_\text{vst}}{dt}\). Když se vstup nemění, proud neteče.</li>
+<li>Do vstupu OZ proud neteče → celý proud jde přes \(R\), na kterém vytvoří úbytek: \(u_\text{výst} = -R\,i = -RC\,\frac{du_\text{vst}}{dt}\).</li>
+</ol></div>
+
+<div class="box vzorec"><div class="box-t">Derivátor</div>
+\[ u_\text{výst}(t) = -RC \, \frac{du_\text{vst}}{dt} \]
+\[ |A| = \omega R C \]
+<table class="vars">
+<tr><td>\(RC\)</td><td>derivační časová konstanta [s]</td></tr>
+<tr><td>\(\frac{du_\text{vst}}{dt}\)</td><td>rychlost změny vstupního napětí [V/s]</td></tr>
+<tr><td>\(|A|\)</td><td>zesílení pro sinusový signál: roste s frekvencí, +20 dB/dek – chová se jako <b>horní propust</b></td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad</div>
+<p>\(RC = 1\) ms, na vstupu rampa rostoucí rychlostí 100 V/s:</p>
+\[ u_\text{výst} = -10^{-3} \cdot 100 = -0{,}1\ \text{V} \]
+<p>Dokud rampa roste, je výstup stálých −0,1 V; když začne klesat stejnou rychlostí, přeskočí na +0,1 V.</p></div>
+
+<div class="box pozor"><div class="box-t">Praktický problém: šum</div>
+<p>Zesílení derivátoru roste s frekvencí neomezeně – vysokofrekvenční šum (který má malou amplitudu, ale rychlé změny) se zesílí nejvíc a zapojení má sklon k nestabilitě. V praxi se do série s kondenzátorem přidává rezistor (omezí zesílení na vysokých frekvencích na \(-R/R_s\)), případně kondenzátor paralelně k \(R\). V biosignálech se derivace používá např. při <b>detekci QRS komplexu</b> (strmé hrany), většinou ale až číslicově.</p></div>
+
+<h2 id="prubehy">Průběhy signálů</h2>
+<figure><div class="paper"><img src="figures/fig04_prubehy.png" alt="Integrátor mění obdélník na trojúhelník, derivátor trojúhelník na obdélník" loading="lazy"></div>
+<figcaption><b>Obr. 4.5</b> Vlevo integrátor (\(RC = 10\) ms): obdélník ±1 V → trojúhelník. Vpravo derivátor (\(RC = 1\) ms): trojúhelník ±1 V → obdélník. Obě zapojení jsou invertující.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>Integrátor:</b> kladný vstup → výstup lineárně klesá (inverze!), záporný → roste. Sklon je \(u_\text{vst}/(RC)\): 1 V / 10 ms = 100 V/s, za půlperiodu 10 ms změna o 1 V.</li>
+<li><b>Derivátor:</b> výstup je úměrný sklonu vstupu. Trojúhelník má sklon ±200 V/s, takže výstup je \(\mp 1\ \text{ms} \cdot 200\ \text{V/s} = \mp 0{,}2\) V.</li>
+<li>Integrátor a derivátor jsou navzájem inverzní operace – jako jejich schémata (prohozené R a C).</li>
+</ul></div>
+
+<div class="tablewrap"><table>
+<tr><th>zapojení</th><th>vstup / zpětná vazba</th><th>výstup</th><th>frekvenčně, použití</th></tr>
+<tr><td>sledovač</td><td>signál na + / přímé spojení</td><td>\(u_\text{vst}\)</td><td>\(A = 1\); oddělení, impedanční převod</td></tr>
+<tr><td>integrátor</td><td>\(R\) / \(C\)</td><td>\(-\frac{1}{RC}\int u_\text{vst}\,dt\)</td><td>−20 dB/dek (jako DP); integrace, aktivní DP</td></tr>
+<tr><td>derivátor</td><td>\(C\) / \(R\)</td><td>\(-RC\,\frac{du_\text{vst}}{dt}\)</td><td>+20 dB/dek (jako HP); rychlé změny, aktivní HP</td></tr>
+</table></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Sledovač má vstup na neinvertujícím vstupu a výstup spojený s invertujícím, takže z virtuálního zkratu je výstup roven vstupu. Nezesiluje napětí, ale má obrovský vstupní a malý výstupní odpor, takže odděluje zdroj od zátěže. Integrátor je invertující zesilovač s kondenzátorem ve zpětné vazbě: proud \(u_\text{vst}/R\) nabíjí kondenzátor a výstup je \(-\frac{1}{RC}\int u_\text{vst}\,dt\). Derivátor má kondenzátor na vstupu: proud \(C\,du/dt\) teče přes \(R\), výstup je \(-RC\,du/dt\). Integrátor se prakticky chová jako dolní propust a potřebuje rezistor paralelně ke kondenzátoru proti driftu, derivátor jako horní propust a zesiluje šum.“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Sledovač = výstup přímo na −, kopíruje vstup a odděluje. Integrátor = C ve zpětné vazbě (\(-\frac{1}{RC}\int\)). Derivátor = C na vstupu (\(-RC\frac{d}{dt}\)).</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p><b>Napěťový sledovač</b> má vstup na neinvertujícím vstupu a výstup spojený s invertujícím; díky virtuálnímu zkratu je \(U_\text{výst} = U_\text{vst}\). Jeho smyslem je oddělení: velký vstupní odpor nezatěžuje zdroj, malý výstupní odpor udrží napětí na zátěži (dělič se zátěží 1 kΩ dá bez sledovače 0,83 V, se sledovačem 5 V). <b>Integrátor</b> vznikne z invertujícího zesilovače nahrazením rezistoru ve zpětné vazbě kondenzátorem: vstupní proud \(u_\text{vst}/R\) nabíjí kondenzátor a výstup je \(-\frac{1}{RC}\int u_\text{vst}\,dt\); obdélník mění na trojúhelník, frekvenčně klesá −20 dB/dek. <b>Derivátor</b> má kondenzátor na vstupu: proud \(C\,du_\text{vst}/dt\) teče přes \(R\) a výstup je \(-RC\,du_\text{vst}/dt\); trojúhelník mění na obdélník, frekvenčně roste +20 dB/dek a zesiluje šum.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Sledovač: \(A = 1\), velký \(R_\text{vst}\), malý \(R_\text{výst}\) → odděluje zdroj od zátěže.</li>
+<li>Sledovač je neinvertující zesilovač s \(R_2 = 0\), \(R_1 = \infty\).</li>
+<li>Integrátor: R na vstupu, C ve zpětné vazbě, \(u_\text{výst} = -\frac{1}{RC}\int u_\text{vst}\,dt\).</li>
+<li>Derivátor: C na vstupu, R ve zpětné vazbě, \(u_\text{výst} = -RC\,du_\text{vst}/dt\).</li>
+<li>Obě jsou invertující; integrátor ≈ DP (drift → paralelní \(R_p\)), derivátor ≈ HP (šum → sériový \(R_s\)).</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Nakreslete napěťový sledovač a vysvětlete, k čemu je, když má zesílení 1.</summary><div>
+<p>Vstup na neinvertující vstup, výstup spojen přímo s invertujícím. Z virtuálního zkratu \(U_\text{výst} = U_\text{vst}\). Nezesiluje napětí, ale proud: vstupní odpor je obrovský (zdroj není zatěžován), výstupní velmi malý (zátěž dostane plné napětí). Používá se k oddělení zdroje s velkým vnitřním odporem od zátěže, mezi stupni filtrů a před A/D převodníkem.</p></div></details>
+<details class="q"><summary>Proč se dělič se zátěží 1 kΩ „zbortí“ a jak to vyřeší sledovač? (10 V, 10 kΩ / 10 kΩ)</summary><div>
+<p>Zátěž je paralelně k \(R_2\): \(10 \parallel 1 \approx 0{,}91\) kΩ, výstup klesne na asi 0,83 V místo 5 V. Se sledovačem mezi děličem a zátěží neteče z děliče žádný proud, dělič zůstane nezatížený (5 V) a proud zátěže dodá OZ – na zátěži je 5 V.</p></div></details>
+<details class="q"><summary>Nakreslete integrátor a vysvětlete jeho princip.</summary><div>
+<p>Invertující zesilovač s rezistorem \(R\) na vstupu a kondenzátorem \(C\) ve zpětné vazbě. Invertující vstup je na virtuální nule, rezistorem teče proud \(u_\text{vst}/R\), který celý nabíjí kondenzátor. Napětí kondenzátoru je integrál proudu lomeno \(C\), výstup je jeho záporná hodnota: \(u_\text{výst} = -\frac{1}{RC}\int u_\text{vst}\,dt\). Stálý vstup dá rampu, obdélník trojúhelník.</p></div></details>
+<details class="q"><summary>Nakreslete derivátor a vysvětlete jeho princip. Jaký má praktický problém?</summary><div>
+<p>Kondenzátor \(C\) na vstupu, rezistor \(R\) ve zpětné vazbě. Na kondenzátoru je celé vstupní napětí (virtuální nula), teče jím proud \(C\,du_\text{vst}/dt\), který přes \(R\) vytvoří výstup \(-RC\,du_\text{vst}/dt\). Problém: zesílení roste s frekvencí (\(\omega RC\)), takže se nejvíc zesílí vysokofrekvenční šum a zapojení může být nestabilní – řeší se rezistorem v sérii s kondenzátorem.</p></div></details>
+<details class="q"><summary>Jak souvisí integrátor a derivátor s dolní a horní propustí?</summary><div>
+<p>Pro sinusový signál má integrátor zesílení \(1/(\omega RC)\), které klesá 20 dB na dekádu – jako dolní propust nad mezní frekvencí. Derivátor má \(\omega RC\), roste 20 dB/dek – jako horní propust pod mezní frekvencí. Po doplnění rezistoru (paralelně k C u integrátoru, do série s C u derivátoru) z nich vzniknou aktivní dolní a horní propust.</p></div></details>
+<details class="q"><summary>Integrátor má \(R = 10\) kΩ, \(C = 1\) µF a na vstupu stálé 1 V. Jaké napětí bude na výstupu po 50 ms?</summary><div>
+\[ \frac{du_\text{výst}}{dt} = -\frac{1}{10^4 \cdot 10^{-6}} = -100\ \text{V/s} \]
+\[ u_\text{výst}(50\ \text{ms}) = -100 \cdot 0{,}05 = -5\ \text{V} \]
+<p>(za předpokladu, že kondenzátor byl na začátku vybitý; časem by výstup došel do saturace).</p></div></details>

@@ -1,0 +1,337 @@
+<h1>Analogové RC filtry</h1>
+<p class="lead">Biosignál nikdy nepřichází čistý: EKG je zatížené driftem izolinie (pomalé pohyby, dýchání), síťovým brumem 50 Hz a vysokofrekvenčním šumem svalů. Filtr propustí jen frekvence, které nás zajímají. Nejjednodušší analogové filtry jsou <b>RC články</b> – a nejsou nic jiného než <b>dělič napětí</b> z kap. 1, ve kterém je jeden rezistor nahrazen kondenzátorem.</p>
+
+<h2 id="filtr">Filtr a jeho přenos</h2>
+<div class="box definice" id="def-filtr"><div class="box-t">Definice: analogový filtr</div>
+<p><b>Analogový filtr</b> je obvod, který propouští složky spojitého signálu v určitém rozsahu frekvencí (<b>propustné pásmo</b>) a potlačuje složky v jiném rozsahu (<b>nepropustné pásmo</b>). Podle polohy propustného pásma rozlišujeme dolní propust, horní propust, pásmovou propust a pásmovou zádrž.</p>
+<p class="jinak">„síto na frekvence“ – co je v propustném pásmu, projde beze změny, co je v nepropustném, se ztlumí. Filtr je <b>pasivní</b>, pokud obsahuje jen R, C (L), a <b>aktivní</b>, pokud obsahuje i zesilovač.</p></div>
+
+<div class="box definice" id="def-prenos"><div class="box-t">Definice: přenos a frekvenční charakteristika</div>
+<p><b>Přenos</b> (napěťový) obvodu je poměr výstupního a vstupního napětí harmonického signálu: \(H = U_\text{výst}/U_\text{vst}\). Jeho závislost na frekvenci je <b>frekvenční (přenosová) charakteristika</b>; skládá se z <b>amplitudové</b> charakteristiky \(|H(f)|\) (kolikrát se změní amplituda) a <b>fázové</b> charakteristiky \(\varphi(f)\) (o kolik se posune fáze).</p>
+<p class="jinak">pošlu na vstup sinusovku dané frekvence a podívám se, jak velká a jak posunutá vyjde na výstupu. Když to udělám pro všechny frekvence, dostanu „otisk“ filtru. (V literatuře se přenos značí také \(K\) nebo \(P\).)</p></div>
+
+<div class="box definice" id="def-decibel"><div class="box-t">Definice: decibel</div>
+<p><b>Decibel</b> (dB) je logaritmická jednotka poměru. Napěťový přenos v decibelech je \(A_\text{dB} = 20 \log_{10} |H|\).</p>
+<p class="jinak">místo násobení sčítám a velký rozsah (1 až 0,0001) se vejde do malého rozsahu čísel (0 až −80 dB). 0 dB = beze změny, záporné dB = zeslabení, kladné = zesílení. Každých 20 dB je desetinásobek.</p></div>
+
+<div class="tablewrap"><table>
+<tr><th>přenos \(|H|\)</th><th class="num">v dB</th><th>význam</th></tr>
+<tr><td>1000</td><td class="num">+60</td><td>zesílení 1000×</td></tr>
+<tr><td>10</td><td class="num">+20</td><td>zesílení 10×</td></tr>
+<tr><td>2</td><td class="num">+6</td><td>dvojnásobek</td></tr>
+<tr><td>1</td><td class="num">0</td><td>beze změny</td></tr>
+<tr><td>\(1/\sqrt2 \approx 0{,}707\)</td><td class="num">−3</td><td><b>mezní frekvence</b></td></tr>
+<tr><td>0,5</td><td class="num">−6</td><td>polovina</td></tr>
+<tr><td>0,1</td><td class="num">−20</td><td>desetina</td></tr>
+<tr><td>0,01</td><td class="num">−40</td><td>setina</td></tr>
+</table></div>
+
+<figure><div class="paper"><img src="figures/fig02_typy.png" alt="Čtyři typy filtrů: dolní propust, horní propust, pásmová propust a pásmová zádrž" loading="lazy"></div>
+<figcaption><b>Obr. 2.1</b> Amplitudové charakteristiky čtyř základních typů filtrů. Tečkovaně mezní frekvence (pokles o 3 dB).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>Dolní propust</b> (DP, low-pass) propouští frekvence <b>pod</b> mezní frekvencí – v EKG odstraní vysokofrekvenční šum.</li>
+<li><b>Horní propust</b> (HP, high-pass) propouští frekvence <b>nad</b> mezní frekvencí – odstraní stejnosměrnou složku a drift izolinie.</li>
+<li><b>Pásmová propust</b> (PP) propouští jen pásmo mezi dvěma frekvencemi, <b>pásmová zádrž</b> (PZ) naopak jedno pásmo potlačí (např. 50 Hz).</li>
+</ul></div>
+
+<h2 id="kondenzator">Kondenzátor: odpor, který závisí na frekvenci</h2>
+<div class="box definice" id="def-kondenzator"><div class="box-t">Definice: kondenzátor a kapacita</div>
+<p><b>Kondenzátor</b> je součástka tvořená dvěma vodivými elektrodami oddělenými izolantem, která uchovává elektrický náboj. <b>Kapacita</b> \(C\) je poměr náboje na elektrodách a napětí mezi nimi: \(C = Q/U\); jednotkou je farad (F). Proud kondenzátorem je úměrný rychlosti změny napětí: \(i = C \cdot \frac{du}{dt}\).</p>
+<p class="jinak">kondenzátor je „zásobník náboje“. Stejnosměrným proudem neprochází (izolant), ale střídavý signál přes něj „projde“, protože se elektrody pořád nabíjejí a vybíjejí. Čím rychleji se napětí mění, tím větší proud teče.</p></div>
+
+<div class="box definice" id="def-reaktance"><div class="box-t">Definice: kapacitní reaktance</div>
+<p><b>Kapacitní reaktance</b> \(X_C\) je „odpor“ kondenzátoru vůči harmonickému (sinusovému) proudu, tedy poměr amplitud napětí a proudu na kondenzátoru: \(X_C = \frac{1}{2\pi f C} = \frac{1}{\omega C}\). Je nepřímo úměrná frekvenci; proud kondenzátorem předbíhá napětí o 90°.</p>
+<p class="jinak">pro <b>nízké frekvence</b> má kondenzátor obrovský odpor (stejnosměrně = rozpojený obvod), pro <b>vysoké frekvence</b> malý (blíží se zkratu). Právě tato závislost na frekvenci dělá z RC článku filtr.</p></div>
+
+<div class="box vzorec"><div class="box-t">Reaktance a impedance kondenzátoru</div>
+\[ X_C = \frac{1}{2 \pi f C} \]
+\[ Z_C = \frac{1}{j \omega C} = -j X_C \]
+<table class="vars">
+<tr><td>\(f\)</td><td>frekvence signálu [Hz]</td></tr>
+<tr><td>\(\omega = 2\pi f\)</td><td>úhlová frekvence [rad/s]</td></tr>
+<tr><td>\(C\)</td><td>kapacita [F]; typicky nF až µF</td></tr>
+<tr><td>\(X_C\)</td><td>reaktance – velikost „odporu“ kondenzátoru [Ω]</td></tr>
+<tr><td>\(Z_C\)</td><td>impedance – komplexní tvar, který nese i fázový posun (−90°)</td></tr>
+<tr><td>\(j\)</td><td>imaginární jednotka (\(j^2 = -1\)), v elektrotechnice místo \(i\)</td></tr>
+</table></div>
+
+<figure><div class="paper"><img src="figures/fig02_xc.png" alt="Reaktance kondenzátoru klesá s frekvencí, odpor rezistoru je konstantní; protínají se v mezní frekvenci" loading="lazy"></div>
+<figcaption><b>Obr. 2.2</b> Reaktance kondenzátoru 100 nF a odpor rezistoru 10 kΩ v závislosti na frekvenci (obě osy logaritmické).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Pod 159 Hz je kondenzátor „větší odpor“ než rezistor, nad 159 Hz menší. Bod, kde \(X_C = R\), je <b>mezní frekvence</b> RC článku. V děliči z R a C se tedy kolem této frekvence „přelévá“ napětí z jedné součástky na druhou.</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad: reaktance 100 nF</div>
+\[ X_C(50\ \text{Hz}) = \frac{1}{2\pi \cdot 50 \cdot 100 \cdot 10^{-9}} \]
+\[ X_C(50\ \text{Hz}) \approx 31{,}8\ \text{k}\Omega \]
+\[ X_C(1\ \text{kHz}) = \frac{1}{2\pi \cdot 1000 \cdot 100 \cdot 10^{-9}} \]
+\[ X_C(1\ \text{kHz}) \approx 1{,}59\ \text{k}\Omega \]
+<p>Dvacetkrát vyšší frekvence → dvacetkrát menší reaktance.</p></div>
+
+<h2 id="dp">Dolní propust RC</h2>
+<figure><div class="paper"><img src="figures/fig02_dp_hp.png" alt="Schéma dolní propusti RC (R v sérii, C proti zemi) a horní propusti CR (C v sérii, R proti zemi)" loading="lazy"></div>
+<figcaption><b>Obr. 2.3</b> Dolní propust RC (vlevo) a horní propust CR (vpravo). Obě jsou dělič napětí: podélný prvek nahoře, příčný prvek dole, výstup na příčném prvku.</figcaption></figure>
+
+<div class="box definice" id="def-dp"><div class="box-t">Definice: dolní propust</div>
+<p><b>Dolní propust</b> (low-pass filter) je filtr, který propouští složky signálu s frekvencí nižší než mezní frekvence \(f_c\) a složky s vyšší frekvencí potlačuje. Pasivní dolní propust 1. řádu tvoří rezistor v podélné větvi a kondenzátor v příčné větvi (výstup na kondenzátoru).</p>
+<p class="jinak">pomalé změny projdou, rychlé „zahladí“. Výstup je vyhlazená verze vstupu.</p></div>
+
+<div class="box intuice"><div class="box-t">Princip: proč R nahoře a C dole</div>
+<p>Je to dělič napětí: \(R\) je „horní“ rezistor, kondenzátor je „dolní“ a výstup bereme z kondenzátoru. Podíl napětí, který na kondenzátoru zůstane, závisí na poměru \(X_C\) a \(R\):</p>
+<ul>
+<li><b>Nízká frekvence:</b> \(X_C \gg R\). Kondenzátor je skoro rozpojený, proud téměř neteče, na \(R\) není úbytek → <b>výstup ≈ vstup</b>.</li>
+<li><b>Vysoká frekvence:</b> \(X_C \ll R\). Kondenzátor se chová skoro jako zkrat a „svádí“ signál do země; téměř celé napětí je na \(R\) → <b>výstup ≈ 0</b>.</li>
+</ul>
+<p><b>Co dělá kondenzátor:</b> je to frekvenčně závislý prvek, který rozhoduje, co projde. <b>Co dělá rezistor:</b> omezuje proud, kterým se kondenzátor nabíjí, a tvoří s ním dělič – bez něj by byl kondenzátor připojen přímo na zdroj a výstup by se vstupu vždy rovnal. Stejnou věc popisuje <b>časová konstanta</b> \(\tau = RC\): kondenzátor se přes rezistor nabíjí „pomalu“, takže nestačí sledovat rychlé změny vstupu.</p>
+<p><b>Proč zrovna toto pořadí:</b> výstup bereme z té součástky, na které má zůstat napětí v propustném pásmu. Pro nízké frekvence je „velký“ kondenzátor, proto výstup na C. Když součástky prohodím, dostanu horní propust.</p></div>
+
+<div class="box vzorec"><div class="box-t">Přenos dolní propusti (vzorec děliče s impedancí \(Z_C\))</div>
+\[ H = \frac{Z_C}{R + Z_C} = \frac{1}{1 + j\omega RC} \]
+<p>Amplituda (modul) a fáze:</p>
+\[ |H| = \frac{1}{\sqrt{1 + (f/f_c)^2}} \]
+\[ \varphi = -\operatorname{arctg}\frac{f}{f_c} \]
+<table class="vars">
+<tr><td>\(R\)</td><td>odpor podélného rezistoru [Ω]</td></tr>
+<tr><td>\(C\)</td><td>kapacita příčného kondenzátoru [F]</td></tr>
+<tr><td>\(f_c\)</td><td>mezní frekvence \(1/(2\pi RC)\)</td></tr>
+<tr><td>\(|H|\)</td><td>kolikrát se zmenší amplituda: 1 pro \(f \ll f_c\), \(0{,}707\) pro \(f = f_c\), \(\approx f_c/f\) pro \(f \gg f_c\)</td></tr>
+<tr><td>\(\varphi\)</td><td>fázový posun výstupu vůči vstupu: od 0° do −90° (výstup se zpožďuje), v \(f_c\) přesně −45°</td></tr>
+</table></div>
+
+<h2 id="hp">Horní propust CR</h2>
+<div class="box definice" id="def-hp"><div class="box-t">Definice: horní propust</div>
+<p><b>Horní propust</b> (high-pass filter) je filtr, který propouští složky signálu s frekvencí vyšší než mezní frekvence \(f_c\) a složky s nižší frekvencí (včetně stejnosměrné) potlačuje. Pasivní horní propust 1. řádu tvoří kondenzátor v podélné větvi a rezistor v příčné větvi (výstup na rezistoru).</p>
+<p class="jinak">rychlé změny projdou, pomalé a stálé hodnoty se odstraní. V EKG tak zmizí stejnosměrný offset elektrod a pomalé „plavání“ izolinie.</p></div>
+
+<div class="box intuice"><div class="box-t">Princip: proč C nahoře a R dole</div>
+<p>Stejný dělič, jen jsou součástky prohozené – výstup bereme z rezistoru:</p>
+<ul>
+<li><b>Nízká frekvence (i stejnosměrné napětí):</b> \(X_C \gg R\). Kondenzátor v podélné větvi signál „nepustí“ – celé napětí je na něm, na \(R\) nic → <b>výstup ≈ 0</b>.</li>
+<li><b>Vysoká frekvence:</b> \(X_C \ll R\). Kondenzátor je skoro zkrat, signál prochází na \(R\) → <b>výstup ≈ vstup</b>.</li>
+</ul>
+<p><b>Co dělá kondenzátor:</b> blokuje stejnosměrnou složku a pomalé změny (tzv. vazební kondenzátor). <b>Co dělá rezistor:</b> tvoří s ním dělič a určuje, k jaké úrovni (k zemi) se výstup „vrací“ – přes \(R\) se kondenzátor vybíjí, takže stálé napětí na výstupu zanikne s časovou konstantou \(\tau = RC\).</p></div>
+
+<div class="box vzorec"><div class="box-t">Přenos horní propusti</div>
+\[ H = \frac{R}{R + Z_C} = \frac{j\omega RC}{1 + j\omega RC} \]
+\[ |H| = \frac{f/f_c}{\sqrt{1 + (f/f_c)^2}} \]
+\[ \varphi = 90^\circ - \operatorname{arctg}\frac{f}{f_c} \]
+<table class="vars">
+<tr><td>\(C\)</td><td>kapacita podélného kondenzátoru [F]</td></tr>
+<tr><td>\(R\)</td><td>odpor příčného rezistoru [Ω]</td></tr>
+<tr><td>\(|H|\)</td><td>\(\approx f/f_c\) pro \(f \ll f_c\), \(0{,}707\) pro \(f = f_c\), 1 pro \(f \gg f_c\)</td></tr>
+<tr><td>\(\varphi\)</td><td>od +90° do 0° (výstup předbíhá), v \(f_c\) přesně +45°</td></tr>
+</table></div>
+
+<h2 id="mezni">Mezní frekvence</h2>
+<div class="box definice" id="def-mezni"><div class="box-t">Definice: mezní frekvence</div>
+<p><b>Mezní frekvence</b> \(f_c\) (zlomová, −3dB frekvence) je frekvence, při které modul přenosu klesne na \(1/\sqrt{2} \approx 0{,}707\) své hodnoty v propustném pásmu, tj. o 3 dB. Pro RC článek 1. řádu (dolní i horní propust) platí \(f_c = \frac{1}{2\pi RC}\).</p>
+<p class="jinak">„hranice“ mezi propustným a nepropustným pásmem. Je to frekvence, kdy má kondenzátor stejnou reaktanci jako rezistor (\(X_C = R\)), výstupní výkon klesne na polovinu a amplituda na 70,7 %.</p></div>
+
+<div class="box postup"><div class="box-t">Odkud se vzorec bere</div>
+<ol>
+<li>Na mezní frekvenci má být \(|H| = 1/\sqrt2\). V přenosu \(\frac{1}{1 + j\omega RC}\) to nastane, když je reálná a imaginární část jmenovatele stejně velká:
+\[ \omega RC = 1 \]</li>
+<li>Totéž jinými slovy: \(\frac{1}{\omega C} = R\), tedy \(X_C = R\).</li>
+<li>Dosadím \(\omega = 2\pi f\) a vyjádřím frekvenci:
+\[ f_c = \frac{1}{2\pi RC} \]</li>
+<li>Kontrola: \(|H| = \frac{1}{|1 + j|} = \frac{1}{\sqrt{1^2 + 1^2}} = \frac{1}{\sqrt2}\).</li>
+</ol></div>
+
+<div class="box vzorec"><div class="box-t">Mezní frekvence RC článku</div>
+\[ f_c = \frac{1}{2 \pi R C} \]
+\[ \tau = R C \]
+<table class="vars">
+<tr><td>\(f_c\)</td><td>mezní frekvence [Hz] – stejný vzorec pro dolní i horní propust</td></tr>
+<tr><td>\(R, C\)</td><td>odpor [Ω] a kapacita [F] článku</td></tr>
+<tr><td>\(\tau\)</td><td>časová konstanta [s]; \(f_c = 1/(2\pi\tau)\)</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad 1: výpočet mezní frekvence</div>
+<p>\(R = 10\) kΩ, \(C = 100\) nF.</p>
+\[ f_c = \frac{1}{2\pi \cdot 10^4 \cdot 10^{-7}} \]
+\[ f_c = \frac{1}{2\pi \cdot 10^{-3}} \approx 159\ \text{Hz} \]
+<p>Jako dolní propust: jak projde signál 1 kHz?</p>
+\[ \frac{f}{f_c} = \frac{1000}{159} \approx 6{,}28 \]
+\[ |H| = \frac{1}{\sqrt{1 + 6{,}28^2}} \approx 0{,}157 \]
+\[ A_\text{dB} = 20 \log_{10} 0{,}157 \approx -16{,}1\ \text{dB} \]
+<p>Jako horní propust: jak projde brum 50 Hz?</p>
+\[ \frac{f}{f_c} = \frac{50}{159} \approx 0{,}314 \]
+\[ |H| = \frac{0{,}314}{\sqrt{1 + 0{,}314^2}} \approx 0{,}30 \]
+\[ A_\text{dB} \approx -10{,}5\ \text{dB} \]</div>
+
+<div class="box priklad"><div class="box-t">Příklad 2: návrh filtru pro EKG</div>
+<p>Chceme dolní propust s \(f_c = 150\) Hz (horní hranice diagnostického EKG). Kondenzátor zvolíme z běžné řady, \(C = 100\) nF, a dopočítáme odpor:</p>
+\[ R = \frac{1}{2\pi f_c C} \]
+\[ R = \frac{1}{2\pi \cdot 150 \cdot 10^{-7}} \approx 10{,}6\ \text{k}\Omega \]
+<p>Horní propust s \(f_c = 0{,}5\) Hz (odstranění driftu) a \(C = 1\) µF:</p>
+\[ R = \frac{1}{2\pi \cdot 0{,}5 \cdot 10^{-6}} \approx 318\ \text{k}\Omega \]
+<p>Postup návrhu: jednu součástku zvolím (obvykle C, vyrábí se v méně hodnotách) a druhou dopočítám ze vzorce pro \(f_c\).</p></div>
+
+<div class="box definice" id="def-rad"><div class="box-t">Definice: řád filtru</div>
+<p><b>Řád filtru</b> je řád přenosové funkce, u pasivních RC filtrů daný počtem kondenzátorů (nezávislých reaktančních prvků). Filtr \(n\)-tého řádu má v nepropustném pásmu sklon amplitudové charakteristiky \(20n\) dB na dekádu.</p>
+<p class="jinak">jeden RC článek = 1. řád = pokles o 20 dB na každý desetinásobek frekvence. Chci-li strmější „hranu“, řadím víc článků (2. řád = 40 dB/dek atd.).</p></div>
+
+<h2 id="kresleni">Jak nakreslit přenosovou charakteristiku</h2>
+<p>U zkoušky stačí <b>asymptotický náčrt</b> (Bodeho graf): dvě přímky, které se lámou v mezní frekvenci, a skutečná křivka, která se k nim přimyká.</p>
+<div class="box definice" id="def-bode"><div class="box-t">Definice: Bodeho graf</div>
+<p><b>Bodeho graf</b> je zobrazení frekvenční charakteristiky ve dvou grafech nad společnou logaritmickou osou frekvence: amplitudová charakteristika v decibelech (\(20\log_{10}|H|\)) a fázová charakteristika ve stupních.</p>
+<p class="jinak">díky logaritmům na obou osách se z křivek stanou téměř přímky, které jde nakreslit od ruky – stačí znát mezní frekvenci a sklon.</p></div>
+
+<div class="box postup"><div class="box-t">Postup kreslení (dolní propust 1. řádu)</div>
+<ol>
+<li><b>Spočítej \(f_c = 1/(2\pi RC)\).</b></li>
+<li><b>Nakresli osy:</b> vodorovně frekvence v logaritmickém měřítku (dekády 1, 10, 100, 1000 … stejně daleko od sebe), svisle přenos v dB. \(f_c\) zhruba doprostřed.</li>
+<li><b>Asymptota v propustném pásmu:</b> vodorovná přímka na 0 dB od levého okraje až do \(f_c\).</li>
+<li><b>Asymptota v nepropustném pásmu:</b> od bodu (\(f_c\); 0 dB) přímka dolů se sklonem −20 dB/dekádu: v \(10 f_c\) je −20 dB, ve \(100 f_c\) −40 dB.</li>
+<li><b>Skutečná křivka:</b> v \(f_c\) leží o 3 dB pod zlomem, o dekádu dál od zlomu už téměř splývá s asymptotami (v \(f_c/10\) i \(10 f_c\) je odchylka jen 0,04 dB).</li>
+<li><b>Fáze:</b> 0° hluboko pod \(f_c\), −45° přesně v \(f_c\), −90° hluboko nad \(f_c\); asymptoticky přímka od \(f_c/10\) (0°) do \(10 f_c\) (−90°).</li>
+</ol>
+<p><b>Horní propust:</b> zrcadlově – v nepropustném pásmu přímka stoupající +20 dB/dek až do \(f_c\), pak 0 dB; fáze z +90° přes +45° na 0°.</p></div>
+
+<figure><div class="paper"><img src="figures/fig02_postup.png" alt="Tři kroky kreslení přenosové charakteristiky: vyznačit mezní frekvenci, nakreslit asymptoty, zaoblit o 3 dB" loading="lazy"></div>
+<figcaption><b>Obr. 2.4</b> Kreslení amplitudové charakteristiky dolní propusti s \(f_c = 100\) Hz ve třech krocích.</figcaption></figure>
+
+<div class="tablewrap"><table>
+<tr><th>\(f / f_c\)</th><th class="num">\(|H|\) DP</th><th class="num">DP [dB]</th><th class="num">fáze DP</th><th>poznámka</th></tr>
+<tr><td>0,1</td><td class="num">0,995</td><td class="num">−0,04</td><td class="num">−5,7°</td><td>prakticky propouští</td></tr>
+<tr><td>0,5</td><td class="num">0,894</td><td class="num">−0,97</td><td class="num">−26,6°</td><td></td></tr>
+<tr><td>1</td><td class="num">0,707</td><td class="num">−3,01</td><td class="num">−45°</td><td>mezní frekvence</td></tr>
+<tr><td>2</td><td class="num">0,447</td><td class="num">−6,99</td><td class="num">−63,4°</td><td>oktáva nad \(f_c\): ≈ −6 dB</td></tr>
+<tr><td>10</td><td class="num">0,0995</td><td class="num">−20,0</td><td class="num">−84,3°</td><td>dekáda nad \(f_c\)</td></tr>
+<tr><td>100</td><td class="num">0,0100</td><td class="num">−40,0</td><td class="num">−89,4°</td><td></td></tr>
+</table></div>
+<p>Pro horní propust platí stejná čísla zrcadlově: při \(f/f_c = 10\) je −0,04 dB, při \(f/f_c = 0{,}1\) je −20 dB.</p>
+
+<figure><div class="paper"><img src="figures/fig02_bode_dp.png" alt="Bodeho graf dolní propusti: amplituda a fáze s asymptotami" loading="lazy"></div>
+<figcaption><b>Obr. 2.5</b> Bodeho graf dolní propusti s \(f_c = 100\) Hz: nahoře amplituda v dB, dole fáze. Čárkovaně asymptoty.</figcaption></figure>
+<figure><div class="paper"><img src="figures/fig02_bode_hp.png" alt="Bodeho graf horní propusti: amplituda a fáze s asymptotami" loading="lazy"></div>
+<figcaption><b>Obr. 2.6</b> Bodeho graf horní propusti s \(f_c = 100\) Hz.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázků odnést</div>
+<ul>
+<li>Celá charakteristika je určená jedním číslem – \(f_c\). Zbytek je vždy stejný tvar.</li>
+<li>V \(f_c\): −3 dB a fáze ±45°. Daleko od \(f_c\): skutečná křivka = asymptota.</li>
+<li>Sklon 1. řádu je 20 dB/dekádu (≈ 6 dB/oktávu). Dolní propust klesá doprava, horní propust stoupá zleva.</li>
+</ul></div>
+
+<div class="box pozor"><div class="box-t">Časté chyby při kreslení</div>
+<ul>
+<li>Lineární osa frekvence – pak z přímek nejsou přímky. Vždy <b>logaritmická</b> osa.</li>
+<li>Skutečná křivka procházející zlomem na 0 dB – v \(f_c\) je vždy o 3 dB níž.</li>
+<li>Záměna \(\omega\) a \(f\): \(\omega_c = 1/(RC)\) [rad/s], ale \(f_c = 1/(2\pi RC)\) [Hz]. Rozdíl je 6,28×.</li>
+<li>Jednotky: nF = \(10^{-9}\) F, µF = \(10^{-6}\) F, kΩ = \(10^3\) Ω, MΩ = \(10^6\) Ω.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„RC dolní propust je dělič napětí, kde dolní rezistor nahradí kondenzátor. Jeho reaktance \(1/(2\pi fC)\) klesá s frekvencí, takže pro nízké frekvence je na něm skoro celé napětí a pro vysoké ho zkratuje k zemi. Mezní frekvence je tam, kde \(X_C = R\): \(f_c = 1/(2\pi RC)\), přenos tam klesne na 0,707, tedy o 3 dB, a fáze je −45°. Nad ní přenos klesá 20 dB na dekádu. Horní propust má součástky prohozené a chová se zrcadlově.“</p></div>
+
+<h2 id="pp">Pásmová propust</h2>
+<div class="box definice" id="def-pp"><div class="box-t">Definice: pásmová propust</div>
+<p><b>Pásmová propust</b> (band-pass filter) je filtr, který propouští složky signálu s frekvencemi mezi dolní mezní frekvencí \(f_d\) a horní mezní frekvencí \(f_h\) a potlačuje frekvence pod \(f_d\) i nad \(f_h\). <b>Šířka pásma</b> je \(B = f_h - f_d\).</p>
+<p class="jinak">„okno“ ve frekvencích – propustí jen pásmo, ve kterém je užitečný signál (EKG asi 0,05–150 Hz), a ořízne drift i šum zároveň.</p></div>
+
+<div class="box intuice"><div class="box-t">Princip: horní propust a dolní propust za sebou</div>
+<p>Nejjednodušší pásmová propust je <b>kaskáda</b> (sériové řazení) horní propusti s mezní frekvencí \(f_d\) a dolní propusti s mezní frekvencí \(f_h\). Signál musí projít oběma filtry: horní propust ořízne vše pod \(f_d\), dolní propust vše nad \(f_h\). Přenosy se násobí (v dB sčítají):</p>
+\[ H_\text{PP} = H_\text{HP} \cdot H_\text{DP} \]
+<p>Aby vzniklo propustné pásmo, musí platit \(f_d &lt; f_h\) – a pro „plochý vršek“ ideálně aspoň o dekádu.</p></div>
+
+<figure><div class="paper"><img src="figures/fig02_pp_schema.png" alt="Schéma pásmové propusti: horní propust C1, R1 následovaná dolní propustí R2, C2" loading="lazy"></div>
+<figcaption><b>Obr. 2.7</b> Pasivní pásmová propust: horní propust \(C_1 R_1\) (určuje \(f_d\)) a za ní dolní propust \(R_2 C_2\) (určuje \(f_h\)).</figcaption></figure>
+
+<div class="box vzorec"><div class="box-t">Mezní frekvence pásmové propusti</div>
+\[ f_d = \frac{1}{2\pi R_1 C_1} \]
+\[ f_h = \frac{1}{2\pi R_2 C_2} \]
+\[ B = f_h - f_d \]
+\[ f_0 = \sqrt{f_d \, f_h} \]
+<table class="vars">
+<tr><td>\(f_d\)</td><td>dolní mezní frekvence – daná horní propustí \(R_1 C_1\)</td></tr>
+<tr><td>\(f_h\)</td><td>horní mezní frekvence – daná dolní propustí \(R_2 C_2\)</td></tr>
+<tr><td>\(B\)</td><td>šířka pásma [Hz]</td></tr>
+<tr><td>\(f_0\)</td><td>střední frekvence – geometrický průměr (na logaritmické ose leží uprostřed)</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad: pásmová propust pro EKG 0,5–150 Hz</div>
+<p>Použijeme články z příkladu 2: horní propust \(C_1 = 1\) µF, \(R_1 = 318\) kΩ (\(f_d = 0{,}5\) Hz) a dolní propust \(R_2 = 10{,}6\) kΩ, \(C_2 = 100\) nF (\(f_h = 150\) Hz).</p>
+\[ B = 150 - 0{,}5 = 149{,}5\ \text{Hz} \]
+\[ f_0 = \sqrt{0{,}5 \cdot 150} \approx 8{,}7\ \text{Hz} \]</div>
+
+<figure><div class="paper"><img src="figures/fig02_bode_pp.png" alt="Amplitudová charakteristika pásmové propusti 0,5 až 150 Hz s oddělovacím sledovačem a bez něj" loading="lazy"></div>
+<figcaption><b>Obr. 2.8</b> Pásmová propust 0,5–150 Hz. Modře ideální kaskáda (články oddělené sledovačem), oranžově oba články spojené přímo.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Charakteristika je „horní propust vlevo + dolní propust vpravo“: vlevo stoupá +20 dB/dek, mezi \(f_d\) a \(f_h\) je rovná, vpravo klesá −20 dB/dek. Když články spojíme přímo, druhý článek <b>zatěžuje</b> první (jako zátěž děliče v kap. 1) a v propustném pásmu ztratíme část signálu (tady asi 0,9 dB; při podobných impedancích obou článků mnohem víc) a posunou se i mezní frekvence.</p></div>
+
+<div class="box pozor"><div class="box-t">Na co myslet u kaskády</div>
+<ul>
+<li><b>Zatěžování:</b> vzorce pro \(f_d\) a \(f_h\) platí přesně, jen když se články neovlivňují. Řešení: mezi články <b>napěťový sledovač</b> (kap. 4), nebo volit impedance druhého článku mnohem větší než prvního.</li>
+<li><b>Blízké mezní frekvence:</b> pokud \(f_d\) a \(f_h\) nejsou daleko od sebe, propustné pásmo nedosáhne 0 dB (každý filtr už v pásmu trochu tlumí).</li>
+<li>Pořadí HP → DP nebo DP → HP na výsledný přenos nemá vliv (přenosy se násobí), pokud jsou články oddělené.</li>
+</ul></div>
+
+<h2 id="pz">Pásmová zádrž</h2>
+<div class="box definice" id="def-pz"><div class="box-t">Definice: pásmová zádrž</div>
+<p><b>Pásmová zádrž</b> (band-stop filter) je filtr, který potlačuje složky signálu v pásmu frekvencí kolem střední frekvence \(f_0\) a frekvence pod tímto pásmem i nad ním propouští. Úzká pásmová zádrž potlačující jedinou frekvenci se nazývá <b>notch filtr</b> (odlaďovač).</p>
+<p class="jinak">opak pásmové propusti – „vyřízne“ jedno pásmo a vše ostatní nechá. Typické použití: odstranění síťového brumu 50 Hz z EKG nebo EEG.</p></div>
+
+<div class="box intuice"><div class="box-t">Princip: dvě cesty, které se v \(f_0\) vyruší</div>
+<p><b>Myšlenka 1 – paralelní spojení:</b> dolní propust (s nízkou mezní frekvencí \(f_1\)) a horní propust (s vysokou mezní frekvencí \(f_2 &gt; f_1\)) dám <b>vedle sebe</b> a jejich výstupy <b>sečtu</b>. Nízké frekvence projdou dolní propustí, vysoké horní propustí, pásmo mezi \(f_1\) a \(f_2\) neprojde ani jednou (obr. 2.1 vpravo dole). Pozor na rozdíl od pásmové propusti: tam jsou filtry <b>za sebou</b>, tady <b>vedle sebe</b>.</p>
+<p><b>Myšlenka 2 – dvojitý T-článek:</b> signál jde ze vstupu na výstup dvěma cestami. Horní cesta R–R s kondenzátorem 2C k zemi je dolní propust (fázi zpožďuje), dolní cesta C–C s rezistorem R/2 k zemi je horní propust (fázi předbíhá). Na frekvenci \(f_0\) jsou oba příspěvky <b>stejně velké a v protifázi</b>, takže se na výstupu přesně odečtou → přenos je teoreticky nulový.</p></div>
+
+<figure><div class="paper"><img src="figures/fig02_pz_schema.png" alt="Schéma dvojitého T-článku: horní cesta R, R s 2C k zemi, dolní cesta C, C s R/2 k zemi" loading="lazy"></div>
+<figcaption><b>Obr. 2.9</b> Pásmová zádrž – dvojitý T-článek (twin-T). Horní T: dva rezistory \(R\) a kondenzátor \(2C\) k zemi; dolní T: dva kondenzátory \(C\) a rezistor \(R/2\) k zemi.</figcaption></figure>
+
+<div class="box vzorec"><div class="box-t">Střední frekvence dvojitého T-článku</div>
+\[ f_0 = \frac{1}{2 \pi R C} \]
+<table class="vars">
+<tr><td>\(f_0\)</td><td>potlačovaná (střední) frekvence [Hz]</td></tr>
+<tr><td>\(R, C\)</td><td>hodnoty v podélných větvích; příčné prvky mají hodnoty \(R/2\) a \(2C\)</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad: zádrž na 50 Hz</div>
+<p>Zvolíme \(C = 100\) nF a dopočítáme \(R\):</p>
+\[ R = \frac{1}{2\pi f_0 C} \]
+\[ R = \frac{1}{2\pi \cdot 50 \cdot 10^{-7}} \approx 31{,}8\ \text{k}\Omega \]
+<p>Příčné prvky: \(R/2 \approx 15{,}9\) kΩ a \(2C = 200\) nF.</p></div>
+
+<figure><div class="paper"><img src="figures/fig02_bode_pz.png" alt="Amplitudová charakteristika pásmové zádrže s hlubokým poklesem na 50 Hz" loading="lazy"></div>
+<figcaption><b>Obr. 2.10</b> Amplitudová charakteristika pasivního dvojitého T-článku naladěného na 50 Hz.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Na 50 Hz je potlačení teoreticky nekonečné. Pasivní dvojitý T-článek má ale <b>široký</b> „zářez“: pokles o 3 dB je už na 11,8 Hz a 212 Hz, takže by tlumil i užitečné složky EKG. V praxi se proto doplňuje operačním zesilovačem (aktivní zádrž), který zářez zúží.</p></div>
+
+<div class="box pozor"><div class="box-t">Brum 50 Hz: zádrž není první obrana</div>
+<p>Síťové rušení je na obou elektrodách skoro stejné (<b>souhlasné</b>). Hlavní obranou je proto rozdílový / přístrojový zesilovač s velkým <b>CMRR</b>, který souhlasné rušení potlačí už při zesílení – výpočet CMRR je v <a href="03_oz.html#cmrr">kap. 3</a>. Zádrž 50 Hz odstraňuje až zbytek, a protože potlačí i složky EKG kolem 50 Hz, používá se s rozmyslem.</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>RC článek je dělič s kondenzátorem: výstup na C = dolní propust, výstup na R = horní propust, \(f_c = 1/(2\pi RC)\), −3 dB, 20 dB/dek. HP + DP za sebou = pásmová propust, vedle sebe (nebo dvojitý T) = pásmová zádrž.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Filtr propouští určité pásmo frekvencí a jiné potlačuje; popisuje ho <b>přenos</b> \(H = U_\text{výst}/U_\text{vst}\) v závislosti na frekvenci, kreslený jako <b>Bodeho graf</b> (dB a fáze nad logaritmickou osou). Kondenzátor má reaktanci \(X_C = 1/(2\pi fC)\), která s frekvencí klesá – pro nízké frekvence je rozpojený, pro vysoké zkrat. <b>Dolní propust</b> je dělič s R nahoře a C dole (výstup na C), <b>horní propust</b> má součástky prohozené (výstup na R). Pro obě je <b>mezní frekvence</b> \(f_c = 1/(2\pi RC)\), kde \(X_C = R\), přenos je 0,707 (−3 dB) a fáze ±45°; za ní se přenos mění o 20 dB na dekádu. <b>Pásmová propust</b> vznikne zařazením horní a dolní propusti za sebe (\(f_d &lt; f_h\), \(B = f_h - f_d\)); články je třeba oddělit, aby se nezatěžovaly. <b>Pásmová zádrž</b> potlačí pásmo kolem \(f_0\) – paralelním spojením DP a HP nebo dvojitým T-článkem, kde se dvě cesty na \(f_0\) vyruší.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>RC filtr = dělič napětí s kondenzátorem; \(X_C = 1/(2\pi fC)\) klesá s frekvencí.</li>
+<li>Výstup na C → dolní propust; výstup na R → horní propust.</li>
+<li>\(f_c = 1/(2\pi RC)\): \(X_C = R\), \(|H| = 0{,}707\), −3 dB, fáze ∓45°.</li>
+<li>1. řád: sklon 20 dB/dekádu; \(n\)-tý řád \(20n\) dB/dek.</li>
+<li>Kreslení: log. osa, asymptoty 0 dB a ∓20 dB/dek zlomené v \(f_c\), skutečná křivka o 3 dB níž.</li>
+<li>Pásmová propust = HP + DP za sebou; pásmová zádrž = DP + HP vedle sebe / dvojitý T, \(f_0 = 1/(2\pi RC)\).</li>
+<li>Články v kaskádě se zatěžují – odděluje je sledovač.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Nakreslete dolní propust RC a vysvětlete, proč propouští nízké frekvence. Jakou roli má R a jakou C?</summary><div>
+<p>Rezistor v podélné větvi, kondenzátor proti zemi, výstup na kondenzátoru. Je to dělič napětí, kde je dolní prvek kondenzátor s reaktancí \(1/(2\pi fC)\). Pro nízké frekvence je reaktance velká, kondenzátor je skoro rozpojený, na R není úbytek a výstup ≈ vstup. Pro vysoké frekvence je reaktance malá a kondenzátor svádí signál do země, výstup ≈ 0. C je frekvenčně závislý prvek, R omezuje nabíjecí proud a tvoří s C dělič (časová konstanta \(RC\)).</p></div></details>
+<details class="q"><summary>Čím se liší horní propust od dolní? Proč stačí prohodit součástky?</summary><div>
+<p>V horní propusti je kondenzátor v podélné větvi a výstup se bere z rezistoru. Pro nízké frekvence (i DC) má kondenzátor velkou reaktanci, napětí zůstane na něm a výstup je ≈ 0; pro vysoké frekvence je kondenzátor zkrat a signál projde na R. Výstup bereme vždy z té součástky, na které má být napětí v propustném pásmu – proto prohození dá opačné chování. Mezní frekvence je stejná, \(1/(2\pi RC)\).</p></div></details>
+<details class="q"><summary>Definujte mezní frekvenci a odvoďte její vzorec pro RC článek.</summary><div>
+<p>Mezní frekvence je frekvence, při které přenos klesne na \(1/\sqrt2\) hodnoty v propustném pásmu (−3 dB). Přenos DP je \(1/(1 + j\omega RC)\); jeho modul je \(1/\sqrt2\), když \(\omega RC = 1\), tedy \(X_C = R\). Odtud \(f_c = 1/(2\pi RC)\).</p></div></details>
+<details class="q"><summary>Jak nakreslíte přenosovou charakteristiku RC dolní propusti?</summary><div>
+<p>Spočítám \(f_c\). Vodorovná osa frekvence logaritmicky, svislá přenos v dB. Do \(f_c\) vodorovná asymptota 0 dB, od \(f_c\) přímka klesající −20 dB/dekádu. Skutečná křivka je v \(f_c\) o 3 dB pod zlomem a dekádu od zlomu splývá s asymptotami. Fáze: 0° → −45° v \(f_c\) → −90°. Horní propust zrcadlově (+20 dB/dek, pak 0 dB; fáze +90° → 0°).</p></div></details>
+<details class="q"><summary>Spočítejte mezní frekvenci pro R = 10 kΩ a C = 100 nF. Kolik dB ztratí signál 1 kHz v dolní propusti?</summary><div>
+\[ f_c = \frac{1}{2\pi \cdot 10^4 \cdot 10^{-7}} \approx 159\ \text{Hz} \]
+\[ |H| = \frac{1}{\sqrt{1 + (1000/159)^2}} \approx 0{,}157 \]
+\[ 20\log_{10} 0{,}157 \approx -16{,}1\ \text{dB} \]</div></details>
+<details class="q"><summary>Jak vytvoříte pásmovou propust z RC článků a na co si dát pozor?</summary><div>
+<p>Horní propust s mezní frekvencí \(f_d\) a za ní dolní propust s \(f_h\), přičemž \(f_d &lt; f_h\) (ideálně o víc než dekádu). Přenosy se násobí. Šířka pásma \(B = f_h - f_d\), střed \(f_0 = \sqrt{f_d f_h}\). Pozor: druhý článek zatěžuje první, takže klesne přenos v pásmu a posunou se mezní frekvence – řeší se oddělovacím sledovačem nebo volbou mnohem větších impedancí druhého článku.</p></div></details>
+<details class="q"><summary>Vysvětlete princip pásmové zádrže a navrhněte dvojitý T-článek na 50 Hz.</summary><div>
+<p>Zádrž potlačí pásmo kolem \(f_0\). Princip: dolní a horní propust paralelně a sečtené (pásmo mezi jejich mezními frekvencemi neprojde ničím), nebo dvojitý T-článek, kde horní cesta (R–R, 2C) fázi zpožďuje a dolní (C–C, R/2) předbíhá; na \(f_0 = 1/(2\pi RC)\) jsou signály stejně velké a v protifázi a vyruší se. Pro 50 Hz a \(C = 100\) nF: \(R \approx 31{,}8\) kΩ, \(R/2 \approx 15{,}9\) kΩ, \(2C = 200\) nF.</p></div></details>
+<details class="q"><summary>Co je decibel a kolik dB odpovídá přenosu 0,707, 0,1 a 1000?</summary><div>
+<p>Logaritmická míra poměru, pro napětí \(20\log_{10}|H|\). 0,707 → −3 dB (mezní frekvence), 0,1 → −20 dB, 1000 → +60 dB.</p></div></details>

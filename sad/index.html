@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAD – příprava na test</title>
+<meta name="description" content="Jak skripta používat a jak spolu témata souvisí.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <a class="brand" href="index.html">SAD – příprava na test<small>obvody, filtry, operační zesilovače</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  
+  <a class="iconbtn" href="pdf/skripta_vse.pdf" download title="Celá skripta v jednom PDF">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html" class="active"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_obvody.html"><span class="n">1</span><span>Ohmův zákon, Kirchhoff, dělič napětí</span></a></li>
+    <li><a href="02_filtry.html"><span class="n">2</span><span>Analogové RC filtry</span></a></li>
+    <li><a href="03_oz.html"><span class="n">3</span><span>Operační zesilovače</span></a></li>
+    <li><a href="04_dalsi_zapojeni.html"><span class="n">4</span><span>Sledovač, integrátor, derivátor</span></a></li>
+    <li><a href="05_tahak.html"><span class="n">★</span><span>Tahák: vzorce a schémata</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+
+</nav>
+<main>
+<p class="printhead">SAD – příprava na test · SAD – příprava na test · https://balnerm.github.io/pripravy/sad/index.html</p>
+
+<h1>SAD – příprava na půlsemestrální test</h1>
+<p class="lead">Skripta k předmětu <b>Měření a zpracování biosignálů</b> pokrývají elektrotechnický základ: zákony obvodů a dělič napětí, analogové RC filtry a operační zesilovače. Důraz je na <b>pochopení principu</b> (proč zapojení funguje, co v něm dělá která součástka) a na <b>výpočty</b>, které se objevují v testu – každý vzorec má řešený příklad krok za krokem.</p>
+
+<h2 id="mapa">Jak spolu témata souvisí</h2>
+<div class="schema">
+<svg viewBox="0 0 760 200" role="img" aria-label="Mapa kurzu: Ohmův a Kirchhoffovy zákony vedou k děliči napětí, z děliče vychází RC filtr a zpětná vazba operačního zesilovače">
+  <defs><marker id="arm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="10" y="70" width="150" height="60" rx="8" class="node fl1"/>
+  <text x="85" y="96" text-anchor="middle">Ohm + Kirchhoff</text><text x="85" y="116" text-anchor="middle" class="t2">kap. 1</text>
+  <rect x="215" y="70" width="140" height="60" rx="8" class="node fl1"/>
+  <text x="285" y="96" text-anchor="middle">dělič napětí</text><text x="285" y="116" text-anchor="middle" class="t2">nezatížený / zatížený</text>
+  <rect x="420" y="10" width="160" height="60" rx="8" class="node fl2"/>
+  <text x="500" y="36" text-anchor="middle">RC filtry</text><text x="500" y="56" text-anchor="middle" class="t2">dělič s kondenzátorem</text>
+  <rect x="420" y="130" width="160" height="60" rx="8" class="node fl3"/>
+  <text x="500" y="156" text-anchor="middle">OZ se zpětnou vazbou</text><text x="500" y="176" text-anchor="middle" class="t2">ZV = dělič</text>
+  <rect x="630" y="70" width="120" height="60" rx="8" class="node"/>
+  <text x="690" y="96" text-anchor="middle">biozesilovač</text><text x="690" y="116" text-anchor="middle" class="t2">EKG, EEG</text>
+  <path d="M160 100 H210" class="ln" marker-end="url(#arm)"/>
+  <path d="M355 90 L415 45" class="ln" marker-end="url(#arm)"/>
+  <path d="M355 110 L415 155" class="ln" marker-end="url(#arm)"/>
+  <path d="M580 45 L625 88" class="ln" marker-end="url(#arm)"/>
+  <path d="M580 155 L625 112" class="ln" marker-end="url(#arm)"/>
+</svg></div>
+<p>Všechno stojí na <b>děliči napětí</b>: RC filtr je dělič, ve kterém jeden rezistor nahradí kondenzátor, a zpětná vazba neinvertujícího zesilovače je dělič z výstupu. Na konci stojí biozesilovač – přístrojový zesilovač s velkým CMRR a za ním filtry.</p>
+
+<h2 id="jak-pouzivat">Jak skripta používat</h2>
+<ul>
+<li>Každá kapitola má stejnou stavbu: <span class="pill">Definice</span> pojmu → princip (<span class="pill">Intuice</span>) → odvození (<span class="pill">Postup</span>) → vzorec s vysvětlenými proměnnými (<span class="pill">Vzorec</span>) → řešený <span class="pill">Příklad</span> → obrázek s <span class="pill">Co si z obrázku odnést</span>.</li>
+<li>Rámeček <b>Definice</b> má dvě části: větu, kterou lze napsat jako definici, a pod čarou <i>„Jinými slovy“</i>. Všechny definice jsou pohromadě ve <a href="99_slovnik.html">Slovníku pojmů</a>.</li>
+<li>Příklady jsou rozepsané po krocích pod sebou – zkus je nejdřív spočítat sám a pak porovnej. Všechna čísla jsou přepočítaná.</li>
+<li>Na konci každé kapitoly je <b>shrnutí</b>, <b>take-home messages</b> a <b>otázky</b> s rozbalovací odpovědí. Na poslední opakování slouží <a href="05_tahak.html">tahák</a>.</li>
+<li><b>PDF na tablet:</b> tlačítko <span class="pill">PDF</span> v horní liště stáhne aktuální stránku; na této úvodní stránce stáhne <a href="pdf/skripta_vse.pdf" download>celá skripta v jednom PDF</a>.</li>
+</ul>
+
+<h2 id="kapitoly">Kapitoly</h2>
+<div class="cards">
+<a class="card" href="01_obvody.html"><div class="n">Kapitola 1</div><div class="t">Ohmův zákon, Kirchhoff, dělič napětí</div><div class="d">Výpočet obvodu Kirchhoffovými zákony, odvození nezatíženého a zatíženého děliče.</div></a>
+<a class="card" href="02_filtry.html"><div class="n">Kapitola 2</div><div class="t">Analogové RC filtry</div><div class="d">Dolní a horní propust (princip), pásmová propust a zádrž, mezní frekvence, kreslení Bodeho grafu.</div></a>
+<a class="card" href="03_oz.html"><div class="n">Kapitola 3</div><div class="t">Operační zesilovače</div><div class="d">Invertující, neinvertující, rozdílový a přístrojový zesilovač, výpočet zesílení a CMRR.</div></a>
+<a class="card" href="04_dalsi_zapojeni.html"><div class="n">Kapitola 4</div><div class="t">Sledovač, integrátor, derivátor</div><div class="d">Princip a schéma zapojení.</div></a>
+<a class="card" href="05_tahak.html"><div class="n">★ Opakování</div><div class="t">Tahák</div><div class="d">Všechny vzorce a schémata na jedné stránce, typické chytáky.</div></a>
+<a class="card" href="99_slovnik.html"><div class="n">Opakování</div><div class="t">Slovník pojmů</div><div class="d">Všechny definice na jednom místě.</div></a>
+</div>
+<p class="muted">Skripta nevycházejí z přednášek předmětu (nebyly k dispozici), ale ze standardní elektrotechniky. Pokud přednášející používá jiné značení (např. \(K\) nebo \(P\) pro přenos, \(A_\text{cm}\) pro souhlasné zesílení), význam je stejný.</p>
+
+<nav class="pager"><a class="next" href="01_obvody.html"><small>další →</small>Ohmův zákon, Kirchhoff, dělič napětí</a></nav>
+</main>
+</div>
+</body>
+</html>

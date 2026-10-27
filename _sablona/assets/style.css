@@ -366,6 +366,7 @@ details.q > div > :last-child { margin-bottom: 0; }
 /* široké vzorce a tabulky nesmí roztáhnout stránku */
 .katex-display { overflow-x: auto; overflow-y: hidden; padding: 2px 0; max-width: 100%; }
 .katex-display > .katex { white-space: nowrap; }
+.katex { white-space: nowrap; }               /* vzorec v textu se neláme mezi řádky */
 table.vars { display: block; overflow-x: auto; }
 main { overflow-wrap: break-word; }
 .demo svg.sq { max-width: 470px; }

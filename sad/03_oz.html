@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Operační zesilovače – SAD</title>
+<meta name="description" content="Invertující, neinvertující, rozdílové a přístrojové zapojení; CMRR.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <a class="brand" href="index.html">SAD – příprava na test<small>obvody, filtry, operační zesilovače</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  
+  <a class="iconbtn" href="pdf/03_oz.pdf" download title="Stáhnout tuto stránku jako PDF">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_obvody.html"><span class="n">1</span><span>Ohmův zákon, Kirchhoff, dělič napětí</span></a></li>
+    <li><a href="02_filtry.html"><span class="n">2</span><span>Analogové RC filtry</span></a></li>
+    <li><a href="03_oz.html" class="active"><span class="n">3</span><span>Operační zesilovače</span></a></li>
+    <li><a href="04_dalsi_zapojeni.html"><span class="n">4</span><span>Sledovač, integrátor, derivátor</span></a></li>
+    <li><a href="05_tahak.html"><span class="n">★</span><span>Tahák: vzorce a schémata</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#oz">Co je operační zesilovač</a></li>
+    <li><a href="#zv">Záporná zpětná vazba a dvě zlatá pravidla</a></li>
+    <li><a href="#inv">Invertující zesilovač</a></li>
+    <li><a href="#neinv">Neinvertující zesilovač</a></li>
+    <li><a href="#dif">Rozdílový (diferenční) zesilovač</a></li>
+    <li><a href="#cmrr">Souhlasné napětí a CMRR</a></li>
+    <li><a href="#pristrojovy">Přístrojový zesilovač</a></li>
+    <li><a href="#srovnani">Srovnání zapojení</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky ke zkoušce</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">SAD – příprava na test · Operační zesilovače – SAD · https://balnerm.github.io/pripravy/sad/03_oz.html</p>
+<p class="kicker">Kapitola 3</p>
+<h1>Operační zesilovače</h1>
+<p class="lead">Biosignály jsou slabé – EKG má jednotky mV, EEG desítky µV – a přicházejí ze zdroje s velkým vnitřním odporem a s rušením, které je mnohonásobně větší než signál. Operační zesilovač (OZ) je univerzální stavební kámen, ze kterého se pár rezistory postaví zesilovač s přesně daným zesílením, velkým vstupním odporem a schopností potlačit rušení. Celá kapitola stojí na dvou jednoduchých pravidlech.</p>
+
+<h2 id="oz">Co je operační zesilovač</h2>
+<div class="box definice" id="def-oz"><div class="box-t">Definice: operační zesilovač</div>
+<p><b>Operační zesilovač</b> je stejnosměrně vázaný rozdílový zesilovač s velmi velkým zesílením, se dvěma vstupy – <b>neinvertujícím</b> (+) a <b>invertujícím</b> (−) – a jedním výstupem. Výstupní napětí je úměrné rozdílu vstupních napětí: \(U_\text{výst} = A_0\,(U_+ - U_-)\).</p>
+<p class="jinak">„porovnává“ napětí na dvou vstupech a jejich rozdíl obrovsky zesílí. Sám o sobě je nepoužitelný (zesílení je příliš velké a nepřesné); teprve s rezistory ve <b>zpětné vazbě</b> z něj vznikne zesilovač s přesným zesílením.</p></div>
+
+<figure><div class="paper"><img src="figures/fig03_oz_symbol.png" alt="Schematická značka operačního zesilovače s invertujícím a neinvertujícím vstupem" loading="lazy"></div>
+<figcaption><b>Obr. 3.1</b> Schematická značka OZ. Napájení (typicky ±15 V) se do schémat často nekreslí, ale výstup ho nikdy nemůže překročit.</figcaption></figure>
+
+<div class="box vzorec"><div class="box-t">OZ bez zpětné vazby</div>
+\[ U_\text{výst} = A_0 \, (U_+ - U_-) = A_0 \, U_d \]
+<table class="vars">
+<tr><td>\(U_+\), \(U_-\)</td><td>napětí na neinvertujícím a invertujícím vstupu (proti zemi)</td></tr>
+<tr><td>\(U_d\)</td><td>rozdílové (diferenční) vstupní napětí</td></tr>
+<tr><td>\(A_0\)</td><td>zesílení naprázdno (bez zpětné vazby), typicky \(10^5\) až \(10^6\), tj. 100–120 dB</td></tr>
+</table></div>
+
+<div class="tablewrap"><table>
+<tr><th>vlastnost</th><th>ideální OZ</th><th>reálný OZ (typicky)</th><th>co to znamená</th></tr>
+<tr><td>zesílení \(A_0\)</td><td>∞</td><td>\(10^5\)–\(10^6\)</td><td>stačí nepatrný rozdíl vstupů</td></tr>
+<tr><td>vstupní odpor</td><td>∞</td><td>MΩ až TΩ</td><td>do vstupů neteče proud</td></tr>
+<tr><td>výstupní odpor</td><td>0</td><td>desítky Ω</td><td>výstup „udrží“ napětí i při zátěži</td></tr>
+<tr><td>šířka pásma</td><td>∞</td><td>MHz (součin zesílení × šířka pásma)</td><td>pro biosignály obvykle stačí</td></tr>
+<tr><td>CMRR</td><td>∞</td><td>80–120 dB</td><td>souhlasné napětí se nezesiluje</td></tr>
+<tr><td>výstupní napětí</td><td>libovolné</td><td>omezené napájením (např. ±13 V)</td><td>saturace</td></tr>
+</table></div>
+
+<figure><div class="paper"><img src="figures/fig03_oz_char.png" alt="Převodní charakteristika OZ bez zpětné vazby: úzká lineární oblast a saturace" loading="lazy"></div>
+<figcaption><b>Obr. 3.2</b> Převodní charakteristika OZ bez zpětné vazby: výstupní napětí v závislosti na rozdílu vstupů.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Bez zpětné vazby stačí rozdíl vstupů ±130 µV a výstup je v <b>saturaci</b> (narazí na napájení). OZ by tak fungoval jen jako komparátor („který vstup je větší?“). Abychom mohli lineárně zesilovat, musíme zesílení „zkrotit“ zápornou zpětnou vazbou.</p></div>
+
+<h2 id="zv">Záporná zpětná vazba a dvě zlatá pravidla</h2>
+<div class="box definice" id="def-zpetna-vazba"><div class="box-t">Definice: záporná zpětná vazba</div>
+<p><b>Záporná zpětná vazba</b> je přivedení části výstupního signálu zpět na vstup tak, aby působila proti změně, která ji vyvolala. U OZ se realizuje propojením výstupu s <b>invertujícím</b> vstupem (přímo nebo přes rezistory). Výsledné zesílení pak určují jen prvky ve zpětné vazbě, ne \(A_0\).</p>
+<p class="jinak">zesilovač „sám sebe hlídá“: když výstup vzroste víc, než má, zvedne se i napětí na invertujícím vstupu, rozdíl \(U_+ - U_-\) se zmenší a výstup klesne zpět. Ustálí se tam, kde jsou oba vstupy (téměř) stejné.</p></div>
+
+<div class="box definice" id="def-virtualni-zkrat"><div class="box-t">Definice: virtuální zkrat (virtuální nula)</div>
+<p><b>Virtuální zkrat</b> je stav OZ se zápornou zpětnou vazbou v lineárním režimu, kdy je napětí mezi jeho vstupy prakticky nulové: \(U_+ \approx U_-\), protože \(U_d = U_\text{výst}/A_0\) a \(A_0\) je obrovské. Je-li neinvertující vstup uzemněn, je invertující vstup na potenciálu země – mluvíme o <b>virtuální nule</b> (zemi).</p>
+<p class="jinak">vstupy jsou na stejném napětí, jako by byly zkratované – ale proud mezi nimi neteče (proto „virtuální“). Pro výstup 10 V a \(A_0 = 10^5\) je rozdíl vstupů jen 0,1 mV.</p></div>
+
+<div class="box postup"><div class="box-t">Univerzální postup pro libovolné zapojení s OZ</div>
+<ol>
+<li><b>Pravidlo 1 (virtuální zkrat):</b> \(U_- = U_+\). Napětí na neinvertujícím vstupu bývá známé (země nebo vstupní signál).</li>
+<li><b>Pravidlo 2 (nulové vstupní proudy):</b> do vstupů OZ neteče žádný proud. Proud, který přiteče k invertujícímu vstupu, musí celý odtéct zpětnou vazbou.</li>
+<li><b>1. Kirchhoffův zákon</b> v uzlu invertujícího vstupu + Ohmův zákon pro každý rezistor.</li>
+<li><b>Vyjádři</b> \(U_\text{výst}\) a zesílení \(A = U_\text{výst}/U_\text{vst}\).</li>
+</ol>
+<p>Tímto postupem se odvodí všechna zapojení níže – stačí si pamatovat postup, ne vzorce.</p></div>
+
+<h2 id="inv">Invertující zesilovač</h2>
+<div class="box definice" id="def-invertujici"><div class="box-t">Definice: invertující zesilovač</div>
+<p><b>Invertující zesilovač</b> je zapojení OZ, ve kterém je vstupní signál přiveden přes rezistor \(R_1\) na invertující vstup, neinvertující vstup je uzemněn a rezistor \(R_2\) tvoří zpětnou vazbu z výstupu na invertující vstup. Zesílení je \(A = -R_2/R_1\).</p>
+<p class="jinak">zesílí signál v poměru rezistorů a otočí jeho znaménko (fázový posun 180°). Zesílení může být i menší než 1 (zeslabení).</p></div>
+
+<figure><div class="paper"><img src="figures/fig03_inv.png" alt="Schéma invertujícího zesilovače s rezistory R1 a R2" loading="lazy"></div>
+<figcaption><b>Obr. 3.3</b> Invertující zesilovač. Invertující vstup je díky zpětné vazbě na virtuální nule (0 V).</figcaption></figure>
+
+<div class="box postup"><div class="box-t">Odvození zesílení</div>
+<ol>
+<li>\(U_+ = 0\) (uzemněn) → podle virtuálního zkratu \(U_- = 0\).</li>
+<li>Proud rezistorem \(R_1\) (Ohmův zákon, na jeho konci je 0 V):
+\[ I = \frac{U_\text{vst} - 0}{R_1} = \frac{U_\text{vst}}{R_1} \]</li>
+<li>Do vstupu OZ proud neteče → celý proud \(I\) teče přes \(R_2\) k výstupu:
+\[ I = \frac{0 - U_\text{výst}}{R_2} \]</li>
+<li>Porovnám oba výrazy:
+\[ \frac{U_\text{vst}}{R_1} = -\frac{U_\text{výst}}{R_2} \]
+\[ U_\text{výst} = -\frac{R_2}{R_1}\,U_\text{vst} \]</li>
+</ol></div>
+
+<div class="box vzorec"><div class="box-t">Invertující zesilovač</div>
+\[ A = \frac{U_\text{výst}}{U_\text{vst}} = -\frac{R_2}{R_1} \]
+\[ R_\text{vst} = R_1 \]
+<table class="vars">
+<tr><td>\(R_1\)</td><td>vstupní rezistor – zároveň určuje vstupní odpor zapojení</td></tr>
+<tr><td>\(R_2\)</td><td>rezistor ve zpětné vazbě</td></tr>
+<tr><td>znaménko −</td><td>výstup je otočený (inverze, fáze 180°)</td></tr>
+<tr><td>\(R_\text{vst}\)</td><td>vstupní odpor – zdroj „vidí“ jen \(R_1\) proti virtuální nule</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad</div>
+<p>\(R_1 = 10\) kΩ, \(R_2 = 100\) kΩ, vstup 0,2 V.</p>
+\[ A = -\frac{100}{10} = -10 \]
+\[ U_\text{výst} = -10 \cdot 0{,}2 = -2\ \text{V} \]
+<p>V decibelech \(|A| = 10\) → 20 dB.</p></div>
+
+<div class="box pozor"><div class="box-t">Slabina invertujícího zapojení</div>
+<p>Vstupní odpor je jen \(R_1\) (kΩ až desítky kΩ). Pro zdroj s velkým vnitřním odporem (elektrody) je to zatěžující – vzpomeň si na zatížený dělič. Velké \(R_1\) zase vyžaduje ještě větší \(R_2\) pro stejné zesílení, což zvyšuje šum.</p></div>
+
+<h2 id="neinv">Neinvertující zesilovač</h2>
+<div class="box definice" id="def-neinvertujici"><div class="box-t">Definice: neinvertující zesilovač</div>
+<p><b>Neinvertující zesilovač</b> je zapojení OZ, ve kterém je vstupní signál přiveden přímo na neinvertující vstup a na invertující vstup se přivádí část výstupního napětí z děliče \(R_2\) (z výstupu) a \(R_1\) (k zemi). Zesílení je \(A = 1 + R_2/R_1\).</p>
+<p class="jinak">zesílí signál bez otočení znaménka, zesílení je vždy aspoň 1 a – hlavně – do vstupu neteče proud, takže zdroj signálu vůbec nezatěžuje.</p></div>
+
+<figure><div class="paper"><img src="figures/fig03_neinv.png" alt="Schéma neinvertujícího zesilovače: vstup na plus, dělič R2, R1 ve zpětné vazbě" loading="lazy"></div>
+<figcaption><b>Obr. 3.4</b> Neinvertující zesilovač. Zpětnou vazbu tvoří dělič napětí \(R_2\), \(R_1\).</figcaption></figure>
+
+<div class="box postup"><div class="box-t">Odvození zesílení (dělič z kap. 1)</div>
+<ol>
+<li>Do invertujícího vstupu neteče proud → \(R_2\) a \(R_1\) tvoří <b>nezatížený dělič</b> z výstupu k zemi:
+\[ U_- = U_\text{výst} \cdot \frac{R_1}{R_1 + R_2} \]</li>
+<li>Virtuální zkrat: \(U_- = U_+ = U_\text{vst}\).</li>
+<li>Dosadím a vyjádřím výstup:
+\[ U_\text{výst} = U_\text{vst} \cdot \frac{R_1 + R_2}{R_1} \]
+\[ U_\text{výst} = U_\text{vst} \left(1 + \frac{R_2}{R_1}\right) \]</li>
+</ol>
+<p>Intuice: OZ nastaví výstup tak velký, aby jeho „zmenšená kopie“ z děliče byla přesně rovna vstupu.</p></div>
+
+<div class="box vzorec"><div class="box-t">Neinvertující zesilovač</div>
+\[ A = 1 + \frac{R_2}{R_1} \]
+\[ R_\text{vst} \to \infty \]
+<table class="vars">
+<tr><td>\(R_1\)</td><td>rezistor děliče mezi invertujícím vstupem a zemí</td></tr>
+<tr><td>\(R_2\)</td><td>rezistor zpětné vazby mezi výstupem a invertujícím vstupem</td></tr>
+<tr><td>\(A\)</td><td>vždy ≥ 1, kladné (výstup ve fázi se vstupem)</td></tr>
+<tr><td>\(R_\text{vst}\)</td><td>vstupní odpor – vstupní odpor samotného OZ (MΩ až TΩ)</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad</div>
+<p>\(R_1 = 10\) kΩ, \(R_2 = 90\) kΩ, vstup 0,3 V.</p>
+\[ A = 1 + \frac{90}{10} = 10 \]
+\[ U_\text{výst} = 10 \cdot 0{,}3 = 3\ \text{V} \]</div>
+
+<h2 id="dif">Rozdílový (diferenční) zesilovač</h2>
+<div class="box definice" id="def-rozdilovy"><div class="box-t">Definice: rozdílový zesilovač</div>
+<p><b>Rozdílový (diferenční) zesilovač</b> je zapojení jednoho OZ se čtyřmi rezistory, které zesiluje rozdíl dvou vstupních napětí: signál \(U_1\) jde přes \(R_1\) na invertující vstup (zpětná vazba \(R_2\)), signál \(U_2\) přes dělič \(R_3\), \(R_4\) na neinvertující vstup. Při \(R_3 = R_1\) a \(R_4 = R_2\) platí \(U_\text{výst} = \frac{R_2}{R_1}(U_2 - U_1)\).</p>
+<p class="jinak">kombinace invertujícího a neinvertujícího zesilovače: co je na obou vstupech stejné, se odečte, zesílí se jen rozdíl. Přesně to potřebujeme u EKG – signál srdce je rozdíl napětí mezi elektrodami, rušení je na obou stejné.</p></div>
+
+<figure><div class="paper"><img src="figures/fig03_dif.png" alt="Schéma rozdílového zesilovače se čtyřmi rezistory" loading="lazy"></div>
+<figcaption><b>Obr. 3.5</b> Rozdílový zesilovač. Pro správnou funkci musí platit \(R_4/R_3 = R_2/R_1\).</figcaption></figure>
+
+<div class="box postup"><div class="box-t">Odvození</div>
+<ol>
+<li>Neinvertující vstup je na výstupu nezatíženého děliče \(R_3\), \(R_4\):
+\[ U_+ = U_2 \cdot \frac{R_4}{R_3 + R_4} \]</li>
+<li>Virtuální zkrat \(U_- = U_+\). Proud z \(U_1\) přes \(R_1\) teče celý přes \(R_2\):
+\[ \frac{U_1 - U_+}{R_1} = \frac{U_+ - U_\text{výst}}{R_2} \]</li>
+<li>Vyjádřím výstup (je to součet „neinvertujícího“ a „invertujícího“ příspěvku):
+\[ U_\text{výst} = U_+\!\left(1 + \frac{R_2}{R_1}\right) - \frac{R_2}{R_1}\,U_1 \]</li>
+<li>Pro \(R_3 = R_1\), \(R_4 = R_2\) je \(U_+ = U_2 \frac{R_2}{R_1 + R_2}\) a první člen se zjednoduší na \(\frac{R_2}{R_1} U_2\):
+\[ U_\text{výst} = \frac{R_2}{R_1}\,(U_2 - U_1) \]</li>
+</ol></div>
+
+<div class="box vzorec"><div class="box-t">Rozdílový zesilovač</div>
+\[ U_\text{výst} = \frac{R_2}{R_1}\,(U_2 - U_1) \]
+\[ \text{podmínka: } \frac{R_4}{R_3} = \frac{R_2}{R_1} \]
+<table class="vars">
+<tr><td>\(U_2 - U_1\)</td><td>rozdílové napětí – to se zesiluje</td></tr>
+<tr><td>\(R_2/R_1\)</td><td>rozdílové zesílení \(A_d\)</td></tr>
+<tr><td>\(R_3, R_4\)</td><td>dělič pro neinvertující vstup; jeho poměr musí přesně odpovídat \(R_1, R_2\)</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad</div>
+<p>\(R_1 = R_3 = 10\) kΩ, \(R_2 = R_4 = 100\) kΩ; \(U_1 = 1{,}000\) V, \(U_2 = 1{,}005\) V.</p>
+\[ U_\text{výst} = \frac{100}{10}\,(1{,}005 - 1{,}000) \]
+\[ U_\text{výst} = 10 \cdot 0{,}005 = 0{,}05\ \text{V} \]
+<p>Společný 1 V na obou vstupech zmizel, zesílil se jen rozdíl 5 mV.</p></div>
+
+<div class="box pozor"><div class="box-t">Slabiny jednoduchého rozdílového zesilovače</div>
+<ul>
+<li><b>Malý a nestejný vstupní odpor:</b> vstup \(U_1\) má asi \(R_1\), vstup \(U_2\) má \(R_3 + R_4\). Elektrody s velkým a různým odporem tvoří s nimi děliče → zesilovač by „viděl“ jiný signál, než na elektrodách je.</li>
+<li><b>Citlivost na přesnost rezistorů:</b> když \(R_4/R_3 \neq R_2/R_1\), zesiluje se i souhlasné napětí a CMRR prudce klesne (viz příklad níže).</li>
+<li>Změna zesílení vyžaduje měnit dva rezistory zároveň.</li>
+</ul>
+<p>Obojí řeší <b>přístrojový zesilovač</b>.</p></div>
+
+<h2 id="cmrr">Souhlasné napětí a CMRR</h2>
+<div class="box definice" id="def-rozdilove-souhlasne"><div class="box-t">Definice: rozdílové a souhlasné napětí</div>
+<p>Pro dvojici vstupních napětí \(U_1\), \(U_2\) je <b>rozdílové napětí</b> \(U_d = U_2 - U_1\) a <b>souhlasné napětí</b> \(U_s = \frac{U_1 + U_2}{2}\) (průměr obou vstupů, angl. common-mode, \(U_\text{cm}\)). Každou dvojici vstupů lze zapsat jako \(U_{1,2} = U_s \mp U_d/2\).</p>
+<p class="jinak">rozdílové napětí je to, co se mezi elektrodami liší (užitečný biosignál), souhlasné to, co mají obě elektrody společné (síťový brum 50 Hz, offset). Rušení se do těla indukuje skoro stejně všude, proto je souhlasné.</p></div>
+
+<div class="box definice" id="def-cmrr"><div class="box-t">Definice: CMRR – činitel potlačení souhlasného signálu</div>
+<p><b>CMRR</b> (common-mode rejection ratio, činitel potlačení souhlasného signálu) je poměr rozdílového zesílení \(A_d\) a souhlasného zesílení \(A_s\) zesilovače: \(\text{CMRR} = A_d / A_s\); obvykle se udává v decibelech: \(\text{CMRR}_\text{dB} = 20 \log_{10}(A_d/A_s)\).</p>
+<p class="jinak">kolikrát víc zesilovač zesílí užitečný rozdíl než společné rušení. Ideální rozdílový zesilovač má \(A_s = 0\) a CMRR nekonečné; reálný má 60–120 dB. Čím víc, tím čistší biosignál.</p></div>
+
+<div class="box vzorec"><div class="box-t">CMRR a výstup reálného rozdílového zesilovače</div>
+\[ U_\text{výst} = A_d \, U_d + A_s \, U_s \]
+\[ \text{CMRR} = \frac{A_d}{A_s} \]
+\[ \text{CMRR}_\text{dB} = 20 \log_{10} \frac{A_d}{A_s} \]
+<table class="vars">
+<tr><td>\(A_d\)</td><td>rozdílové zesílení – měří se jako \(U_\text{výst}/U_d\) při \(U_s = 0\) (vstupy v protifázi)</td></tr>
+<tr><td>\(A_s\)</td><td>souhlasné zesílení – měří se jako \(U_\text{výst}/U_s\) při stejném napětí na obou vstupech</td></tr>
+<tr><td>\(U_d\), \(U_s\)</td><td>rozdílové a souhlasné vstupní napětí</td></tr>
+<tr><td>CMRR</td><td>bezrozměrné číslo, nebo v dB (60 dB = 1000×, 100 dB = 100 000×)</td></tr>
+</table></div>
+
+<div class="box postup"><div class="box-t">Postup výpočtu CMRR</div>
+<ol>
+<li><b>Rozdílové zesílení:</b> přivedu rozdílové napětí \(U_d\) (souhlasné nulové), změřím/spočítám výstup → \(A_d = U_\text{výst}/U_d\).</li>
+<li><b>Souhlasné zesílení:</b> oba vstupy spojím a přivedu na ně stejné napětí \(U_s\) → \(A_s = U_\text{výst}/U_s\).</li>
+<li>\(\text{CMRR} = A_d/A_s\), převedu na dB: \(20 \log_{10}\).</li>
+<li>Obráceně: ze známého CMRR v dB spočítám \(A_s = A_d / 10^{\text{CMRR}_\text{dB}/20}\) a pak rušení na výstupu \(A_s U_s\).</li>
+</ol></div>
+
+<div class="box priklad"><div class="box-t">Příklad 1: CMRR ze zesílení</div>
+<p>Zesilovač má \(A_d = 1000\) a \(A_s = 0{,}01\).</p>
+\[ \text{CMRR} = \frac{1000}{0{,}01} = 10^5 \]
+\[ \text{CMRR}_\text{dB} = 20 \log_{10} 10^5 = 100\ \text{dB} \]</div>
+
+<div class="box priklad"><div class="box-t">Příklad 2: CMRR z měření</div>
+<p>Rozdílový vstup 2 mV dá na výstupu 0,5 V. Stejné napětí 2 V na obou vstupech dá na výstupu 5 mV.</p>
+\[ A_d = \frac{0{,}5}{2 \cdot 10^{-3}} = 250 \]
+\[ A_s = \frac{5 \cdot 10^{-3}}{2} = 0{,}0025 \]
+\[ \text{CMRR} = \frac{250}{0{,}0025} = 10^5 \]
+\[ \text{CMRR}_\text{dB} = 100\ \text{dB} \]</div>
+
+<div class="box priklad"><div class="box-t">Příklad 3: co udělá EKG s brumem</div>
+<p>Na elektrodách je EKG \(U_d = 1\) mV a souhlasný brum \(U_s = 0{,}5\) V (500× větší!). Zesilovač \(A_d = 1000\).</p>
+<p>CMRR = 60 dB → \(A_s = 1000/10^{3} = 1\):</p>
+\[ \text{signál: } 1000 \cdot 1\ \text{mV} = 1\ \text{V} \]
+\[ \text{brum: } 1 \cdot 0{,}5\ \text{V} = 0{,}5\ \text{V} \]
+<p>CMRR = 100 dB → \(A_s = 1000/10^{5} = 0{,}01\):</p>
+\[ \text{brum: } 0{,}01 \cdot 0{,}5\ \text{V} = 5\ \text{mV} \]
+<p>S 60 dB je brum na výstupu poloviční než EKG, se 100 dB je 200× menší.</p></div>
+
+<figure><div class="paper"><img src="figures/fig03_cmrr.png" alt="Vstupy zesilovače se silným brumem a výstupy pro CMRR 60 dB a 100 dB" loading="lazy"></div>
+<figcaption><b>Obr. 3.6</b> Simulace příkladu 3: nahoře vstupní napětí obou elektrod (EKG není vidět), uprostřed výstup se CMRR = 60 dB, dole se CMRR = 100 dB.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Na vstupech jsou oba průběhy skoro totožné – EKG je jen nepatrný rozdíl mezi nimi. Rozdílový zesilovač vytáhne právě tento rozdíl; jak čistý výstup bude, rozhoduje CMRR. Každých 20 dB navíc = 10× menší brum.</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad 4: nepřesný rezistor zkazí CMRR</div>
+<p>Rozdílový zesilovač \(R_1 = R_3 = 10\) kΩ, \(R_2 = 100\) kΩ, ale \(R_4 = 101\) kΩ (chyba 1 %). Z obecného vzorce z odvození (krok 3) pro \(U_1 = U_2 = U_s\):</p>
+\[ \frac{R_4}{R_3 + R_4} = \frac{101}{111} \approx 0{,}9099 \]
+\[ A_s = 0{,}9099 \cdot 11 - 10 \approx 0{,}0090 \]
+\[ A_d \approx 10{,}0 \]
+\[ \text{CMRR} \approx \frac{10{,}0}{0{,}0090} \approx 1110 \approx 61\ \text{dB} \]
+<p>Jediný rezistor s chybou 1 % srazí CMRR na asi 61 dB. Proto se rozdílové zesilovače vyrábějí jako integrované obvody s laserově dostavenými rezistory a proto přístrojový zesilovač.</p></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„CMRR je poměr rozdílového a souhlasného zesílení, \(A_d/A_s\), většinou v dB jako \(20\log\). Rozdílové zesílení zjistím tak, že přivedu rozdíl napětí mezi vstupy, souhlasné tak, že na oba vstupy dám stejné napětí. U biosignálů je důležité, protože síťové rušení je na všech elektrodách stejné – souhlasné – a mnohonásobně větší než signál. Zesilovač s CMRR 100 dB ho potlačí 100 000× víc než užitečný signál.“</p></div>
+
+<h2 id="pristrojovy">Přístrojový zesilovač</h2>
+<div class="box definice" id="def-pristrojovy"><div class="box-t">Definice: přístrojový zesilovač</div>
+<p><b>Přístrojový (instrumentační) zesilovač</b> je rozdílový zesilovač složený ze tří OZ: dva neinvertující zesilovače na vstupu (s rezistory \(R\) ve zpětných vazbách propojenými rezistorem \(R_G\)) a za nimi rozdílový zesilovač. Má velmi velký a stejný vstupní odpor obou vstupů, vysoké CMRR a zesílení nastavitelné jediným rezistorem \(R_G\).</p>
+<p class="jinak">„vylepšený“ rozdílový zesilovač: vstupní stupeň nezatěžuje elektrody a sám zesílí rozdíl, výstupní stupeň odečte zbytek souhlasného napětí. Je základem každého EKG, EEG a EMG zesilovače.</p></div>
+
+<figure><div class="paper"><img src="figures/fig03_pristrojovy.png" alt="Schéma přístrojového zesilovače se třemi operačními zesilovači a rezistorem RG" loading="lazy"></div>
+<figcaption><b>Obr. 3.7</b> Přístrojový zesilovač: 1. stupeň (vlevo) – dva neinvertující zesilovače se společným \(R_G\); 2. stupeň (vpravo) – rozdílový zesilovač.</figcaption></figure>
+
+<div class="box intuice"><div class="box-t">Jak funguje</div>
+<ol>
+<li><b>Vstupy jdou přímo na neinvertující vstupy</b> OZ 1 a 2 → vstupní odpor je obrovský a pro oba vstupy stejný. Elektrody nejsou zatěžovány.</li>
+<li><b>Rozdílový signál:</b> díky virtuálnímu zkratu jsou na koncích \(R_G\) napětí \(U_1\) a \(U_2\). Rezistorem \(R_G\) teče proud \((U_2 - U_1)/R_G\) a protože do vstupů OZ proud neteče, teče stejný proud i přes oba rezistory \(R\). Mezi výstupy 1. stupně je tedy napětí \((U_2 - U_1)\cdot(R + R_G + R)/R_G\) – rozdíl se zesílí \(\left(1 + 2R/R_G\right)\)×.</li>
+<li><b>Souhlasný signál:</b> je-li \(U_1 = U_2\), je na obou koncích \(R_G\) stejné napětí, proud neteče a oba výstupy 1. stupně jsou rovny vstupu – souhlasné zesílení je jen 1.</li>
+<li><b>2. stupeň</b> (rozdílový zesilovač) zesílí rozdíl výstupů \(R_2/R_1\)× a souhlasnou složku odečte.</li>
+</ol>
+<p>Celkový efekt: CMRR se zlepší přibližně o zesílení prvního stupně, protože rozdíl se tam zesílí, ale souhlasný signál ne.</p></div>
+
+<div class="box vzorec"><div class="box-t">Přístrojový zesilovač</div>
+\[ A_d = \left(1 + \frac{2R}{R_G}\right) \cdot \frac{R_2}{R_1} \]
+\[ U_\text{výst} = A_d \, (U_2 - U_1) \]
+<table class="vars">
+<tr><td>\(R\)</td><td>rezistory ve zpětné vazbě vstupních OZ (oba stejné)</td></tr>
+<tr><td>\(R_G\)</td><td>rezistor nastavující zesílení (gain) – jediná součástka, kterou se zesílení mění</td></tr>
+<tr><td>\(1 + 2R/R_G\)</td><td>zesílení 1. stupně (jen pro rozdílový signál; souhlasný má zesílení 1)</td></tr>
+<tr><td>\(R_2/R_1\)</td><td>zesílení 2. stupně (rozdílový zesilovač, často \(R_2 = R_1\), tj. 1)</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad 1: výpočet zesílení</div>
+<p>\(R = 10\) kΩ, \(R_G = 1\) kΩ, \(R_1 = 10\) kΩ, \(R_2 = 100\) kΩ.</p>
+\[ A_1 = 1 + \frac{2 \cdot 10}{1} = 21 \]
+\[ A_2 = \frac{100}{10} = 10 \]
+\[ A_d = 21 \cdot 10 = 210 \]</div>
+
+<div class="box priklad"><div class="box-t">Příklad 2: návrh \(R_G\) pro zesílení 1000</div>
+<p>Při \(R = 10\) kΩ a \(R_2/R_1 = 10\) potřebuje 1. stupeň zesílení 100:</p>
+\[ 1 + \frac{2R}{R_G} = 100 \]
+\[ R_G = \frac{2R}{99} = \frac{20\ \text{k}\Omega}{99} \approx 202\ \Omega \]</div>
+
+<h2 id="srovnani">Srovnání zapojení</h2>
+<div class="tablewrap"><table>
+<tr><th>zapojení</th><th>zesílení</th><th>vstupní odpor</th><th>k čemu</th></tr>
+<tr><td>invertující</td><td>\(-R_2/R_1\)<br>otočí fázi, může být &lt; 1</td><td>\(R_1\) (malý)</td><td>zesílení/zeslabení s inverzí, sčítání signálů</td></tr>
+<tr><td>neinvertující</td><td>\(1 + R_2/R_1\)<br>stejná fáze, vždy ≥ 1</td><td>velmi velký</td><td>zesílení signálu ze zdroje s velkým odporem</td></tr>
+<tr><td>rozdílový (1 OZ)</td><td>\(\frac{R_2}{R_1}\) × \((U_2 - U_1)\)</td><td>malý, nestejný</td><td>odečtení dvou signálů, potlačení souhlasného napětí</td></tr>
+<tr><td>přístrojový (3 OZ)</td><td>\(\left(1 + \frac{2R}{R_G}\right) \frac{R_2}{R_1}\)</td><td>velmi velký, stejný</td><td>biosignály (EKG, EEG, EMG), můstky, senzory</td></tr>
+</table></div>
+
+<div class="box pozor"><div class="box-t">Typické chytáky</div>
+<ul>
+<li>Neinvertující zesílení je \(1 + R_2/R_1\), ne \(R_2/R_1\). Se stejnými rezistory dá invertující −10, neinvertující 11.</li>
+<li>Virtuální zkrat platí jen se <b>zápornou</b> zpětnou vazbou a mimo saturaci.</li>
+<li>Výstup OZ nikdy nepřekročí napájení: zesílení 100 a vstup 0,5 V nedá 50 V, ale saturaci (~13 V).</li>
+<li>CMRR se počítá jako poměr <b>zesílení</b>, ne napětí; v dB vždy \(20\log\) (napěťový poměr).</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Operační zesilovač zesiluje rozdíl vstupů obrovským zesílením. Se zápornou zpětnou vazbou se ustálí tak, že jsou oba vstupy na stejném napětí, a do vstupů neteče proud – z toho odvodím každé zapojení. Invertující má zesílení \(-R_2/R_1\) a vstupní odpor \(R_1\), neinvertující \(1 + R_2/R_1\) a velmi velký vstupní odpor. Rozdílový zesiluje \(U_2 - U_1\) v poměru \(R_2/R_1\), ale má malý vstupní odpor a jeho CMRR závisí na přesnosti rezistorů. Přístrojový zesilovač předřadí dva neinvertující zesilovače – vstupní odpor je pak velký, zesílení se nastaví jedním rezistorem \(R_G\) a souhlasný signál se v prvním stupni nezesiluje, takže má vysoké CMRR. Proto se používá pro biosignály.“</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p><b>Operační zesilovač</b> zesiluje rozdíl napětí svých vstupů se zesílením \(10^5\)–\(10^6\); sám by byl hned v saturaci, proto se zapojuje se <b>zápornou zpětnou vazbou</b> (výstup → invertující vstup). Pak platí dvě pravidla: <b>virtuální zkrat</b> \(U_+ = U_-\) a <b>nulové vstupní proudy</b>; spolu s 1. KZ z nich odvodíme každé zapojení. <b>Invertující</b> zesilovač má \(A = -R_2/R_1\) a vstupní odpor \(R_1\); <b>neinvertující</b> \(A = 1 + R_2/R_1\) (zpětná vazba je dělič) a velmi velký vstupní odpor. <b>Rozdílový</b> zesilovač dává \(\frac{R_2}{R_1}(U_2 - U_1)\), když \(R_4/R_3 = R_2/R_1\); jeho kvalitu udává <b>CMRR</b> \(= A_d/A_s\), v dB \(20\log(A_d/A_s)\), které je citlivé na přesnost rezistorů. <b>Přístrojový</b> zesilovač (3 OZ) má velký a stejný vstupní odpor, zesílení \((1 + 2R/R_G)\cdot R_2/R_1\) a vysoké CMRR – je standardním vstupem biozesilovačů.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>OZ: \(U_\text{výst} = A_0(U_+ - U_-)\), \(A_0\) obrovské; bez zpětné vazby saturace.</li>
+<li>Záporná ZV → \(U_+ = U_-\) a do vstupů neteče proud. To je celý návod k odvození.</li>
+<li>Invertující: \(-R_2/R_1\), \(R_\text{vst} = R_1\). Neinvertující: \(1 + R_2/R_1\), \(R_\text{vst} \to \infty\).</li>
+<li>Rozdílový: \(\frac{R_2}{R_1}(U_2 - U_1)\) při \(R_4/R_3 = R_2/R_1\); malý vstupní odpor.</li>
+<li>CMRR = \(A_d/A_s\); v dB \(20\log_{10}\). 20 dB navíc = 10× méně rušení.</li>
+<li>1% chyba jednoho rezistoru → CMRR rozdílového zesilovače jen ≈ 60 dB.</li>
+<li>Přístrojový: \((1 + 2R/R_G)\cdot R_2/R_1\), zesílení jedním \(R_G\), vysoké CMRR, velký vstupní odpor → biosignály.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Jaké vlastnosti má ideální operační zesilovač a proč se používá se zápornou zpětnou vazbou?</summary><div>
+<p>Nekonečné zesílení naprázdno, nekonečný vstupní odpor (neteče do něj proud), nulový výstupní odpor, nekonečná šířka pásma a CMRR. Bez zpětné vazby by stačil rozdíl vstupů v řádu stovek µV a výstup by byl v saturaci. Záporná zpětná vazba (výstup na invertující vstup) srazí zesílení na hodnotu danou rezistory, která je přesná a nezávisí na \(A_0\).</p></div></details>
+<details class="q"><summary>Co je virtuální zkrat a jak se používá při odvozování?</summary><div>
+<p>U OZ se zápornou zpětnou vazbou je rozdíl vstupů \(U_\text{výst}/A_0 \approx 0\), takže \(U_+ = U_-\), ačkoliv mezi vstupy neteče proud. Při odvození: napětí invertujícího vstupu položím rovno neinvertujícímu, do vstupů nepouštím proud, napíšu 1. KZ pro uzel invertujícího vstupu a vyjádřím výstup.</p></div></details>
+<details class="q"><summary>Odvoďte zesílení invertujícího zesilovače.</summary><div>
+<p>\(U_+ = 0\), tedy \(U_- = 0\) (virtuální nula). Proud \(R_1\): \(U_\text{vst}/R_1\). Do vstupu neteče, takže teče přes \(R_2\): \(U_\text{vst}/R_1 = -U_\text{výst}/R_2\). Odtud \(A = -R_2/R_1\). Vstupní odpor je \(R_1\).</p></div></details>
+<details class="q"><summary>Odvoďte zesílení neinvertujícího zesilovače. V čem je lepší než invertující?</summary><div>
+<p>Zpětnou vazbu tvoří nezatížený dělič: \(U_- = U_\text{výst} R_1/(R_1+R_2)\). Virtuální zkrat \(U_- = U_\text{vst}\), takže \(U_\text{výst} = U_\text{vst}(1 + R_2/R_1)\). Výhoda: signál jde přímo na vstup OZ, vstupní odpor je velmi velký a zdroj se nezatěžuje; výstup je ve fázi. Nevýhoda: zesílení nemůže být menší než 1.</p></div></details>
+<details class="q"><summary>Jak funguje rozdílový zesilovač a jaké má nevýhody?</summary><div>
+<p>Jeden OZ, \(U_1\) přes \(R_1\) na invertující vstup (zpětná vazba \(R_2\)), \(U_2\) přes dělič \(R_3\), \(R_4\) na neinvertující. Při \(R_4/R_3 = R_2/R_1\) je \(U_\text{výst} = \frac{R_2}{R_1}(U_2 - U_1)\) – souhlasná složka se odečte. Nevýhody: malý a pro oba vstupy různý vstupní odpor (zatěžuje elektrody), CMRR silně závisí na shodě rezistorů, změna zesílení vyžaduje změnit dva rezistory.</p></div></details>
+<details class="q"><summary>Definujte CMRR. Jak ho změříte a vypočítáte? Proč je důležitý u biosignálů?</summary><div>
+<p>CMRR = \(A_d/A_s\), v dB \(20\log_{10}(A_d/A_s)\). \(A_d\): přivedu rozdílové napětí a dělím jím výstup; \(A_s\): oba vstupy spojím, přivedu stejné napětí a dělím jím výstup. Příklad: 2 mV rozdílově → 0,5 V (\(A_d = 250\)); 2 V souhlasně → 5 mV (\(A_s = 0{,}0025\)); CMRR = \(10^5\) = 100 dB. U biosignálů je síťové rušení na všech elektrodách stejné (souhlasné) a často stokrát až tisíckrát větší než signál; vysoké CMRR ho potlačí.</p></div></details>
+<details class="q"><summary>Popište přístrojový zesilovač, jeho zesílení a proč se používá pro EKG.</summary><div>
+<p>Tři OZ: dva neinvertující zesilovače na vstupu, jejichž invertující vstupy spojuje \(R_G\) (zpětné vazby \(R\)), a za nimi rozdílový zesilovač \(R_1\), \(R_2\). \(A_d = (1 + 2R/R_G)\cdot R_2/R_1\). Výhody: velmi velký a stejný vstupní odpor (nezatěžuje elektrody), zesílení nastavitelné jedním rezistorem, souhlasný signál má v 1. stupni zesílení 1, takže CMRR je vysoké. Proto je vstupním stupněm EKG/EEG zesilovačů.</p></div></details>
+<details class="q"><summary>Spočítejte: zesilovač má \(A_d = 1000\) a CMRR 80 dB, na vstupu je EKG 1 mV a souhlasný brum 1 V. Jaký je signál a brum na výstupu?</summary><div>
+\[ A_s = \frac{1000}{10^{80/20}} = \frac{1000}{10^4} = 0{,}1 \]
+\[ \text{signál} = 1000 \cdot 1\ \text{mV} = 1\ \text{V} \]
+\[ \text{brum} = 0{,}1 \cdot 1\ \text{V} = 0{,}1\ \text{V} \]
+<p>Na vstupu byl brum 1000× větší než signál, na výstupu je 10× menší.</p></div></details>
+
+<nav class="pager"><a class="prev" href="02_filtry.html"><small>← předchozí</small>Analogové RC filtry</a><a class="next" href="04_dalsi_zapojeni.html"><small>další →</small>Sledovač, integrátor, derivátor</a></nav>
+</main>
+</div>
+</body>
+</html>

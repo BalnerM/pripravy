@@ -1,0 +1,272 @@
+<h1>Ohmův zákon, Kirchhoffovy zákony a dělič napětí</h1>
+<p class="lead">Každý měřicí řetězec pro biosignály (elektrody → zesilovač → filtr → převodník) je složený z obvodů. Tři pravidla – Ohmův zákon a dva Kirchhoffovy zákony – stačí na výpočet libovolného obvodu z rezistorů a zdrojů. Nejdůležitější aplikací je <b>dělič napětí</b>: je základem filtrů (kap. 2) i zpětné vazby operačních zesilovačů (kap. 3).</p>
+
+<h2 id="pojmy">Napětí, proud a odpor</h2>
+<div class="box definice" id="def-proud"><div class="box-t">Definice: elektrický proud</div>
+<p><b>Elektrický proud</b> \(I\) je množství elektrického náboje, které projde průřezem vodiče za jednotku času: \(I = Q/t\). Jednotkou je ampér (A).</p>
+<p class="jinak">kolik náboje „proteče“ vodičem za sekundu. Proud teče <b>skrz</b> součástku – co do ní vteče, to z ní vyteče.</p></div>
+<div class="box definice" id="def-napeti"><div class="box-t">Definice: elektrické napětí</div>
+<p><b>Elektrické napětí</b> \(U\) mezi dvěma body je rozdíl elektrických potenciálů těchto bodů; odpovídá práci, kterou elektrické pole vykoná při přenesení jednotkového náboje z jednoho bodu do druhého. Jednotkou je volt (V).</p>
+<p class="jinak">„tlak“, který žene proud obvodem. Napětí se vždy měří <b>mezi</b> dvěma body (na součástce, proti zemi) – nikdy „v jednom bodě“.</p></div>
+<div class="box definice" id="def-odpor"><div class="box-t">Definice: elektrický odpor</div>
+<p><b>Elektrický odpor</b> \(R\) součástky je poměr napětí na součástce a proudu, který jí protéká: \(R = U/I\). Jednotkou je ohm (Ω). Součástka s (přibližně) stálým odporem se nazývá <b>rezistor</b>.</p>
+<p class="jinak">jak moc součástka „brání“ průtoku proudu. Větší odpor = při stejném napětí menší proud.</p></div>
+
+<h2 id="ohm">Ohmův zákon</h2>
+<div class="box definice" id="def-ohmuv-zakon"><div class="box-t">Definice: Ohmův zákon</div>
+<p><b>Ohmův zákon</b> říká, že proud procházející rezistorem je přímo úměrný napětí na rezistoru a nepřímo úměrný jeho odporu: \(I = U/R\), neboli \(U = R \cdot I\).</p>
+<p class="jinak">dvojnásobné napětí na stejném rezistoru = dvojnásobný proud; dvojnásobný odpor při stejném napětí = poloviční proud. Stačí znát dvě ze tří veličin a třetí dopočítám.</p></div>
+
+<div class="box vzorec"><div class="box-t">Ohmův zákon – tři tvary jednoho vzorce</div>
+\[ U = R \cdot I \]
+\[ I = \frac{U}{R} \]
+\[ R = \frac{U}{I} \]
+<table class="vars">
+<tr><td>\(U\)</td><td>napětí na rezistoru [V]</td></tr>
+<tr><td>\(I\)</td><td>proud protékající rezistorem [A]</td></tr>
+<tr><td>\(R\)</td><td>odpor rezistoru [Ω]</td></tr>
+</table></div>
+
+<figure><div class="paper"><img src="figures/fig01_ohm.png" alt="Zdroj napětí U připojený k rezistoru R, obvodem teče proud I" loading="lazy"></div>
+<figcaption><b>Obr. 1.1</b> Nejjednodušší obvod: zdroj napětí \(U\) a rezistor \(R\). Celé napětí zdroje je na rezistoru, proud je \(I = U/R\).</figcaption></figure>
+
+<div class="box intuice"><div class="box-t">Intuice: voda v trubce</div>
+<p>Napětí je jako <b>tlak</b> vody, proud jako <b>průtok</b> a odpor jako <b>zúžení trubky</b>. Větší tlak protlačí víc vody, užší trubka propustí méně. Ohmův zákon je přesně tento vztah pro elektřinu.</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad</div>
+<p>Rezistor 4,7 kΩ je připojen na napětí 9 V. Jaký proud teče?</p>
+\[ I = \frac{U}{R} = \frac{9\ \text{V}}{4700\ \Omega} \]
+\[ I \approx 1{,}91\ \text{mA} \]</div>
+
+<div class="box pozor"><div class="box-t">Užitečný trik s jednotkami</div>
+<p>V elektronice se počítá v <b>kΩ a mA</b>: kΩ · mA = V. Ušetříš si mocniny deseti. Například 2 kΩ · 3 mA = 6 V. Kontroluj ale, že nemícháš Ω s mA – to je nejčastější chyba o tři řády.</p></div>
+
+<h2 id="razeni">Sériové a paralelní řazení rezistorů</h2>
+<p>Než se pustíme do Kirchhoffových zákonů a děliče, potřebujeme umět nahradit několik rezistorů jedním. To se hodí hlavně u zatíženého děliče.</p>
+<div class="box vzorec"><div class="box-t">Náhradní odpor</div>
+<p><b>Sériově</b> (za sebou, teče jimi stejný proud) se odpory sčítají:</p>
+\[ R_s = R_1 + R_2 \]
+<p><b>Paralelně</b> (vedle sebe, je na nich stejné napětí) se sčítají vodivosti \(1/R\):</p>
+\[ \frac{1}{R_p} = \frac{1}{R_1} + \frac{1}{R_2} \]
+<p>Pro dva rezistory to vychází jako „součin lomeno součet“:</p>
+\[ R_p = R_1 \parallel R_2 = \frac{R_1 R_2}{R_1 + R_2} \]
+<table class="vars">
+<tr><td>\(R_s\)</td><td>náhradní odpor sériového spojení – vždy <b>větší</b> než největší z rezistorů</td></tr>
+<tr><td>\(R_p\)</td><td>náhradní odpor paralelního spojení – vždy <b>menší</b> než nejmenší z rezistorů</td></tr>
+<tr><td>\(\parallel\)</td><td>zkratka pro „paralelně s“</td></tr>
+</table></div>
+<div class="box priklad"><div class="box-t">Příklad</div>
+<p>Dva stejné rezistory 10 kΩ paralelně dávají polovinu:</p>
+\[ R_p = \frac{10 \cdot 10}{10 + 10} = 5\ \text{k}\Omega \]
+<p>10 kΩ paralelně se 100 kΩ dává o něco méně než 10 kΩ:</p>
+\[ R_p = \frac{10 \cdot 100}{10 + 100} \approx 9{,}09\ \text{k}\Omega \]
+<p>Velký odpor paralelně k malému tedy na výsledku skoro nic nezmění – to je klíč k zatíženému děliči.</p></div>
+
+<h2 id="kirchhoff">Kirchhoffovy zákony</h2>
+<div class="box definice" id="def-uzel-smycka"><div class="box-t">Definice: uzel, větev a smyčka</div>
+<p><b>Uzel</b> je místo obvodu, kde se spojují alespoň tři vodiče. <b>Větev</b> je část obvodu mezi dvěma sousedními uzly; protéká jí v celé délce stejný proud. <b>Smyčka</b> je uzavřená cesta obvodem, která projde každým uzlem nejvýše jednou.</p>
+<p class="jinak">uzel = „křižovatka“, kde se proud dělí nebo slévá; větev = „silnice“ mezi křižovatkami; smyčka = „okruh“, který mě vrátí tam, kde jsem začal.</p></div>
+
+<div class="box definice" id="def-1kz"><div class="box-t">Definice: 1. Kirchhoffův zákon (proudový)</div>
+<p><b>1. Kirchhoffův zákon</b> říká, že algebraický součet proudů v každém uzlu je roven nule: \(\sum I_k = 0\). Proudy do uzlu vtékající bereme s jedním znaménkem, vytékající s opačným.</p>
+<p class="jinak">kolik proudu do uzlu přiteče, tolik z něj musí odtéct – náboj se v uzlu nehromadí ani neztrácí (zákon zachování náboje).</p></div>
+
+<div class="box definice" id="def-2kz"><div class="box-t">Definice: 2. Kirchhoffův zákon (napěťový)</div>
+<p><b>2. Kirchhoffův zákon</b> říká, že algebraický součet všech napětí podél libovolné uzavřené smyčky je roven nule: \(\sum U_k = 0\). Napětí zdrojů a úbytky napětí na součástkách bereme se znaménkem podle zvoleného směru oběhu.</p>
+<p class="jinak">když obejdu smyčku a vrátím se na start, jsem na stejném potenciálu – kolik napětí zdroje „dodají“, tolik se ho na součástkách „spotřebuje“ (zákon zachování energie).</p></div>
+
+<div class="box vzorec"><div class="box-t">Kirchhoffovy zákony v praktickém tvaru</div>
+\[ \sum I_\text{dovnitř} = \sum I_\text{ven} \]
+\[ \sum U_\text{zdrojů} = \sum R_k I_k \]
+<table class="vars">
+<tr><td>\(I_\text{dovnitř}, I_\text{ven}\)</td><td>proudy vtékající do uzlu a vytékající z něj</td></tr>
+<tr><td>\(U_\text{zdrojů}\)</td><td>napětí zdrojů ve smyčce (kladné, pokud zdroj „žene“ proud ve směru oběhu)</td></tr>
+<tr><td>\(R_k I_k\)</td><td>úbytek napětí na rezistoru \(R_k\) podle Ohmova zákona (kladný, pokud proud \(I_k\) teče ve směru oběhu)</td></tr>
+</table></div>
+
+<div class="box postup"><div class="box-t">Postup: jak spočítat obvod Kirchhoffovými zákony</div>
+<ol>
+<li><b>Označ neznámé proudy</b> ve všech větvích a ke každému nakresli šipku. Směr zvol libovolně – když se netrefíš, vyjde proud záporný.</li>
+<li><b>Spočítej rovnice:</b> obvod s \(u\) uzly a \(v\) větvemi potřebuje \(u - 1\) rovnic podle 1. KZ a \(v - u + 1\) rovnic podle 2. KZ (nezávislé smyčky, typicky „okénka“ obvodu). Celkem tolik rovnic, kolik je neznámých proudů.</li>
+<li><b>1. KZ</b> pro uzly: vtékající = vytékající.</li>
+<li><b>2. KZ</b> pro smyčky: zvol směr oběhu a napiš „napětí zdrojů = součet \(R \cdot I\)“, se znaménky podle šipek.</li>
+<li><b>Vyřeš soustavu</b> (dosazovací nebo sčítací metodou, případně maticí).</li>
+<li><b>Interpretuj znaménka</b> (záporný proud = teče opačně, než ukazuje šipka) a <b>zkontroluj</b> výsledek dosazením do rovnice, kterou jsi nepoužil.</li>
+</ol></div>
+
+<figure><div class="paper"><img src="figures/fig01_kirchhoff.png" alt="Obvod se dvěma zdroji U1 = 12 V a U2 = 6 V, rezistory R1, R2 a R3, uzly A a B a dvěma smyčkami" loading="lazy"></div>
+<figcaption><b>Obr. 1.2</b> Obvod se dvěma zdroji: dva uzly (A, B), tři větve, dvě nezávislé smyčky. Šipky ukazují zvolené směry proudů.</figcaption></figure>
+
+<div class="box priklad"><div class="box-t">Řešený příklad: obvod z obr. 1.2</div>
+<p>Zadáno: \(U_1 = 12\) V, \(U_2 = 6\) V, \(R_1 = 1\) kΩ, \(R_2 = 2\) kΩ, \(R_3 = 2\) kΩ. Hledáme proudy \(I_1, I_2, I_3\). Počítáme v kΩ a mA.</p>
+<p><b>1. Rovnice.</b> Dva uzly → jedna rovnice podle 1. KZ (uzel A). Tři větve → \(3 - 2 + 1 = 2\) rovnice podle 2. KZ.</p>
+<p>Uzel A (\(I_1\) a \(I_2\) do uzlu vtékají, \(I_3\) vytéká):</p>
+\[ I_1 + I_2 = I_3 \]
+<p>Smyčka 1 (\(U_1\), \(R_1\), \(R_3\)):</p>
+\[ U_1 = R_1 I_1 + R_3 I_3 \]
+\[ 12 = 1 \cdot I_1 + 2 \cdot I_3 \]
+<p>Smyčka 2 (\(U_2\), \(R_2\), \(R_3\)):</p>
+\[ U_2 = R_2 I_2 + R_3 I_3 \]
+\[ 6 = 2 \cdot I_2 + 2 \cdot I_3 \]
+<p><b>2. Dosazení</b> \(I_3 = I_1 + I_2\) do obou smyček:</p>
+\[ \begin{aligned} 12 &= I_1 + 2(I_1 + I_2) = 3 I_1 + 2 I_2 \\ 6 &= 2 I_2 + 2(I_1 + I_2) = 2 I_1 + 4 I_2 \end{aligned} \]
+<p><b>3. Řešení.</b> První rovnici vynásobíme dvěma a odečteme druhou:</p>
+\[ \begin{array}{rcl} 24 &=& 6 I_1 + 4 I_2 \\ 6 &=& 2 I_1 + 4 I_2 \\ \hline 18 &=& 4 I_1 \end{array} \]
+\[ I_1 = 4{,}5\ \text{mA} \]
+\[ I_2 = \frac{12 - 3 \cdot 4{,}5}{2} = -0{,}75\ \text{mA} \]
+\[ I_3 = I_1 + I_2 = 3{,}75\ \text{mA} \]
+<p><b>4. Interpretace.</b> \(I_2\) vyšel záporný: proud ve skutečnosti teče opačně, než ukazuje šipka, tedy z uzlu A <b>do</b> zdroje \(U_2\) (silnější zdroj \(U_1\) „nabíjí“ slabší \(U_2\)).</p>
+<p><b>5. Kontrola</b> – napětí uzlu A proti B třemi cestami:</p>
+\[ U_{AB} = R_3 I_3 = 2 \cdot 3{,}75 = 7{,}5\ \text{V} \]
+\[ U_{AB} = U_1 - R_1 I_1 = 12 - 4{,}5 = 7{,}5\ \text{V} \]
+\[ U_{AB} = U_2 - R_2 I_2 = 6 + 1{,}5 = 7{,}5\ \text{V} \]
+<p>Všechny tři cesty dávají stejné napětí, výsledek je správně.</p></div>
+
+<div class="box intuice"><div class="box-t">Zkratka: metoda uzlových napětí</div>
+<p>Místo tří proudů můžeš hledat jen jedno neznámé napětí uzlu A (proti B). Každý proud vyjádříš Ohmovým zákonem a dosadíš do 1. KZ pro uzel A:</p>
+\[ \frac{U_1 - U_A}{R_1} + \frac{U_2 - U_A}{R_2} = \frac{U_A}{R_3} \]
+\[ \frac{12 - U_A}{1} + \frac{6 - U_A}{2} = \frac{U_A}{2} \]
+\[ 15 = 2\,U_A \quad\Rightarrow\quad U_A = 7{,}5\ \text{V} \]
+<p>Proudy pak z Ohmova zákona. Jedna rovnice místo tří – u obvodů s jedním „hlavním“ uzlem je to nejrychlejší cesta. Je to pořád 1. KZ, jen chytře zapsaný.</p></div>
+
+<div class="box pozor"><div class="box-t">Časté chyby</div>
+<ul>
+<li><b>Znaménka ve smyčce:</b> zvol směr oběhu jednou a drž se ho. Rezistor, kterým teče proud proti směru oběhu, má úbytek se záporným znaménkem.</li>
+<li><b>Záporný výsledek není chyba</b> – jen informace o skutečném směru proudu. Nepřepisuj šipky uprostřed výpočtu.</li>
+<li><b>Příliš mnoho rovnic:</b> rovnice 1. KZ pro poslední uzel už nic nového nepřinese (je součtem ostatních).</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„První Kirchhoffův zákon vychází ze zachování náboje: součet proudů do uzlu se rovná součtu proudů z uzlu. Druhý vychází ze zachování energie: součet napětí ve smyčce je nula, tedy napětí zdrojů se rovná součtu úbytků \(R \cdot I\). Při výpočtu označím proudy ve větvích, napíšu \(u-1\) uzlových rovnic a tolik smyčkových, aby rovnic bylo stejně jako neznámých, soustavu vyřeším a záporný proud znamená opačný směr.“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>1. KZ: co do uzlu vteče, to vyteče. 2. KZ: ve smyčce se napětí zdrojů „spotřebuje“ na rezistorech. Spolu s Ohmovým zákonem spočítají každý odporový obvod.</p></div>
+
+<h2 id="delic">Nezatížený dělič napětí</h2>
+<div class="box definice" id="def-delic"><div class="box-t">Definice: dělič napětí</div>
+<p><b>Dělič napětí</b> je zapojení dvou sériově řazených rezistorů \(R_1\) a \(R_2\) připojených ke vstupnímu napětí \(U_1\); výstupní napětí \(U_2\) se odebírá z jednoho z rezistorů (\(R_2\)) a je částí vstupního napětí v poměru odporů. <b>Nezatížený</b> dělič je takový, z jehož výstupu se neodebírá žádný proud.</p>
+<p class="jinak">dva rezistory za sebou si rozdělí napětí – každý dostane podíl úměrný svému odporu. Výstup „odbočkou“ mezi nimi dá zmenšenou kopii vstupu.</p></div>
+
+<figure><div class="paper"><img src="figures/fig01_delic.png" alt="Nezatížený dělič R1, R2 a zatížený dělič s rezistorem Rz paralelně k R2" loading="lazy"></div>
+<figcaption><b>Obr. 1.3</b> Vlevo nezatížený dělič (výstup naprázdno), vpravo zatížený dělič – k výstupu je připojena zátěž \(R_\text{z}\) (např. vstup dalšího obvodu nebo měřicí přístroj).</figcaption></figure>
+
+<div class="box postup"><div class="box-t">Myšlenka odvození (tohle je potřeba umět)</div>
+<ol>
+<li><b>Výstup je naprázdno</b> → z odbočky neteče žádný proud. Oběma rezistory proto teče <b>stejný proud</b> \(I\) (1. KZ v uzlu mezi nimi).</li>
+<li>Rezistory jsou tedy v sérii. Celkový odpor je \(R_1 + R_2\) a z Ohmova zákona:
+\[ I = \frac{U_1}{R_1 + R_2} \]</li>
+<li>Výstupní napětí je úbytek na \(R_2\) (znovu Ohmův zákon):
+\[ U_2 = R_2 \cdot I \]</li>
+<li>Dosadím proud z kroku 2:
+\[ U_2 = R_2 \cdot \frac{U_1}{R_1 + R_2} \]</li>
+</ol></div>
+
+<div class="box vzorec"><div class="box-t">Nezatížený dělič</div>
+\[ U_2 = U_1 \cdot \frac{R_2}{R_1 + R_2} \]
+<table class="vars">
+<tr><td>\(U_1\)</td><td>vstupní napětí (na celém děliči)</td></tr>
+<tr><td>\(U_2\)</td><td>výstupní napětí (na rezistoru \(R_2\))</td></tr>
+<tr><td>\(R_1\)</td><td>„horní“ rezistor, mezi vstupem a výstupem</td></tr>
+<tr><td>\(R_2\)</td><td>„dolní“ rezistor, mezi výstupem a zemí – na něm odebíráme napětí</td></tr>
+<tr><td>\(\frac{R_2}{R_1+R_2}\)</td><td><b>dělicí poměr</b> (přenos děliče), vždy mezi 0 a 1</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad: nezatížený dělič</div>
+<p>\(U_1 = 10\) V, \(R_1 = R_2 = 10\) kΩ.</p>
+\[ I = \frac{10\ \text{V}}{20\ \text{k}\Omega} = 0{,}5\ \text{mA} \]
+\[ U_2 = 10 \cdot \frac{10}{10 + 10} = 5\ \text{V} \]
+<p>Stejné rezistory dělí napětí napůl. Kdyby \(R_1 = 8\) kΩ a \(R_2 = 4\) kΩ při \(U_1 = 12\) V:</p>
+\[ U_2 = 12 \cdot \frac{4}{8 + 4} = 4\ \text{V} \]</div>
+
+<div class="box intuice"><div class="box-t">Proč na tom tolik záleží</div>
+<p>Vzorec děliče se v předmětu objeví ještě dvakrát: <b>RC filtr</b> je dělič, ve kterém je jeden rezistor nahrazen kondenzátorem (kap. 2), a <b>zpětná vazba neinvertujícího zesilovače</b> je dělič z výstupu na invertující vstup (kap. 3). Kdo umí dělič, umí půlku předmětu.</p></div>
+
+<h2 id="zatizeny">Zatížený dělič napětí</h2>
+<div class="box definice" id="def-zatez"><div class="box-t">Definice: zátěž a zatížený dělič</div>
+<p><b>Zátěž</b> je obvod nebo součástka připojená k výstupu zdroje signálu, která z něj odebírá proud; modelujeme ji odporem \(R_\text{z}\). <b>Zatížený dělič</b> je dělič napětí, k jehož výstupu je zátěž připojena – zátěž je pak paralelně k rezistoru \(R_2\).</p>
+<p class="jinak">jakmile na výstup děliče něco připojím (voltmetr, další stupeň), odebírá to proud a výstupní napětí klesne pod hodnotu spočítanou pro nezatížený dělič.</p></div>
+
+<div class="box postup"><div class="box-t">Myšlenka odvození</div>
+<ol>
+<li>Zátěž \(R_\text{z}\) je připojená mezi výstup a zem, stejně jako \(R_2\) – je tedy s \(R_2\) <b>paralelně</b>.</li>
+<li>Obě součástky nahradím jedním odporem:
+\[ R_{2\text{z}} = R_2 \parallel R_\text{z} = \frac{R_2 R_\text{z}}{R_2 + R_\text{z}} \]</li>
+<li>Obvod je teď zase obyčejný nezatížený dělič, jen s \(R_{2\text{z}}\) místo \(R_2\). Použiji známý vzorec:
+\[ U_{2\text{z}} = U_1 \cdot \frac{R_{2\text{z}}}{R_1 + R_{2\text{z}}} \]</li>
+<li>Protože \(R_{2\text{z}} &lt; R_2\) (paralelní spojení je vždy menší), je i \(U_{2\text{z}} &lt; U_2\): <b>zátěž výstupní napětí vždy sníží</b>.</li>
+</ol></div>
+
+<div class="box vzorec"><div class="box-t">Zatížený dělič</div>
+\[ U_{2\text{z}} = U_1 \cdot \frac{R_2 \parallel R_\text{z}}{R_1 + R_2 \parallel R_\text{z}} \]
+<p>Po dosazení za paralelní kombinaci a úpravě:</p>
+\[ U_{2\text{z}} = U_1 \cdot \frac{R_2 R_\text{z}}{R_1 R_2 + R_1 R_\text{z} + R_2 R_\text{z}} \]
+<table class="vars">
+<tr><td>\(R_\text{z}\)</td><td>odpor zátěže (vstupní odpor připojeného obvodu)</td></tr>
+<tr><td>\(R_2 \parallel R_\text{z}\)</td><td>náhradní odpor dolní části děliče se zátěží</td></tr>
+<tr><td>\(U_{2\text{z}}\)</td><td>výstupní napětí zatíženého děliče</td></tr>
+</table>
+<p>Kontrola: pro \(R_\text{z} \to \infty\) (nic nepřipojeno) je \(R_2 \parallel R_\text{z} \to R_2\) a vzorec přejde na nezatížený dělič.</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad: tentýž dělič se zátěží</div>
+<p>\(U_1 = 10\) V, \(R_1 = R_2 = 10\) kΩ (nezatížený dává 5 V). Připojíme zátěž \(R_\text{z} = 10\) kΩ.</p>
+\[ R_{2\text{z}} = \frac{10 \cdot 10}{10 + 10} = 5\ \text{k}\Omega \]
+\[ U_{2\text{z}} = 10 \cdot \frac{5}{10 + 5} \approx 3{,}33\ \text{V} \]
+<p>Napětí kleslo o třetinu. Se zátěží \(R_\text{z} = 100\) kΩ:</p>
+\[ R_{2\text{z}} = \frac{10 \cdot 100}{10 + 100} \approx 9{,}09\ \text{k}\Omega \]
+\[ U_{2\text{z}} = 10 \cdot \frac{9{,}09}{10 + 9{,}09} \approx 4{,}76\ \text{V} \]
+<p>Pokles už jen o 4,8 %. Druhý dělič (12 V, 8 kΩ / 4 kΩ, nezatížený 4 V) se zátěží 4 kΩ:</p>
+\[ R_{2\text{z}} = 4 \parallel 4 = 2\ \text{k}\Omega \]
+\[ U_{2\text{z}} = 12 \cdot \frac{2}{8 + 2} = 2{,}4\ \text{V} \]</div>
+
+<figure><div class="paper"><img src="figures/fig01_zatizeni.png" alt="Graf výstupního napětí děliče v závislosti na odporu zátěže" loading="lazy"></div>
+<figcaption><b>Obr. 1.4</b> Výstupní napětí děliče 10 kΩ / 10 kΩ (vstup 10 V) v závislosti na odporu zátěže. Čárkovaně hodnota bez zátěže.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Malá zátěž (srovnatelná s \(R_2\) nebo menší) dělič „zbortí“. Když je \(R_\text{z}\) aspoň <b>10× větší</b> než odpory děliče, je chyba pod 5 %; při 100× pod 0,5 %. Pravidlo: <b>zátěž musí mít mnohem větší odpor než dělič</b>.</p></div>
+
+<div class="box intuice"><div class="box-t">Jiný pohled: dělič jako zdroj s vnitřním odporem</div>
+<p>Z pohledu zátěže se nezatížený dělič chová jako zdroj napětí \(U_2\) (napětí naprázdno) se sériovým <b>vnitřním odporem</b> \(R_i = R_1 \parallel R_2\) (Théveninova náhrada). Zátěž s tímto vnitřním odporem tvoří další dělič:</p>
+\[ U_{2\text{z}} = U_2 \cdot \frac{R_\text{z}}{R_i + R_\text{z}} \]
+<p>Pro náš příklad \(R_i = 5\) kΩ a \(R_\text{z} = 10\) kΩ:</p>
+\[ U_{2\text{z}} = 5 \cdot \frac{10}{5 + 10} \approx 3{,}33\ \text{V} \]
+<p>Stejný výsledek. Odtud je také vidět, proč stačí \(R_\text{z} \gg R_i\).</p></div>
+
+<div class="box pozor"><div class="box-t">Proč je to důležité pro biosignály</div>
+<p>Zdrojem biosignálu je tělo s elektrodami, které má velký vnitřní odpor (kůže, rozhraní elektroda–gel, desítky kΩ až MΩ). Zesilovač, který k němu připojíme, je „zátěž“. Pokud by měl malý vstupní odpor, signál by se na něm zmenšil jako na zatíženém děliči. Proto biozesilovače potřebují <b>velmi velký vstupní odpor</b> – a proto se používá přístrojový zesilovač nebo napěťový sledovač (kap. 3 a 4).</p></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Nezatíženým děličem teče oběma rezistory stejný proud \(U_1/(R_1+R_2)\), výstupní napětí je úbytek na \(R_2\), takže \(U_2 = U_1 R_2/(R_1+R_2)\). Když připojím zátěž, je paralelně k \(R_2\); nahradím je paralelní kombinací a použiji stejný vzorec. Protože paralelní kombinace je menší než \(R_2\), výstupní napětí klesne. Chyba je malá, jen pokud je odpor zátěže mnohem větší než odpory děliče – typicky aspoň desetkrát.“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Dělič dává \(U_1 \cdot R_2/(R_1+R_2)\); zátěž se přidá paralelně k \(R_2\) a výstup sníží – zanedbatelně jen pokud \(R_\text{z} \gg R_2\).</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p><b>Ohmův zákon</b> \(U = RI\) spojuje napětí, proud a odpor jedné součástky. <b>1. Kirchhoffův zákon</b> (zachování náboje) říká, že součet proudů do uzlu je roven součtu proudů z uzlu, <b>2. Kirchhoffův zákon</b> (zachování energie), že součet napětí ve smyčce je nula. Obvod spočítáme tak, že označíme proudy ve větvích, sestavíme \(u-1\) uzlových a zbylý počet smyčkových rovnic a soustavu vyřešíme; záporný proud jen znamená opačný směr. <b>Dělič napětí</b> ze dvou rezistorů dává \(U_2 = U_1 R_2/(R_1+R_2)\), protože oběma rezistory teče stejný proud. <b>Zátěž</b> je paralelně k \(R_2\), zmenší dolní odpor a tím i výstupní napětí; zanedbat ji lze, jen když je \(R_\text{z}\) mnohem větší než odpory děliče.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>\(U = R \cdot I\); počítej v kΩ a mA, vyjdou volty.</li>
+<li>Sériově se odpory sčítají, paralelně „součin lomeno součet“ (výsledek menší než nejmenší).</li>
+<li>1. KZ: proudy do uzlu = proudy z uzlu. 2. KZ: napětí zdrojů ve smyčce = součet \(R \cdot I\).</li>
+<li>Počet rovnic: \(u-1\) uzlových + \(v-u+1\) smyčkových; záporný proud = opačný směr.</li>
+<li>Nezatížený dělič: stejný proud oběma rezistory → \(U_2 = U_1 R_2/(R_1+R_2)\).</li>
+<li>Zatížený dělič: \(R_2\) nahraď \(R_2 \parallel R_\text{z}\); výstup vždy klesne.</li>
+<li>Zátěž zanedbatelná, když \(R_\text{z} \geq 10\times\) odpory děliče – proto mají zesilovače velký vstupní odpor.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Formulujte Ohmův zákon a vysvětlete, co znamenají jednotlivé veličiny.</summary><div>
+<p>Proud rezistorem je přímo úměrný napětí na něm a nepřímo úměrný jeho odporu: \(I = U/R\), tedy \(U = RI\). \(U\) je napětí (rozdíl potenciálů, V), \(I\) proud (náboj za čas, A), \(R\) odpor (Ω), který vyjadřuje, jak součástka brání průtoku proudu.</p></div></details>
+<details class="q"><summary>Formulujte oba Kirchhoffovy zákony. Z jakých fyzikálních principů vycházejí?</summary><div>
+<p>1. KZ: algebraický součet proudů v uzlu je nulový (vtékající = vytékající) – zákon zachování náboje. 2. KZ: algebraický součet napětí v uzavřené smyčce je nulový (napětí zdrojů = součet úbytků \(RI\)) – zákon zachování energie (potenciál po oběhu smyčky je stejný jako na začátku).</p></div></details>
+<details class="q"><summary>Popište postup výpočtu obvodu pomocí Kirchhoffových zákonů. Kolik rovnic potřebujete?</summary><div>
+<p>Označím neznámé proudy ve všech větvích a zvolím jejich směry. Sestavím \(u-1\) rovnic podle 1. KZ (\(u\) = počet uzlů) a \(v-u+1\) rovnic podle 2. KZ pro nezávislé smyčky (\(v\) = počet větví) – dohromady tolik rovnic, kolik je neznámých proudů. Úbytky vyjádřím Ohmovým zákonem, soustavu vyřeším. Záporný výsledek znamená, že proud teče opačně, než jsem zvolil. Nakonec zkontroluji dosazením (např. napětí uzlu spočítané různými cestami).</p></div></details>
+<details class="q"><summary>Odvoďte vzorec pro nezatížený dělič napětí.</summary><div>
+<p>Výstup je naprázdno, proto z odbočky neteče proud a oběma rezistory teče stejný proud \(I = U_1/(R_1+R_2)\). Výstupní napětí je úbytek na \(R_2\): \(U_2 = R_2 I = U_1 \cdot R_2/(R_1+R_2)\). Dělicí poměr \(R_2/(R_1+R_2)\) je vždy mezi 0 a 1.</p></div></details>
+<details class="q"><summary>Co se stane, když dělič zatížíme? Jak se to spočítá?</summary><div>
+<p>Zátěž \(R_\text{z}\) je paralelně k \(R_2\). Nahradím je odporem \(R_2 \parallel R_\text{z} = R_2R_\text{z}/(R_2+R_\text{z})\), který je menší než \(R_2\), a dosadím do vzorce nezatíženého děliče. Výstupní napětí proto klesne. Příklad: 10 V, 10 kΩ / 10 kΩ: bez zátěže 5 V, se zátěží 10 kΩ jen 3,33 V, se zátěží 100 kΩ 4,76 V.</p></div></details>
+<details class="q"><summary>Jak velká musí být zátěž, aby se dělič choval téměř jako nezatížený? Proč je to důležité u biosignálů?</summary><div>
+<p>Odpor zátěže musí být mnohem větší než odpory děliče (přesněji než jeho vnitřní odpor \(R_1 \parallel R_2\)); při desetinásobku je chyba asi do 5 %, při stonásobku pod 0,5 %. U biosignálů má zdroj (tělo + elektrody) velký vnitřní odpor, takže zesilovač musí mít velmi velký vstupní odpor, jinak by signál „spadl“ jako na zatíženém děliči. Proto přístrojový zesilovač nebo sledovač na vstupu.</p></div></details>
+<details class="q"><summary>Spočítejte: dělič 12 V, \(R_1 = 8\) kΩ, \(R_2 = 4\) kΩ, bez zátěže a se zátěží 4 kΩ.</summary><div>
+<p>Bez zátěže:</p>
+\[ U_2 = 12 \cdot \frac{4}{8+4} = 4\ \text{V} \]
+<p>Se zátěží: \(R_2 \parallel R_\text{z} = 4 \parallel 4 = 2\) kΩ, takže</p>
+\[ U_{2\text{z}} = 12 \cdot \frac{2}{8+2} = 2{,}4\ \text{V} \]</div></details>

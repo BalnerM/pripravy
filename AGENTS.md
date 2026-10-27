@@ -62,13 +62,15 @@ Každá kapitola (= jedna přednáška) obsahuje:
    schémata postupů jako inline SVG s třídami z `assets/style.css` (`node`, `fl1–fl3`, `ln`, `t2` – viz VMM).
 5. Na konci povinně: `<section class="souhrn" id="shrnuti">` se shrnutím a `<div class="takehome">` (take-home
    messages), pak `<h2 id="otazky">` s 5–8 otázkami ke zkoušce jako `<details class="q">` s modelovou odpovědí.
-6. Vzorce v KaTeX: `\( … \)` v textu, `\[ … \]` samostatně.
+6. Vzorce v KaTeX: `\( … \)` v textu, `\[ … \]` samostatně. Vzorce se nesmí lámat ani přetékat: v textu jen krátké,
+   výpočty v příkladech po krocích pod sebou (jeden `\[ … \]` nebo řádek `aligned` na krok), ne v jednom odstavci.
    Jazyk výkladu jednoduchý, bez zbytečně složitých formulací; definice ale přesné. Věrnost přednáškám: stejné
    příklady, terminologie a čísla jako na slidech (u nejasností se podívej na stránku PDF jako obrázek).
    Navíc obvykle: srovnávací stránka / tahák (`★`), slovník (generuje se), interaktivní ukázky (volitelné, `DEMOS` v `app.js`).
 
 Grafy (`_build/make_figures.py`): paleta C1 `#2a78d6`, C2 `#eb6834`, C3 `#1baf7a` v pevném pořadí, tvar značky
 jako druhé rozlišení, popsané osy, žádná dvojí osa y, pevný random seed; řiď se skillem `dataviz`, je-li k dispozici.
+Elektrická schémata (R, C, OZ…) kresli knihovnou `schemdraw` v `make_figures.py` – vzorem je `sad/`.
 
 ## Postup: nová skripta k předmětu
 
