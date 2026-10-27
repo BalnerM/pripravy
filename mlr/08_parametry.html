@@ -33,7 +33,7 @@
     <li><a href="03_redukce.html"><span class="n">3</span><span>Výběr příznaků a redukce dimenze</span></a></li>
     <li><a href="04_linearni.html"><span class="n">4</span><span>Lineární modely, jádra a SVM</span></a></li>
     <li><a href="05_vibecoding.html"><span class="n">5</span><span>Vibecoding: práce s AI agentem</span></a></li>
-    <li><a href="06_stromy.html"><span class="n">6</span><span>Rozhodovací stromy a ansámbly</span></a></li>
+    <li><a href="06_stromy.html"><span class="n">6</span><span>Rozhodovací stromy a ensemble methods</span></a></li>
     <li><a href="07_neuronove_site.html"><span class="n">7</span><span>Umělé neuronové sítě</span></a></li>
     <li><a href="08_parametry.html" class="active"><span class="n">★</span><span>Tahák: parametry a srovnání modelů</span></a></li>
     <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
@@ -65,7 +65,7 @@
 <tr><td>SVM</td><td>↑ \(C\), ↑ \(\gamma\) (RBF), ↑ \(p\) (poly), ↓ \(\nu\)</td><td>↓ \(C\), ↓ \(\gamma\), ↓ \(p\), ↑ \(\nu\)</td></tr>
 <tr><td>rozhodovací strom</td><td>↑ max_depth, ↓ min_samples_leaf, ↓ min_samples_split, ↓ ccp_alpha</td><td>opak</td></tr>
 <tr><td>random forest</td><td>↑ hloubka stromů (rozptyl ale srazí průměr), ↑ max_features (korelace)</td><td>↓ hloubka, ↓ max_features (každý strom slabší)</td></tr>
-<tr><td>AdaBoost</td><td>↑ počet kol \(M\), silnější slabý klasifikátor</td><td>↓ \(M\), pahýly</td></tr>
+<tr><td>AdaBoost</td><td>↑ počet kol \(M\), silnější slabý klasifikátor</td><td>↓ \(M\), pařezy</td></tr>
 <tr><td>neuronová síť</td><td>↑ vrstvy/neurony, ↓ \(\lambda\), ↑ \(p\) dropoutu (= méně vypínání), ↑ epoch</td><td>opak; early stopping</td></tr>
 <tr><td>výběr příznaků / PCA</td><td>↑ počet příznaků / komponent</td><td>↓ počet</td></tr>
 </table></div>
@@ -120,10 +120,10 @@
 <tr><td>polynomiální jádro \(p\), \(c\)</td><td>stupeň, posun</td><td>složitější hranice</td><td>jednodušší</td></tr>
 <tr><td>perceptron \(\eta\), epochy</td><td>krok a počet průchodů</td><td colspan="2">konverguje jen pro separabilní data; jinak cyklí bez ohledu na \(\eta\)</td></tr>
 </table></div>
-<h3 id="p-stromy">Stromy a ansámbly (<a href="06_stromy.html#cart">kap. 6</a>)</h3>
+<h3 id="p-stromy">Stromy a ensemble methods (<a href="06_stromy.html#cart">kap. 6</a>)</h3>
 <div class="tablewrap"><table class="params">
 <tr><th>parametr</th><th>význam</th><th><span class="up">↑</span></th><th><span class="dn">↓</span></th></tr>
-<tr><td>max_depth</td><td>max. počet otázek na cestě</td><td>jemnější obdélníky, trénovací chyba → 0, přeučení</td><td>jednodušší, pahýl = podučení</td></tr>
+<tr><td>max_depth</td><td>max. počet otázek na cestě</td><td>jemnější obdélníky, trénovací chyba → 0, přeučení</td><td>jednodušší, pařez = podučení</td></tr>
 <tr><td>min_samples_leaf</td><td>min. vzorků v listu</td><td>hladší, méně přeučení</td><td>listy s jedním bodem – kopíruje šum</td></tr>
 <tr><td>min_samples_split, max_leaf_nodes</td><td>kdy se smí dělit, velikost stromu</td><td colspan="2">↑ min_samples_split / ↓ max_leaf_nodes = menší strom</td></tr>
 <tr><td>criterion</td><td>Gini / entropie / MSE</td><td colspan="2">Gini a entropie dávají podobné stromy</td></tr>
@@ -131,7 +131,7 @@
 <tr><td>RF/bagging: n_estimators \(M\)</td><td>počet stromů</td><td>rozptyl ↓ (do \(\rho\sigma^2\)), nepřeučí, víc výpočtu</td><td>hlučnější predikce</td></tr>
 <tr><td>RF: max_features</td><td>příznaků na jedno dělení</td><td>silnější, ale korelované stromy (všechny = bagging)</td><td>různorodé, slabší stromy; typicky √d</td></tr>
 <tr><td>AdaBoost: počet kol \(M\)</td><td>počet slabých klasifikátorů</td><td>bias ↓, složitější hranice, přeučení na šumu</td><td>podučení</td></tr>
-<tr><td>AdaBoost: slabý klasifikátor</td><td>pahýl / mělký strom</td><td>rychlejší pokles chyby, snazší přeučení</td><td>pomalý, bezpečný</td></tr>
+<tr><td>AdaBoost: slabý klasifikátor</td><td>pařez / mělký strom</td><td>rychlejší pokles chyby, snazší přeučení</td><td>pomalý, bezpečný</td></tr>
 <tr><td>AdaBoost: learning_rate</td><td>zmenšení \(\alpha_m\)</td><td>rychlejší učení</td><td>potřeba víc kol, lepší zobecnění</td></tr>
 </table></div>
 <h3 id="p-nn">Neuronové sítě (<a href="07_neuronove_site.html#optimalizatory">kap. 7</a>)</h3>

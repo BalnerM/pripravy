@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rozhodovací stromy a ansámbly – MLR</title>
+<title>Rozhodovací stromy a ensemble methods – MLR</title>
 <meta name="description" content="Bias, rozptyl a šum, CART, bagging, random forest a AdaBoost.">
 <link rel="alternate" hreflang="en" href="en/06_stromy.html">
 <script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
@@ -33,7 +33,7 @@
     <li><a href="03_redukce.html"><span class="n">3</span><span>Výběr příznaků a redukce dimenze</span></a></li>
     <li><a href="04_linearni.html"><span class="n">4</span><span>Lineární modely, jádra a SVM</span></a></li>
     <li><a href="05_vibecoding.html"><span class="n">5</span><span>Vibecoding: práce s AI agentem</span></a></li>
-    <li><a href="06_stromy.html" class="active"><span class="n">6</span><span>Rozhodovací stromy a ansámbly</span></a></li>
+    <li><a href="06_stromy.html" class="active"><span class="n">6</span><span>Rozhodovací stromy a ensemble methods</span></a></li>
     <li><a href="07_neuronove_site.html"><span class="n">7</span><span>Umělé neuronové sítě</span></a></li>
     <li><a href="08_parametry.html"><span class="n">★</span><span>Tahák: parametry a srovnání modelů</span></a></li>
     <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
@@ -43,7 +43,7 @@
     <li><a href="#bias-variance">Bias, rozptyl a šum</a></li>
     <li><a href="#stromy">Rozhodovací stromy</a></li>
     <li><a href="#cart">CART</a></li>
-    <li><a href="#bagging">Ansámbly a bagging</a></li>
+    <li><a href="#bagging">Ensemble methods a bagging</a></li>
     <li><a href="#rf">Random forest</a></li>
     <li><a href="#adaboost">Adaptivní boosting (AdaBoost)</a></li>
     <li><a href="#dalsi">Další stromové algoritmy a prořezávání</a></li>
@@ -52,19 +52,24 @@
   </ul>
 </nav>
 <main>
-<p class="printhead">MLR – příprava na zkoušku · Rozhodovací stromy a ansámbly – MLR · https://balnerm.github.io/pripravy/mlr/06_stromy.html</p>
+<p class="printhead">MLR – příprava na zkoušku · Rozhodovací stromy a ensemble methods – MLR · https://balnerm.github.io/pripravy/mlr/06_stromy.html</p>
 <p class="kicker">Přednáška 6</p>
-<h1>Rozhodovací stromy a ansámbly</h1>
+<h1>Rozhodovací stromy a ensemble methods</h1>
 <p class="lead">Posloupnost otázek ano/ne je model – a to takový, který přečte každý. Jeden strom je ale nestabilní: malá změna dat přepíše celý strom. Kapitola nejdřív rozloží testovou chybu na <b>bias, rozptyl a šum</b> (dva z nich ovlivníme), pak ukáže, jak se strom staví (CART), a jak z mnoha stromů složit silnější model: <b>bagging a random forest</b> snižují rozptyl, <b>boosting</b> snižuje bias.</p>
 
 <h2 id="bias-variance">Bias, rozptyl a šum</h2>
+<div class="box definice" id="def-stredni-hodnota"><div class="box-t">Definice: střední hodnota 𝔼</div>
+<p><b>Střední hodnota</b> \(\mathbb E\) (expected value) náhodné veličiny je její průměr přes všechny možné hodnoty, vážený jejich pravděpodobností. Pro spojitou veličinu je to integrál, např. pro label \(y\) v bodě \(\mathbf x\):
+\[ \mathbb E_{y\mid\mathbf x}[Y] = \int_y y\,P(y\mid\mathbf x)\,dy \]
+Dolní index říká, <b>přes co se průměruje</b>: \(\mathbb E_T\) přes všechny možné trénovací množiny, \(\mathbb E_{\mathbf x, y}\) přes všechny testovací body a jejich labely, \(\mathbb E_{\mathbf x, y, T}\) přes obojí najednou.</p>
+<p class="jinak">\(\mathbb E\) = „průměr, kdybychom pokus mohli opakovat nekonečněkrát“. Například \(\mathbb E_{\mathbf x, y}\big[(h_T(\mathbf x) - y)^2\big]\) čti: vezmi model \(h_T\), v každém testovacím bodě spočítej rozdíl predikce \(h_T(\mathbf x)\) a správné hodnoty (ground truth) \(y\), umocni ho na druhou (čtvercová chyba) a zprůměruj přes všechny možné testovací body – to je očekávaná testová chyba (MSE) tohoto modelu.</p></div>
 <div class="box definice" id="def-ocekavany-model"><div class="box-t">Definice: očekávaný label a očekávaný model</div>
-<p>Trénovací množina \(T = \{(\mathbf x_1, y_1), \dots, (\mathbf x_n, y_n)\}\) je náhodný výběr z rozdělení \(P(X, Y)\); algoritmus \(\mathcal A\) z ní vyrobí model \(h_T = \mathcal A(T)\).</p>
+<p>Trénovací množina \(T = \{(\mathbf x_1, y_1), \dots, (\mathbf x_n, y_n)\}\) je náhodný výběr z rozdělení \(P(X, Y)\), kde \(\mathbf x_i\) je vektor příznaků a \(y_i\) správný label (učení s učitelem); algoritmus \(\mathcal A\) z ní vyrobí model \(h_T = \mathcal A(T)\). Natrénovaný model tedy závisí na algoritmu <i>i</i> na tom, jaká trénovací data zrovna dostal.</p>
 <ul>
 <li><b>Očekávaný label</b> je nejlepší možná predikce v bodě \(\mathbf x\): \[ \bar y(\mathbf x) = \mathbb E_{y\mid\mathbf x}[Y] \]</li>
 <li><b>Očekávaný model</b> je průměr modelů, které by algoritmus vyrobil ze všech možných trénovacích množin: \[ \bar h = \mathbb E_{T\sim P^n}[h_T] \]</li>
 </ul>
-<p class="jinak">\(\bar y\) je „pravda bez šumu“, \(\bar h\) je to, co náš algoritmus „v průměru umí“. Kdybychom měli nekonečně mnoho trénovacích sad, zprůměrovali bychom z nich naučené modely a dostali \(\bar h\).</p></div>
+<p class="jinak">\(\bar y\) je „pravda bez šumu“, \(\bar h\) je to, co náš algoritmus „v průměru umí“. Kdybychom měli nekonečně mnoho trénovacích sad, zprůměrovali bychom z nich naučené modely a dostali \(\bar h\) – „ideální“ model daného algoritmu, jako by se učil ze všech dat na světě. V praxi ho nikdy nemáme; slouží k tomu, abychom chybu rozložili na části.</p></div>
 <div class="box vzorec"><div class="box-t">Rozklad očekávané testové chyby (MSE)</div>
 \[ \begin{aligned} &\underbrace{\mathbb E_{\mathbf x, y, T}\big[(h_T(\mathbf x) - y)^2\big]}_{\text{očekávaná testová chyba}} \\ &\quad= \underbrace{\mathbb E_{\mathbf x, T}\big[(h_T(\mathbf x) - \bar h(\mathbf x))^2\big]}_{\text{rozptyl}} \\ &\quad+ \underbrace{\mathbb E_{\mathbf x}\big[(\bar h(\mathbf x) - \bar y(\mathbf x))^2\big]}_{\text{bias}^2} \\ &\quad+ \underbrace{\mathbb E_{\mathbf x, y}\big[(\bar y(\mathbf x) - y)^2\big]}_{\text{šum}} \end{aligned} \]
 <table class="vars">
@@ -72,6 +77,7 @@
 <tr><td>bias²</td><td>jak daleko je průměrný model od nejlepší možné predikce (systematická chyba algoritmu)</td></tr>
 <tr><td>šum (noise)</td><td>neodstranitelná chyba dat – žádný algoritmus ani víc dat ji neodstraní</td></tr>
 </table>
+<p><b>Slovy:</b> čtvercová chyba zprůměrovaná přes všechny testovací body, jejich labely a všechny možné trénovací množiny se rozpadne na tři části – jak moc model „kolísá“ podle toho, jaká data dostal (rozptyl), jak moc se jeho průměr mýlí systematicky (bias²) a jak moc kolísají samotné labely kolem své střední hodnoty (šum). Všechny tři členy jsou nezáporné, takže testová chyba nikdy neklesne pod šum.</p>
 <p>Odvození: dvakrát „přičti a odečti“ – nejdřív \(\bar h(\mathbf x)\), pak \(\bar y(\mathbf x)\) – a roznásob \((a + b)^2 = a^2 + 2ab + b^2\). Smíšené členy vypadnou:</p>
 <ul>
 <li>první proto, že \(\mathbb E_T[h_T(\mathbf x)] = \bar h(\mathbf x)\),</li>
@@ -80,6 +86,8 @@
 <div class="box definice" id="def-bias-variance"><div class="box-t">Definice: kompromis bias–rozptyl, podučení a přeučení</div>
 <p><b>Kompromis bias–rozptyl</b> je jev, že zvyšováním složitosti modelu obvykle klesá bias a roste rozptyl. <b>Podučení</b> (underfitting) = model je příliš jednoduchý, má vysoký bias (velká chyba už na trénovacích datech). <b>Přeučení</b> (overfitting) = model je příliš složitý, má vysoký rozptyl (nízká trénovací, ale vysoká testová chyba – naučil se šum).</p>
 <p class="jinak">jednoduchý model „netrefí tvar“, ale je stabilní; složitý model tvar trefí, ale „poskakuje“ podle toho, jaká data zrovna dostal. Optimum je uprostřed. Šum je podlaha, pod kterou se nedostaneme.</p></div>
+<div class="box pozor"><div class="box-t">Pozor: šum je neodstranitelný jen pro dané příznaky</div>
+<p>Šum nezávisí na modelu ani na jeho složitosti (v grafu chyby je to vodorovná čára) – lepší algoritmus ani víc dat ho nesníží. Je ale definovaný vzhledem k příznakům \(\mathbf x\), ze kterých model vychází. Když přidáme nový informativní příznak (např. další měření pacienta), změní se \(\bar y(\mathbf x)\) a část dosavadního „šumu“ se stane vysvětlitelnou. To už ale není lepší model, ale jiná úloha s víc informacemi.</p></div>
 <h3 id="bv-vizualne">Bias a rozptyl vizuálně</h3>
 <figure class="wide"><div class="paper"><img src="figures/fig06_terce.png" alt="Čtyři terče pro kombinace nízkého a vysokého biasu a rozptylu a graf bias², rozptylu a celkové chyby v závislosti na složitosti modelu" loading="lazy"></div>
 <figcaption><b>Obr. 6.1</b> Vlevo: každý terč odpovídá jednomu algoritmu, každá tečka jednomu modelu natrénovanému na <i>jiné</i> trénovací množině; střed terče je nejlepší možná predikce \(\bar y(\mathbf x)\). Vpravo: jak se členy rozkladu chyby mění se složitostí modelu (schéma, překresleno podle slidu 7 přednášky; původní zdroj S. Fortmann-Roe).</figcaption></figure>
@@ -89,23 +97,23 @@
 <figure><div class="paper"><img src="figures/fig06_regimy.png" alt="Schéma učicích křivek: trénovací a testovací chyba v závislosti na počtu vzorků se dvěma vyznačenými režimy" loading="lazy"></div>
 <figcaption><b>Obr. 6.2</b> Učicí křivky: trénovací a testovací chyba v závislosti na velikosti trénovací množiny a přijatelná chyba \(\varepsilon\) (schéma, překresleno podle slidu 8 přednášky; původní zdroj Cornell CS4780, lecture note 12).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
-<p>S rostoucím počtem vzorků <b>trénovací chyba roste</b> (víc bodů se hůř „zapamatuje“) a <b>testovací klesá</b> (víc dat = lepší odhad); obě se blíží ke stejné hodnotě. <b>Režim 1 – vysoký rozptyl</b> (vlevo): trénovací chyba je pod \(\varepsilon\), testovací nad ním a mezi nimi je velká mezera; mezera je právě rozptyl. Testovací křivka ještě klesá, takže <b>víc dat pomůže</b>, stejně jako jednodušší model nebo bagging. <b>Režim 2 – vysoký bias</b> (vpravo): obě křivky už splynuly, ale <i>nad</i> \(\varepsilon\). Další data nepomohou – křivky zkonvergovaly na špatné místo; je potřeba složitější model, víc příznaků nebo boosting. U zkoušky: „nejdřív se podívám na učicí křivky, abych věděl, kterým směrem model měnit.“</p></div>
+<p>S rostoucím počtem vzorků <b>trénovací chyba roste</b> (víc bodů se hůř „zapamatuje“) a <b>testovací klesá</b> (víc dat = lepší odhad); obě se blíží ke stejné hodnotě. Testovací křivka leží nad trénovací – na datech, která model viděl, chybuje v průměru méně. <b>Režim 1 – vysoký rozptyl</b> (vlevo): trénovací chyba je pod \(\varepsilon\), testovací nad ním a mezi nimi je velká mezera; mezera je právě rozptyl. Extrém: v trénovací sadě jsou jen 2 pacienti – model si je prostě zapamatuje (trénovací chyba 0), ale na nových pacientech má obrovskou chybu; jde o přeučení. Testovací křivka ještě klesá, takže <b>víc dat pomůže</b>, stejně jako jednodušší model nebo bagging. <b>Režim 2 – vysoký bias</b> (vpravo): obě křivky už splynuly, ale <i>nad</i> \(\varepsilon\). Máme třeba miliony pacientů a další data nepomohou – křivky zkonvergovaly na špatné místo; je potřeba složitější model, víc příznaků nebo boosting. U zkoušky: „nejdřív se podívám na učicí křivky, abych věděl, kterým směrem model měnit.“</p></div>
 <div class="tablewrap"><table>
 <tr><th></th><th>režim 1: vysoký rozptyl</th><th>režim 2: vysoký bias</th></tr>
 <tr><td>jak poznat</td><td>trénovací chyba ≪ testovací; trénovací &lt; \(\varepsilon\), testovací &gt; \(\varepsilon\)</td><td>trénovací chyba &gt; \(\varepsilon\) a testovací je blízko ní</td></tr>
-<tr><td>co pomůže</td><td>víc trénovacích dat; jednodušší model; <b>bagging</b></td><td>složitější model; víc příznaků; <b>boosting</b></td></tr>
+<tr><td>co pomůže</td><td>víc trénovacích dat; jednodušší model (např. <b>regularizace</b> = snížení složitosti modelu beze změny dat); <b>bagging</b></td><td>složitější model; víc příznaků; <b>boosting</b></td></tr>
 </table></div>
 <p>Přijatelná chyba \(\varepsilon\) je daná aplikací, ne daty. Oba režimy potřebují opačnou léčbu, proto nejdřív zjisti, ve kterém jsi.</p>
 <h3 id="bv-data">Totéž na skutečně spočítaných datech</h3>
 <figure class="wide"><div class="paper"><img src="figures/fig06_bias_variance.png" alt="Chyba vs. složitost stromu a učicí křivky ve dvou režimech" loading="lazy"></div>
-<figcaption><b>Obr. 6.3</b> Regresní stromy na 1D datech se šumem \(\sigma^2 = 0{,}20\). Vlevo: průměrná trénovací a testovací chyba (30 trénovacích sad po 60 bodech) v závislosti na hloubce stromu. Uprostřed a vpravo: učicí křivky – chyba v závislosti na počtu trénovacích vzorků pro strom hloubky 8 a pro pahýl (hloubka 1); čárkovaně přijatelná chyba \(\varepsilon\).</figcaption></figure>
+<figcaption><b>Obr. 6.3</b> Regresní stromy na 1D datech se šumem \(\sigma^2 = 0{,}20\). Vlevo: průměrná trénovací a testovací chyba (30 trénovacích sad po 60 bodech) v závislosti na hloubce stromu. Uprostřed a vpravo: učicí křivky – chyba v závislosti na počtu trénovacích vzorků pro strom hloubky 8 a pro pařez (hloubka 1); čárkovaně přijatelná chyba \(\varepsilon\).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
-<p>Schémata z obr. 6.1 a 6.2 platí i na skutečném výpočtu. Vlevo: trénovací chyba s hloubkou klesá k nule, testovací má minimum (hloubka 3) a nikdy neklesne pod šum 0,20. Uprostřed (strom hloubky 8): velká mezera, testovací chyba s daty klesá pod \(\varepsilon\) – režim 1, víc dat pomohlo. Vpravo (pahýl): obě křivky splynou kolem 0,40 nad \(\varepsilon\) – režim 2, ani 1000 vzorků nepomůže.</p></div>
+<p>Schémata z obr. 6.1 a 6.2 platí i na skutečném výpočtu. Vlevo: trénovací chyba s hloubkou klesá k nule, testovací má minimum (hloubka 3) a nikdy neklesne pod šum 0,20. Uprostřed (strom hloubky 8): velká mezera, testovací chyba s daty klesá pod \(\varepsilon\) – režim 1, víc dat pomohlo. Vpravo (pařez): obě křivky splynou kolem 0,40 nad \(\varepsilon\) – režim 2, ani 1000 vzorků nepomůže.</p></div>
 
 <h2 id="stromy">Rozhodovací stromy</h2>
 <div class="box definice" id="def-strom"><div class="box-t">Definice: rozhodovací strom a jeho části</div>
-<p><b>Rozhodovací strom</b> je model, který vzorek klasifikuje (nebo předpoví hodnotu) průchodem od <b>kořene</b> k <b>listu</b>: každý vnitřní <b>uzel</b> položí jednu binární otázku o jednom příznaku (např. \(x_1 \gt \frac14\)), <b>větev</b> je odpověď a <b>list</b> (koncový uzel) nese výslednou třídu nebo hodnotu. <b>Velikost</b> stromu je počet uzlů (dělení), <b>hloubka</b> je délka nejdelší cesty od kořene k listu. Strom s jediným uzlem je <b>pahýl</b> (stump).</p>
-<p class="jinak">„dvacet otázek“: Má srst? Má čtyři nohy? … Predikce stojí tolik otázek, kolik je hloubka stromu – nezávisí na počtu trénovacích vzorků.</p></div>
+<p><b>Rozhodovací strom</b> je model, který vzorek klasifikuje (nebo předpoví hodnotu) průchodem od <b>kořene</b> k <b>listu</b>: každý vnitřní <b>uzel</b> položí jednu binární otázku o jednom příznaku (např. \(x_1 \gt \frac14\)), <b>větev</b> je odpověď a <b>list</b> (koncový uzel) nese výslednou třídu nebo hodnotu. <b>Velikost</b> stromu je počet uzlů (dělení), <b>hloubka</b> je délka nejdelší cesty od kořene k listu. Strom s jediným uzlem je <b>pařez</b> (stump).</p>
+<p class="jinak">„dvacet otázek“: Má srst? Má čtyři nohy? … Otázky se mohou týkat číselných (\(x_1 \gt \frac14\), počet nohou), kategorických (kůže = srst) i binárních (je roztomilé?) příznaků. Predikce stojí tolik otázek, kolik je hloubka stromu – nezávisí na počtu trénovacích vzorků. Strom je <b>interpretovatelný</b>: u každé predikce víme, jakou cestou (kterými odpověďmi) jsme k rozhodnutí došli.</p></div>
 <div class="schema narrow">
 <svg viewBox="0 0 560 250" role="img" aria-label="Rozhodovací strom s kořenem n1, uzly n2 až n4 a listy l1 až l4">
   <g class="ln"><path d="M280 45 L120 100"/><path d="M280 45 L360 100"/><path d="M360 125 L250 175"/><path d="M360 125 L450 175"/><path d="M250 200 L200 225"/><path d="M250 200 L300 225"/><path d="M450 200 L410 225"/><path d="M450 200 L500 225"/></g>
@@ -134,7 +142,11 @@
 <tr><td>\(\hat y_R\)</td><td>většinová třída oblasti (hodnota listu)</td></tr>
 <tr><td>\(I(\cdot)\)</td><td>indikátor – počítá chybně zařazené body</td></tr>
 </table>
-<p>V praxi se místo počtu chyb používá Gini nebo entropie (viz níže). U regrese je kritériem součet čtverců \(\sum_{i\in R}(y_i - \hat y_R)^2\) a hodnotou listu průměr – model je po částech konstantní („schody“).</p></div>
+<p><b>Slovy:</b> každé dělení se dělá podle <b>jediného</b> příznaku, takže otázka zní: který příznak \(j\) a jaký práh \(s\)? Pro každou dvojici \((j, s)\) rozdělíme body uzlu na dvě části (\(x_{ij} \gt s\) a \(x_{ij} \le s\)). V každé části všechny body označíme její většinovou třídou a spočítáme, kolik z nich je tím zařazeno špatně (\(E_R\)). Oba počty sečteme a vybereme dvojici s nejmenším součtem. Prahy stačí zkoušet mezi sousedními hodnotami příznaku, proto to jde hrubou silou; stejné hledání se pak opakuje v každé nové oblasti.</p>
+<p>Příklad z přednášky (19 bodů, 10 : 9): bez dělení je 9 chyb. Nejlepší první řez je \(x_2 \gt 0{,}25\) – v horní oblasti zůstane 5 chyb a v dolní 1, tedy \(E = 5 + 1 = 6\).</p>
+<p>V praxi se místo počtu chyb používá Gini nebo entropie (viz níže). U regrese je kritériem součet čtverců \(\sum_{i\in R}(y_i - \hat y_R)^2\) a hodnotou listu průměr – model je po částech konstantní („schody“). Slovy: jak moc se hodnoty \(y\) v oblasti rozptylují kolem jejího průměru (průměrná čtvercová chyba vynásobená počtem bodů).</p></div>
+<div class="box pozor"><div class="box-t">Pozor: E v CART není střední hodnota</div>
+<p>V rozkladu testové chyby je \(\mathbb E\) <b>střední hodnota</b> (průměr). V CART značí \(E_k\) a \(E_R\) <b>chybu</b> uzlu nebo oblasti – počet chybně zařazených bodů (u regrese součet čtverců). Stejné písmeno, jiný význam.</p></div>
 <div class="box postup"><div class="box-t">Hladové růstání stromu</div>
 <ol>
 <li>Pro každou oblast spočítej nejlepší dělení – projdi příznaky \(j\) a prahy \(s\) (hrubou silou nebo pomocí histogramů).</li>
@@ -149,7 +161,12 @@
 <li><b>entropie</b> \(H_R = -\sum_y p_R(y)\log p_R(y)\);</li>
 <li><b>Giniho nečistota</b> \[ G_R = \sum_y p_R(y)(1 - p_R(y)) = 1 - \sum_y p_R(y)^2 \]</li>
 </ul>
-<p>Všechny jsou nulové pro čistý uzel (jediná třída) a maximální pro rovnoměrné zastoupení tříd.</p>
+<p>Všechny jsou nulové pro čistý uzel (jediná třída) a maximální pro rovnoměrné zastoupení tříd. Slovy:</p>
+<ul>
+<li><b>chybovost</b> = podíl bodů, které nepatří do většinové třídy uzlu;</li>
+<li><b>entropie</b> = kolik bitů v průměru potřebujeme, abychom zjistili třídu náhodně vybraného bodu z uzlu;</li>
+<li><b>Gini</b> = pravděpodobnost, že náhodně vybraný bod zařadíme špatně, když mu třídu přidělíme náhodně podle podílů tříd v uzlu.</li>
+</ul>
 <p class="jinak">„jak moc je uzel promíchaný“. Gini a entropie jsou hladké a ostře konkávní, takže odmění i dělení, které počet chyb nezmění, ale udělá jeden z uzlů čistším – proto se v praxi preferují.</p></div>
 <div class="box priklad"><div class="box-t">Ručně (přednáška, dvě třídy, log₂)</div>
 <p>List 4 : 1 (\(p = 0{,}8\)): chyba 1 (chybovost 0,2); \(H = -0{,}8\log_20{,}8 - 0{,}2\log_20{,}2 = 0{,}72\) bitu; \(G = 0{,}8\cdot0{,}2 + 0{,}2\cdot0{,}8 = 0{,}32\). Kořen 10 : 9: \(H = 1{,}00\) bit, \(G = 0{,}50\). Čistý list: všechny tři nulové.</p></div>
@@ -167,11 +184,11 @@
 <figure class="wide"><div class="paper"><img src="figures/fig06_tree_depth.png" alt="Hranice rozhodnutí stromu pro hloubky 1, 3 a 10 a přesnost vs. hloubka" loading="lazy"></div>
 <figcaption><b>Obr. 6.5</b> Data vína (3 odrůdy), dva příznaky: alkohol a flavonoidy (vlastní volba, 115 trénovacích a 63 testovacích vzorků jako v přednášce). Barva pozadí = rozhodnutí stromu.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
-<p>Strom dělí prostor <b>osově rovnoběžnými obdélníky</b>. Hloubka 1 (pahýl) umí jen jeden řez – dvě třídy z tří (podučení). Hloubka 3 zachytí strukturu. Hloubka 10 vyrobí úzké pruhy kolem jednotlivých bodů: trénovací přesnost 1,00, testovací už neroste. Trénovací přesnost s hloubkou roste vždy, testovací se zastaví a může klesnout.</p></div>
+<p>Strom dělí prostor <b>osově rovnoběžnými obdélníky</b>. Hloubka 1 (pařez) umí jen jeden řez – dvě třídy z tří (podučení). Hloubka 3 zachytí strukturu. Hloubka 10 vyrobí úzké pruhy kolem jednotlivých bodů: trénovací přesnost 1,00, testovací už neroste. Trénovací přesnost s hloubkou roste vždy, testovací se zastaví a může klesnout.</p></div>
 <div class="box parametry"><div class="box-t">Parametry: rozhodovací strom (CART)</div>
 <div class="tablewrap"><table class="params">
 <tr><th>parametr</th><th>co znamená</th><th><span class="up">↑</span> když ho zvětším</th><th><span class="dn">↓</span> když ho zmenším</th></tr>
-<tr><td><code>max_depth</code></td><td>maximální hloubka (počet otázek na cestě)</td><td>složitější strom, jemnější obdélníky, trénovací chyba → 0, vysoký rozptyl (přeučení)</td><td>jednodušší strom, vyšší bias; hloubka 1 = pahýl (podučení)</td></tr>
+<tr><td><code>max_depth</code></td><td>maximální hloubka (počet otázek na cestě)</td><td>složitější strom, jemnější obdélníky, trénovací chyba → 0, vysoký rozptyl (přeučení)</td><td>jednodušší strom, vyšší bias; hloubka 1 = pařez (podučení)</td></tr>
 <tr><td><code>min_samples_leaf</code></td><td>minimální počet vzorků v listu</td><td>větší, „průměrnější“ listy, hladší model, méně přeučení</td><td>listy i s jedním bodem – strom kopíruje šum</td></tr>
 <tr><td><code>min_samples_split</code> (\(n_{\min}\))</td><td>kolik bodů musí uzel mít, aby se smel dělit</td><td>dřívější zastavení, menší strom</td><td>dělí se i malé uzly</td></tr>
 <tr><td><code>max_leaf_nodes</code> / počet dělení</td><td>velikost stromu</td><td>složitější model</td><td>jednodušší model</td></tr>
@@ -184,9 +201,9 @@
 <tr><td>jednoduchý a intuitivní, čitelný; zvládne číselné i kategorické příznaky; minimální předzpracování (nezávisí na škálování – není potřeba normalizace); zvládne chybějící hodnoty (náhradní, surrogate dělení); nevadí mu korelované příznaky</td><td><b>nestabilita</b> – malá změna dat přepíše celý strom (lék: bagging, random forest); <b>přeučení hlubokých stromů</b> (lék: pravidla zastavení, prořezávání, bagging, random forest)</td></tr>
 </table></div>
 
-<h2 id="bagging">Ansámbly a bagging</h2>
-<div class="box definice" id="def-ansambl"><div class="box-t">Definice: ansámblová metoda</div>
-<p><b>Ansámblová metoda</b> kombinuje mnoho základních modelů (zde stromů) do jednoho silnějšího: <b>bagging</b> prostým průměrem, <b>boosting</b> (AdaBoost) váženým průměrem; dále mnoho variant (LPBoost, RUSBoost, RobustBoost, XGBoost…).</p>
+<h2 id="bagging">Ensemble methods a bagging</h2>
+<div class="box definice" id="def-ansambl"><div class="box-t">Definice: ensemble method</div>
+<p><b>Ensemble method</b> kombinuje mnoho základních modelů (zde stromů) do jednoho silnějšího a složitějšího modelu: <b>bagging</b> prostým průměrem, <b>boosting</b> (AdaBoost) váženým průměrem; dále mnoho variant (LPBoost, RUSBoost, RobustBoost, XGBoost…).</p>
 <p class="jinak">„moudrost davu“. Bagging útočí na <b>rozptyl</b>, boosting na <b>bias</b>.</p></div>
 <div class="box definice" id="def-bootstrap"><div class="box-t">Definice: bootstrap výběr a bagging</div>
 <p><b>Bootstrap výběr</b> je náhodný výběr \(n'\) vzorků z trénovací množiny <b>s vracením</b> (obvykle \(n' = n\)), takže některé vzorky jsou v něm víckrát a jiné vůbec. <b>Bagging</b> (bootstrap aggregation) natrénuje \(M\) modelů na \(M\) bootstrap výběrech a jejich predikce zprůměruje: \(h_{\text{bagg}}(\mathbf x) = \frac1M\sum_{m=1}^Mh_{T_m}(\mathbf x)\) (u klasifikace většinové hlasování).</p>
@@ -201,6 +218,7 @@
 <tr><td>\(M\)</td><td>počet stromů v průměru</td></tr>
 <tr><td>\(\rho\)</td><td>korelace mezi stromy – stromy sdílejí stejná data, takže nejsou nezávislé</td></tr>
 </table>
+<p><b>Slovy:</b> u nezávislých stromů klesne rozptyl průměru \(M\)-krát. U korelovaných má dvě části. Člen \(\rho\sigma_1^2\) je chyba, kterou mají stromy <i>společnou</i> (vidí stejná data, takže se pletou podobně) – průměrováním nezmizí. Člen \(\frac{1-\rho}{M}\sigma_1^2\) jsou jejich <i>vlastní</i> náhodné chyby – ty se v průměru navzájem ruší. Čím menší korelace, tím víc bagging pomůže.</p>
 <p>S rostoucím \(M\) druhý člen mizí, ale první \(\rho\sigma_1^2\) zůstává – rozptyl neklesne pod \(\rho\sigma_1^2\). V přednášce: z jednoho bootstrap stromu na \(M = 50\) klesl rozptyl predikce z 0,00465 na 0,00175 – <b>2,7×, ne 50×</b>. (Dosazením vychází \(\rho \approx 0{,}36\).) Proto random forest stromy navíc „dekoreluje“.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig06_bagging.png" alt="Predikce jednoho stromu a baggingu přes 20 trénovacích sad a teoretický rozptyl v závislosti na M" loading="lazy"></div>
 <figcaption><b>Obr. 6.6</b> Vlevo a uprostřed: predikce regresního stromu (max_depth = 4) a baggingu (M = 50) natrénovaných na 20 různých trénovacích sadách po 45 bodech (tenké modré čáry). Vpravo: rozptyl průměru \(M\) stromů podle vzorce pro tři korelace \(\rho\).</figcaption></figure>
@@ -211,9 +229,9 @@
 <h2 id="rf">Random forest</h2>
 <div class="box definice" id="def-random-forest"><div class="box-t">Definice: random forest</div>
 <p><b>Random forest</b> je bagging rozhodovacích stromů s jedním zdrojem náhody navíc: při každém dělení uzlu smí strom vybírat jen z <b>náhodné podmnožiny příznaků</b>. Má tedy dva nezávislé zdroje náhodnosti – které vzorky strom vidí (bootstrap) a které příznaky smí každé dělení použít.</p>
-<p class="jinak">kdyby jeden příznak byl velmi silný, všechny bagged stromy by se ptaly hlavně na něj a byly by si podobné (vysoké \(\rho\)). Náhodný výběr příznaků je donutí být různorodé, stromy jsou méně korelované, a proto se průměrování víc vyplatí.</p></div>
+<p class="jinak">kdyby jeden příznak byl velmi silný, všechny bagged stromy by se ptaly hlavně na něj a byly by si podobné (vysoké \(\rho\)). Náhodný výběr příznaků je donutí být různorodé, stromy jsou méně korelované, a proto se průměrování víc vyplatí. Random forest je tedy odpověď na otázku: jak snížit korelaci stromů, aby byl bagging účinný?</p></div>
 <div class="box definice" id="def-oob"><div class="box-t">Definice: out-of-bag (OOB) vzorky</div>
-<p><b>Out-of-bag vzorky</b> stromu jsou trénovací vzorky, které se do jeho bootstrap výběru nedostaly (ostatní jsou in-bag); slouží jako validační data. OOB skóre vzorku se počítá jen ze stromů, pro které je tento vzorek OOB.</p>
+<p><b>Out-of-bag vzorky</b> stromu jsou trénovací vzorky, které se do jeho bootstrap výběru nedostaly (ostatní jsou in-bag); slouží jako validační data. Každý strom má jiné OOB vzorky, tedy vlastní validační množinu. OOB skóre vzorku se počítá jen ze stromů, pro které je tento vzorek OOB.</p>
 <p class="jinak">bootstrap velikosti \(n\) vynechá každý vzorek s pravděpodobností \((1 - 1/n)^n \to e^{-1} \approx 37\,\%\) (pro \(n = 10\): 0,35; \(n = 100\): 0,366) – odtud pravidlo „2/3 in-bag, 1/3 OOB“. Dostaneme tak odhad testové chyby bez křížové validace – užitečné u malých dat. Každý vzorek ale hodnotí jen ≈ 1/3 stromů, takže OOB skóre bývá mírně pesimistické; nemíchat OOB a validační skóre při porovnání modelů.</p></div>
 <figure><div class="paper"><img src="figures/fig06_rf.png" alt="OOB chyba random forestu v závislosti na počtu stromů pro tři hodnoty max_features" loading="lazy"></div>
 <figcaption><b>Obr. 6.7</b> Syntetická data (500 vzorků, 20 příznaků, z nich 6 informativních a 4 redundantní, 5 % zašuměných labelů): OOB chyba v závislosti na počtu stromů pro tři hodnoty <code>max_features</code>.</figcaption></figure>
@@ -235,9 +253,24 @@
 
 <h2 id="adaboost">Adaptivní boosting (AdaBoost)</h2>
 <div class="box definice" id="def-adaboost"><div class="box-t">Definice: AdaBoost</div>
-<p><b>AdaBoost</b> je ansámblová metoda, která trénuje slabé klasifikátory \(h_m\) <b>postupně</b>, každý na převážených datech (chybně klasifikované vzorky dostanou vyšší váhu), a výsledek je jejich váženým hlasováním (pro třídy \(\pm1\)):
+<p><b>AdaBoost</b> je ensemble method, která trénuje slabé klasifikátory \(h_m\) <b>postupně</b>, každý na převážených datech (chybně klasifikované vzorky dostanou vyšší váhu), a výsledek je jejich váženým hlasováním (pro třídy \(\pm1\)):
 \[ H(\mathbf x) = \operatorname{sign}\Big(\sum_{m=1}^M\alpha_mh_m(\mathbf x)\Big) \]</p>
-<p class="jinak">každý další „slabý žák“ se soustředí na to, co předchozí pokazili, a lepší žák má ve finálním hlasování silnější hlas. Z mnoha jednoduchých (např. pahýlů) vznikne silný, složitý klasifikátor – boosting snižuje bias.</p></div>
+<p class="jinak">každý další „slabý žák“ se soustředí na to, co předchozí pokazili, a lepší žák má ve finálním hlasování silnější hlas. Z mnoha jednoduchých (typicky pařezů) vznikne silný, složitý klasifikátor – boosting snižuje bias.</p></div>
+<div class="box intuice"><div class="box-t">Princip: AdaBoost = vážené hlasování pařezů</div>
+<p>Slabý klasifikátor je v AdaBoostu nejčastěji <b>pařez</b> (stump) – strom s jediným dělením, tedy jeden osově rovnoběžný řez „na jedné straně +1, na druhé −1“. Sám je slabý, jen o něco lepší než náhoda. AdaBoost jich postupně natrénuje \(M\) a výsledek je jejich <b>vážený součet</b>: každý pařez hlasuje \(+1\) nebo \(-1\), jeho hlas se násobí vahou \(\alpha_m\) a o třídě rozhodne znaménko součtu. Z několika přímých řezů tak vznikne „schodovitá“, nelineární hranice (obr. 6.10).</p>
+<p><b>Dva druhy vah – nepléct:</b></p>
+<ul>
+<li><b>váha vzorku</b> \(w_i\) – jak moc se má <i>další</i> pařez o vzorek \(i\) starat; mění se po každém kole;</li>
+<li><b>váha pařezu</b> \(\alpha_m\) – jak silný hlas má pařez \(m\) ve finálním hlasování; spočítá se jednou a už se nemění.</li>
+</ul>
+<p><b>Jak se mění váhy vzorků:</b></p>
+<ol>
+<li>Na začátku jsou všechny vzorky stejně důležité: \(w_i = 1/n\).</li>
+<li>Pařez se vybírá podle <b>vážené chyby</b> \(\epsilon_m\) = součet vah chybně zařazených vzorků. Splést „těžký“ vzorek stojí hodně, splést „lehký“ málo – proto se vyplatí trefit hlavně těžké vzorky.</li>
+<li>Po kole se váha každého <b>správně</b> zařazeného vzorku vynásobí \(e^{-\alpha_m} \lt 1\) (klesne) a každého <b>chybně</b> zařazeného \(e^{+\alpha_m} \gt 1\) (vzroste). Čím přesnější pařez (větší \(\alpha_m\)), tím silnější převážení.</li>
+<li>Dělení \(Z_m\) váhy znovu sečte na 1 – váhy jsou „podíly pozornosti“, které se jen přelévají mezi vzorky.</li>
+</ol>
+<p>Po převážení mají chybně zařazené vzorky dohromady <b>přesně polovinu</b> celkové váhy. Na nových vahách je tedy právě natrénovaný pařez stejně dobrý jako hod mincí (\(\epsilon = 0{,}5\)) a další kolo musí najít <i>jiný</i> řez – takový, který opraví dosavadní chyby.</p></div>
 <div class="box postup"><div class="box-t">Algoritmus AdaBoost (data \(\mathbf x_i\in\mathbb R^d\), \(y_i\in\{-1,+1\}\))</div>
 <ol>
 <li>Inicializuj váhy vzorků \(w_i^{(1)} = 1/n\).</li>
@@ -246,23 +279,45 @@
 <li>Převáž vzorky: \(w_i^{(m+1)} = w_i^{(m)}e^{-\alpha_my_ih_m(\mathbf x_i)}/Z_m\), kde \(Z_m = \sum_iw_i^{(m)}e^{-\alpha_my_ih_m(\mathbf x_i)}\) normalizuje váhy na součet 1.</li>
 <li>Opakuj 2–4 pro všech \(M\) slabých klasifikátorů.</li>
 </ol>
-<p>Správně zařazené (\(y_ih_m = +1\)) vzorky váhu ztratí (\(e^{-\alpha}\)), chybné ji získají (\(e^{+\alpha}\)). Při \(\epsilon_m = 0{,}5\) (náhoda) je \(\alpha_m = 0\) – klasifikátor nemá hlas; čím menší chyba, tím větší \(\alpha_m\).</p></div>
-<div class="box priklad"><div class="box-t">AdaBoost krok za krokem (přednáška: 10 vzorků, 3 pahýly)</div>
+<p>Správně zařazené (\(y_ih_m = +1\)) vzorky váhu ztratí (\(e^{-\alpha}\)), chybné ji získají (\(e^{+\alpha}\)). Při \(\epsilon_m = 0{,}5\) (náhoda) je \(\alpha_m = 0\) – klasifikátor nemá hlas; čím menší chyba, tím větší \(\alpha_m\).</p>
+<p><b>Slovy, vzorec pro \(\alpha_m\):</b> zlomek \(\frac{1 - \epsilon_m}{\epsilon_m}\) je poměr „váha, kterou pařez trefil : váha, kterou spletl“. Pařez, který trefí 70 % váhy, má poměr 70 : 30:</p>
+\[ \alpha = \tfrac12\ln\tfrac{0{,}70}{0{,}30} = \tfrac12\ln 2{,}33 = 0{,}42 \]
+<p>Logaritmus zajistí, že pařez na úrovni náhody (50 : 50, poměr 1) dostane \(\alpha = 0\) a pařez horší než náhoda zápornou váhu – jeho hlas se otočí.</p></div>
+<div class="box priklad"><div class="box-t">AdaBoost krok za krokem (přednáška: 10 vzorků, 3 pařezy)</div>
 <ol>
-<li>Všechny váhy 0,10. První pahýl splete 3 vzorky: \(\epsilon_1 = 3\cdot0{,}10 = 0{,}30\), \(\alpha_1 = \frac12\ln\frac{0{,}70}{0{,}30} = 0{,}42\). (Vlastní dopočet: \(Z_1 = 0{,}917\); správné vzorky dostanou váhu 0,071, chybné 0,167.)</li>
-<li>Druhý pahýl na převážených datech trefí tři „těžké“ modré a splete tři lehké červené: \(\epsilon_2 = 3\cdot0{,}07 = 0{,}21\), \(\alpha_2 = 0{,}65 \gt \alpha_1\).</li>
+<li>Všechny váhy 0,10. První pařez splete 3 vzorky: \(\epsilon_1 = 3\cdot0{,}10 = 0{,}30\), \(\alpha_1 = \frac12\ln\frac{0{,}70}{0{,}30} = 0{,}42\). (Vlastní dopočet: \(Z_1 = 0{,}917\); správné vzorky dostanou váhu 0,071, chybné 0,167.)</li>
+<li>Druhý pařez na převážených datech trefí tři „těžké“ modré a splete tři lehké červené: \(\epsilon_2 = 3\cdot0{,}07 = 0{,}21\), \(\alpha_2 = 0{,}65 \gt \alpha_1\).</li>
 <li>Třetí (vodorovný) splete tři ze čtyř nejlehčích vzorků (každý přesně 1/22): \(\epsilon_3 = 0{,}14\), \(\alpha_3 = 0{,}92\).</li>
-<li>\(H(\mathbf x) = \operatorname{sign}(0{,}42h_1 + 0{,}65h_2 + 0{,}92h_3)\) – tři osově rovnoběžné pahýly dají netriviální oblast, která správně zařadí všech 10 vzorků.</li>
-</ol></div>
-<figure class="wide"><div class="paper"><img src="figures/fig06_adaboost.png" alt="Hranice AdaBoostu pro 1, 3, 20 a 300 pahýlů" loading="lazy"></div>
-<figcaption><b>Obr. 6.8</b> AdaBoost s pahýly na zašuměných „dvou měsících“ (200 trénovacích bodů); v titulcích přesnost na trénovacích a na 2000 nových bodech.</figcaption></figure>
+<li>\(H(\mathbf x) = \operatorname{sign}(0{,}42h_1 + 0{,}65h_2 + 0{,}92h_3)\) – tři osově rovnoběžné pařezy dají netriviální oblast, která správně zařadí všech 10 vzorků.</li>
+</ol>
+<p>Vývoj vah vzorků (✓ = pařez vzorek trefil, ✗ = spletl; přesně: 1/14 = 0,071, 1/6 = 0,167, 1/22 = 0,045, 7/66 = 0,106):</p>
+<div class="tablewrap"><table class="compact">
+<tr><th>skupina vzorků</th><th>\(h_1\)</th><th>\(w^{(2)}\)</th><th>\(h_2\)</th><th>\(w^{(3)}\)</th></tr>
+<tr><td>2 modré vlevo</td><td>✓</td><td>0,07</td><td>✓</td><td>0,05</td></tr>
+<tr><td>3 modré vpravo nahoře</td><td>✗</td><td>0,17</td><td>✓</td><td>0,11</td></tr>
+<tr><td>3 červené uprostřed</td><td>✓</td><td>0,07</td><td>✗</td><td>0,17</td></tr>
+<tr><td>2 červené vpravo</td><td>✓</td><td>0,07</td><td>✓</td><td>0,05</td></tr>
+</table></div>
+<p>Na začátku mají všechny váhu 0,10. Vzorek, který pařez splete, ztěžkne; vzorek, který trefí, zlehčí. Nejlehčí jsou na konci vzorky, které oba pařezy trefily – a právě ty si třetí pařez „může dovolit“ splést.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig06_ada_kola.png" alt="AdaBoost kolo po kole: tři pařezy, chybně zařazené vzorky a váhy vzorků po každém převážení" loading="lazy"></div>
+<figcaption><b>Obr. 6.9</b> Příklad z přednášky (slidy 37–40, překresleno): 10 vzorků, tři kola AdaBoostu. Horní řada: pařez \(h_m\) (barva pozadí = jeho rozhodnutí), kroužek = chybně zařazený vzorek, velikost značky a číslo = váha, se kterou pařez pracoval. Dolní řada: váhy vzorků po převážení.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
-<p>Jeden pahýl = jeden řez (vysoký bias). Každé kolo přidá řez tam, kde se dosud chybovalo – hranice je postupně složitější a bias klesá (test 0,82 → 0,90). Při 300 kolech trénovací přesnost dosáhne 1,00 díky úzkým „výběžkům“ kolem jednotlivých bodů. <b>Šum v labelech</b> (přednáška): tři chybně označené vzorky ze 80 začínají s 3,75 % celkové váhy a po 40 kolech drží 37 %; trénovací chyba je 0 díky proužkům užším než 0,01 kolem nich – AdaBoost je na chybné labely citlivý.</p></div>
+<p><b>Kolo 1:</b> svislý pařez splete tři modré vzorky vpravo nahoře, takže jejich váha vyroste z 0,10 na 0,17 a ostatním klesne na 0,07. <b>Kolo 2:</b> druhý pařez se učí na nových vahách – posune řez doprava, aby těžké modré trefil, a radši splete tři lehké červené (\(\epsilon_2 = 3\cdot0{,}07 = 0{,}21\)). Teď ztěžknou ty červené. <b>Kolo 3:</b> nejlehčí (0,05) jsou čtyři vzorky, které oba předchozí pařezy trefily; třetí, vodorovný pařez obětuje tři z nich a trefí všechny těžké (\(\epsilon_3 = 0{,}14\)). Každý pařez tak opravuje chyby předchozích. Jejich váhy \(\alpha\) rostou (0,42 → 0,65 → 0,92), protože na převážených datech mají menší váženou chybu.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig06_ada_silny.png" alt="Silný klasifikátor AdaBoostu jako vážený součet tří pařezů a jeho schodovitá hranice" loading="lazy"></div>
+<figcaption><b>Obr. 6.10</b> Silný klasifikátor z příkladu (slide 41, překresleno): vážený součet tří pařezů a výsledná oblast \(H(\mathbf x)\).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Každý pařez dělí plochu jediným přímým řezem a každý sám několik vzorků splete. Silný klasifikátor v každém bodě sečte hlasy (\(+\alpha_m\) za modrou, \(-\alpha_m\) za červenou) a rozhodne podle znaménka. Pro dva modré vzorky vlevo hlasují \(h_1\) a \(h_2\) pro modrou a \(h_3\) pro červenou:</p>
+\[ 0{,}42 + 0{,}65 - 0{,}92 = 0{,}15 \gt 0 \;\Rightarrow\; \text{modrá} \]
+<p>Zařadí je tedy správně, i když je nejsilnější pařez spletl. Pro červený vzorek vpravo nahoře vychází \(-0{,}42 - 0{,}65 + 0{,}92 = -0{,}15\), tedy červená. Výsledná hranice má tvar schodu, který žádný jednotlivý pařez nakreslit neumí, a zařadí správně všech 10 vzorků.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig06_adaboost.png" alt="Hranice AdaBoostu pro 1, 3, 20 a 300 pařezů" loading="lazy"></div>
+<figcaption><b>Obr. 6.11</b> AdaBoost s pařezy na zašuměných „dvou měsících“ (200 trénovacích bodů); v titulcích přesnost na trénovacích a na 2000 nových bodech.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Jeden pařez = jeden řez (vysoký bias). Každé kolo přidá řez tam, kde se dosud chybovalo – hranice je postupně složitější a bias klesá (test 0,82 → 0,90). Při 300 kolech trénovací přesnost dosáhne 1,00 díky úzkým „výběžkům“ kolem jednotlivých bodů. <b>Šum v labelech</b> (přednáška): tři chybně označené vzorky ze 80 začínají s 3,75 % celkové váhy a po 40 kolech drží 37 %; trénovací chyba je 0 díky proužkům užším než 0,01 kolem nich – AdaBoost je na chybné labely citlivý.</p></div>
 <div class="box parametry"><div class="box-t">Parametry: AdaBoost</div>
 <div class="tablewrap"><table class="params">
 <tr><th>parametr</th><th>co znamená</th><th><span class="up">↑</span> když ho zvětším</th><th><span class="dn">↓</span> když ho zmenším</th></tr>
 <tr><td>počet kol \(M\) (<code>n_estimators</code>)</td><td>kolik slabých klasifikátorů se postupně přidá</td><td>bias ↓, složitější hranice; při šumu v labelech přeučení (váha se soustředí na chybné vzorky)</td><td>jednodušší model, vyšší bias (podučení)</td></tr>
-<tr><td>typ / síla slabého klasifikátoru</td><td>např. pahýl (hloubka 1), mělký strom</td><td>silnější žák (hlubší strom) = rychlejší pokles chyby, ale snazší přeučení</td><td>pahýly = pomalý, ale bezpečný postup</td></tr>
+<tr><td>typ / síla slabého klasifikátoru</td><td>např. pařez (hloubka 1), mělký strom</td><td>silnější žák (hlubší strom) = rychlejší pokles chyby, ale snazší přeučení</td><td>pařezy = pomalý, ale bezpečný postup</td></tr>
 <tr><td><code>learning_rate</code> (scikit-learn)</td><td>zmenšení vah \(\alpha_m\) každého žáka</td><td>rychlejší učení, méně kol stačí</td><td>pomalejší, potřeba víc kol, obvykle lépe zobecní</td></tr>
 </table></div>
 <p class="volba">málo hyperparametrů – hlavně počet kol a typ slabého klasifikátoru; počet kol ladit na validaci (early stopping).</p></div>
@@ -273,7 +328,7 @@
 <div class="tablewrap"><table>
 <tr><th></th><th>bagging / random forest</th><th>boosting (AdaBoost)</th></tr>
 <tr><td>co snižuje</td><td>rozptyl</td><td>bias</td></tr>
-<tr><td>základní modely</td><td>hluboké, nezávisle trénované stromy</td><td>slabé (pahýly), trénované postupně</td></tr>
+<tr><td>základní modely</td><td>hluboké, nezávisle trénované stromy</td><td>slabé (pařezy), trénované postupně</td></tr>
 <tr><td>kombinace</td><td>prostý průměr / hlasování</td><td>vážené hlasování (\(\alpha_m\))</td></tr>
 <tr><td>paralelizace</td><td>ano (stromy jsou nezávislé)</td><td>ne (každé kolo závisí na předchozím)</td></tr>
 <tr><td>šum v labelech</td><td>odolný</td><td>citlivý</td></tr>
@@ -298,14 +353,14 @@
 <li>Zisk: nohy 1,92; kůže 1,92; oči 0,72; roztomilé 0,72 bitu.</li>
 <li>Dělit podle nohou nebo kůže (remíza); pak opakovat ve větvi, která ještě míchá třídy ({kotě, zebra}).</li>
 </ol></div>
-<p>Další algoritmy: <b>CHAID</b> (Chi-squared Automatic Interaction Detection), <b>MARS</b> (Multivariate Adaptive Regression Splines). <b>Prořezávání</b>: nejdřív nechat vyrůst celý strom a pak odříznout větve, které nezlepší validační chybu – alternativa k pravidlům zastavení.</p>
+<p><b>Prořezávání</b>: nejdřív nechat vyrůst celý strom a pak odříznout větve, které nezlepší validační chybu – alternativa k pravidlům zastavení.</p>
 
 <div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
-<p>„Očekávaná testová chyba se rozkládá na rozptyl – jak moc se model mění s trénovacími daty –, bias² – jak daleko je průměrný model od nejlepší predikce – a neodstranitelný šum. Velká mezera mezi trénovací a testovací chybou znamená vysoký rozptyl: pomůže víc dat, jednodušší model nebo bagging. Vysoká chyba i na tréninku znamená bias: pomůže složitější model, příznaky nebo boosting. CART staví strom hladově – v každém uzlu volí příznak a práh minimalizující Gini nebo entropii – a zastavuje podle hloubky nebo velikosti listu. Strom je čitelný, ale nestabilní. Bagging průměruje stromy z bootstrap výběrů a snižuje rozptyl, omezeně korelací stromů; random forest je dekoreluje náhodným výběrem příznaků na dělení a nabízí OOB odhad chyby. AdaBoost trénuje slabé klasifikátory postupně na převážených datech a váží je \(\alpha_m = \frac12\ln\frac{1-\epsilon_m}{\epsilon_m}\); snižuje bias, ale je citlivý na šum v labelech.“</p></div>
+<p>„Očekávaná testová chyba se rozkládá na rozptyl – jak moc se model mění s trénovacími daty –, bias² – jak daleko je průměrný model od nejlepší predikce – a neodstranitelný šum. Velká mezera mezi trénovací a testovací chybou znamená vysoký rozptyl: pomůže víc dat, jednodušší model nebo bagging. Vysoká chyba i na tréninku znamená bias: pomůže složitější model, příznaky nebo boosting. CART staví strom hladově – v každém uzlu volí příznak a práh minimalizující Gini nebo entropii – a zastavuje podle hloubky nebo velikosti listu. Strom je čitelný, ale nestabilní. Bagging průměruje stromy z bootstrap výběrů a snižuje rozptyl, omezeně korelací stromů; random forest je dekoreluje náhodným výběrem příznaků na dělení a nabízí OOB odhad chyby. AdaBoost skládá slabé klasifikátory – typicky pařezy – trénované postupně na převážených datech a váží je \(\alpha_m = \frac12\ln\frac{1-\epsilon_m}{\epsilon_m}\); snižuje bias, ale je citlivý na šum v labelech.“</p></div>
 
 <section class="souhrn" id="shrnuti">
 <h2 id="shrnuti-h">Shrnutí</h2>
-<p>Testová chyba = rozptyl + bias² + šum; složitost modelu vyvažuje bias a rozptyl a učicí křivky ukážou, který převládá. Rozhodovací strom klade binární otázky o jednotlivých příznacích a dělí prostor na osově rovnoběžné obdélníky; CART ho staví hladově podle nečistoty (Gini, entropie; u regrese čtverce) a zastavuje podle hloubky, velikosti listu nebo čistoty, případně prořezává. Strom nepotřebuje škálování, ale je nestabilní a hluboký přeučí. Bagging průměruje stromy natrénované na bootstrap výběrech a snižuje rozptyl, ale jen do \(\rho\sigma^2\); random forest přidá náhodnou podmnožinu příznaků na dělení, čímž stromy dekoreluje, a OOB vzorky (≈ 37 %) dávají odhad chyby bez CV. AdaBoost postupně přidává slabé klasifikátory na převážených datech s vahami \(\alpha_m\), snižuje bias, ale přeučí se na chybných labelech. ID3 dělí podle informačního zisku.</p>
+<p>Testová chyba = rozptyl + bias² + šum; složitost modelu vyvažuje bias a rozptyl a učicí křivky ukážou, který převládá. Rozhodovací strom klade binární otázky o jednotlivých příznacích a dělí prostor na osově rovnoběžné obdélníky; CART ho staví hladově podle nečistoty (Gini, entropie; u regrese čtverce) a zastavuje podle hloubky, velikosti listu nebo čistoty, případně prořezává. Strom nepotřebuje škálování, ale je nestabilní a hluboký přeučí. Bagging průměruje stromy natrénované na bootstrap výběrech a snižuje rozptyl, ale jen do \(\rho\sigma^2\); random forest přidá náhodnou podmnožinu příznaků na dělení, čímž stromy dekoreluje, a OOB vzorky (≈ 37 %) dávají odhad chyby bez CV. AdaBoost postupně přidává slabé klasifikátory (typicky pařezy) na převážených datech s vahami \(\alpha_m\), snižuje bias, ale přeučí se na chybných labelech. ID3 dělí podle informačního zisku.</p>
 <div class="takehome"><h3>Take-home messages</h3><ol>
 <li>Chyba = rozptyl + bias² + šum; šum neodstraníš.</li>
 <li>Velká mezera trénink–test = rozptyl (víc dat, jednodušší model, bagging); vysoká chyba všude = bias (složitější model, boosting).</li>
@@ -323,10 +378,18 @@
 <p>Rozklad očekávané testové chyby:</p>
 \[ \begin{aligned} \mathbb E[(h_T(\mathbf x) - y)^2] &= \mathbb E[(h_T - \bar h)^2] && \text{rozptyl} \\ &+ \mathbb E[(\bar h - \bar y)^2] && \text{bias}^2 \\ &+ \mathbb E[(\bar y - y)^2] && \text{šum} \end{aligned} \]
 <p>\(\bar h\) je průměrný model přes trénovací množiny, \(\bar y\) očekávaný label. Smíšené členy vypadnou, protože \(\mathbb E_T[h_T] = \bar h\) a \(\mathbb E_{y|\mathbf x}[y] = \bar y\). Ovlivníme rozptyl (víc dat, jednodušší model, bagging, regularizace) a bias (složitější model, víc příznaků, boosting); šum ne.</p></div></details>
+<details class="q"><summary>Co znamená 𝔼 v rozkladu testové chyby a co říká jeho dolní index?</summary><div>
+<p>\(\mathbb E\) je střední hodnota – průměr přes všechny možné hodnoty, vážený jejich pravděpodobností. Dolní index říká, přes co se průměruje:</p>
+<ul>
+<li>\(\mathbb E_T\) přes všechny možné trénovací množiny – tak vzniká průměrný model \(\bar h\);</li>
+<li>\(\mathbb E_{y\mid\mathbf x}\) přes možné labely v pevném bodě \(\mathbf x\) – tak vzniká očekávaný label \(\bar y(\mathbf x)\);</li>
+<li>\(\mathbb E_{\mathbf x, y}\) přes testovací body a jejich labely.</li>
+</ul>
+<p>Očekávaná testová chyba \(\mathbb E_{\mathbf x, y, T}[(h_T(\mathbf x) - y)^2]\) je tedy čtvercová chyba (predikce minus ground truth, na druhou) zprůměrovaná přes všechna možná testovací data i všechny možné trénovací množiny. Pozor: \(E_k\) v CART je jiná věc – počet chybně zařazených bodů v uzlu.</p></div></details>
 <details class="q"><summary>Vidíte velkou mezeru mezi trénovací a testovou chybou. Který je to režim a co s tím? A když je trénovací chyba nad ε?</summary><div>
 <p>Velká mezera (trénovací &lt; ε &lt; testovací) = vysoký rozptyl: víc trénovacích dat, jednodušší model (menší hloubka, regularizace), bagging. Trénovací chyba nad ε a testová blízko ní = vysoký bias: víc dat nepomůže (křivky už zkonvergovaly na špatné hodnotě), je potřeba složitější model, víc příznaků nebo boosting.</p></div></details>
-<details class="q"><summary>Definujte uzel, list, větev, velikost a hloubku stromu. Co je pahýl? Napište kritérium dělení CART.</summary><div>
-<p>Uzel = binární otázka o jednom příznaku; list = koncový uzel s odpovědí; větev = odpověď na otázku; velikost = počet uzlů (dělení); hloubka = nejdelší cesta kořen–list; pahýl = strom s jediným uzlem. CART minimalizuje přes příznak \(j\) a práh \(s\) součet chyb (nečistot) obou vzniklých oblastí \(E_{R_k}(j,s) + E_{R_k^C}(j,s)\), \(R_k = \{x_{ij} \gt s\}\). Je hladový – volí lokálně nejlepší dělení a nevrací se; globálně optimální strom by byl kombinatoricky nedosažitelný.</p></div></details>
+<details class="q"><summary>Definujte uzel, list, větev, velikost a hloubku stromu. Co je pařez? Napište kritérium dělení CART.</summary><div>
+<p>Uzel = binární otázka o jednom příznaku; list = koncový uzel s odpovědí; větev = odpověď na otázku; velikost = počet uzlů (dělení); hloubka = nejdelší cesta kořen–list; pařez = strom s jediným uzlem. CART minimalizuje přes příznak \(j\) a práh \(s\) součet chyb (nečistot) obou vzniklých oblastí \(E_{R_k}(j,s) + E_{R_k^C}(j,s)\), \(R_k = \{x_{ij} \gt s\}\). Je hladový – volí lokálně nejlepší dělení a nevrací se; globálně optimální strom by byl kombinatoricky nedosažitelný.</p></div></details>
 <details class="q"><summary>Porovnejte chybovost, entropii a Gini. Spočítejte je pro list 4 : 1.</summary><div>
 <p>Chybovost \(1 - \max p\), entropie \(-\sum p\log_2p\), Gini \(\sum p(1-p)\); všechny 0 pro čistý uzel, maximum při rovnoměrném zastoupení. List 4 : 1: chybovost 0,2 (1 chyba), entropie 0,72 bitu, Gini 0,32. Gini a entropie jsou hladké a konkávní, takže ocení i dělení, které nezmění počet chyb, ale vytvoří čistší uzel – proto se pro růst preferují.</p></div></details>
 <details class="q"><summary>Jak se liší regresní strom od klasifikačního?</summary><div>
@@ -341,7 +404,7 @@
 \[ \alpha_m = \frac12\ln\frac{1-\epsilon_m}{\epsilon_m} \]
 <p>Při \(\epsilon_m = 0{,}5\) je \(\alpha_m = 0\) – náhodný klasifikátor nemá hlas, při malé chybě je váha velká. Aktualizace vah vzorků:</p>
 \[ w_i \leftarrow \frac{w_i\,e^{-\alpha_my_ih_m(\mathbf x_i)}}{Z_m} \]
-<p>Chybně zařazené rostou, správné klesají; \(Z_m\) je normalizační konstanta, aby váhy dávaly součet 1. Citlivost na šum: chybně označený vzorek je „vždy špatně“, jeho váha roste kolo od kola a další klasifikátory se ho snaží za každou cenu trefit.</p></div></details>
+<p>Chybně zařazené rostou, správné klesají; \(Z_m\) je normalizační konstanta, aby váhy dávaly součet 1. V příkladu z přednášky mají po prvním pařezu tři spletené vzorky váhu 0,17 a ostatní 0,07, takže druhý pařez je trefí a radši splete tři lehké vzorky. Výsledek je vážené hlasování pařezů, které dohromady vytvoří schodovitou hranici. Citlivost na šum: chybně označený vzorek je „vždy špatně“, jeho váha roste kolo od kola a další klasifikátory se ho snaží za každou cenu trefit.</p></div></details>
 <details class="q"><summary>Bagging vs. boosting: který člen chyby každý z nich snižuje a který lze paralelizovat?</summary><div>
 <p>Bagging (a random forest) snižuje rozptyl průměrováním nezávisle natrénovaných (hlubokých) stromů – paralelizovatelný. Boosting snižuje bias postupným přidáváním slabých klasifikátorů zaměřených na chyby předchozích – sekvenční, paralelizovat nejde.</p></div></details>
 

@@ -567,7 +567,7 @@ def fig06_bias_variance():
     ax.set_title(T("Chyba vs. složitost (60 vzorků)", "Error vs. complexity (60 samples)"), fontsize=10)
     ns = np.unique(np.logspace(1.1, 3, 14).astype(int))
     for ax, d, ttl in [(axs[1], 8, T("Režim 1: vysoký rozptyl (strom hloubky 8)", "Regime 1: high variance (tree of depth 8)")),
-                       (axs[2], 1, T("Režim 2: vysoký bias (pahýl, hloubka 1)", "Regime 2: high bias (stump, depth 1)"))]:
+                       (axs[2], 1, T("Režim 2: vysoký bias (pařez, hloubka 1)", "Regime 2: high bias (stump, depth 1)"))]:
         a, b = [], []
         for n in ns:
             aa, bb = [], []
@@ -707,11 +707,101 @@ def fig06_adaboost():
         m = AdaBoostClassifier(DecisionTreeClassifier(max_depth=1), n_estimators=M, random_state=0).fit(X, y)
         regions(ax, m, X, h=200)
         scatter2(ax, X, y, s=12)
-        ax.set_title(f"M = {M} {T('pahýlů', 'stumps')}\n{T('trénink', 'train')} {cz(m.score(X, y))} · test {cz(m.score(Xt, yt))}",
+        ax.set_title(f"M = {M} {T('pařezů', 'stumps')}\n{T('trénink', 'train')} {cz(m.score(X, y))} · test {cz(m.score(Xt, yt))}",
                      fontsize=10)
         ax.set_xlabel("x₁")
     axs[0].set_ylabel("x₂")
     save(fig, "fig06_adaboost")
+
+
+# příklad z přednášky (slidy 37–41): 10 bodů odečtených ze slidu, 3 pařezy; čísla ε, α a vah odpovídají slidům
+ADA_X = np.array([[.11, .52], [.18, .29], [.37, .77], [.51, .85], [.66, .72],
+                  [.35, .57], [.52, .50], [.31, .14], [.86, .81], [.83, .23]])
+ADA_Y = np.array([1, 1, 1, 1, 1, -1, -1, -1, -1, -1])
+ADA_STUMPS = [(0, 0.245, 1), (0, 0.74, 1), (1, 0.65, -1)]   # (příznak, práh, třída pro x ≤ práh)
+
+
+def ada_stump(X, j, s, left):
+    return np.where(X[:, j] <= s, left, -left)
+
+
+def ada_run():
+    """Vrátí seznam kol: (váhy před kolem, predikce pařezu, ε, α, váhy po kole)."""
+    w = np.full(len(ADA_Y), 1 / len(ADA_Y))
+    out = []
+    for j, s, left in ADA_STUMPS:
+        p = ada_stump(ADA_X, j, s, left)
+        eps = w[p != ADA_Y].sum()
+        a = 0.5 * np.log((1 - eps) / eps)
+        w_new = w * np.exp(-a * ADA_Y * p)
+        w_new /= w_new.sum()
+        out.append((w, p, eps, a, w_new))
+        w = w_new
+    return out
+
+
+def ada_points(ax, w, labels=True, wrong=None):
+    """+1 = modrý křížek, −1 = oranžová čárka; plocha značky ∝ váha vzorku."""
+    for k, (c, mk) in enumerate([(C1, "+"), (C2, "_")]):
+        m = ADA_Y == (1 if k == 0 else -1)
+        ax.scatter(ADA_X[m, 0], ADA_X[m, 1], s=2200 * w[m], c=c, marker=mk, linewidths=3, zorder=3)
+    if wrong is not None:
+        ax.scatter(ADA_X[wrong, 0], ADA_X[wrong, 1], s=650, facecolors="none", edgecolors=INK, linewidths=1.2, zorder=2)
+    if labels:
+        for (x, y), v in zip(ADA_X, w):
+            ax.text(x + 0.075, y, cz(v), ha="left", va="center", fontsize=11, color=INK2, zorder=4,
+                    bbox=dict(boxstyle="round,pad=0.12", fc=SURF, ec="none", alpha=0.85))
+
+
+def ada_frame(ax, Z=None):
+    if Z is not None:
+        g = np.linspace(0, 1, 300)
+        xx, yy = np.meshgrid(g, g)
+        ax.contourf(xx, yy, (Z(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape) < 0).astype(float),
+                    levels=[-0.5, 0.5, 1.5], cmap=REG, zorder=0)
+        ax.contour(xx, yy, Z(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape), levels=[0], colors=[C3],
+                   linewidths=1.6, zorder=1)
+    ax.set_xlim(0, 1); ax.set_ylim(0, 1)
+    ax.set_xticks([]); ax.set_yticks([]); ax.grid(False)
+    for sp in ax.spines.values():
+        sp.set_visible(True)
+
+
+def fig06_ada_kola():
+    runs = ada_run()
+    sub, sup = "₁₂₃", "¹²³⁴"
+    fig, axs = plt.subplots(2, 3, figsize=(11, 7.4))
+    for m, (w, p, eps, a, w_new) in enumerate(runs):
+        j, s, left = ADA_STUMPS[m]
+        ax = axs[0, m]
+        ada_frame(ax, lambda P, j=j, s=s, left=left: ada_stump(P, j, s, left).astype(float))
+        ada_points(ax, w, wrong=np.where(p != ADA_Y)[0])
+        ax.set_title(T(f"kolo {m + 1}: pařez h{sub[m]} na vahách w⁽{sup[m]}⁾\nε{sub[m]} = {cz(eps)} · α{sub[m]} = {cz(a)}",
+                       f"round {m + 1}: stump h{sub[m]} on weights w⁽{sup[m]}⁾\nε{sub[m]} = {cz(eps)} · α{sub[m]} = {cz(a)}"),
+                     fontsize=12.5)
+        ax = axs[1, m]
+        ada_frame(ax)
+        ada_points(ax, w_new)
+        ax.set_title(T(f"nové váhy w⁽{sup[m + 1]}⁾ po kole {m + 1}", f"new weights w⁽{sup[m + 1]}⁾ after round {m + 1}"),
+                     fontsize=12.5)
+    axs[0, 0].set_ylabel(T("pařez a chyby", "stump and errors"), fontsize=12)
+    axs[1, 0].set_ylabel(T("převážení", "reweighting"), fontsize=12)
+    save(fig, "fig06_ada_kola")
+
+
+def fig06_ada_silny():
+    runs = ada_run()
+    fig, axs = plt.subplots(1, 4, figsize=(12, 3.5))
+    for m, ax in enumerate(axs[:3]):
+        j, s, left = ADA_STUMPS[m]
+        ada_frame(ax, lambda P, j=j, s=s, left=left: ada_stump(P, j, s, left).astype(float))
+        ada_points(ax, np.full(10, 0.1), labels=False)
+        ax.set_title(f"{'' if m == 0 else '+ '}{cz(runs[m][3])} · h{'₁₂₃'[m]}(x)", fontsize=14)
+    H = lambda P: sum(r[3] * ada_stump(P, *st) for r, st in zip(runs, ADA_STUMPS))
+    ada_frame(axs[3], H)
+    ada_points(axs[3], np.full(10, 0.1), labels=False)
+    axs[3].set_title("= H(x) = sign(…)", fontsize=14)
+    save(fig, "fig06_ada_silny")
 
 
 # =====================================================================  přednáška 7
@@ -830,6 +920,7 @@ def fig07_alpha():
 ALL = [fig01_gd_eta, fig01_knn_k, fig02_roc, fig02_kfold_var, fig03_hughes, fig03_pca_lda, fig03_tsne_perp,
        fig03_umap_params, fig04_poly, fig04_ridge_lasso, fig04_losses, fig04_svm_c, fig04_svm_rbf,
        fig06_terce, fig06_regimy, fig06_bias_variance, fig06_tree_depth, fig06_impurity, fig06_bagging, fig06_rf, fig06_adaboost,
+       fig06_ada_kola, fig06_ada_silny,
        fig07_activations, fig07_optimizers, fig07_early_stopping, fig07_alpha]
 
 if __name__ == "__main__":

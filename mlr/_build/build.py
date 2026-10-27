@@ -28,7 +28,7 @@ PAGES = [
      "Lineární a polynomiální regrese, ridge a LASSO, jádra, logistická regrese, perceptron a SVM."),
     ("05_vibecoding", "5", "Vibecoding: práce s AI agentem",
      "Jazykový model, agent a nástroje, kontext, kontrola výsledků a bezpečnost."),
-    ("06_stromy", "6", "Rozhodovací stromy a ansámbly",
+    ("06_stromy", "6", "Rozhodovací stromy a ensemble methods",
      "Bias, rozptyl a šum, CART, bagging, random forest a AdaBoost."),
     ("07_neuronove_site", "7", "Umělé neuronové sítě",
      "Neuron, aktivační funkce, backpropagation, optimalizátory, ztrátové funkce a regularizace."),
