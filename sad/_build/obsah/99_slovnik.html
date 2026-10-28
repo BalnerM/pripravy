@@ -164,3 +164,59 @@
 <div class="box definice" id="s-vyvazeny-mustek"><div class="box-t">vyvážený můstek</div>
 <p><b>Vyvážený můstek</b> je stav Wheatstoneova můstku, kdy mezi uzly B a D neprotéká žádný proud (napětí \(V_G = 0\)). Pak platí \(R_1/R_2 = R_3/R_X\).</p>
 <p class="jinak">oba děliče dělí napětí ve stejném poměru, středy jsou na stejném potenciálu a měřidlo ukazuje nulu.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-vyvazeny-mustek">výklad v kapitole P1 →</a></p></div>
+<h2 id="kP2" class="slovnik-kap">P2 · Úprava signálu: tranzistorové zesilovače a OZ</h2>
+<div class="box definice" id="s-zesilovac"><div class="box-t">zesilovač a zesílení</div>
+<p><b>Zesilovač</b> je obvod, jehož výstupní signál je zvětšenou kopií vstupního signálu; energii na zvětšení bere z napájecího zdroje. <b>Napěťové zesílení</b> je poměr výstupního a vstupního napětí, <b>proudové zesílení</b> poměr výstupního a vstupního proudu:
+\[ A_u = \frac{u_\text{výst}}{u_\text{vst}} \]
+\[ A_i = \frac{i_\text{výst}}{i_\text{vst}} \]</p>
+<p class="jinak">zesilovač „nafoukne“ slabý signál tak, aby s ním šlo dál pracovat. Nevyrábí energii z ničeho – bere ji z napájení a signál jen řídí, kolik jí pustí na výstup.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-zesilovac">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-bjt"><div class="box-t">bipolární tranzistor (BJT)</div>
+<p><b>Bipolární tranzistor</b> (BJT, <i>Bipolar Junction Transistor</i>) je polovodičová součástka se třemi vývody – <b>bází</b> (B), <b>kolektorem</b> (C) a <b>emitorem</b> (E) –, u které malý proud bází řídí mnohem větší proud kolektorem. Oba proudy odtékají emitorem:
+\[ i_E = i_B + i_C \]</p>
+<p class="jinak">tranzistor je „ventil“: malým proudem do báze otevírám velký proud z kolektoru do emitoru. Emitorem teče součet obou proudů.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-bjt">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-beta"><div class="box-t">proudový zesilovací činitel β (h21E)</div>
+<p><b>Proudový zesilovací činitel</b> \(\beta\), v katalozích \(h_{21E}\), je poměr proudu kolektorem a proudu bází tranzistoru:
+\[ \beta = h_{21E} = \frac{i_C}{i_B} \]</p>
+<p class="jinak">říká, kolikrát se zesílí proud bází – je to <b>proudové zesílení</b> tranzistoru. Typicky bývá ve stovkách.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-beta">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-se"><div class="box-t">zapojení se společným emitorem (SE)</div>
+<p><b>Zapojení se společným emitorem</b> (SE) je základní zapojení tranzistorového zesilovače: vstupní signál se přivádí do báze, výstup se odebírá z kolektoru a emitor je společný vstupu i výstupu (je na zemi, případně přes rezistor).</p>
+<p class="jinak">signál „pootvírá“ tranzistor přes bázi a změna kolektorového proudu vytvoří na rezistoru v kolektoru velkou změnu napětí. Zesiluje napětí i proud a výstup je <b>obrácený</b> (invertovaný).</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-se">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-re"><div class="box-t">vnitřní odpor emitoru r<sub>E</sub></div>
+<p><b>Vnitřní odpor emitoru</b> \(r_E\) (na slidu \(R_E\)) je odpor, přes který uvnitř tranzistoru prochází proud z báze do emitoru; u bipolárních tranzistorů je typicky kolem 25 Ω. Při pohledu do báze se jeví zvětšený \(\beta\)-krát.</p>
+<p class="jinak">do báze teče jen malý proud, ale emitorem teče \(\beta\)-krát větší. Proto se odpor v emitoru „z pohledu báze“ jeví \(\beta\)-krát větší.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-re">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-pracovni-bod"><div class="box-t">pracovní bod tranzistoru</div>
+<p><b>Pracovní bod</b> (klidový bod) tranzistoru jsou stejnosměrné hodnoty proudů a napětí tranzistoru bez vstupního signálu (klidový proud báze \(I_B\), kolektoru \(I_C\) a napětí na kolektoru), nastavené rezistory v okolí tranzistoru.</p>
+<p class="jinak">nastavení pracovního bodu = „lehce otevřít tranzistor“. Napětí na kolektoru se volí zhruba na <b>polovinu napájecího napětí</b>, aby se výstup mohl stejně daleko hýbat nahoru i dolů.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-pracovni-bod">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-sc"><div class="box-t">zapojení se společným kolektorem (SC)</div>
+<p><b>Zapojení se společným kolektorem</b> (SC, <b>emitorový sledovač</b>) je tranzistorový zesilovač, u kterého je kolektor připojen přímo na napájení, signál se přivádí do báze a výstup se odebírá z emitoru. Napěťové zesílení je 1, ale zapojení zesiluje proud (a tím výkon).</p>
+<p class="jinak">napětí chci zachovat, proud posílit. Emitor „sleduje“ bázi (o 0,7 V níž), ale výstup může dodat \(\beta\)-krát větší proud, než odebírá vstup. Je to tranzistorová obdoba <a href="04_dalsi_zapojeni.html#def-sledovac">sledovače s OZ</a>.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-sc">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-darlington"><div class="box-t">Darlingtonovo zapojení</div>
+<p><b>Darlingtonovo zapojení</b> (Darlingtonův pár) jsou dva tranzistory zapojené tak, že emitorový proud prvního tranzistoru \(T_1\) je proudem báze druhého \(T_2\) a kolektory jsou spojené. Navenek se chová jako jeden tranzistor se třemi vývody C, B, E a s proudovým zesílením přibližně rovným součinu zesílení obou tranzistorů.</p>
+<p class="jinak">první tranzistor zesílí proud báze, druhý zesílí výsledek ještě jednou – celkové zesílení je zesílení jednoho krát zesílení druhého.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-darlington">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-diferencni-par"><div class="box-t">rozdílový zesilovač s tranzistory (diferenční pár)</div>
+<p><b>Rozdílový zesilovač s tranzistory</b> (diferenční pár) tvoří dva stejné tranzistory se spojenými emitory, které napájí společný rezistor (zdroj proudu) z napětí \(V_{EE}\). Signály se přivádějí do obou bází a výstupní napětí na kolektoru je úměrné <b>rozdílu</b> vstupních napětí.</p>
+<p class="jinak">oba tranzistory se „přetahují“ o stejný proud z \(R_3\). Když jeden vstup převýší druhý, jeho tranzistor si vezme víc proudu a druhý méně. Stejná změna na obou vstupech nic nezmění. Je to vstupní stupeň každého OZ.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-diferencni-par">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-selektivni"><div class="box-t">selektivní (laděný) zesilovač</div>
+<p><b>Selektivní (laděný) zesilovač</b> je zesilovač, který má místo kolektorového rezistoru paralelní rezonanční obvod LC; zesiluje jen signály v úzkém pásmu kolem rezonanční frekvence \(f_0\) obvodu LC, ostatní frekvence téměř nezesiluje.</p>
+<p class="jinak">tranzistor zesiluje selektivně jen určitou frekvenci. Paralelní LC má na rezonanční frekvenci velkou impedanci (a zesílení je velké jako u velkého \(R_3\)), mimo ni malou. Podobně funguje třeba rádio – naladí se jen na jednu stanici.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-selektivni">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-mosfet"><div class="box-t">MOSFET</div>
+<p><b>MOSFET</b> (<i>Metal Oxide Semiconductor Field Effect Transistor</i>) je unipolární tranzistor řízený <b>elektrickým polem</b>: napětí na izolované řídicí elektrodě <b>gate</b> (g) ovládá vodivost kanálu mezi elektrodami <b>source</b> (s) a <b>drain</b> (d).</p>
+<p class="jinak">bipolární tranzistor se řídí proudem do báze, MOSFET napětím na gate. Gate je od kanálu izolovaná oxidem, takže do ní neteče stejnosměrný proud – vstupní odpor je obrovský.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-mosfet">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-prahove-napeti"><div class="box-t">prahové napětí MOSFETu</div>
+<p><b>Prahové napětí</b> \(V_\text{th}\) (<i>threshold</i>) je napětí mezi gate a source, od kterého začne kanálem MOSFETu protékat proud drainem; pod prahem tranzistor nevede.</p>
+<p class="jinak">MOSFET se „neotevírá“ od nuly. Dokud napětí gate nepřekročí práh (na slidu 1,8 V), je zavřený a na signál nereaguje.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-prahove-napeti">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-offset"><div class="box-t">offset vstupního napětí</div>
+<p><b>Offset vstupního napětí</b> (<i>input voltage offset</i>) je napětí, které je na výstupu OZ (přepočteno na vstup), když jsou na oba vstupy připojena stejná napětí. Je dán nedokonalostí (nesymetrií) vnitřních impedancí a tranzistorů; v ideálním případě je 0,000 000 V.</p>
+<p class="jinak">dva vstupní tranzistory nejsou nikdy úplně stejné, takže OZ „vidí“ malý rozdíl i tam, kde žádný není. Měří se tak, že se oba vstupy spojí a připojí na stejné napětí.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-offset">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-slew-rate"><div class="box-t">rychlost přeběhu (slew rate)</div>
+<p><b>Rychlost přeběhu</b> (<i>slew rate</i>, SR) je maximální rychlost změny výstupního napětí zesilovače; vyjadřuje se ve voltech za mikrosekundu (V/µs).</p>
+<p class="jinak">výstup OZ se nemůže změnit skokem – „dojede“ na novou hodnotu nejvýš touto rychlostí. Způsobuje to hlavně kapacita uvnitř zesilovače (u 741 kondenzátor 30 pF), která se nabíjí omezeným proudem.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-slew-rate">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-sirka-pasma"><div class="box-t">šířka pásma</div>
+<p><b>Šířka pásma</b> (<i>bandwidth</i>) zesilovače je rozsah frekvencí od 0 Hz (DC) po mezní frekvenci \(f_M\), na které výkon výstupního signálu klesne na polovinu oproti DC, tj. zisk klesne o 3 dB.</p>
+<p class="jinak">pásmo, ve kterém zesilovač „jede naplno“. Nad ním zesílení klesá. Stejný pojem je u filtrů <a href="02_filtry.html#def-mezni">mezní frekvence</a>.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-sirka-pasma">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-gbw"><div class="box-t">součin zisku a šířky pásma (GBW)</div>
+<p><b>Součin zisku a šířky pásma</b> (<i>gain-bandwidth product</i>, GBW) je konstantní součin zesílení a frekvence na klesající části frekvenční charakteristiky OZ. Rovná se <b>tranzitní frekvenci</b>, na které zisk OZ klesne na 1 (0 dB).</p>
+<p class="jinak">zesílení a šířku pásma lze „vyměnit“: čím menší zesílení nastavím zpětnou vazbou, tím širší pásmo zesilovač přenese.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-gbw">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="s-komparator"><div class="box-t">napěťový komparátor</div>
+<p><b>Napěťový komparátor</b> je zapojení OZ <b>bez zpětné vazby</b> s maximálním zesílením, jehož výstup nabývá jen hodnoty maxima nebo minima napětí (saturace) podle toho, které ze dvou vstupních napětí je větší.</p>
+<p class="jinak">komparátor neměří, o kolik se napětí liší, jen <b>které je větší</b>. Výstup je „ano / ne“ – most mezi analogovým signálem a logikou. Je to jediná běžná aplikace OZ bez zpětné vazby.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-komparator">výklad v kapitole P2 →</a></p></div>

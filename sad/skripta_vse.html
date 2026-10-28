@@ -33,6 +33,7 @@
     <li><a href="04_dalsi_zapojeni.html"><span class="n">Z4</span><span>Sledovač, integrátor, derivátor</span></a></li>
     <li><a href="05_tahak.html"><span class="n">★</span><span>Tahák: základy</span></a></li>
     <li><a href="11_signal.html"><span class="n">P1</span><span>Úvod: signál a jeho převod na napětí</span></a></li>
+    <li><a href="12_uprava.html"><span class="n">P2</span><span>Úprava signálu: tranzistorové zesilovače a OZ</span></a></li>
     <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
   </ol>
 
@@ -88,7 +89,7 @@
 <thead><tr><th>Přednáška</th><th>Téma</th><th>Kapitola</th></tr></thead>
 <tbody>
 <tr><td>P1</td><td>Úvod, signál</td><td><a href="#k11">P1 · Úvod: signál a jeho převod na napětí</a></td></tr>
-<tr><td>P2</td><td>Úprava signálu</td><td class="muted">připravuje se (základ: <a href="#k02">Z2</a>, <a href="#k03">Z3</a>)</td></tr>
+<tr><td>P2</td><td>Úprava signálu</td><td><a href="#k12">P2 · Úprava signálu: tranzistorové zesilovače a OZ</a></td></tr>
 <tr><td>P3</td><td>Napájení a zdroje referenčního napětí</td><td class="muted">připravuje se</td></tr>
 <tr><td>P4</td><td>Aplikace OZ I – zapojení</td><td class="muted">připravuje se (základ: <a href="#k03">Z3</a>, <a href="#k04">Z4</a>)</td></tr>
 <tr><td>P5</td><td>Aplikace OZ II – aktivní filtry</td><td class="muted">připravuje se (základ: <a href="#k02">Z2</a>)</td></tr>
@@ -142,6 +143,7 @@
 <h2 id="k00-kapitoly-prednasek">Kapitoly přednášek</h2>
 <div class="cards">
 <a class="card" href="#k11"><div class="n">Přednáška P1</div><div class="t">Úvod: signál a jeho převod na napětí</div><div class="d">Akviziční cesta, druhy signálů, měkký zdroj; převod proudu, frekvence a odporu na napětí; Wheatstoneův můstek.</div></a>
+<a class="card" href="#k12"><div class="n">Přednáška P2</div><div class="t">Úprava signálu: tranzistorové zesilovače a OZ</div><div class="d">Zesilovač s bipolárním tranzistorem a jeho stabilizace, SC, Darlington, rozdílový a laděný zesilovač, MOSFET; reálný OZ, offset, slew rate, odkud jsou 3 dB, komparátor.</div></a>
 </div>
 <p class="muted">Základy (Z1–Z4) nevycházejí z přednášek předmětu, ale ze standardní elektrotechniky; kapitoly přednášek (P1–P10) se drží slidů. Pokud přednášející používá jiné značení (např. \(K\) nebo \(P\) pro přenos, \(A_\text{cm}\) pro souhlasné zesílení), význam je stejný.</p>
 
@@ -1805,6 +1807,524 @@
 <p>\(R_2\) bývá trimr pro vyvážení (kalibraci). Používá se k měření velmi malých změn odporu, např. teplotních čidel Pt100, Pt1000: měří se jen malý rozdíl kolem nuly, ne malá změna velkého napětí.</p></div></details>
 
 </section>
+<section class="kapitola" id="k12">
+<p class="kicker">Přednáška 2</p>
+<h1>Úprava signálu: tranzistorové zesilovače a operační zesilovač</h1>
+<p class="lead">Biologický signál má mikrovolty až milivolty, obvody za ním ale pracují s volty. Základní úpravou signálu je proto <b>zesílení</b>. Přednáška ukazuje, jak zesiluje <b>tranzistor</b> (bipolární a MOSFET) a jak se jeho zapojení postupně vylepšují, aby byl zesilovač stabilní. Pak přechází k <b>operačnímu zesilovači</b>: čím se reálný OZ liší od ideálního (offset, rychlost přeběhu, pokles zisku s frekvencí), odkud se bere hranice <b>−3 dB</b> a jak OZ pracuje jako <b>komparátor</b>.</p>
+
+<h2 id="k12-proc">Proč signál zesilovat</h2>
+<p>Úprava signálu je v <a href="#k11-def-akvizicni-cesta">akviziční cestě</a> krok před A/D převodem. Na slidech jsou dva důvody, proč je první úpravou zesílení:</p>
+<ul>
+<li><b>Biologické signály</b> jsou v řádech <b>µV až mV</b> (EEG desítky µV, EKG jednotky mV).</li>
+<li>Zpracování probíhá v obvodech, které pracují s napětím na úrovni <b>logiky TTL nebo CMOS</b>, tedy jednotek voltů.</li>
+</ul>
+
+<div class="box definice" id="k12-def-zesilovac"><div class="box-t">Definice: zesilovač a zesílení</div>
+<p><b>Zesilovač</b> je obvod, jehož výstupní signál je zvětšenou kopií vstupního signálu; energii na zvětšení bere z napájecího zdroje. <b>Napěťové zesílení</b> je poměr výstupního a vstupního napětí, <b>proudové zesílení</b> poměr výstupního a vstupního proudu:
+\[ A_u = \frac{u_\text{výst}}{u_\text{vst}} \]
+\[ A_i = \frac{i_\text{výst}}{i_\text{vst}} \]</p>
+<p class="jinak">zesilovač „nafoukne“ slabý signál tak, aby s ním šlo dál pracovat. Nevyrábí energii z ničeho – bere ji z napájení a signál jen řídí, kolik jí pustí na výstup.</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad: kolik zesílit EKG (vlastní čísla)</div>
+<p>EKG má amplitudu asi 1 mV, A/D převodník má rozsah asi 1 V. Potřebné zesílení:</p>
+\[ A_u = \frac{1\ \text{V}}{1\ \text{mV}} = 1000 \]
+<p>V decibelech (viz <a href="#k02-def-decibel">decibel</a>):</p>
+\[ 20 \log 1000 = 60\ \text{dB} \]</div>
+
+<h2 id="k12-bjt">Bipolární tranzistor jako zesilovač</h2>
+<div class="box definice" id="k12-def-bjt"><div class="box-t">Definice: bipolární tranzistor (BJT)</div>
+<p><b>Bipolární tranzistor</b> (BJT, <i>Bipolar Junction Transistor</i>) je polovodičová součástka se třemi vývody – <b>bází</b> (B), <b>kolektorem</b> (C) a <b>emitorem</b> (E) –, u které malý proud bází řídí mnohem větší proud kolektorem. Oba proudy odtékají emitorem:
+\[ i_E = i_B + i_C \]</p>
+<p class="jinak">tranzistor je „ventil“: malým proudem do báze otevírám velký proud z kolektoru do emitoru. Emitorem teče součet obou proudů.</p></div>
+
+<div class="box definice" id="k12-def-beta"><div class="box-t">Definice: proudový zesilovací činitel β (h21E)</div>
+<p><b>Proudový zesilovací činitel</b> \(\beta\), v katalozích \(h_{21E}\), je poměr proudu kolektorem a proudu bází tranzistoru:
+\[ \beta = h_{21E} = \frac{i_C}{i_B} \]</p>
+<p class="jinak">říká, kolikrát se zesílí proud bází – je to <b>proudové zesílení</b> tranzistoru. Typicky bývá ve stovkách.</p></div>
+
+<p>Na slidu je tranzistor v měřicím zapojení: zdroj \(V_{BE}\) posílá přes mikroampérmetr proud do báze, zdroj \(V_{CC}\) přes miliampérmetr proud do kolektoru, emitor je na společné zemi. Závislost \(i_C\) na \(i_B\) je přímka:</p>
+
+<figure><div class="paper"><img src="figures/fig12_beta.png" alt="Graf proudu kolektorem v závislosti na proudu bází: přímka z počátku; trojúhelník mezi 10 a 20 µA ukazuje přírůstek 3,84 mA, tedy β = 384" loading="lazy"></div>
+<figcaption><b>Obr. P2.1</b> Proud kolektorem v závislosti na proudu bází (překresleno podle slidu „Zesilovač s bipolárním tranzistorem“).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Závislost je <b>lineární</b> – kolektorový proud je pořád stejný násobek proudu bází. Sklon přímky je \(\beta\). Z trojúhelníku na slidu: zvětšení proudu bází o 10 µA zvětší proud kolektorem o 3,84 mA.</p>
+\[ \beta = \frac{\Delta i_C}{\Delta i_B} = \frac{3{,}84\ \text{mA}}{10\ \mu\text{A}} = 384 \]</div>
+
+<div class="box definice" id="k12-def-se"><div class="box-t">Definice: zapojení se společným emitorem (SE)</div>
+<p><b>Zapojení se společným emitorem</b> (SE) je základní zapojení tranzistorového zesilovače: vstupní signál se přivádí do báze, výstup se odebírá z kolektoru a emitor je společný vstupu i výstupu (je na zemi, případně přes rezistor).</p>
+<p class="jinak">signál „pootvírá“ tranzistor přes bázi a změna kolektorového proudu vytvoří na rezistoru v kolektoru velkou změnu napětí. Zesiluje napětí i proud a výstup je <b>obrácený</b> (invertovaný).</p></div>
+
+<h3 id="k12-re">Odpor emitoru a vstupní odpor</h3>
+<div class="box definice" id="k12-def-re"><div class="box-t">Definice: vnitřní odpor emitoru r<sub>E</sub></div>
+<p><b>Vnitřní odpor emitoru</b> \(r_E\) (na slidu \(R_E\)) je odpor, přes který uvnitř tranzistoru prochází proud z báze do emitoru; u bipolárních tranzistorů je typicky kolem 25 Ω. Při pohledu do báze se jeví zvětšený \(\beta\)-krát.</p>
+<p class="jinak">do báze teče jen malý proud, ale emitorem teče \(\beta\)-krát větší. Proto se odpor v emitoru „z pohledu báze“ jeví \(\beta\)-krát větší.</p></div>
+
+<div class="box vzorec"><div class="box-t">Vstupní odpor do báze</div>
+\[ R_\text{in} \approx \beta \cdot r_E \]
+<table class="vars">
+<tr><td>\(R_\text{in}\)</td><td>vstupní odpor tranzistoru při pohledu do báze</td></tr>
+<tr><td>\(\beta\)</td><td>proudový zesilovací činitel (\(h_{21E}\))</td></tr>
+<tr><td>\(r_E\)</td><td>vnitřní odpor emitoru, typicky asi 25 Ω</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad (čísla ze slidu „Odpor emitoru“)</div>
+<p>\(h_{21E} = 400\), \(r_E = 25\ \Omega\):</p>
+\[ R_\text{in} = 400 \cdot 25\ \Omega = 10\ \text{k}\Omega \]
+<p>Tranzistorový zesilovač SE má tedy <b>poměrně malý vstupní odpor</b>. Pro měkký biologický zdroj (viz <a href="#k11-def-tvrdy-mekky-zdroj">P1</a>) je to málo – zdroj by se zatěžoval.</p></div>
+
+<div class="box pozor"><div class="box-t">Pozor: r<sub>E</sub> není pevná hodnota (nad rámec slidu)</div>
+<p>Hodnota 25 Ω platí pro proud emitorem asi 1 mA. Obecně se udává \(r_E \approx 25\ \text{mV} / I_E\), takže při menším proudu je \(r_E\) větší. Na slidu se pracuje s typickou hodnotou 25 Ω a ta stačí.</p></div>
+
+<h2 id="k12-pracovni-bod">Pracovní bod a stabilita zapojení SE</h2>
+<p>Tranzistor zesiluje jen tehdy, když je <b>trochu otevřený</b> už bez signálu. Střídavý signál pak kolektorový proud zvětšuje i zmenšuje kolem této klidové hodnoty. Klidový stav nastavují rezistory a říká se mu <b>pracovní bod</b>.</p>
+
+<div class="box definice" id="k12-def-pracovni-bod"><div class="box-t">Definice: pracovní bod tranzistoru</div>
+<p><b>Pracovní bod</b> (klidový bod) tranzistoru jsou stejnosměrné hodnoty proudů a napětí tranzistoru bez vstupního signálu (klidový proud báze \(I_B\), kolektoru \(I_C\) a napětí na kolektoru), nastavené rezistory v okolí tranzistoru.</p>
+<p class="jinak">nastavení pracovního bodu = „lehce otevřít tranzistor“. Napětí na kolektoru se volí zhruba na <b>polovinu napájecího napětí</b>, aby se výstup mohl stejně daleko hýbat nahoru i dolů.</p></div>
+
+<figure><div class="paper"><img src="figures/fig12_se.png" alt="Zesilovač SE: VCC 15 V, R1 4M7 z napájení do báze, R2 7k5 v kolektoru, vstup přes C1 820n do báze, výstup přes C2 1µ z kolektoru, tranzistor BC548, emitor na 0 V" loading="lazy"></div>
+<figcaption><b>Obr. P2.2</b> Zesilovač SE v nejjednodušší podobě (hodnoty ze slidu „obecné schéma“). \(R_1\) nastavuje proud bází, \(R_2\) je kolektorový rezistor.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Pracovní bod nastavuje jediný rezistor \(R_1\) z napájení do báze. Kondenzátory \(C_1\) a \(C_2\) propustí střídavý signál, ale stejnosměrné napětí ne – pracovní bod se tak nepřenáší do zdroje signálu ani na výstup.</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad: pracovní bod zapojení z obr. P2.2 (vlastní výpočet)</div>
+<p>\(V_{CC}\) = 15 V, \(R_1\) = 4,7 MΩ, \(R_2\) = 7,5 kΩ, \(\beta\) = 400, na přechodu báze–emitor je asi 0,7 V.</p>
+<p>1. Proud bází:</p>
+\[ I_B = \frac{15 - 0{,}7}{4{,}7\ \text{M}\Omega} = 3{,}04\ \mu\text{A} \]
+<p>2. Proud kolektorem:</p>
+\[ I_C = \beta\, I_B = 400 \cdot 3{,}04\ \mu\text{A} = 1{,}22\ \text{mA} \]
+<p>3. Napětí na kolektoru:</p>
+\[ U_C = 15 - 7{,}5\ \text{k}\Omega \cdot 1{,}22\ \text{mA} = 5{,}9\ \text{V} \]
+<p>Kolektor je zhruba na polovině napájení – pracovní bod je nastavený dobře. Ale jen pro \(\beta = 400\).</p></div>
+
+<p>Slide uvádí <b>hlavní nevýhodu</b> tohoto zapojení: <b>horší stabilitu</b>, která je navíc velmi závislá na <b>teplotě okolí</b>. Proud bází je tu pevný, takže proud kolektorem je přímo úměrný \(\beta\) – a \(\beta\) se liší kus od kusu a mění se s teplotou.</p>
+
+<div class="box pozor"><div class="box-t">Pozor: co se stane, když se β změní (vlastní čísla)</div>
+<p>Stejné zapojení, ale tranzistor s \(\beta = 600\) (jiný kus nebo teplejší):</p>
+\[ I_C = 600 \cdot 3{,}04\ \mu\text{A} = 1{,}83\ \text{mA} \]
+\[ U_C = 15 - 7{,}5\ \text{k}\Omega \cdot 1{,}83\ \text{mA} = 1{,}3\ \text{V} \]
+<p>Kolektor je skoro na zemi a výstup se už nemá kam hýbat dolů – zesilovač ořezává signál. S \(\beta = 200\) je naopak \(U_C = 10{,}4\ \text{V}\). Pracovní bod „ujíždí“.</p></div>
+
+<h3 id="k12-zv-kolektor">Zlepšení 1: R1 z kolektoru</h3>
+<p>Slide „Stabilita zesilovače“: kladný vývod \(R_1\) se nepřipojí na napájení, ale do <b>kolektoru</b>.</p>
+<ul>
+<li>\(R_1\) je teď připojen „na polovinu“ napájecího napětí, takže se jeho odpor může <b>zmenšit na polovinu</b> (4M7 → 2M2) při stejném proudu bází jako předtím.</li>
+<li>Zapojení <b>neovlivňuje zesílení</b>, ale má vliv na <b>stabilitu</b>.</li>
+</ul>
+
+<figure><div class="paper"><img src="figures/fig12_se_zv.png" alt="Zesilovač SE s rezistorem R1 2M2 mezi kolektorem a bází, R2 7k5 v kolektoru, C1 820n, C2 1µ, BC548" loading="lazy"></div>
+<figcaption><b>Obr. P2.3</b> SE se zpětnou vazbou z kolektoru do báze (slide „Stabilita zesilovače“).</figcaption></figure>
+
+<div class="box intuice"><div class="box-t">Princip: proč je to stabilnější</div>
+<p>Je to <b>záporná zpětná vazba</b>, stejný princip jako u <a href="#k03-def-zpetna-vazba">OZ</a>. Když se proud kolektorem zvětší (větší \(\beta\), teplo), klesne napětí na kolektoru. Tím klesne i napětí na \(R_1\) a do báze teče <b>menší</b> proud – a ten proud kolektorem zase zmenší. Tranzistor se sám „brzdí“.</p>
+<p>Kontrola, že 2M2 dává stejný proud bází (kolektor na polovině, 7,5 V):</p>
+\[ I_B = \frac{7{,}5 - 0{,}7}{2{,}2\ \text{M}\Omega} = 3{,}09\ \mu\text{A} \]</div>
+
+<h3 id="k12-delic">Zlepšení 2: dělič v bázi a rezistor v emitoru</h3>
+<p>Nejpoužívanější zapojení SE (slidy „Stabilizace zapojení SE s napěťovým děličem“):</p>
+<ul>
+<li><b>Napěťový dělič</b> \(R_1\)–\(R_2\) definuje <b>klidové napětí na bázi</b>.</li>
+<li>Další zlepšení přinese <b>\(R_4\) mezi emitor a zem</b>, přičemž \(R_4 \gg R_E\) (vnitřní odpor emitoru).</li>
+<li>Při \(I_C\) asi 1 mA je na \(R_4\) = 1 kΩ úbytek 1 V.</li>
+<li>Dělič musí nastavit napětí báze <b>alespoň o 0,7 V vyšší</b> (úbytek na přechodu báze–emitor), tedy aspoň 1,7 V.</li>
+</ul>
+
+<figure><div class="paper"><img src="figures/fig12_se_delic.png" alt="SE s děličem: R1 240k a R2 33k nastavují napětí báze, R3 7k5 v kolektoru, R4 1k v emitoru, C1 330n, C2 1µ, BC548, VCC 15 V" loading="lazy"></div>
+<figcaption><b>Obr. P2.4</b> SE s napěťovým děličem a emitorovým rezistorem (hodnoty ze slidu).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Napětí báze drží <a href="#k01-def-delic">dělič</a>, napětí emitoru je o 0,7 V níž a proud emitorem pak určuje <b>\(R_4\)</b>, ne \(\beta\). Proto je pracovní bod stabilní.</p></div>
+
+<div class="box vzorec"><div class="box-t">SE s děličem a emitorovým rezistorem</div>
+<p>Pracovní bod:</p>
+\[ U_B = V_{CC}\,\frac{R_2}{R_1 + R_2} \]
+\[ I_C \approx I_E = \frac{U_B - 0{,}7\ \text{V}}{R_4} \]
+<p>Vstupní odpor a napěťové zesílení (podle slidu):</p>
+\[ R_\text{IN} = R_1 \parallel R_2 \parallel (\beta R_4) \]
+\[ A_u = -\frac{R_3}{R_4} \]
+<table class="vars">
+<tr><td>\(U_B\)</td><td>klidové napětí báze (z nezatíženého děliče)</td></tr>
+<tr><td>\(V_{CC}\)</td><td>napájecí napětí</td></tr>
+<tr><td>\(R_1\), \(R_2\)</td><td>dělič v bázi</td></tr>
+<tr><td>\(R_3\)</td><td>kolektorový rezistor</td></tr>
+<tr><td>\(R_4\)</td><td>emitorový rezistor; „z pohledu báze“ se jeví jako \(\beta R_4\)</td></tr>
+<tr><td>\(\parallel\)</td><td>paralelní spojení odporů</td></tr>
+<tr><td>\(A_u\)</td><td>napěťové zesílení; minus = výstup je obrácený</td></tr>
+</table></div>
+
+<div class="box intuice"><div class="box-t">Princip: proč zesílení je −R3/R4</div>
+<p>Změní-li se napětí báze o \(u_\text{vst}\), změní se o totéž napětí emitoru (rozdíl 0,7 V zůstává). Proud emitorem se tedy změní o \(u_\text{vst}/R_4\). Stejná změna proudu teče kolektorem a na \(R_3\) vytvoří změnu napětí \(R_3 \cdot u_\text{vst}/R_4\). Větší proud = větší úbytek na \(R_3\) = <b>nižší</b> napětí kolektoru, odtud minus. Zesílení tak závisí jen na <b>poměru dvou rezistorů</b>, ne na \(\beta\) – stejná myšlenka jako u <a href="#k03-def-invertujici">invertujícího zesilovače s OZ</a>.</p>
+<p><b>Proudové zesílení</b> je dáno zesilovacím činitelem \(\beta\).</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad (čísla ze slidu)</div>
+<p>\(V_{CC}\) = 15 V, \(R_1\) = 240 kΩ, \(R_2\) = 33 kΩ, \(R_3\) = 7,5 kΩ, \(R_4\) = 1 kΩ, \(\beta\) = 400.</p>
+<p>1. Napětí báze z děliče:</p>
+\[ U_B = 15 \cdot \frac{33}{240 + 33} = 1{,}81\ \text{V} \]
+<p>To je víc než požadovaných 1,7 V.</p>
+<p>2. Proud emitorem a kolektorem:</p>
+\[ I_C \approx \frac{1{,}81 - 0{,}7}{1\ \text{k}\Omega} = 1{,}11\ \text{mA} \]
+<p>3. Vstupní odpor (\(\beta R_4 = 400\ \text{k}\Omega\)):</p>
+\[ R_\text{IN} = 240\ \text{k}\Omega \parallel 33\ \text{k}\Omega \parallel 400\ \text{k}\Omega = 27\ \text{k}\Omega \]
+<p>4. Napěťové zesílení:</p>
+\[ A_u = -\frac{7{,}5\ \text{k}\Omega}{1\ \text{k}\Omega} = -7{,}5 \]</div>
+
+<figure><div class="paper"><img src="figures/fig12_stabilita.png" alt="Klidový proud kolektoru v závislosti na β pro tři zapojení: s R1 z napájení roste přímo úměrně a od β 660 saturuje, s R1 z kolektoru roste pomaleji, s děličem a R4 je téměř konstantní kolem 1 mA" loading="lazy"></div>
+<figcaption><b>Obr. P2.5</b> Klidový proud kolektoru tří zapojení SE ze slidů v závislosti na \(\beta\) (vlastní výpočet, \(U_{BE} = 0{,}7\ \text{V}\), u děliče včetně proudu báze).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Postup na slidech je vidět v jednom grafu: s \(R_1\) z napájení se proud mění přímo úměrně \(\beta\) (při \(\beta\) = 200 / 600 je 0,61 / 1,83 mA). Zpětná vazba z kolektoru změnu zmírní (0,77 / 1,28 mA). S děličem a \(R_4\) je proud skoro konstantní (0,97 / 1,06 mA) – pracovní bod je stabilní.</p></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Tranzistor musím nejdřív lehce otevřít – nastavit pracovní bod, aby kolektor byl zhruba na polovině napájení. Když to udělám jen rezistorem do báze, proud kolektoru je \(\beta\)-krát proud báze a \(\beta\) se mění s teplotou i kus od kusu, takže pracovní bod ujíždí. Proto se báze napájí z děliče a do emitoru se dá rezistor \(R_4\): proud pak určuje \(R_4\), ne \(\beta\). Napěťové zesílení je \(-R_3/R_4\), proudové je dáno \(\beta\), vstupní odpor je \(R_1 \parallel R_2 \parallel \beta R_4\).“</p></div>
+
+<h2 id="k12-sc">Zapojení se společným kolektorem (emitorový sledovač)</h2>
+<div class="box definice" id="k12-def-sc"><div class="box-t">Definice: zapojení se společným kolektorem (SC)</div>
+<p><b>Zapojení se společným kolektorem</b> (SC, <b>emitorový sledovač</b>) je tranzistorový zesilovač, u kterého je kolektor připojen přímo na napájení, signál se přivádí do báze a výstup se odebírá z emitoru. Napěťové zesílení je 1, ale zapojení zesiluje proud (a tím výkon).</p>
+<p class="jinak">napětí chci zachovat, proud posílit. Emitor „sleduje“ bázi (o 0,7 V níž), ale výstup může dodat \(\beta\)-krát větší proud, než odebírá vstup. Je to tranzistorová obdoba <a href="#k04-def-sledovac">sledovače s OZ</a>.</p></div>
+
+<figure><div class="paper"><img src="figures/fig12_sc.png" alt="Emitorový sledovač: kolektor BC548 přímo na 15 V, dělič R1 130k a R2 160k v bázi, R3 7k5 z emitoru na zem, vstup přes C1 120n, výstup z emitoru přes C2 1µ" loading="lazy"></div>
+<figcaption><b>Obr. P2.6</b> Zapojení se společným kolektorem (hodnoty ze slidu). Výstup je zapojen přímo do emitoru.</figcaption></figure>
+
+<div class="box priklad"><div class="box-t">Příklad: návrh pracovního bodu (postup ze slidu)</div>
+<p>Chceme pracovní napětí emitoru na \(\tfrac{1}{2} V_{CC} = 7{,}5\ \text{V}\), emitorový rezistor \(R_3 = 7{,}5\ \text{k}\Omega\).</p>
+<p>1. Proud kolektorem (≈ emitorem):</p>
+\[ I_C \approx \frac{7{,}5\ \text{V}}{7{,}5\ \text{k}\Omega} = 1\ \text{mA} \]
+<p>2. Napětí, které musí nastavit dělič na bázi:</p>
+\[ U_B = 7{,}5 + 0{,}7 = 8{,}2\ \text{V} \]
+<p>3. Kontrola děliče ze slidu (\(R_1 = 130\ \text{k}\Omega\), \(R_2 = 160\ \text{k}\Omega\)):</p>
+\[ U_B = 15 \cdot \frac{160}{130 + 160} = 8{,}28\ \text{V} \]</div>
+
+<h3 id="k12-darlington">Darlingtonovo zapojení</h3>
+<div class="box definice" id="k12-def-darlington"><div class="box-t">Definice: Darlingtonovo zapojení</div>
+<p><b>Darlingtonovo zapojení</b> (Darlingtonův pár) jsou dva tranzistory zapojené tak, že emitorový proud prvního tranzistoru \(T_1\) je proudem báze druhého \(T_2\) a kolektory jsou spojené. Navenek se chová jako jeden tranzistor se třemi vývody C, B, E a s proudovým zesílením přibližně rovným součinu zesílení obou tranzistorů.</p>
+<p class="jinak">první tranzistor zesílí proud báze, druhý zesílí výsledek ještě jednou – celkové zesílení je zesílení jednoho krát zesílení druhého.</p></div>
+
+<figure><div class="paper"><img src="figures/fig12_darlington.png" alt="Darlingtonův pár: emitor T1 do báze T2, kolektory spojené do vývodu C, báze T1 je vývod B, emitor T2 je vývod E" loading="lazy"></div>
+<figcaption><b>Obr. P2.7</b> Darlingtonovo zapojení (podle slidu).</figcaption></figure>
+
+<ul>
+<li>Pár může vzniknout propojením dvou tranzistorů, většinou se ale vyrábí jako celek na jednom čipu.</li>
+<li>Má tři standardní vývody: C, B, E.</li>
+<li>Tranzistory nemusí být stejného typu – velmi často je \(T_1\) nízkonapěťový a \(T_2\) výkonový.</li>
+</ul>
+
+<div class="box vzorec"><div class="box-t">Jaké je celkové zesílení? (otázka ze slidu)</div>
+\[ \beta \approx \beta_1 \cdot \beta_2 \]
+<table class="vars">
+<tr><td>\(\beta\)</td><td>proudový zesilovací činitel celého páru</td></tr>
+<tr><td>\(\beta_1\), \(\beta_2\)</td><td>zesilovací činitele tranzistorů \(T_1\) a \(T_2\)</td></tr>
+</table>
+<p>Odvození: proud báze \(i_B\) se v \(T_1\) zesílí na \(\beta_1 i_B\); tento proud (přesněji emitorový proud \(T_1\)) vtéká do báze \(T_2\) a ten ho zesílí \(\beta_2\)-krát. Přesně vyjde \(\beta_1\beta_2 + \beta_1 + \beta_2\), ale pro velká \(\beta\) jsou poslední dva členy zanedbatelné.</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad (vlastní čísla)</div>
+<p>\(T_1\) nízkonapěťový s \(\beta_1 = 400\), \(T_2\) výkonový s \(\beta_2 = 50\):</p>
+\[ \beta \approx 400 \cdot 50 = 20\,000 \]
+<p>Proud báze 0,1 mA tak řídí proud kolektorem 2 A.</p></div>
+
+<h2 id="k12-rozdilovy">Rozdílový zesilovač s tranzistory</h2>
+<div class="box definice" id="k12-def-diferencni-par"><div class="box-t">Definice: rozdílový zesilovač s tranzistory (diferenční pár)</div>
+<p><b>Rozdílový zesilovač s tranzistory</b> (diferenční pár) tvoří dva stejné tranzistory se spojenými emitory, které napájí společný rezistor (zdroj proudu) z napětí \(V_{EE}\). Signály se přivádějí do obou bází a výstupní napětí na kolektoru je úměrné <b>rozdílu</b> vstupních napětí.</p>
+<p class="jinak">oba tranzistory se „přetahují“ o stejný proud z \(R_3\). Když jeden vstup převýší druhý, jeho tranzistor si vezme víc proudu a druhý méně. Stejná změna na obou vstupech nic nezmění. Je to vstupní stupeň každého OZ.</p></div>
+
+<figure><div class="paper"><img src="figures/fig12_rozdilovy.png" alt="Diferenční pár: Q1 a Q2 BC548, kolektorové rezistory R1 a R2 75k na +15 V, spojené emitory přes R3 75k na −15 V, vstupy do bází, výstup z kolektoru Q2" loading="lazy"></div>
+<figcaption><b>Obr. P2.8</b> Rozdílový zesilovač s tranzistory (hodnoty ze slidu). Napájení je symetrické ±15 V.</figcaption></figure>
+
+<figure><div class="paper"><img src="figures/fig12_rozdilovy_prubeh.png" alt="Dva vstupní sinusové signály 120 mV posunuté o čtvrt periody a výstup s amplitudou asi 850 mV, který je v fázi s jejich rozdílem" loading="lazy"></div>
+<figcaption><b>Obr. P2.9</b> Průběhy podle grafu na slidu: vstupy 120 mV / 1 Hz posunuté o čtvrt periody, výstup asi 850 mV. Amplitudy odpovídají zesílení rozdílu 5.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Výstup nekopíruje ani jeden vstup, ale jejich <b>rozdíl</b>. Rozdíl dvou sinusovek 120 mV posunutých o čtvrt periody má amplitudu</p>
+\[ 120\ \text{mV} \cdot \sqrt{2} = 170\ \text{mV} \]
+<p>a výstup 850 mV je jeho pětinásobek (\(5 \cdot 170 = 849\)). Kdyby byly oba vstupy stejné, výstup by se nehýbal – to je potlačení <a href="#k03-def-rozdilove-souhlasne">souhlasného signálu</a>.</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad: klidový stav diferenčního páru (vlastní výpočet)</div>
+<p>Báze jsou bez signálu na 0 V, emitory tedy na −0,7 V.</p>
+<p>1. Proud rezistorem \(R_3\) do \(V_{EE} = -15\ \text{V}\):</p>
+\[ I_{R3} = \frac{-0{,}7 - (-15)}{75\ \text{k}\Omega} = 0{,}19\ \text{mA} \]
+<p>2. Rozdělí se rovným dílem, každým tranzistorem teče 0,095 mA.</p>
+<p>3. Napětí kolektoru:</p>
+\[ U_C = 15 - 75\ \text{k}\Omega \cdot 0{,}095\ \text{mA} = 7{,}85\ \text{V} \]
+<p>Kolektor je zase zhruba na polovině kladného napájení.</p></div>
+
+<h2 id="k12-selektivni">Zesilovač? Laděný (selektivní) zesilovač</h2>
+<p>Slide „Zesilovač?“ ukazuje SE s děličem, kde je místo kolektorového rezistoru <b>paralelní obvod LC</b> (\(C_3\) = 820 pF, \(L_1\) = 3,3 mH), a ptá se: <b>k čemu slouží toto zapojení?</b></p>
+
+<figure><div class="paper"><img src="figures/fig12_selektivni.png" alt="SE s děličem R1 240k, R2 33k, R4 1k v emitoru, tranzistor 2N2222, v kolektoru paralelně C3 820p a L1 3m3" loading="lazy"></div>
+<figcaption><b>Obr. P2.10</b> Zesilovač s rezonančním obvodem v kolektoru (hodnoty ze slidu).</figcaption></figure>
+
+<div class="box definice" id="k12-def-selektivni"><div class="box-t">Definice: selektivní (laděný) zesilovač</div>
+<p><b>Selektivní (laděný) zesilovač</b> je zesilovač, který má místo kolektorového rezistoru paralelní rezonanční obvod LC; zesiluje jen signály v úzkém pásmu kolem rezonanční frekvence \(f_0\) obvodu LC, ostatní frekvence téměř nezesiluje.</p>
+<p class="jinak">tranzistor zesiluje selektivně jen určitou frekvenci. Paralelní LC má na rezonanční frekvenci velkou impedanci (a zesílení je velké jako u velkého \(R_3\)), mimo ni malou. Podobně funguje třeba rádio – naladí se jen na jednu stanici.</p></div>
+
+<div class="box vzorec"><div class="box-t">Rezonanční frekvence obvodu LC</div>
+\[ f_0 = \frac{1}{2\pi\sqrt{LC}} \]
+<table class="vars">
+<tr><td>\(f_0\)</td><td>rezonanční frekvence – frekvence, kterou zesilovač zesiluje nejvíc</td></tr>
+<tr><td>\(L\)</td><td>indukčnost cívky (\(L_1\))</td></tr>
+<tr><td>\(C\)</td><td>kapacita kondenzátoru (\(C_3\))</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad (čísla ze slidu)</div>
+<p>\(L_1 = 3{,}3\ \text{mH}\), \(C_3 = 820\ \text{pF}\).</p>
+<p>1. Součin pod odmocninou:</p>
+\[ LC = 3{,}3 \cdot 10^{-3} \cdot 820 \cdot 10^{-12} = 2{,}706 \cdot 10^{-12}\ \text{s}^2 \]
+<p>2. Rezonanční frekvence:</p>
+\[ f_0 = \frac{1}{2\pi \cdot 1{,}645 \cdot 10^{-6}\ \text{s}} \cong 96{,}7\ \text{kHz} \]</div>
+
+<h2 id="k12-mosfet">MOSFET</h2>
+<div class="box definice" id="k12-def-mosfet"><div class="box-t">Definice: MOSFET</div>
+<p><b>MOSFET</b> (<i>Metal Oxide Semiconductor Field Effect Transistor</i>) je unipolární tranzistor řízený <b>elektrickým polem</b>: napětí na izolované řídicí elektrodě <b>gate</b> (g) ovládá vodivost kanálu mezi elektrodami <b>source</b> (s) a <b>drain</b> (d).</p>
+<p class="jinak">bipolární tranzistor se řídí proudem do báze, MOSFET napětím na gate. Gate je od kanálu izolovaná oxidem, takže do ní neteče stejnosměrný proud – vstupní odpor je obrovský.</p></div>
+
+<div class="box definice" id="k12-def-prahove-napeti"><div class="box-t">Definice: prahové napětí MOSFETu</div>
+<p><b>Prahové napětí</b> \(V_\text{th}\) (<i>threshold</i>) je napětí mezi gate a source, od kterého začne kanálem MOSFETu protékat proud drainem; pod prahem tranzistor nevede.</p>
+<p class="jinak">MOSFET se „neotevírá“ od nuly. Dokud napětí gate nepřekročí práh (na slidu 1,8 V), je zavřený a na signál nereaguje.</p></div>
+
+<figure><div class="paper"><img src="figures/fig12_mosfet_char.png" alt="Proud drainem v závislosti na napětí gate–source: do prahu 1,8 V nulový, pak roste zhruba kvadraticky" loading="lazy"></div>
+<figcaption><b>Obr. P2.11</b> Převodní charakteristika n-kanálového MOSFETu: práh 1,8 V a hodnota 50 mA při 2,7 V podle slidu, průběh mezi nimi podle kvadratického modelu.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>VA charakteristika je „zatížena“ prahovým napětím: do 1,8 V se nic neděje, pak proud prudce roste. Aby tranzistor zesiloval i malý střídavý signál, musí být gate předem posunuta nad práh – <b>předpětí</b>.</p></div>
+
+<div class="box pozor"><div class="box-t">Pozor na slide: gate, ne „gain“</div>
+<p>Na slidu je napsáno „řízen polem na vstupu <b>g</b>ain“. Správně je <b>gate</b> (hradlo) – proto zkratka g.</p></div>
+
+<h3 id="k12-ss-sd">Zapojení SS a SD</h3>
+<p>MOSFET má stejná základní zapojení jako bipolární tranzistor, jen se vývody jmenují jinak: <b>společný source (SS)</b> odpovídá SE, <b>společný drain (SD)</b> odpovídá SC.</p>
+<ul>
+<li><b>SS:</b> kvůli prahovému napětí se gate předpíná děličem \(R_1\)–\(R_2\) (zde asi 4 V).</li>
+<li><b>SD:</b> napěťový sledovač s MOSFETem – výstup ze source, zesílení asi 1.</li>
+</ul>
+
+<figure><div class="paper"><img src="figures/fig12_mosfet_ss.png" alt="MOSFET ZVN3306A v zapojení se společným source: dělič R1 910k a R2 330k na gate, R3 36R v drainu, C1 33n, výstup z drainu přes C2 220µ" loading="lazy"></div>
+<figcaption><b>Obr. P2.12</b> n-kanálový MOSFET v zapojení SS (hodnoty ze slidu).</figcaption></figure>
+<figure><div class="paper"><img src="figures/fig12_mosfet_sd.png" alt="MOSFET ZVN3306A v zapojení se společným drainem: drain na 15 V, dělič R1 910k a R2 330k na gate, R3 36R ze source na zem, výstup ze source přes C2 220µ" loading="lazy"></div>
+<figcaption><b>Obr. P2.13</b> n-kanálový MOSFET v zapojení SD – napěťový sledovač (hodnoty ze slidu).</figcaption></figure>
+
+<div class="box priklad"><div class="box-t">Příklad: předpětí gate (čísla ze slidu)</div>
+<p>\(V_{DD}\) = 15 V, \(R_1\) = 910 kΩ, \(R_2\) = 330 kΩ. Do gate neteče proud, dělič je nezatížený:</p>
+\[ U_G = 15 \cdot \frac{330}{910 + 330} = 3{,}99\ \text{V} \approx 4\ \text{V} \]
+<p>To je nad prahem 1,8 V, tranzistor je otevřený. Vstupní odpor celého stupně je jen dělič:</p>
+\[ R_\text{IN} = 910\ \text{k}\Omega \parallel 330\ \text{k}\Omega = 242\ \text{k}\Omega \]
+<p>To je asi devětkrát víc než 27 kΩ u bipolárního SE s děličem – a dělič lze udělat ještě vysokoohmovější.</p></div>
+
+<h3 id="k12-spinace">Pár zajímavých aplikací</h3>
+<p>Poslední slide o tranzistorech ukazuje dvě zapojení s otázkou „k čemu slouží?“. Odpověď na slidu není; níže je výklad podle obecné teorie.</p>
+<figure><div class="paper"><img src="figures/fig12_spinace.png" alt="Dvě zapojení s MOSFETem: a) vstup přes R1 22k na výstup, MOSFET ZVN4210 z výstupu na zem řízený vstupem control; b) MOSFET v sérii mezi dvěma svorkami VIN/VOUT, gate na control, substrát na 0 V" loading="lazy"></div>
+<figcaption><b>Obr. P2.14</b> MOSFET jako spínač signálu (podle slidu „Pár zajímavých aplikací“).</figcaption></figure>
+<ul>
+<li><b>a) Spínač k zemi:</b> když je na „control“ napětí nad prahem, MOSFET sepne a stáhne výstup k 0 V – signál se umlčí. Když je zavřený, prochází signál přes \(R_1\) na výstup.</li>
+<li><b>b) Sériový (analogový) spínač:</b> MOSFET je v sérii se signálem. Otevřený kanál vede v obou směrech, proto jsou svorky označeny „VIN/VOUT“ a „VOUT/VIN“. Takové spínače tvoří analogové multiplexery (přednáška P8).</li>
+</ul>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>BJT: proud báze řídí \(\beta\)-krát větší proud kolektoru. SE zesiluje napětí i proud, stabilní je s děličem a \(R_4\) (\(A_u = -R_3/R_4\)). SC (sledovač) zachová napětí a posílí proud, Darlington má \(\beta \approx \beta_1\beta_2\). Diferenční pár zesiluje rozdíl, LC v kolektoru dělá laděný zesilovač. MOSFET je řízen napětím na gate, má práh a potřebuje předpětí.</p></div>
+
+<h2 id="k12-oz">Operační zesilovač</h2>
+<p>Podrobně jsou OZ a jejich zapojení v základech <a href="#k03-def-oz">Z3</a>. Slidy přidávají:</p>
+<ul>
+<li>OZ jsou <b>precizní diferenciální zesilovače s vysokým ziskem</b>. Původně sloužily k matematickým operacím v analogových počítačích (odtud „operační“); tuto funkci dnes převzaly mikroprocesory.</li>
+<li>OZ lze sestavit z jednotlivých tranzistorů a rezistorů, prakticky všechny se ale vyrábějí jako <b>integrované obvody</b> – desítky typů s různými kombinacemi vlastností.</li>
+<li>Standardně se napájejí <b>symetrickým napětím</b>, obvykle ±5 V až ±18 V; existují i speciální OZ pro ±1 V.</li>
+<li>Mohou být napájeny i <b>nesymetricky</b> (jen kladné napětí a zem); pak je omezen rozsah vstupního napětí.</li>
+</ul>
+
+<h3 id="k12-vstupy">Vstupy a výstup</h3>
+<ul>
+<li>Invertující (−) a neinvertující (+) vstup jsou první částí zesilovače a společně tvoří <b>diferenciální vstup</b> – uvnitř je to diferenční pár z obr. P2.8.</li>
+<li>V pouzdře bývají další <b>korekční vstupy</b>, např. pro nastavení offsetu.</li>
+<li>Při symetrickém napájení je GND na 0 V. Výstup je <b>kladný</b>, když je napětí na (+) větší než na (−), a <b>záporný</b>, když je napětí na (−) větší. Při stejných napětích je na výstupu 0 V.</li>
+</ul>
+
+<h3 id="k12-idealni-realny">Ideální a reálný OZ</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Vlastnost ideálního OZ</th><th>Reálný OZ (podle slidu)</th></tr></thead>
+<tbody>
+<tr><td>nekonečné napěťové zesílení (gain)</td><td>bez zpětné vazby až 200 000×, omezeno též napájecím napětím</td></tr>
+<tr><td>zisk nezávislý na frekvenci</td><td>zisk závisí na frekvenci, definováno v katalogovém listu</td></tr>
+<tr><td>nekonečně vysoký vstupní odpor</td><td>min. 2 MΩ, až \(10^{14}\) Ω</td></tr>
+<tr><td>nulový výstupní odpor</td><td>jednotky mΩ, typizované hodnoty, např. 75 Ω</td></tr>
+<tr><td>nulový posun vstupního napětí (offset)</td><td>offset existuje, lze ho dodatečně nastavit</td></tr>
+<tr><td>výstup dosáhne napájecího napětí (rail-to-rail)</td><td>„kéž by…“ – ve skutečnosti se k němu jen téměř přiblíží</td></tr>
+<tr><td>výstup se změní okamžitě (slew rate)</td><td>stovky V/µs</td></tr>
+</tbody></table></div>
+
+<div class="box pozor"><div class="box-t">Výstupní odpor: 75 Ω, nebo mΩ?</div>
+<p>Obě čísla ze slidu platí, každé jinde. Asi 75 Ω je výstupní odpor samotného OZ <b>bez zpětné vazby</b> (typická hodnota z katalogu, např. 741). Se zápornou zpětnou vazbou se výstupní odpor zapojení zmenší mnohokrát, až na jednotky mΩ.</p></div>
+
+<h3 id="k12-vnitrek">Co je uvnitř: OZ 741</h3>
+<p>Slide ukazuje vnitřní zapojení klasického OZ 741 (asi 20 tranzistorů) rozdělené na barevné bloky:</p>
+<ul>
+<li><b>diferenční zesílení</b> – vstupní diferenční pár (vstupy 2 a 3) a vývody 1 a 5 pro vyrovnání offsetu (<i>offset null</i>);</li>
+<li><b>proudová zrcadla</b> – napájejí ostatní stupně stálým proudem;</li>
+<li><b>napěťové zesílení</b> – hlavní zesilovací stupeň;</li>
+<li><b>výstupní zesilovač</b> – koncový stupeň, který dodá proud do zátěže (výstup 6);</li>
+<li>kondenzátor <b>30 pF</b> – kompenzační; určuje rychlost přeběhu a pokles zisku s frekvencí.</li>
+</ul>
+<p>Pouzdro DIP-8: 2 = invertující vstup, 3 = neinvertující vstup, 6 = výstup, 7 = kladné napájení, 4 = záporné napájení, 1 a 5 = nastavení offsetu.</p>
+
+<h3 id="k12-offset">Offset vstupního napětí</h3>
+<div class="box definice" id="k12-def-offset"><div class="box-t">Definice: offset vstupního napětí</div>
+<p><b>Offset vstupního napětí</b> (<i>input voltage offset</i>) je napětí, které je na výstupu OZ (přepočteno na vstup), když jsou na oba vstupy připojena stejná napětí. Je dán nedokonalostí (nesymetrií) vnitřních impedancí a tranzistorů; v ideálním případě je 0,000 000 V.</p>
+<p class="jinak">dva vstupní tranzistory nejsou nikdy úplně stejné, takže OZ „vidí“ malý rozdíl i tam, kde žádný není. Měří se tak, že se oba vstupy spojí a připojí na stejné napětí.</p></div>
+<p>U některých OZ lze offset externě vynulovat: u 741 se mezi vývody 1 a 5 připojí <b>trimr 10 kΩ</b>, jehož jezdec je na záporném napájení, a otáčí se jím, dokud není výstup nulový.</p>
+
+<div class="box priklad"><div class="box-t">Příklad: proč na offsetu záleží (vlastní čísla)</div>
+<p>OZ má offset 1 mV a zesiluje biosignál 1000×. Na výstupu je i bez signálu chyba</p>
+\[ 1000 \cdot 1\ \text{mV} = 1\ \text{V} \]
+<p>– stejně velká jako zesílený signál EKG. Proto se offset u přesných zesilovačů nuluje.</p></div>
+
+<h3 id="k12-slew">Rychlost přeběhu (slew rate)</h3>
+<div class="box definice" id="k12-def-slew-rate"><div class="box-t">Definice: rychlost přeběhu (slew rate)</div>
+<p><b>Rychlost přeběhu</b> (<i>slew rate</i>, SR) je maximální rychlost změny výstupního napětí zesilovače; vyjadřuje se ve voltech za mikrosekundu (V/µs).</p>
+<p class="jinak">výstup OZ se nemůže změnit skokem – „dojede“ na novou hodnotu nejvýš touto rychlostí. Způsobuje to hlavně kapacita uvnitř zesilovače (u 741 kondenzátor 30 pF), která se nabíjí omezeným proudem.</p></div>
+<ul>
+<li>SR se pohybuje od jednotek po stovky V/µs; obvyklá a dostatečná hodnota je <b>10 V/µs</b>.</li>
+<li>Vyšší SR předurčuje OZ pro vysokofrekvenční (vf) aplikace.</li>
+</ul>
+
+<div class="box priklad"><div class="box-t">Příklad (vlastní čísla)</div>
+<p>1. Výstup má skočit o 10 V, OZ má SR = 10 V/µs. Trvá to nejméně</p>
+\[ t = \frac{10\ \text{V}}{10\ \text{V}/\mu\text{s}} = 1\ \mu\text{s} \]
+<p>2. Sinus s amplitudou \(U_p\) a frekvencí \(f\) se nejrychleji mění při průchodu nulou, rychlostí \(2\pi f U_p\) (nad rámec slidu). OZ ho přenese nezkreslený jen do frekvence</p>
+\[ f_\text{max} = \frac{SR}{2\pi U_p} = \frac{10\ \text{V}/\mu\text{s}}{2\pi \cdot 10\ \text{V}} = 159\ \text{kHz} \]</div>
+
+<figure><div class="paper"><img src="figures/fig12_slew.png" alt="Požadovaný sinus 50 kHz s amplitudou 10 V a skutečný výstup OZ se slew rate 1 V/µs, který je trojúhelníkový a menší" loading="lazy"></div>
+<figcaption><b>Obr. P2.15</b> Simulace OZ s malou rychlostí přeběhu 1 V/µs (vlastní čísla). Sinus 10 V by potřeboval až 3,1 V/µs.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Když signál vyžaduje rychlejší změnu, než OZ zvládne, výstup jede s konstantním sklonem SR a ze sinusu je <b>trojúhelník</b> s menší amplitudou. Nejde o pomalý pokles zisku jako u filtru, ale o tvrdé zkreslení – proto se pro rychlé signály volí OZ s vyšší SR.</p></div>
+
+<h3 id="k12-frekvence">Vliv frekvence na zisk</h3>
+<ul>
+<li>Tabulková hodnota zisku se často udává pro „plný výkon“ zesilovače <b>bez zpětné vazby při DC</b>, tj. \(f = 0\ \text{Hz}\).</li>
+<li>Zisk s rostoucí frekvencí <b>klesá</b>.</li>
+<li>„Plný výkon“ OZ trvá až do frekvence, kde výkon klesne na polovinu – to je pokles o <b>3 dB</b>. Tato aktivní část je <b>šířka pásma</b>.</li>
+<li>Na klesající části je <b>součin zisku a šířky pásma konstantní</b>, až zisk klesne na 1 (tranzitní frekvence).</li>
+</ul>
+
+<div class="box definice" id="k12-def-sirka-pasma"><div class="box-t">Definice: šířka pásma</div>
+<p><b>Šířka pásma</b> (<i>bandwidth</i>) zesilovače je rozsah frekvencí od 0 Hz (DC) po mezní frekvenci \(f_M\), na které výkon výstupního signálu klesne na polovinu oproti DC, tj. zisk klesne o 3 dB.</p>
+<p class="jinak">pásmo, ve kterém zesilovač „jede naplno“. Nad ním zesílení klesá. Stejný pojem je u filtrů <a href="#k02-def-mezni">mezní frekvence</a>.</p></div>
+
+<div class="box definice" id="k12-def-gbw"><div class="box-t">Definice: součin zisku a šířky pásma (GBW)</div>
+<p><b>Součin zisku a šířky pásma</b> (<i>gain-bandwidth product</i>, GBW) je konstantní součin zesílení a frekvence na klesající části frekvenční charakteristiky OZ. Rovná se <b>tranzitní frekvenci</b>, na které zisk OZ klesne na 1 (0 dB).</p>
+<p class="jinak">zesílení a šířku pásma lze „vyměnit“: čím menší zesílení nastavím zpětnou vazbou, tím širší pásmo zesilovač přenese.</p></div>
+
+<figure><div class="paper"><img src="figures/fig12_zisk_f.png" alt="Zisk OZ bez zpětné vazby v decibelech v závislosti na frekvenci: 106 dB do 5 Hz, pak pokles 20 dB na dekádu až na 0 dB při 1 MHz" loading="lazy"></div>
+<figcaption><b>Obr. P2.16</b> Frekvenční charakteristika OZ bez zpětné vazby – jednoduchý model se ziskem 200 000 (106 dB) jako na slidu a GBW 1 MHz (typická hodnota, vlastní volba).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Obrovský zisk platí jen pro velmi nízké frekvence – v modelu už od 5 Hz klesá. Bod −3 dB určuje šířku pásma, bod 0 dB tranzitní frekvenci. Na šikmé části platí zisk · frekvence = 1 MHz (GBW).</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad: šířka pásma se zpětnou vazbou (vlastní čísla)</div>
+<p>OZ s GBW = 1 MHz zapojíme jako zesilovač se zesílením 100. Šířka pásma:</p>
+\[ f_M = \frac{\text{GBW}}{A} = \frac{1\ \text{MHz}}{100} = 10\ \text{kHz} \]
+<p>Pro EKG nebo EEG (do stovek Hz) je to víc než dost.</p></div>
+
+<h2 id="k12-tri-db">Kde a proč se vlastně vzaly 3 dB?</h2>
+<p>Mezní frekvence je definována jako <b>pokles výkonu signálu na polovinu</b>. Slidy krok po kroku ukazují, proč to v decibelech dělá právě −3 dB a proč napětí klesne na 0,707.</p>
+
+<div class="box postup"><div class="box-t">Odvození (slidy krok po kroku)</div>
+<p>1. Výkon signálu daného napětím a proudem na odporu \(R\):</p>
+\[ P = U \cdot I = U \cdot \frac{U}{R} = \frac{U^2}{R}\ [\text{W}] \]
+<p>2. Výkonový zisk v decibelech je \(10 \log\) poměru výkonů. Dosadíme výkony, \(R\) se zkrátí a kvadrát se vytkne před logaritmus:</p>
+\[ \begin{aligned} G_\text{dB} &= 10 \cdot \log \frac{P_2}{P_1} = 10 \cdot \log \frac{U_2^2 / R}{U_1^2 / R} \\ &= 10 \cdot \log \frac{U_2^2}{U_1^2} = 20 \cdot \log \frac{U_2}{U_1}\ [\text{dB}] \end{aligned} \]
+<p>3. Modelově mějme jednotkový vstup: \(U_1 = 1\ \text{V}\), tedy i \(U_1^2 = 1\). Polovina výkonu znamená \(U_2^2 = 1/2\). Napětí na výstupu:</p>
+\[ U_2 = \sqrt{U_2^2} = \sqrt{\tfrac{1}{2}} = \frac{\sqrt{2}}{2} = 0{,}707\ldots \]
+<p>4. Zisk v decibelech:</p>
+\[ G_\text{dB} = 20 \cdot \log \frac{\sqrt{2}}{2} = -3{,}0102999\ldots\ \text{dB} \]</div>
+
+<div class="box intuice"><div class="box-t">Princip: proč 20 u napětí a 10 u výkonu</div>
+<p>Decibel je definovaný pro <b>výkon</b>: \(10 \log (P_2/P_1)\). Výkon je úměrný <b>kvadrátu</b> napětí a kvadrát se v logaritmu změní na dvojnásobek – proto je u napětí \(20 \log\). Poloviční výkon je tedy −3 dB, ale napětí přitom klesne jen na 70,7 %, ne na polovinu. Plný přenos = pokles o 0 dB.</p></div>
+
+<div class="box pozor"><div class="box-t">Pozor: „poloviční zisk“ znamená poloviční výkon</div>
+<p>Slide „Vliv frekvence na zisk“ říká, že plný výkon trvá „do frekvence, na které je poloviční zisk oproti DC“. Myslí se <b>poloviční výkon</b>. Napěťový zisk je v tom bodě 0,707násobek, ne polovina. Napěťový zisk poloviční (0,5) by byl pokles o 6 dB.</p></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Mezní frekvence je tam, kde výkon klesne na polovinu. Výkon je \(U^2/R\), takže v decibelech platí</p>
+\[ 10\log\frac{P_2}{P_1} = 20\log\frac{U_2}{U_1} \]
+<p>Polovina výkonu znamená \(U_2^2 = 1/2\), tedy napětí klesne na \(\sqrt{2}/2 = 0{,}707\), a to je</p>
+\[ 20\log 0{,}707 = -3{,}01\ \text{dB} \]
+<p>Proto se mezní frekvence a šířka pásma určují na −3 dB.“</p></div>
+
+<h2 id="k12-komparator">Napěťový komparátor</h2>
+<div class="box definice" id="k12-def-komparator"><div class="box-t">Definice: napěťový komparátor</div>
+<p><b>Napěťový komparátor</b> je zapojení OZ <b>bez zpětné vazby</b> s maximálním zesílením, jehož výstup nabývá jen hodnoty maxima nebo minima napětí (saturace) podle toho, které ze dvou vstupních napětí je větší.</p>
+<p class="jinak">komparátor neměří, o kolik se napětí liší, jen <b>které je větší</b>. Výstup je „ano / ne“ – most mezi analogovým signálem a logikou. Je to jediná běžná aplikace OZ bez zpětné vazby.</p></div>
+
+<figure><div class="paper"><img src="figures/fig12_komparator.png" alt="Komparátor: OZ bez zpětné vazby, V1 na invertujícím vstupu, V2 na neinvertujícím vstupu, výstup VOUT" loading="lazy"></div>
+<figcaption><b>Obr. P2.17</b> Napěťový komparátor (podle slidu): \(V_1\) na invertujícím, \(V_2\) na neinvertujícím vstupu.</figcaption></figure>
+<ul>
+<li>Výstup je <b>negativní</b> (záporná saturace), je-li \(V_1 \gg V_2\).</li>
+<li>Výstup je <b>pozitivní</b> (kladná saturace), je-li \(V_2 \gg V_1\).</li>
+</ul>
+
+<div class="box pozor"><div class="box-t">Pozor: „≫“ stačí velmi malé</div>
+<p>Na slidu je \(V_1 \gg V_2\), ale kvůli obrovskému zesílení stačí nepatrný rozdíl. Při zisku 200 000 a saturaci 13 V:</p>
+\[ \Delta U = \frac{13\ \text{V}}{200\,000} = 65\ \mu\text{V} \]
+<p>Prakticky tedy výstup přeskočí, jakmile jedno napětí převýší druhé (viz <a href="#k03-oz">převodní charakteristika OZ v Z3</a>). Komparátorům se podrobně věnuje přednáška P6.</p></div>
+
+<section class="souhrn" id="k12-shrnuti">
+<h2 id="k12-shrnuti-h">Shrnutí</h2>
+<p>Biosignály mají µV až mV, obvody pracují s volty – základní úpravou je <b>zesílení</b>. <b>Bipolární tranzistor</b> zesiluje proud: proud kolektorem je \(\beta\)-krát větší než proud bází. Zapojení <b>SE</b> potřebuje nastavený <b>pracovní bod</b> (kolektor asi na polovině napájení). S rezistorem z napájení do báze je pracovní bod nestabilní, protože závisí na \(\beta\) a teplotě. Pomáhá zpětná vazba z kolektoru a hlavně <b>dělič v bázi s rezistorem v emitoru</b>: zesílení pak dává poměr dvou rezistorů. <b>SC</b> (emitorový sledovač) má napěťové zesílení 1, ale zesiluje proud; <b>Darlington</b> má zesílení rovné součinu zesílení obou tranzistorů. <b>Diferenční pár</b> zesiluje rozdíl vstupů a je vstupem každého OZ; s <b>LC v kolektoru</b> vznikne laděný zesilovač na rezonanční frekvenci. <b>MOSFET</b> je řízen napětím na gate, má prahové napětí a potřebuje předpětí. Reálný <b>OZ</b> má konečný zisk klesající s frekvencí, <b>offset</b> a omezenou <b>rychlost přeběhu</b>. Šířka pásma končí na <b>−3 dB</b> = polovina výkonu = 0,707 napětí. OZ bez zpětné vazby je <b>komparátor</b>.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>β (\(h_{21E}\)) = proudové zesílení tranzistoru, \(i_C = \beta i_B\); ze slidu β = 3,84 mA / 10 µA = 384.</li>
+<li>Vstupní odpor do báze \(\approx \beta r_E\) (400 · 25 Ω = 10 kΩ) – BJT zesilovač má malý vstupní odpor.</li>
+<li>Pracovní bod = lehce otevřený tranzistor, kolektor zhruba na polovině napájení.</li>
+<li>Stabilní SE: dělič \(R_1\)–\(R_2\) + \(R_4\) v emitoru; \(A_u = -R_3/R_4 = -7{,}5\), \(R_\text{IN} = 27\ \text{k}\Omega\).</li>
+<li>SC: napětí zachová (\(A_u = 1\)), proud posílí; Darlington: \(\beta \approx \beta_1 \beta_2\).</li>
+<li>Paralelní LC v kolektoru = selektivní zesilovač, \(f_0 = 1/(2\pi\sqrt{LC}) = 96{,}7\ \text{kHz}\).</li>
+<li>MOSFET: řízení napětím na gate, práh 1,8 V → předpětí děličem (4 V); SS ≈ SE, SD = sledovač.</li>
+<li>Reálný OZ: zisk až 200 000, klesá s frekvencí (GBW = konst.), offset, SR obvykle 10 V/µs.</li>
+<li>−3 dB = polovina výkonu; \(20\log(\sqrt{2}/2) = -3{,}01\ \text{dB}\), napětí 0,707.</li>
+</ol></div>
+</section>
+
+<h2 id="k12-otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Proč je základní úpravou signálu zesílení? Co je bipolární tranzistor a parametr β?</summary><div>
+<p>Biologické signály mají µV až mV, ale obvody za nimi (TTL, CMOS logika, A/D převodník) pracují s jednotkami voltů. Signál se proto musí zesílit.</p>
+<p>Bipolární tranzistor má bázi, kolektor a emitor; malý proud bází řídí velký proud kolektorem a emitorem teče jejich součet:</p>
+\[ i_E = i_B + i_C \]
+<p>Parametr \(\beta\) (\(h_{21E}\)) je proudové zesílení – kolikrát se zesílí proud bází:</p>
+\[ \beta = \frac{i_C}{i_B} \]
+<p>Na slidu: přírůstek \(i_B\) o 10 µA dá přírůstek \(i_C\) o 3,84 mA, tedy \(\beta = 384\).</p></div></details>
+<details class="q"><summary>Nakreslete zapojení SE s napěťovým děličem. Proč je stabilnější než zapojení s jedním rezistorem do báze? Jaký má vstupní odpor a zesílení?</summary><div>
+<p>Dělič \(R_1\)–\(R_2\) z napájení nastaví napětí báze, \(R_3\) je v kolektoru, \(R_4\) mezi emitorem a zemí, vstup přes \(C_1\) do báze, výstup přes \(C_2\) z kolektoru.</p>
+<p>S jedním rezistorem do báze je pevný proud bází a \(I_C = \beta I_B\) – pracovní bod závisí na \(\beta\), které se mění s teplotou a kus od kusu. S děličem je pevné napětí báze, emitor je o 0,7 V níž a proud určuje \(R_4\):</p>
+\[ I_C \approx \frac{U_B - 0{,}7}{R_4} \]
+<p>Vstupní odpor a zesílení:</p>
+\[ R_\text{IN} = R_1 \parallel R_2 \parallel \beta R_4 \]
+\[ A_u = -\frac{R_3}{R_4} \]
+<p>Proudové zesílení je dáno \(\beta\). Na slidu: 240 kΩ ∥ 33 kΩ ∥ 400 kΩ = 27 kΩ a \(A_u = -7{,}5\).</p></div></details>
+<details class="q"><summary>Popište zapojení se společným kolektorem a Darlingtonovo zapojení. Jaké je celkové zesílení Darlingtona?</summary><div>
+<p>SC (emitorový sledovač): kolektor přímo na napájení, vstup do báze, výstup z emitoru. Napěťové zesílení je 1 (emitor sleduje bázi o 0,7 V níž), ale zesiluje proud, a tím výkon – napětí chci zachovat, proud posílit. Na slidu: emitor na 7,5 V, \(I_C\) = 1 mA, dělič musí dát 8,2 V.</p>
+<p>Darlington: emitorový proud \(T_1\) je proudem báze \(T_2\), kolektory jsou spojené, navenek vývody C, B, E. Často bývá \(T_1\) nízkonapěťový a \(T_2\) výkonový. Celkové zesílení je zesílení jednoho krát zesílení druhého:</p>
+\[ \beta \approx \beta_1 \cdot \beta_2 \]</div></details>
+<details class="q"><summary>Jak funguje rozdílový zesilovač s tranzistory? K čemu slouží zapojení s LC obvodem v kolektoru?</summary><div>
+<p>Rozdílový zesilovač: dva tranzistory se spojenými emitory napájenými přes společný rezistor ze záporného napětí. Oba se dělí o stejný proud; převýší-li jeden vstup druhý, jeho tranzistor si vezme víc proudu. Výstup z kolektoru je úměrný rozdílu vstupů, souhlasná změna se potlačí. Je to vstupní stupeň OZ.</p>
+<p>LC v kolektoru: selektivní (laděný) zesilovač. Paralelní LC má velkou impedanci jen na rezonanční frekvenci, takže zesiluje jen ji – podobně funguje rádio. Na slidu:</p>
+\[ \begin{aligned} f_0 &= \frac{1}{2\pi\sqrt{LC}} = \frac{1}{2\pi\sqrt{3{,}3\ \text{mH} \cdot 820\ \text{pF}}} \\ &\cong 96{,}7\ \text{kHz} \end{aligned} \]</div></details>
+<details class="q"><summary>Čím se liší MOSFET od bipolárního tranzistoru? Proč se u něj používá předpětí gate?</summary><div>
+<p>MOSFET je řízen elektrickým polem: napětí na izolované gate ovládá vodivost kanálu mezi source a drain. Do gate neteče proud, takže vstupní odpor je velmi velký. Bipolární tranzistor je řízen proudem do báze.</p>
+<p>VA charakteristika má prahové napětí (na slidu 1,8 V) – pod ním MOSFET nevede. Aby zesiloval malý střídavý signál, gate se předpíná děličem nad práh (na slidu 910 k / 330 k z 15 V, tedy asi 4 V). Zapojení SS odpovídá SE, SD je napěťový sledovač.</p></div></details>
+<details class="q"><summary>Jaké vlastnosti má ideální OZ a jak se od nich liší reálný? Vysvětlete offset a rychlost přeběhu.</summary><div>
+<ul>
+<li>Zesílení: ideálně nekonečné, reálně bez zpětné vazby až 200 000, omezené napájením.</li>
+<li>Frekvence: ideálně bez vlivu, reálně zisk klesá; konstantní je součin zisku a šířky pásma.</li>
+<li>Vstupní odpor: ideálně nekonečný, reálně 2 MΩ až \(10^{14}\) Ω.</li>
+<li>Výstupní odpor: ideálně nulový, reálně např. 75 Ω (se zpětnou vazbou až mΩ).</li>
+<li>Výstup: ideálně až k napájení (rail-to-rail), reálně jen téměř.</li>
+</ul>
+<p><b>Offset</b> je výstupní napětí při stejných napětích na obou vstupech, dané nesymetrií vnitřních tranzistorů a impedancí. U 741 se nuluje trimrem 10 kΩ mezi vývody 1 a 5.</p>
+<p><b>Rychlost přeběhu</b> je maximální rychlost změny výstupu ve V/µs (jednotky až stovky, obvykle 10 V/µs). Je daná hlavně vnitřní kapacitou (u 741 30 pF). Vyšší SR je potřeba pro vf aplikace.</p></div></details>
+<details class="q"><summary>Kde a proč se vzaly 3 dB? Odvoďte.</summary><div>
+<p>Mezní frekvence je pokles výkonu na polovinu. Výkon:</p>
+\[ P = \frac{U^2}{R} \]
+<p>Zisk v decibelech:</p>
+\[ G_\text{dB} = 10 \log \frac{P_2}{P_1} = 10 \log \frac{U_2^2}{U_1^2} = 20 \log \frac{U_2}{U_1} \]
+<p>Pro \(U_1 = 1\ \text{V}\) a poloviční výkon \(U_2^2 = 1/2\):</p>
+\[ U_2 = \frac{\sqrt{2}}{2} = 0{,}707 \]
+\[ G_\text{dB} = 20 \log 0{,}707 = -3{,}01\ \text{dB} \]
+<p>Na mezní frekvenci tedy napětí klesne na 70,7 % a výkon na polovinu.</p></div></details>
+<details class="q"><summary>Jak funguje OZ jako napěťový komparátor?</summary><div>
+<p>OZ je zapojen bez zpětné vazby s maximálním zesílením – jediná taková aplikace OZ. Neměří velikost rozdílu, výstup nabývá jen maxima nebo minima (saturace). Je-li \(V_1\) na invertujícím vstupu větší než \(V_2\) na neinvertujícím, výstup je záporný; je-li \(V_2\) větší, je kladný. Díky zisku kolem 200 000 stačí rozdíl desítek µV.</p></div></details>
+
+</section>
 <section class="kapitola" id="k99">
 
 <h1>Slovník pojmů</h1>
@@ -1973,6 +2493,62 @@
 <div class="box definice" id="k99-s-vyvazeny-mustek"><div class="box-t">vyvážený můstek</div>
 <p><b>Vyvážený můstek</b> je stav Wheatstoneova můstku, kdy mezi uzly B a D neprotéká žádný proud (napětí \(V_G = 0\)). Pak platí \(R_1/R_2 = R_3/R_X\).</p>
 <p class="jinak">oba děliče dělí napětí ve stejném poměru, středy jsou na stejném potenciálu a měřidlo ukazuje nulu.</p><p class="slovnik-odkaz"><a href="#k11-def-vyvazeny-mustek">výklad v kapitole P1 →</a></p></div>
+<h2 id="k99-kP2" class="slovnik-kap">P2 · Úprava signálu: tranzistorové zesilovače a OZ</h2>
+<div class="box definice" id="k99-s-zesilovac"><div class="box-t">zesilovač a zesílení</div>
+<p><b>Zesilovač</b> je obvod, jehož výstupní signál je zvětšenou kopií vstupního signálu; energii na zvětšení bere z napájecího zdroje. <b>Napěťové zesílení</b> je poměr výstupního a vstupního napětí, <b>proudové zesílení</b> poměr výstupního a vstupního proudu:
+\[ A_u = \frac{u_\text{výst}}{u_\text{vst}} \]
+\[ A_i = \frac{i_\text{výst}}{i_\text{vst}} \]</p>
+<p class="jinak">zesilovač „nafoukne“ slabý signál tak, aby s ním šlo dál pracovat. Nevyrábí energii z ničeho – bere ji z napájení a signál jen řídí, kolik jí pustí na výstup.</p><p class="slovnik-odkaz"><a href="#k12-def-zesilovac">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-bjt"><div class="box-t">bipolární tranzistor (BJT)</div>
+<p><b>Bipolární tranzistor</b> (BJT, <i>Bipolar Junction Transistor</i>) je polovodičová součástka se třemi vývody – <b>bází</b> (B), <b>kolektorem</b> (C) a <b>emitorem</b> (E) –, u které malý proud bází řídí mnohem větší proud kolektorem. Oba proudy odtékají emitorem:
+\[ i_E = i_B + i_C \]</p>
+<p class="jinak">tranzistor je „ventil“: malým proudem do báze otevírám velký proud z kolektoru do emitoru. Emitorem teče součet obou proudů.</p><p class="slovnik-odkaz"><a href="#k12-def-bjt">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-beta"><div class="box-t">proudový zesilovací činitel β (h21E)</div>
+<p><b>Proudový zesilovací činitel</b> \(\beta\), v katalozích \(h_{21E}\), je poměr proudu kolektorem a proudu bází tranzistoru:
+\[ \beta = h_{21E} = \frac{i_C}{i_B} \]</p>
+<p class="jinak">říká, kolikrát se zesílí proud bází – je to <b>proudové zesílení</b> tranzistoru. Typicky bývá ve stovkách.</p><p class="slovnik-odkaz"><a href="#k12-def-beta">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-se"><div class="box-t">zapojení se společným emitorem (SE)</div>
+<p><b>Zapojení se společným emitorem</b> (SE) je základní zapojení tranzistorového zesilovače: vstupní signál se přivádí do báze, výstup se odebírá z kolektoru a emitor je společný vstupu i výstupu (je na zemi, případně přes rezistor).</p>
+<p class="jinak">signál „pootvírá“ tranzistor přes bázi a změna kolektorového proudu vytvoří na rezistoru v kolektoru velkou změnu napětí. Zesiluje napětí i proud a výstup je <b>obrácený</b> (invertovaný).</p><p class="slovnik-odkaz"><a href="#k12-def-se">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-re"><div class="box-t">vnitřní odpor emitoru r<sub>E</sub></div>
+<p><b>Vnitřní odpor emitoru</b> \(r_E\) (na slidu \(R_E\)) je odpor, přes který uvnitř tranzistoru prochází proud z báze do emitoru; u bipolárních tranzistorů je typicky kolem 25 Ω. Při pohledu do báze se jeví zvětšený \(\beta\)-krát.</p>
+<p class="jinak">do báze teče jen malý proud, ale emitorem teče \(\beta\)-krát větší. Proto se odpor v emitoru „z pohledu báze“ jeví \(\beta\)-krát větší.</p><p class="slovnik-odkaz"><a href="#k12-def-re">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-pracovni-bod"><div class="box-t">pracovní bod tranzistoru</div>
+<p><b>Pracovní bod</b> (klidový bod) tranzistoru jsou stejnosměrné hodnoty proudů a napětí tranzistoru bez vstupního signálu (klidový proud báze \(I_B\), kolektoru \(I_C\) a napětí na kolektoru), nastavené rezistory v okolí tranzistoru.</p>
+<p class="jinak">nastavení pracovního bodu = „lehce otevřít tranzistor“. Napětí na kolektoru se volí zhruba na <b>polovinu napájecího napětí</b>, aby se výstup mohl stejně daleko hýbat nahoru i dolů.</p><p class="slovnik-odkaz"><a href="#k12-def-pracovni-bod">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-sc"><div class="box-t">zapojení se společným kolektorem (SC)</div>
+<p><b>Zapojení se společným kolektorem</b> (SC, <b>emitorový sledovač</b>) je tranzistorový zesilovač, u kterého je kolektor připojen přímo na napájení, signál se přivádí do báze a výstup se odebírá z emitoru. Napěťové zesílení je 1, ale zapojení zesiluje proud (a tím výkon).</p>
+<p class="jinak">napětí chci zachovat, proud posílit. Emitor „sleduje“ bázi (o 0,7 V níž), ale výstup může dodat \(\beta\)-krát větší proud, než odebírá vstup. Je to tranzistorová obdoba <a href="#k04-def-sledovac">sledovače s OZ</a>.</p><p class="slovnik-odkaz"><a href="#k12-def-sc">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-darlington"><div class="box-t">Darlingtonovo zapojení</div>
+<p><b>Darlingtonovo zapojení</b> (Darlingtonův pár) jsou dva tranzistory zapojené tak, že emitorový proud prvního tranzistoru \(T_1\) je proudem báze druhého \(T_2\) a kolektory jsou spojené. Navenek se chová jako jeden tranzistor se třemi vývody C, B, E a s proudovým zesílením přibližně rovným součinu zesílení obou tranzistorů.</p>
+<p class="jinak">první tranzistor zesílí proud báze, druhý zesílí výsledek ještě jednou – celkové zesílení je zesílení jednoho krát zesílení druhého.</p><p class="slovnik-odkaz"><a href="#k12-def-darlington">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-diferencni-par"><div class="box-t">rozdílový zesilovač s tranzistory (diferenční pár)</div>
+<p><b>Rozdílový zesilovač s tranzistory</b> (diferenční pár) tvoří dva stejné tranzistory se spojenými emitory, které napájí společný rezistor (zdroj proudu) z napětí \(V_{EE}\). Signály se přivádějí do obou bází a výstupní napětí na kolektoru je úměrné <b>rozdílu</b> vstupních napětí.</p>
+<p class="jinak">oba tranzistory se „přetahují“ o stejný proud z \(R_3\). Když jeden vstup převýší druhý, jeho tranzistor si vezme víc proudu a druhý méně. Stejná změna na obou vstupech nic nezmění. Je to vstupní stupeň každého OZ.</p><p class="slovnik-odkaz"><a href="#k12-def-diferencni-par">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-selektivni"><div class="box-t">selektivní (laděný) zesilovač</div>
+<p><b>Selektivní (laděný) zesilovač</b> je zesilovač, který má místo kolektorového rezistoru paralelní rezonanční obvod LC; zesiluje jen signály v úzkém pásmu kolem rezonanční frekvence \(f_0\) obvodu LC, ostatní frekvence téměř nezesiluje.</p>
+<p class="jinak">tranzistor zesiluje selektivně jen určitou frekvenci. Paralelní LC má na rezonanční frekvenci velkou impedanci (a zesílení je velké jako u velkého \(R_3\)), mimo ni malou. Podobně funguje třeba rádio – naladí se jen na jednu stanici.</p><p class="slovnik-odkaz"><a href="#k12-def-selektivni">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-mosfet"><div class="box-t">MOSFET</div>
+<p><b>MOSFET</b> (<i>Metal Oxide Semiconductor Field Effect Transistor</i>) je unipolární tranzistor řízený <b>elektrickým polem</b>: napětí na izolované řídicí elektrodě <b>gate</b> (g) ovládá vodivost kanálu mezi elektrodami <b>source</b> (s) a <b>drain</b> (d).</p>
+<p class="jinak">bipolární tranzistor se řídí proudem do báze, MOSFET napětím na gate. Gate je od kanálu izolovaná oxidem, takže do ní neteče stejnosměrný proud – vstupní odpor je obrovský.</p><p class="slovnik-odkaz"><a href="#k12-def-mosfet">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-prahove-napeti"><div class="box-t">prahové napětí MOSFETu</div>
+<p><b>Prahové napětí</b> \(V_\text{th}\) (<i>threshold</i>) je napětí mezi gate a source, od kterého začne kanálem MOSFETu protékat proud drainem; pod prahem tranzistor nevede.</p>
+<p class="jinak">MOSFET se „neotevírá“ od nuly. Dokud napětí gate nepřekročí práh (na slidu 1,8 V), je zavřený a na signál nereaguje.</p><p class="slovnik-odkaz"><a href="#k12-def-prahove-napeti">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-offset"><div class="box-t">offset vstupního napětí</div>
+<p><b>Offset vstupního napětí</b> (<i>input voltage offset</i>) je napětí, které je na výstupu OZ (přepočteno na vstup), když jsou na oba vstupy připojena stejná napětí. Je dán nedokonalostí (nesymetrií) vnitřních impedancí a tranzistorů; v ideálním případě je 0,000 000 V.</p>
+<p class="jinak">dva vstupní tranzistory nejsou nikdy úplně stejné, takže OZ „vidí“ malý rozdíl i tam, kde žádný není. Měří se tak, že se oba vstupy spojí a připojí na stejné napětí.</p><p class="slovnik-odkaz"><a href="#k12-def-offset">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-slew-rate"><div class="box-t">rychlost přeběhu (slew rate)</div>
+<p><b>Rychlost přeběhu</b> (<i>slew rate</i>, SR) je maximální rychlost změny výstupního napětí zesilovače; vyjadřuje se ve voltech za mikrosekundu (V/µs).</p>
+<p class="jinak">výstup OZ se nemůže změnit skokem – „dojede“ na novou hodnotu nejvýš touto rychlostí. Způsobuje to hlavně kapacita uvnitř zesilovače (u 741 kondenzátor 30 pF), která se nabíjí omezeným proudem.</p><p class="slovnik-odkaz"><a href="#k12-def-slew-rate">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-sirka-pasma"><div class="box-t">šířka pásma</div>
+<p><b>Šířka pásma</b> (<i>bandwidth</i>) zesilovače je rozsah frekvencí od 0 Hz (DC) po mezní frekvenci \(f_M\), na které výkon výstupního signálu klesne na polovinu oproti DC, tj. zisk klesne o 3 dB.</p>
+<p class="jinak">pásmo, ve kterém zesilovač „jede naplno“. Nad ním zesílení klesá. Stejný pojem je u filtrů <a href="#k02-def-mezni">mezní frekvence</a>.</p><p class="slovnik-odkaz"><a href="#k12-def-sirka-pasma">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-gbw"><div class="box-t">součin zisku a šířky pásma (GBW)</div>
+<p><b>Součin zisku a šířky pásma</b> (<i>gain-bandwidth product</i>, GBW) je konstantní součin zesílení a frekvence na klesající části frekvenční charakteristiky OZ. Rovná se <b>tranzitní frekvenci</b>, na které zisk OZ klesne na 1 (0 dB).</p>
+<p class="jinak">zesílení a šířku pásma lze „vyměnit“: čím menší zesílení nastavím zpětnou vazbou, tím širší pásmo zesilovač přenese.</p><p class="slovnik-odkaz"><a href="#k12-def-gbw">výklad v kapitole P2 →</a></p></div>
+<div class="box definice" id="k99-s-komparator"><div class="box-t">napěťový komparátor</div>
+<p><b>Napěťový komparátor</b> je zapojení OZ <b>bez zpětné vazby</b> s maximálním zesílením, jehož výstup nabývá jen hodnoty maxima nebo minima napětí (saturace) podle toho, které ze dvou vstupních napětí je větší.</p>
+<p class="jinak">komparátor neměří, o kolik se napětí liší, jen <b>které je větší</b>. Výstup je „ano / ne“ – most mezi analogovým signálem a logikou. Je to jediná běžná aplikace OZ bez zpětné vazby.</p><p class="slovnik-odkaz"><a href="#k12-def-komparator">výklad v kapitole P2 →</a></p></div>
 
 </section>
 

@@ -961,13 +961,342 @@ def fig11_mustek():
         elm.Label().at((-s - u * 0.45 - 0.5, D[1])).label("$U$", fontsize=14)
 
 
+# =====================================================================  přednáška 2: úprava signálu
+def fig12_beta():
+    ib = np.linspace(0, 27.5, 100)                               # µA
+    beta = 384                                                   # z trojúhelníku na slidu: 3,84 mA / 10 µA
+    fig, ax = plt.subplots(figsize=(7.6, 3.6))
+    ax.plot(ib, beta * ib * 1e-3, color=C1)
+    ax.plot([10, 20, 20], [3.84, 3.84, 7.68], color=C2, lw=1.4)
+    ax.plot([10, 20], [3.84, 7.68], "o", color=C2, mec=SURF, ms=6)
+    ax.text(15, 3.2, "$\\Delta i_B$ = 10 µA", ha="center", fontsize=9.5, color=INK2)
+    ax.text(20.6, 5.6, "$\\Delta i_C$ = 3,84 mA", fontsize=9.5, color=INK2)
+    ax.text(1, 8.6, "$\\beta = \\Delta i_C / \\Delta i_B$ = 3,84 mA / 10 µA = 384", fontsize=10.5, color=C1)
+    ax.set_xlabel("proud bází $i_B$ [µA]")
+    ax.set_ylabel("proud kolektorem $i_C$ [mA]")
+    ax.set_xlim(0, 27.5)
+    ax.set_ylim(0, 10.5)
+    ax.set_title("Proud kolektorem je β-násobkem proudu bází (podle slidu)", loc="left")
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:g}".replace(".", ",")))
+    save(fig, "fig12_beta")
+
+
+def _stupen(name, q, r1, c1, c2, rc=None, r2=None, re=None, zv=False, sc=False, lc=None, fet=False):
+    """Tranzistorový stupeň jako na slidech: napájení nahoře, 0 V dole, vstup přes C1 do báze (gate),
+    výstup přes C2 z kolektoru (drainu), u SC / SD z emitoru (source)."""
+    with schema(name, unit=1.9) as d:
+        u = d.unit
+        if fet:
+            t = elm.NFet(bulk=True).reverse().anchor("gate").at((0, 0)).label(q, loc="right", ofst=(0.1, 0))
+            hor, dol, vst = t.drain, t.source, "gate"
+        else:
+            t = elm.BjtNpn(circle=True).anchor("base").at((0, 0)).label(q, loc="right")
+            hor, dol, vst = t.collector, t.emitter, "base"
+        xt = hor[0]
+        ytop = hor[1] + u * (1.75 if lc else 1.35)
+        ybot = dol[1] - u * 1.25
+        xb, xl, xo = (-u * 1.15, -u * 2.75, xt + u * 1.6) if lc else (-u * 0.75, -u * 2.35, xt + u * 1.6)
+        # horní větev (kolektor / drain)
+        if sc:
+            elm.Line().at(hor).toy(ytop)
+            nc = None
+        else:
+            nc = elm.Line().at(hor).up(u * 0.3).dot().end
+            if lc:
+                a = elm.Line().at(nc).up(u * 0.15).end
+                elm.Line().at(a).left(u * 0.35)
+                elm.Capacitor().up(u * 0.85).label(lc[0], loc="top")
+                elm.Line().right(u * 0.35)
+                elm.Line().at(a).right(u * 0.35)
+                elm.Inductor2(loops=3).up(u * 0.85).label(lc[1], loc="bottom")
+                elm.Line().left(u * 0.35)
+                elm.Line().at((xt, a[1] + u * 0.85)).toy(ytop)
+            else:
+                elm.Resistor().at(nc).up().toy(ytop).label(rc, loc="bottom")
+        # dolní větev (emitor / source)
+        if re:
+            ne = elm.Line().at(dol).down(u * 0.15).dot().end if sc else dol
+            elm.Resistor().at(ne).down().toy(ybot).label(re, loc="bottom")
+        else:
+            ne = dol
+            elm.Line().at(dol).toy(ybot)
+        # báze / gate a předpětí
+        nb = elm.Line().at(getattr(t, vst)).tox(xb).dot().end
+        if zv:
+            elm.Line().at(nb).toy(nc[1])
+            elm.Resistor().right().tox(nc).label(r1)
+        else:
+            elm.Resistor().at(nb).up().toy(ytop).label(r1, loc="top")
+        if r2:
+            elm.Resistor().at(nb).down().toy(ybot).label(r2, loc="bottom")
+        elm.Capacitor(polar=not fet).at(nb).left().tox(xl + u * 0.35).reverse().label(c1, loc="bottom")
+        elm.Line().tox(xl)
+        svorka(d, (xl, 0), "$V_\\mathrm{IN}$")
+        # výstup
+        nout = ne if sc else nc
+        elm.Capacitor(polar=True).at(nout).right().tox(xo - u * 0.35).label(c2, loc="bottom")
+        elm.Line().tox(xo)
+        svorka(d, (xo, nout[1]), "$V_\\mathrm{OUT}$", loc="right")
+        # napájecí a zemní vodič
+        elm.Line().at((xl, ytop)).tox(xt)
+        elm.Line().at((xl, ybot)).tox(xo)
+        svorka(d, (xl, ytop), "$V_\\mathrm{DD}$ 15 V" if fet else "$V_\\mathrm{CC}$ 15 V")
+        svorka(d, (xl, ybot), "0 V")
+        svorka(d, (xo, ybot), "", loc="right")
+
+
+def fig12_se():
+    _stupen("fig12_se", "Q1 BC548", "$R_1$ 4M7", "$C_1$ 820n", "$C_2$ 1µ", rc="$R_2$ 7k5")
+
+
+def fig12_se_zv():
+    _stupen("fig12_se_zv", "Q1 BC548", "$R_1$ 2M2", "$C_1$ 820n", "$C_2$ 1µ", rc="$R_2$ 7k5", zv=True)
+
+
+def fig12_se_delic():
+    _stupen("fig12_se_delic", "Q1 BC548", "$R_1$ 240k", "$C_1$ 330n", "$C_2$ 1µ", rc="$R_3$ 7k5",
+            r2="$R_2$ 33k", re="$R_4$ 1k")
+
+
+def fig12_sc():
+    _stupen("fig12_sc", "Q1 BC548", "$R_1$ 130k", "$C_1$ 120n", "$C_2$ 1µ", r2="$R_2$ 160k", re="$R_3$ 7k5",
+            sc=True)
+
+
+def fig12_selektivni():
+    _stupen("fig12_selektivni", "Q1 2N2222", "$R_1$ 240k", "$C_1$ 330n", "$C_2$ 1µ", r2="$R_2$ 33k",
+            re="$R_4$ 1k", lc=("$C_3$ 820p", "$L_1$ 3m3"))
+
+
+def fig12_mosfet_ss():
+    _stupen("fig12_mosfet_ss", "Q1 ZVN3306A", "$R_1$ 910k", "$C_1$ 33n", "$C_2$ 220µ", rc="$R_3$ 36R",
+            r2="$R_2$ 330k", fet=True)
+
+
+def fig12_mosfet_sd():
+    _stupen("fig12_mosfet_sd", "Q1 ZVN3306A", "$R_1$ 910k", "$C_1$ 33n", "$C_2$ 220µ", r2="$R_2$ 330k",
+            re="$R_3$ 36R", sc=True, fet=True)
+
+
+def _ic_bias(beta):
+    """Klidový proud kolektoru tří zapojení SE ze slidů v závislosti na β (U_BE = 0,7 V)."""
+    vcc, ube = 15.0, 0.7
+    ic_r1 = beta * (vcc - ube) / 4.7e6                                 # R1 4M7 z napájení do báze
+    k = 7.5e3 * (beta + 1) / 2.2e6                                     # R1 2M2 z kolektoru do báze
+    ic_zv = beta * ((vcc + k * ube) / (1 + k) - ube) / 2.2e6
+    uth, rth = vcc * 33 / 273, 240e3 * 33e3 / 273e3                    # dělič 240k/33k (Théveninův zdroj), R4 1k
+    ic_del = beta * (uth - ube) / (rth + (beta + 1) * 1e3)
+    return ic_r1, ic_zv, ic_del
+
+
+def fig12_stabilita():
+    b = np.linspace(100, 800, 200)
+    fig, ax = plt.subplots(figsize=(7.6, 3.8))
+    for y, col, mk, lbl in zip(_ic_bias(b), CAT, MARK, ["$R_1$ z napájení do báze (slide 6)",
+                                                        "$R_1$ z kolektoru do báze (slide 8)",
+                                                        "dělič $R_1$–$R_2$ a $R_4$ v emitoru (slide 9)"]):
+        y = np.minimum(y, 2e-3)
+        ax.plot(b, y * 1e3, color=col, label=lbl)
+        bb = np.array([200, 400, 600])
+        ax.plot(bb, np.interp(bb, b, y) * 1e3, mk, color=col, mec=SURF, ms=7)
+    ax.axhline(2.0, color=MUTED, ls="--", lw=1.0)
+    ax.text(790, 2.04, "saturace: celé napájení na rezistoru 7k5 v kolektoru", fontsize=9, color=INK2,
+            va="bottom", ha="right")
+    ax.set_xlabel("proudový zesilovací činitel β")
+    ax.set_ylabel("klidový proud $I_C$ [mA]")
+    ax.set_ylim(0, 2.35)
+    ax.set_xlim(100, 800)
+    ax.legend(loc="lower right")
+    ax.set_title("Jak se pracovní bod mění s β (různé kusy tranzistoru, teplota)", loc="left")
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:g}".replace(".", ",")))
+    save(fig, "fig12_stabilita")
+
+
+def fig12_darlington():
+    with schema("fig12_darlington", unit=2.0) as d:
+        u = d.unit
+        t1 = elm.BjtNpn(circle=True).anchor("base").at((0, 0)).label("$T_1$", loc="right")
+        t2 = elm.BjtNpn(circle=True).anchor("base").at((t1.emitter[0] + u * 0.35, t1.emitter[1] - u * 0.45)).label(
+            "$T_2$", loc="right")
+        elm.Line().at(t1.emitter).toy(t2.base)
+        elm.Line().tox(t2.base)
+        ytop = t1.collector[1] + u * 0.5
+        elm.Line().at(t1.collector).toy(ytop).dot()
+        elm.Line().at(t2.collector).toy(ytop)
+        elm.Line().tox(t1.collector)
+        elm.Line().at((t2.collector[0], ytop)).up(u * 0.3)
+        elm.Dot(open=True).label("C", loc="top")
+        elm.Line().at(t1.base).left(u * 0.5)
+        elm.Dot(open=True).label("B", loc="left")
+        elm.Line().at(t2.emitter).down(u * 0.4)
+        elm.Dot(open=True).label("E", loc="bottom")
+        elm.Label().at((t1.emitter[0] - 0.75, (t1.emitter[1] + t2.base[1]) / 2)).label(
+            "$i_{E1} = i_{B2}$", fontsize=11, color=C2)
+        elm.Label().at((t2.collector[0] + u * 1.5, t1.base[1] - 0.2)).label(
+            "$\\beta \\approx \\beta_1 \\cdot \\beta_2$", fontsize=16, color=C1)
+
+
+def fig12_rozdilovy():
+    with schema("fig12_rozdilovy", unit=2.0) as d:
+        u = d.unit
+        q1 = elm.BjtNpn(circle=True).anchor("base").at((0, 0))
+        q2 = elm.BjtNpn(circle=True).reverse().anchor("base").at((q1.emitter[0] * 2 + u * 0.9, 0))
+        elm.Label().at((q1.emitter[0] - 0.9, q1.emitter[1] - 0.6)).label("Q1 BC548", fontsize=11)
+        elm.Label().at((q2.emitter[0] + 0.9, q2.emitter[1] - 0.6)).label("Q2 BC548", fontsize=11)
+        ytop = q1.collector[1] + u * 1.3
+        elm.Resistor().at(q1.collector).up().toy(ytop).label("$R_1$ 75k", loc="top")
+        n2 = elm.Line().at(q2.collector).up(u * 0.3).dot().end
+        elm.Resistor().at(n2).up().toy(ytop).label("$R_2$ 75k", loc="bottom")
+        elm.Line().at(n2).right(u * 1.1)
+        elm.Dot(open=True).label("$V_\\mathrm{OUT}$", loc="right")
+        xm = (q1.emitter[0] + q2.emitter[0]) / 2
+        ye = q1.emitter[1] - u * 0.35
+        elm.Line().at(q1.emitter).toy(ye)
+        elm.Line().tox(q2.emitter)
+        elm.Line().toy(q2.emitter)
+        elm.Dot().at((xm, ye))
+        elm.Resistor().at((xm, ye)).down().label("$R_3$ 75k", loc="bottom")
+        elm.Dot(open=True).label("$V_\\mathrm{EE}$ −15 V", loc="bottom")
+        elm.Line().at((q1.collector[0] - u * 0.9, ytop)).tox(q2.collector)
+        elm.Dot(open=True).at((q1.collector[0] - u * 0.9, ytop)).label("+15 V", loc="left")
+        elm.Line().at(q1.base).left(u * 0.4)
+        elm.Dot(open=True).label("$V_\\mathrm{in+}$", loc="left")
+        elm.Line().at(q2.base).right(u * 0.4)
+        elm.Dot(open=True).label("$V_\\mathrm{in-}$", loc="right")
+
+
+def fig12_rozdilovy_prubeh():
+    t = np.linspace(0, 2.9, 1000)
+    vp = 120 * np.sin(2 * np.pi * t)                             # mV, jako na slidu: 1 Hz, posun o čtvrt periody
+    vm = -120 * np.cos(2 * np.pi * t)
+    vo = 5 * (vp - vm)                                           # zesílení 5 odpovídá amplitudám na slidu
+    fig, ax = plt.subplots(figsize=(7.6, 3.6))
+    ax.plot(t, vo, color=C1, label="$V_\\mathrm{OUT}$ = 5 · ($V_\\mathrm{in+} - V_\\mathrm{in-}$)")
+    ax.plot(t, vp, color=C2, lw=1.6, label="$V_\\mathrm{in+}$")
+    ax.plot(t, vm, color=C3, lw=1.6, ls="--", label="$V_\\mathrm{in-}$")
+    ax.set_xlabel("čas t [s]")
+    ax.set_ylabel("napětí (střídavá složka) [mV]")
+    ax.set_ylim(-950, 1300)
+    ax.set_xlim(0, 2.9)
+    ax.legend(loc="upper left", ncol=3)
+    ax.set_title("Výstup sleduje rozdíl vstupů, ne vstupy samotné (podle grafu na slidu)", loc="left")
+    ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:g}".replace(".", ",")))
+    save(fig, "fig12_rozdilovy_prubeh")
+
+
+def fig12_mosfet_char():
+    v = np.linspace(1.5, 3.6, 300)
+    k = 50 / 0.9 ** 2                                            # mA/V², aby 2,7 V → 50 mA jako na slidu
+    i = np.where(v > 1.8, k * (v - 1.8) ** 2, 0)
+    fig, ax = plt.subplots(figsize=(7.6, 3.5))
+    ax.plot(v, i, color=C1)
+    ax.axvline(1.8, color=C2, ls="--", lw=1.2)
+    ax.text(1.84, 165, "prahové napětí\n$V_\\mathrm{th}$ = 1,8 V", fontsize=9.5, color=C2)
+    ax.text(1.52, 12, "pod prahem\nnevede", fontsize=9.5, color=INK2)
+    ax.set_xlabel("napětí gate–source $V_\\mathrm{GS}$ [V]")
+    ax.set_ylabel("proud drainem $i_D$ [mA]")
+    ax.set_xlim(1.5, 3.6)
+    ax.set_ylim(0, 210)
+    ax.set_title("Převodní charakteristika n-kanálového MOSFETu (práh podle slidu)", loc="left")
+    ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:g}".replace(".", ",")))
+    save(fig, "fig12_mosfet_char")
+
+
+def fig12_spinace():
+    with schema("fig12_spinace", unit=2.0) as d:
+        u = d.unit
+        elm.Dot(open=True).at((0, 0)).label("$V_\\mathrm{IN}$", loc="left")
+        elm.Resistor().right().label("$R_1$ 22k")
+        n = elm.Dot().center
+        elm.Line().at(n).right(u * 0.9)
+        elm.Dot(open=True).label("$V_\\mathrm{OUT}$", loc="right")
+        f = elm.NFet(bulk=True).theta(0).reverse().anchor("drain").at(n)
+        elm.Label().at((f.drain[0] + 1.2, f.gate[1] - 0.15)).label("ZVN4210", fontsize=11)
+        elm.Line().at(f.bulk).toy(f.source)                     # substrát spojený se source (jako na slidu)
+        elm.Line().at(f.gate).left(u * 0.4)
+        elm.Dot(open=True).label("control", loc="left")
+        elm.Line().at(f.source).down(u * 0.2)
+        elm.Ground(lead=False)
+        elm.Label().at((u * 0.6, 1.5)).label("a) spínač k zemi", fontsize=12, color=C1)
+        x0 = u * 4.3
+        g = elm.NFet(bulk=True).theta(0).reverse().anchor("drain").at((x0, 0))
+        elm.Line().at(g.drain).up(u * 0.3)
+        elm.Dot(open=True).label("$V_\\mathrm{IN}$ / $V_\\mathrm{OUT}$", loc="right")
+        elm.Line().at(g.source).down(u * 0.3)
+        elm.Dot(open=True).label("$V_\\mathrm{OUT}$ / $V_\\mathrm{IN}$", loc="right")
+        elm.Line().at(g.gate).left(u * 0.4)
+        elm.Dot(open=True).label("control", loc="left")
+        elm.Line().at(g.bulk).right(u * 0.35)
+        elm.Ground()
+        elm.Label().at((x0, 1.5)).label("b) sériový spínač", fontsize=12, color=C3)
+
+
+def fig12_slew():
+    t = np.linspace(0, 40, 8000)                                 # µs
+    f, up, sr = 50e-3, 10.0, 1.0                                 # 50 kHz (v 1/µs), amplituda 10 V, SR 1 V/µs
+    want = up * np.sin(2 * np.pi * f * t)
+    out = np.zeros_like(t)
+    dt = t[1] - t[0]
+    for k in range(1, len(t)):
+        out[k] = out[k - 1] + np.clip(want[k] - out[k - 1], -sr * dt, sr * dt)
+    fig, ax = plt.subplots(figsize=(7.6, 3.6))
+    ax.plot(t, want, color=MUTED, ls="--", lw=1.6, label="požadovaný výstup (sinus 50 kHz, 10 V)")
+    ax.plot(t, out, color=C1, label="skutečný výstup OZ se SR = 1 V/µs")
+    ax.set_xlabel("čas t [µs]")
+    ax.set_ylabel("výstupní napětí [V]")
+    ax.set_ylim(-11, 16)
+    ax.set_xlim(0, 40)
+    ax.legend(loc="upper left", ncol=2)
+    ax.set_title("Omezená rychlost přeběhu: výstup nestíhá, ze sinusu je trojúhelník", loc="left")
+    save(fig, "fig12_slew")
+
+
+def fig12_zisk_f():
+    f = np.logspace(-0.3, 6.5, 600)
+    a0, fp = 2e5, 5.0                                            # zisk při DC a zlom (jednopólový model, 1 MHz)
+    a = a0 / np.sqrt(1 + (f / fp) ** 2)
+    fig, ax = plt.subplots(figsize=(7.6, 3.8))
+    ax.plot(f, 20 * np.log10(a), color=C1)
+    g3 = 20 * np.log10(a0) - 3.0103
+    ax.axhline(20 * np.log10(a0), color=MUTED, ls=":", lw=1.0)
+    ax.plot(fp, g3, "o", color=C2, mec=SURF, ms=7)
+    ax.annotate("−3 dB (polovina výkonu)\nšířka pásma $f_M$ = 5 Hz", (fp, g3), xytext=(30, 90), fontsize=9.5,
+                color=INK2, arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.plot(1e6, 0, "s", color=C3, mec=SURF, ms=7)
+    ax.annotate("jednotkový zisk (0 dB)\ntranzitní frekvence 1 MHz", (1e6, 0), xytext=(1.5e3, 6), fontsize=9.5,
+                color=INK2, arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.text(300, 55, "pokles 20 dB na dekádu:\nzisk · frekvence = konst.", fontsize=9.5, color=INK2)
+    log_osa(ax)
+    ax.set_xticks([1, 10, 100, 1e3, 1e4, 1e5, 1e6])
+    ax.set_xticklabels(["1", "10", "100", "1 k", "10 k", "100 k", "1 M"])
+    ax.set_ylabel("zisk bez zpětné vazby [dB]")
+    ax.set_ylim(-10, 115)
+    ax.set_title("Zisk OZ s frekvencí klesá ($A_0 = 2 \\cdot 10^5$, jednoduchý model)", loc="left")
+    save(fig, "fig12_zisk_f")
+
+
+def fig12_komparator():
+    with schema("fig12_komparator") as d:
+        op = elm.Opamp(leads=True)
+        elm.Line().at(op.in1).left(d.unit * 0.4)
+        elm.Dot(open=True).label("$V_1$", loc="left")
+        elm.Line().at(op.in2).left(d.unit * 0.4)
+        elm.Dot(open=True).label("$V_2$", loc="left")
+        elm.Line().at(op.out).right(d.unit * 0.35)
+        elm.Dot(open=True).label("$V_\\mathrm{OUT}$", loc="right")
+        elm.Label().at((op.out[0] - 0.4, op.out[1] - 1.3)).label("bez zpětné vazby", fontsize=11, color=C2)
+
+
 ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig02_xc, fig02_dp_hp, fig02_bode_dp, fig02_bode_hp, fig02_postup, fig02_typy, fig02_pp_schema,
        fig02_bode_pp, fig02_pz_schema, fig02_bode_pz,
        fig03_oz_symbol, fig03_oz_char, fig03_inv, fig03_neinv, fig03_dif, fig03_pristrojovy, fig03_cmrr,
        fig04_sledovac, fig04_sledovac_delic, fig04_integrator, fig04_derivator, fig04_prubehy,
        fig11_signaly, fig11_zdroj, fig11_iu, fig11_shunt, fig11_trafo, fig11_fu_schema, fig11_fu_prubeh, fig11_rx,
-       fig11_mustek]
+       fig11_mustek,
+       fig12_beta, fig12_se, fig12_se_zv, fig12_se_delic, fig12_stabilita, fig12_sc, fig12_darlington,
+       fig12_rozdilovy, fig12_rozdilovy_prubeh, fig12_selektivni, fig12_mosfet_char, fig12_mosfet_ss,
+       fig12_mosfet_sd, fig12_spinace, fig12_slew, fig12_zisk_f, fig12_komparator]
 
 if __name__ == "__main__":
     vyber = sys.argv[1:]

@@ -33,6 +33,8 @@ PAGES = [
     ("05_tahak", "★", "Tahák: základy", "Vzorce a schémata základů na jedné stránce a typické chytáky."),
     ("11_signal", "P1", "Úvod: signál a jeho převod na napětí",
      "Akviziční cesta, druhy signálů, měkký zdroj; převod proudu, frekvence a odporu na napětí; Wheatstoneův můstek."),
+    ("12_uprava", "P2", "Úprava signálu: tranzistorové zesilovače a OZ",
+     "Zesilovač s BJT (SE, SC, Darlington, rozdílový, laděný), pracovní bod, MOSFET; reálný OZ, slew rate, 3 dB, komparátor."),
     ("99_slovnik", "Aa", "Slovník pojmů (definice)", "Všechny definice ze skript na jednom místě."),
 ]
 
