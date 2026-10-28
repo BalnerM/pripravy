@@ -35,6 +35,7 @@
     <li><a href="11_signal.html"><span class="n">P1</span><span>Úvod: signál a jeho převod na napětí</span></a></li>
     <li><a href="12_uprava.html"><span class="n">P2</span><span>Úprava signálu: tranzistorové zesilovače a OZ</span></a></li>
     <li><a href="13_napajeni.html"><span class="n">P3</span><span>Napájení a zdroje referenčního napětí</span></a></li>
+    <li><a href="14_oz_zapojeni.html"><span class="n">P4</span><span>Aplikace OZ: integrátor, derivátor, usměrňovač</span></a></li>
     <li><a href="99_slovnik.html" class="active"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
   </ol>
   <h4>Na této stránce</h4>
@@ -46,6 +47,7 @@
     <li><a href="#kP1">P1 · Úvod: signál a jeho převod na napětí</a></li>
     <li><a href="#kP2">P2 · Úprava signálu: tranzistorové zesilovače a OZ</a></li>
     <li><a href="#kP3">P3 · Napájení a zdroje referenčního napětí</a></li>
+    <li><a href="#kP4">P4 · Aplikace OZ: integrátor, derivátor, usměrňovač</a></li>
   </ul>
 </nav>
 <main>
@@ -316,8 +318,52 @@
 <div class="box definice" id="s-zdroj-proudu"><div class="box-t">zdroj konstantního proudu</div>
 <p><b>Zdroj konstantního proudu</b> je zdroj, který do zátěže dodává stálý proud nezávisle na napětí na zátěži. Ideální proudový zdroj má nekonečně velký výstupní odpor (výstup nezávislý na napětí).</p>
 <p class="jinak">opak zdroje napětí: tady se drží proud a napětí se přizpůsobí zátěži. Používá se při měření odporů, napájení LED, generování pilového průběhu apod.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-zdroj-proudu">výklad v kapitole P3 →</a></p></div>
+<h2 id="kP4" class="slovnik-kap">P4 · Aplikace OZ: integrátor, derivátor, usměrňovač</h2>
+<div class="box definice" id="s-analogova-pamet"><div class="box-t">kondenzátor jako analogová paměť</div>
+<p>Kondenzátor ve zpětné vazbě integrátoru <b>integruje napětí v čase</b> a slouží jako <b>analogová paměť</b>: náboj, který na něm vstupní proud nahromadil, na něm zůstane, a výstupní napětí \(u_o = -u_C\) se proto nemění, dokud je vstupní napětí nulové.</p>
+<p class="jinak">kondenzátor je „kbelík na náboj“. Vstup do něj přilévá nebo z něj ubírá; když vstup přestane, hladina (napětí) zůstane stát. Výstup integrátoru tak ukazuje součet všeho, co na vstup přišlo od začátku integrace.</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-analogova-pamet">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="s-nulovaci-obvod"><div class="box-t">nulovací obvod integrátoru</div>
+<p><b>Nulovací obvod</b> je spínač (na slidu tranzistor \(T_1\) řízený napětím \(U_G\)) zapojený paralelně ke kondenzátoru ve zpětné vazbě integrátoru. Před začátkem integrace je sepnut, kondenzátor <b>zkratuje</b>, a tím jej vybije; po vypnutí tranzistoru je zahájena integrace.</p>
+<p class="jinak">tlačítko „vynulovat“. Integrátor si pamatuje všechno, co se na vstup dostalo; nulovací obvod paměť smaže, aby se další měření začalo počítat od nuly.</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-nulovaci-obvod">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="s-neinvertujici-integrator"><div class="box-t">neinvertující integrační zesilovač</div>
+<p><b>Neinvertující integrační zesilovač</b> je zapojení OZ, které integruje vstupní napětí bez změny znaménka:</p>
+<p>\[ u_o = \frac{1}{RC} \int u_i(t)\,dt \]</p>
+<p>Signál se přivádí přes rezistor \(R\) na neinvertující vstup, ze kterého je kondenzátor \(C\) na zem; invertující vstup má rezistor \(R\) na zem a kondenzátor \(C\) ve zpětné vazbě.</p>
+<p class="jinak">stejný integrátor jako Millerův, jen bez minus: kladný vstup dá rostoucí výstup.</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-neinvertujici-integrator">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="s-diferencni-integrator"><div class="box-t">diferenční integrační zesilovač</div>
+<p><b>Diferenční integrační zesilovač</b> integruje obě vstupní napětí rozdílově (diferenčně). Výsledné napětí je</p>
+<p>\[ u_o = \frac{1}{RC} \int (u_2 - u_1)\,dt \]</p>
+<p class="jinak">je to neinvertující integrátor, u kterého rezistor invertujícího vstupu nevede na zem, ale na druhý vstup \(u_1\). Integruje se jen <b>rozdíl</b> vstupů, stejná napětí na obou vstupech se odečtou.</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-diferencni-integrator">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="s-oktava"><div class="box-t">oktáva a sklon 6 dB na oktávu</div>
+<p><b>Oktáva</b> je frekvenční interval, ve kterém se frekvence zdvojnásobí (\(f \to 2f\)). Sklon <b>6 dB na oktávu</b> znamená, že se zisk při každém zdvojnásobení frekvence změní dvakrát:</p>
+<p>\[ 20 \log_{10} 2 \approx 6{,}02\ \text{dB} \]</p>
+<p class="jinak">jiný zápis téhož sklonu jako 20 dB na dekádu (desetinásobek frekvence). Integrátor má −6 dB/okt (zisk klesá), derivátor +6 dB/okt (zisk roste).</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-oktava">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="s-derivacne-integracni"><div class="box-t">derivačně-integrační zesilovač</div>
+<p><b>Derivačně-integrační zesilovač</b> je derivační zesilovač ošetřený proti nestabilitě: do série se vstupním kondenzátorem \(C\) je zařazen rezistor \(R_1\) a paralelně k rezistoru \(R\) ve zpětné vazbě kondenzátor \(C_1\). Pod zlomovou frekvencí \(\omega_K\) derivuje, kolem ní zesiluje (propust) a nad ní integruje.</p>
+<p class="jinak">derivátor, kterému jsme „přistřihli“ zisk na vysokých frekvencích. Pomalé změny derivuje jako dřív, ale šum a rychlé zákmity už nezesiluje, takže se nerozkmitá.</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-derivacne-integracni">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="s-prah-pn"><div class="box-t">napěťový práh PN přechodu</div>
+<p><b>Napěťový práh PN přechodu</b> je napětí v propustném směru (u křemíkové diody asi 0,35 – 0,7 V), pod kterým dioda prakticky nevede proud. Teprve nad ním proud diodou prudce roste.</p>
+<p class="jinak">dioda je „dveře se pružinou“: dokud signál netlačí aspoň 0,7 V, neprojde nic. Signál 0,5 V obyčejná dioda vůbec neusměrní a signálu 1 V „ukousne“ 0,7 V.</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-prah-pn">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="s-schottkyho-dioda"><div class="box-t">Schottkyho dioda</div>
+<p><b>Schottkyho dioda</b> je dioda s přechodem kov–polovodič, která má malý úbytek napětí v propustném směru (asi 0,1 – 0,3 V).</p>
+<p class="jinak">dioda s „lehčí pružinou“. Ani ona ale práh neodstraní úplně – to dokáže až zapojení s OZ.</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-schottkyho-dioda">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="s-precizni-usmernovac"><div class="box-t">usměrňovač s OZ (precizní usměrňovač)</div>
+<p><b>Usměrňovač s OZ</b> (precizní, aktivní usměrňovač) je zapojení, ve kterém je dioda zapojena do obvodu operačního zesilovače, takže se usměrní i napěťově malé signály. Vysoká vstupní impedance OZ nezatíží vstupní signál a k jeho usměrnění dochází <b>na výstupu</b>, <b>ve zpětné vazbě</b>, nebo <b>v kaskádě mezi více OZ</b>.</p>
+<p class="jinak">OZ „přidá“ diodě přesně tolik napětí, kolik potřebuje na otevření. Zpětná vazba hlídá výstup, ne výstup OZ, takže úbytek na diodě se ve výsledku neprojeví. Výhodné je navíc použít diody s malým úbytkem, např. Schottkyho.</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-precizni-usmernovac">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="s-jednocestny-usmernovac"><div class="box-t">jednocestný usměrňovač s OZ</div>
+<p><b>Jednocestný usměrňovač</b> propustí na výstup jen jednu polaritu vstupního signálu (jednu půlvlnu); druhou polaritu zablokuje a výstup je při ní nulový. V zapojení ze slidu je dioda \(D\) mezi výstupem OZ a zátěží \(R_L\) a zpětná vazba se bere až za diodou.</p>
+<p class="jinak">„ventil“, který pustí jen kladné půlvlny. Protože OZ hlídá napětí za diodou, propustí i milivoltové signály celé.</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-jednocestny-usmernovac">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="s-dvoucestny-usmernovac"><div class="box-t">precizní dvoucestný usměrňovač</div>
+<p><b>Precizní dvoucestný usměrňovač</b> je zapojení s OZ, jehož výstupní napětí je při obou polaritách vstupního napětí kladné a rovné absolutní hodnotě vstupu, \(u_o = |u_i|\). Zapojení ze slidu má tři OZ: OZ1 a OZ3 tvoří napěťové sledovače, OZ2 invertuje příchozí napětí.</p>
+<p class="jinak">„převracečka“ záporných půlvln: kladné projdou beze změny, záporné se otočí nahoru. Díky OZ to funguje i pro signály v milivoltech.</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-dvoucestny-usmernovac">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="s-vrcholovy-detektor"><div class="box-t">vrcholový detektor</div>
+<p><b>Vrcholový detektor</b> je zapojení s OZ, diodou a kondenzátorem, které slouží k detekci a <i>zapamatování si</i> předchozího vyššího napětí na vstupu. Kondenzátor se přes diodu dobíjí na vrcholovou hodnotu vstupního napětí a dioda mu nedovolí se zpět vybít.</p>
+<p class="jinak">„ručička maxima“ na teploměru: ukazuje nejvyšší hodnotu, kterou signál od posledního vynulování dosáhl. Používá se např. k měření amplitudy signálu.</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-vrcholovy-detektor">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="s-obnoveni-nuly"><div class="box-t">obnovení nuly (vybíjecí obvod)</div>
+<p><b>Obnovení nuly</b> je vybíjecí obvod vrcholového detektoru, který po sepnutí spínače vybíjí napětí kondenzátoru \(u_C\) přes rezistor \(R_V\) do GND.</p>
+<p class="jinak">„vynulování ručičky maxima“ – stejná myšlenka jako nulovací obvod integrátoru. \(R_V\) omezí vybíjecí proud, aby spínač nezatížil kondenzátor zkratem.</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-obnoveni-nuly">výklad v kapitole P4 →</a></p></div>
 
-<nav class="pager"><a class="prev" href="13_napajeni.html"><small>← předchozí</small>Napájení a zdroje referenčního napětí</a></nav>
+<nav class="pager"><a class="prev" href="14_oz_zapojeni.html"><small>← předchozí</small>Aplikace OZ: integrátor, derivátor, usměrňovač</a></nav>
 </main>
 </div>
 </body>

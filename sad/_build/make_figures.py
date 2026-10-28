@@ -1609,6 +1609,397 @@ def fig13_proudovy():
         elm.Line().right().tox(e)
 
 
+# =====================================================================  přednáška 4: aplikace OZ (zapojení)
+def _vystup(d, op, text, delka=0.35):
+    elm.Line().at(op.out).right(d.unit * delka)
+    elm.Dot(open=True).label(text, loc="right")
+
+
+def fig14_nulovani():
+    """Millerův integrátor s nulovacím obvodem: tranzistor T1 paralelně ke C (slide „… s nulovacím obvodem“)."""
+    with schema("fig14_nulovani") as d:
+        u = d.unit
+        op = elm.Opamp(leads=True)
+        _vstup_zem(d, op)
+        elm.Line().at(op.in1).left(u * 0.25)
+        n = elm.Dot()
+        elm.Resistor().left().label("$R_1$", loc="bottom")
+        elm.Dot(open=True).label("$U_i$", loc="left")
+        elm.Line().at(n.center).up(u * 0.6)
+        m = elm.Dot()
+        elm.Capacitor().right().tox(op.out).label("$C$")
+        k = elm.Dot()
+        elm.Line().down().toy(op.out).dot()
+        elm.Line().at(m.center).up(u * 0.55)
+        elm.Switch(action="close").right().tox(op.out).label("$T_1$ (spínač, řízen $U_G$)", color=C2).color(C2)
+        elm.Line().down().toy(k.center)
+        _vystup(d, op, "$U_o$")
+
+
+def _int_rc(name, minus):
+    """Neinvertující (minus = None → R na zem) a diferenční (minus = popisek vstupu) integrátor."""
+    with schema(name) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True)                               # − (in1) nahoře, + (in2) dole
+        elm.Line().at(op.in1).left(u * 0.25)
+        n = elm.Dot()
+        elm.Resistor().left().label("$R$")
+        if minus:
+            elm.Dot(open=True).label(minus, loc="left")
+        else:
+            elm.Line().down(u * 0.25)
+            elm.Ground(lead=False)
+        elm.Line().at(n.center).up(u * 0.6)
+        elm.Capacitor().right().tox(op.out).label("$C$")
+        elm.Line().down().toy(op.out).dot()
+        elm.Line().at(op.in2).left(u * 0.25)
+        p = elm.Dot()
+        elm.Resistor().left().label("$R$", loc="bottom")
+        elm.Dot(open=True).label("$u_2$" if minus else "$u_i$", loc="left")
+        elm.Capacitor().at(p.center).down().label("$C$", loc="bottom")
+        elm.Ground()
+        _vystup(d, op, "$u_o$")
+
+
+def fig14_neinv_int():
+    _int_rc("fig14_neinv_int", None)
+
+
+def fig14_dif_int():
+    _int_rc("fig14_dif_int", "$u_1$")
+
+
+def fig14_der_osetreny():
+    """Derivátor ošetřený proti nestabilitě: R1 v sérii s C, C1 paralelně k R (slide „Ošetření nestability…“)."""
+    with schema("fig14_der_osetreny", unit=2.3) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True)
+        elm.Resistor().at(op.in2).down().label("$R$", loc="bottom")
+        elm.Ground()
+        elm.Line().at(op.in1).left(u * 0.25)
+        n = elm.Dot()
+        elm.Resistor().left().label("$R_1$", loc="bottom", color=C2).color(C2)
+        elm.Capacitor().left().label("$C$", loc="bottom")
+        elm.Dot(open=True).label("$u_i$", loc="left")
+        elm.Line().at(n.center).up(u * 0.55)
+        m = elm.Dot()
+        elm.Resistor().right().tox(op.out).label("$R$")
+        k = elm.Dot()
+        elm.Line().down().toy(op.out).dot()
+        elm.Line().at(m.center).up(u * 0.55)
+        elm.Capacitor().right().tox(op.out).label("$C_1$", color=C2).color(C2)
+        elm.Line().down().toy(k.center)
+        _vystup(d, op, "$u_o$")
+
+
+def fig14_jednocestny():
+    """Jednocestný usměrňovač: dioda uvnitř zpětné vazby sledovače (slide „Jednocestný usměrňovač“)."""
+    with schema("fig14_jednocestny") as d:
+        u = d.unit
+        op = elm.Opamp(leads=True)                               # − nahoře, + dole
+        elm.Line().at(op.in2).left(u * 0.3)
+        elm.Dot(open=True).label("$u_i$", loc="left")
+        elm.Line().at(op.out).right(u * 0.15)
+        elm.Diode().right().label("$D$").label("$U_D$", loc="bottom", fontsize=11)
+        o = elm.Dot()
+        elm.Line().right(u * 0.4)
+        elm.Dot(open=True).label("$u_o$", loc="right")
+        elm.Resistor().at(o.center).down().label("$R_L$", loc="bottom")
+        elm.Ground()
+        elm.Line().at(op.in1).left(u * 0.25)
+        elm.Line().up(u * 0.6)
+        elm.Line().right().tox(o.center)
+        elm.Line().down().toy(o.center)
+        elm.Label().at((op.out[0] + 0.1, op.out[1] + 0.45)).label("$u_1$", fontsize=12)
+
+
+def fig14_usm_a():
+    """Jednocestný usměrňovač – invertující varianta s D1 a D2 (slide „… různá řešení“, vlevo)."""
+    with schema("fig14_usm_a") as d:
+        u = d.unit
+        op = elm.Opamp(leads=True)
+        _vstup_zem(d, op)
+        elm.Line().at(op.in1).left(u * 0.25)
+        n = elm.Dot()
+        elm.Resistor().left().label("$R_1$", loc="bottom")
+        elm.Dot(open=True).label("vstup", loc="left")
+        xk = op.out[0] + u * 0.3
+        elm.Line().at(n.center).up(u * 0.6)
+        m = elm.Dot()
+        elm.Diode().right().tox(xk).label("$D_1$")
+        j = elm.Dot()
+        elm.Line().at(op.out).right().tox(xk)
+        elm.Line().up().toy(j.center)
+        elm.Line().at(m.center).up(u * 0.6)
+        elm.Resistor().right().tox(xk).label("$R_2$")
+        v = elm.Dot()
+        elm.Diode().at(j.center).up().toy(v.center).label("$D_2$", loc="bottom")
+        elm.Line().at(v.center).right(u * 0.35)
+        elm.Dot(open=True).label("výstup", loc="right")
+
+
+def fig14_usm_b():
+    """Jednocestný usměrňovač se dvěma výstupy A a B (slide „… různá řešení“, vpravo)."""
+    with schema("fig14_usm_b") as d:
+        u = d.unit
+        op = elm.Opamp(leads=True)
+        _vstup_zem(d, op)
+        elm.Line().at(op.in1).left(u * 0.3)
+        n = elm.Dot()
+        elm.Resistor().left().label("$R$", loc="bottom")
+        elm.Dot(open=True).label("vstup", loc="left")
+        xk = op.out[0] + u * 0.45
+        ya = op.in1[1] + u * 0.75
+        yb = op.in2[1] - u * 0.95
+        elm.Line().at(n.center).up().toy(ya)
+        elm.Resistor().right().tox(xk).label("$R_1$")
+        a = elm.Dot()
+        elm.Line().right(u * 0.35)
+        elm.Dot(open=True).label("A", loc="right")
+        elm.Line().at(n.center).down().toy(yb)
+        elm.Resistor().right().tox(xk).label("$R_2$", loc="bottom")
+        b = elm.Dot()
+        elm.Line().right(u * 0.35)
+        elm.Dot(open=True).label("B", loc="right")
+        elm.Line().at(op.out).right().tox(xk)
+        s = elm.Dot()
+        elm.Diode().at(a.center).down().toy(s.center).label("$D_1$", loc="bottom")
+        elm.Diode().at(s.center).down().toy(b.center).label("$D_2$", loc="bottom")
+
+
+def fig14_dvoucestny():
+    """Precizní dvoucestný usměrňovač se třemi OZ (slide „Precizní dvoucestný usměrňovač“)."""
+    with schema("fig14_dvoucestny", unit=2.2) as d:
+        u = d.unit
+        op1 = elm.Opamp(leads=True).label("OZ1", loc="center", fontsize=11)
+        elm.Line().at(op1.in2).left(u * 0.15)
+        elm.Resistor().left().label("$R_s$", loc="bottom")
+        elm.Dot(open=True).label("$u_i$", loc="left")
+        ytop = op1.out[1] + u * 1.0
+        elm.Line().at(op1.in1).left(u * 0.2)
+        elm.Line().up().toy(ytop)
+        elm.Line().right().tox(op1.out[0] + u * 0.3)
+        p = elm.Dot()
+        elm.Line().down().toy(op1.out)
+        elm.Line().left().tox(op1.out)
+        elm.Label().at((p.center[0], p.center[1] + 0.4)).label("$u_i$", fontsize=12)
+        # OZ2 – invertor se dvěma R1, dioda D ve zpětné vazbě
+        x2 = p.center[0] + u * 1.6
+        op2 = elm.Opamp(leads=True).right().anchor("in1").at((x2, op1.out[1])).label("OZ2", loc="center", fontsize=11)
+        elm.Line().at(op2.in2).down(u * 0.25)
+        elm.Ground(lead=False)
+        elm.Line().at(op2.out).right(u * 0.1)
+        elm.Diode().right(u * 0.8).label("$D$", color=C2).color(C2)
+        c = elm.Dot()
+        xa = x2 - u * 0.3
+        elm.Resistor().at(p.center).right().tox(xa).label("$R_1$")
+        a = elm.Dot()
+        elm.Line().down().toy(op2.in1)
+        elm.Line().right().tox(op2.in1)
+        elm.Resistor().at(a.center).right().tox(c.center).label("$R_1$")
+        elm.Line().down().toy(c.center)
+        # OZ3 – sledovač
+        op3 = elm.Opamp(leads=True, flip=True).right().anchor("in2").at((c.center[0] + u * 0.6, c.center[1])) \
+            .label("OZ3", loc="center", fontsize=11)
+        elm.Line().at(c.center).right().tox(op3.in2)
+        elm.Label().at((c.center[0] + u * 0.3, c.center[1] - 0.4)).label("$u_+$", fontsize=12)
+        elm.Line().at(op3.in1).left(u * 0.2)
+        elm.Line().down(u * 0.5)
+        elm.Line().right().tox(op3.out)
+        elm.Line().up().toy(op3.out).dot()
+        _vystup(d, op3, "$u_o = |u_i|$")
+
+
+def fig14_vrcholovy():
+    """Vrcholový detektor: OZ1 + D nabíjí C, OZ2 sledovač, R_V se spínačem = obnovení nuly (slide „Vrcholový detektor“)."""
+    with schema("fig14_vrcholovy", unit=2.3) as d:
+        u = d.unit
+        op1 = elm.Opamp(leads=True).label("OZ1", loc="center", fontsize=11)
+        elm.Line().at(op1.in2).left(u * 0.3)
+        elm.Dot(open=True).label("$u_i$", loc="left")
+        elm.Line().at(op1.out).right(u * 0.1)
+        elm.Diode().right(u * 0.7).label("$D$")
+        k = elm.Dot()
+        elm.Line().right(u * 0.45)
+        k2 = elm.Dot()
+        elm.Line().right(u * 0.7)
+        k3 = elm.Dot()
+        elm.Capacitor().at(k2.center).down(u * 0.8).label("$C$", loc="bottom").label("$u_C$", loc="top", fontsize=11)
+        elm.Ground()
+        elm.Resistor().at(k3.center).down(u * 0.6).label("$R_V$", loc="bottom").linestyle("--")
+        elm.Switch().down(u * 0.6).label("obnovení\n„nuly“", loc="bottom", color=C2).color(C2)
+        elm.Ground()
+        elm.Line().at(op1.in1).left(u * 0.2)
+        elm.Line().up(u * 0.6)
+        elm.Line().right().tox(k.center)
+        elm.Line().down().toy(k.center)
+        op2 = elm.Opamp(leads=True).right().anchor("in2").at((k3.center[0] + u * 0.5, k3.center[1])) \
+            .label("OZ2", loc="center", fontsize=11)
+        elm.Line().at(k3.center).right().tox(op2.in2)
+        elm.Line().at(op2.in1).left(u * 0.2)
+        elm.Line().up(u * 0.6)
+        elm.Line().right().tox(op2.out)
+        elm.Line().down().toy(op2.out).dot()
+        _vystup(d, op2, "$u_o$")
+
+
+def fig14_int_prubeh():
+    """Odezva Millerova integrátoru na skok ±0,5 V, RC = 10 ms, saturace ±12 V (slide „Časové průběhy…“)."""
+    t = np.linspace(0, 0.4, 2001)
+    RC, t0, usat = 10e-3, 0.05, 12.0
+    fig, axs = plt.subplots(2, 2, figsize=(9.2, 4.8), sharex=True)
+    for j, ui in enumerate([0.5, -0.5]):
+        uin = np.where(t >= t0, ui, 0.0)
+        uo = np.clip(-ui / RC * np.clip(t - t0, 0, None), -usat, usat)
+        axs[0, j].plot(t * 1e3, uin, color=C1)
+        axs[0, j].set_ylim(-0.8, 0.8)
+        axs[0, j].set_title(f"vstup $u_i$ = {cz(ui, 1).replace('-', '−')} V" + (" (> 0)" if ui > 0 else " (< 0)"), loc="left")
+        axs[1, j].axhspan(np.sign(-ui) * usat, np.sign(-ui) * 14, color=C2, alpha=0.12, lw=0)
+        axs[1, j].plot(t * 1e3, uo, color=C2)
+        axs[1, j].set_ylim(-14, 14)
+        ts = (t0 + usat * RC / abs(ui)) * 1e3
+        axs[1, j].annotate("saturace", (ts + 30, np.sign(-ui) * 12.9), fontsize=9.5, color=INK2, va="center")
+        txt = "sklon $-u_i/RC$ = −50 V/s" if ui > 0 else "sklon $-u_i/RC$ = +50 V/s"
+        axs[1, j].text(t0 * 1e3 + 125, -np.sign(-ui) * 6, txt, fontsize=9.5, color=INK2)
+        axs[1, j].set_title("výstup $u_o$", loc="left")
+        axs[1, j].set_xlabel("čas t [ms]")
+    axs[0, 0].set_ylabel("$u_i$ [V]")
+    axs[1, 0].set_ylabel("$u_o$ [V]")
+    save(fig, "fig14_int_prubeh")
+
+
+def fig14_nulovani_prubeh():
+    """Integrátor jako analogová paměť a nulování tranzistorem T1 (vlastní ilustrace, RC = 10 ms)."""
+    dt = 1e-5
+    t = np.arange(0, 0.12, dt)
+    RC = 10e-3
+    ui = np.where((t >= 0.01) & (t < 0.03), -1.0, 0.0) + np.where((t >= 0.07) & (t < 0.09), -1.0, 0.0)
+    reset = (t < 0.005) | ((t >= 0.05) & (t < 0.06))
+    uo = np.zeros_like(t)
+    for i in range(1, len(t)):
+        uo[i] = 0.0 if reset[i] else uo[i - 1] - ui[i] / RC * dt
+    fig, axs = plt.subplots(3, 1, figsize=(7.8, 5.2), sharex=True, gridspec_kw=dict(height_ratios=[1, 0.6, 1.4]))
+    ms = t * 1e3
+    axs[0].plot(ms, ui, color=C1)
+    axs[0].set_ylabel("$u_i$ [V]")
+    axs[0].set_ylim(-1.4, 0.4)
+    axs[0].set_title("vstup: dva pulzy −1 V po 20 ms", loc="left")
+    axs[1].step(ms, reset.astype(float), where="post", color=C3)
+    axs[1].set_yticks([0, 1], ["vyp.", "sepnut"])
+    axs[1].set_ylim(-0.3, 1.3)
+    axs[1].set_title("tranzistor $T_1$ (nulování)", loc="left")
+    axs[2].plot(ms, uo, color=C2)
+    axs[2].set_ylabel("$u_o$ [V]")
+    axs[2].set_ylim(-0.4, 2.6)
+    axs[2].set_title("výstup integrátoru (RC = 10 ms)", loc="left")
+    axs[2].text(33, 2.15, "vstup 0 → výstup drží 2 V\n(analogová paměť)", fontsize=9.5, color=INK2)
+    axs[2].text(94, 0.6,"po vynulování\nnová integrace", fontsize=9.5, color=INK2)
+    axs[2].set_xlabel("čas t [ms]")
+    for ax in axs:
+        for a, b in [(0, 5), (50, 60)]:
+            ax.axvspan(a, b, color=C3, alpha=0.10, lw=0)
+    save(fig, "fig14_nulovani_prubeh")
+
+
+def fig14_der_bode():
+    """Ošetřený derivátor: R = 100 kΩ, R1 = 1 kΩ, C = 1 µF, C1 = 10 nF (vlastní čísla, tvar podle slidu)."""
+    R, R1, C, Cz = 100e3, 1e3, 1e-6, 10e-9            # Cz = C1 ze slidu (C1 je barva)
+    w = np.logspace(1, 5, 600)
+
+    def h(ww):
+        s = 1j * ww
+        return -(R / (1 + s * R * Cz)) / (R1 + 1 / (s * C))
+
+    wk = 1 / (R1 * C)
+    fig, ax = plt.subplots(figsize=(7.8, 3.9))
+    ax.axvspan(wk / 10, wk * 10, color=C3, alpha=0.08, lw=0)
+    ax.plot(w, 20 * np.log10(w * C * R), color=MUTED, lw=1.2, ls="--")
+    ax.plot(w, 20 * np.log10(1 / (w * Cz * R1)), color=MUTED, lw=1.2, ls="--")
+    ax.plot(w, np.full_like(w, 20 * np.log10(R / R1)), color=MUTED, lw=1.2, ls=":")
+    ax.plot(w, db(h(w)), color=C1)
+    ax.plot([wk], [db(h(wk))], "o", color=C1)
+    ax.axvline(wk, color=INK2, lw=0.8, ls="--")
+    ax.text(12, 22, "+20 dB/dek\n(+6 dB/okt)\n$\\omega CR$", fontsize=9.5, color=INK2)
+    ax.text(2.2e4, 22, "−20 dB/dek\n(−6 dB/okt)\n$1/(\\omega C_1 R_1)$", fontsize=9.5, color=INK2)
+    ax.annotate("$\\omega_K$ = 1000 rad/s: 34 dB (50×)", (wk, db(h(wk))), xytext=(1.25e3, 6), fontsize=9.5,
+                color=INK2, arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.text(12, 42.5, "asymptota $R/R_1$ = 100 (40 dB)", fontsize=9.5, color=INK2)
+    for x, txt in [(25, "DERIVACE"), (wk, "PROPUST"), (4e4, "INTEGRACE")]:
+        ax.text(x, -14, txt, fontsize=9.5, color=INK2, ha="center", weight="semibold")
+    ax.set_xscale("log")
+    ax.set_xlim(10, 1e5)
+    ax.set_ylim(-20, 50)
+    ax.set_xlabel("úhlová frekvence ω [rad/s]")
+    ax.set_ylabel("zisk |A| [dB]")
+    ax.set_title("Derivačně-integrační zesilovač", loc="left")
+    save(fig, "fig14_der_bode")
+
+
+def fig14_der_trojuhelnik():
+    """Derivátor (RC = 1 ms) a trojúhelník ±1 V s periodou 4 ms a 8 ms (tvar podle slidu, vlastní čísla)."""
+    t = np.linspace(0, 12e-3, 6001)
+    RC = 1e-3
+
+    def tri(T):
+        return 1 - 2 * np.abs(2 * ((t / T + 0.25) % 1) - 1)      # začíná v 0 a roste
+
+    fig, axs = plt.subplots(2, 1, figsize=(7.8, 4.6), sharex=True)
+    for T, c, ls, lab in [(4e-3, C1, "-", "rychlý (T = 4 ms)"), (8e-3, C2, "--", "pomalý (T = 8 ms)")]:
+        x = tri(T)
+        axs[0].plot(t * 1e3, x, color=c, ls=ls, label=lab)
+        axs[1].plot(t * 1e3, -RC * np.gradient(x, t), color=c, ls=ls)
+    axs[0].set_ylabel("$u_i$ [V]")
+    axs[0].set_title("vstup: trojúhelník ±1 V", loc="left")
+    axs[0].legend(loc="upper right", ncol=2, fontsize=9)
+    axs[0].set_ylim(-1.3, 1.7)
+    axs[1].set_ylabel("$u_o$ [V]")
+    axs[1].set_ylim(-1.4, 1.4)
+    axs[1].set_title("výstup derivátoru: obdélník ∓1 V, resp. ∓0,5 V", loc="left")
+    axs[1].set_xlabel("čas t [ms]")
+    save(fig, "fig14_der_trojuhelnik")
+
+
+def fig14_usm_prubeh():
+    """Diodový usměrňovač (U_D = 0,7 V) vs. precizní s OZ, sinus 1 V (vlastní ilustrace)."""
+    t = np.linspace(0, 40e-3, 2001)
+    ui = np.sin(2 * np.pi * 50 * t)
+    fig, axs = plt.subplots(2, 1, figsize=(7.8, 4.8), sharex=True)
+    for ax in axs:
+        ax.plot(t * 1e3, ui, color=MUTED, lw=1.1, ls=":", label="vstup $u_i$ (1 V)")
+    axs[0].plot(t * 1e3, np.maximum(ui, 0), color=C1, label="precizní s OZ")
+    axs[0].plot(t * 1e3, np.maximum(ui - 0.7, 0), color=C2, ls="--", label="jen dioda (0,7 V)")
+    axs[0].set_title("jednocestné usměrnění", loc="left")
+    axs[1].plot(t * 1e3, np.abs(ui), color=C1, label="$|u_i|$ precizní dvoucestný")
+    axs[1].set_title("dvoucestné usměrnění", loc="left")
+    for ax in axs:
+        ax.set_ylim(-1.2, 1.9)
+        ax.set_ylabel("napětí [V]")
+        ax.legend(loc="upper right", ncol=3, fontsize=9)
+    axs[1].set_xlabel("čas t [ms]")
+    save(fig, "fig14_usm_prubeh")
+
+
+def fig14_vrchol_prubeh():
+    """Vrcholový detektor: u_C drží maximum, v čase 70 ms obnovení nuly (vlastní ilustrace, tvar podle slidu)."""
+    dt = 1e-5
+    t = np.arange(0, 0.1, dt)
+    ui = 1.0 + 0.6 * np.sin(2 * np.pi * 25 * t - 1.2) + 1.2 * np.exp(-((t - 0.045) / 0.02) ** 2)
+    reset = (t >= 0.07) & (t < 0.072)
+    uc = np.zeros_like(t)
+    for i in range(len(t)):
+        uc[i] = 0.0 if reset[i] else max(uc[i - 1] if i else 0.0, ui[i])
+    fig, ax = plt.subplots(figsize=(7.8, 3.7))
+    ax.axvspan(70, 72, color=C3, alpha=0.18, lw=0)
+    ax.plot(t * 1e3, ui, color=C1, ls="--", label="vstup $u_i$")
+    ax.plot(t * 1e3, uc, color=C2, label="$u_C = u_o$ (paměť vrcholu)")
+    ax.text(73.5, 2.0, "obnovení nuly\n(spínač sepnut)", fontsize=9.5, color=INK2)
+    ax.set_xlabel("čas t [ms]")
+    ax.set_ylabel("napětí [V]")
+    ax.set_ylim(0, 3.6)
+    ax.legend(loc="upper left", ncol=2, fontsize=9)
+    save(fig, "fig14_vrchol_prubeh")
+
+
 ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig02_xc, fig02_dp_hp, fig02_bode_dp, fig02_bode_hp, fig02_postup, fig02_typy, fig02_pp_schema,
        fig02_bode_pp, fig02_pz_schema, fig02_bode_pz,
@@ -1620,7 +2011,10 @@ ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig12_rozdilovy, fig12_rozdilovy_prubeh, fig12_selektivni, fig12_mosfet_char, fig12_mosfet_ss,
        fig12_mosfet_sd, fig12_spinace, fig12_slew, fig12_zisk_f, fig12_komparator,
        fig13_teplota, fig13_dlouhodoba, fig13_zener_va, fig13_zd_stab, fig13_zd_alt, fig13_posileni, fig13_omezeni,
-       fig13_omezeni_va, fig13_vlecny, fig13_proudovy]
+       fig13_omezeni_va, fig13_vlecny, fig13_proudovy,
+       fig14_nulovani, fig14_neinv_int, fig14_dif_int, fig14_der_osetreny, fig14_jednocestny, fig14_usm_a,
+       fig14_usm_b, fig14_dvoucestny, fig14_vrcholovy, fig14_int_prubeh, fig14_nulovani_prubeh, fig14_der_bode,
+       fig14_der_trojuhelnik, fig14_usm_prubeh, fig14_vrchol_prubeh]
 
 if __name__ == "__main__":
     vyber = sys.argv[1:]

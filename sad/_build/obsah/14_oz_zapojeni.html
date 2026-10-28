@@ -1,0 +1,456 @@
+<h1>Aplikace OZ: integrátor, derivátor, usměrňovač, vrcholový detektor</h1>
+<p class="lead">Operační zesilovač neumí jen zesilovat. Když do zpětné vazby nebo na vstup dáme <b>kondenzátor</b>, OZ signál <b>integruje</b> nebo <b>derivuje</b>. Když do zpětné vazby dáme <b>diodu</b>, vznikne <b>přesný usměrňovač</b>, který usměrní i signál menší než 0,7 V, a s kondenzátorem za diodou <b>vrcholový detektor</b>, který si „pamatuje“ nejvyšší napětí. Přednáška ukazuje, jak tato zapojení pracují a jaké mají praktické problémy (saturace, nestabilita, úbytek na diodě).</p>
+
+<p>V <a href="11_signal.html#def-akvizicni-cesta">akviziční cestě</a> patří přednáška do bloku <b>úprava signálu</b>, před analogově-digitální převod. Slide „Úprava signálu“ jmenuje čtyři témata: integrační zesilovač, derivační zesilovač, usměrňovač a vrcholový detektor. Základní integrátor a derivátor jsou vysvětlené v základech (<a href="04_dalsi_zapojeni.html">Z4</a>); tady se na ně navazuje.</p>
+
+<h2 id="integrator">Integrační zesilovač – Millerův integrátor</h2>
+<p><b>Millerův integrátor</b> je název přednášky pro <a href="04_dalsi_zapojeni.html#def-integrator">integrátor</a> ze základů: invertující zesilovač, který má na vstupu rezistor \(R\) a ve zpětné vazbě kondenzátor \(C\). Podle slidu <b>provádí integraci invertovaného vstupního napětí v čase</b>. Na neinvertujícím vstupu je rezistor \(R\) na zem (stejně velký jako vstupní, aby vstupní proudy OZ vytvořily na obou vstupech stejný úbytek).</p>
+
+<figure><div class="paper"><img src="figures/fig04_integrator.png" alt="Schéma integrátoru: R na vstupu, kondenzátor C ve zpětné vazbě, neinvertující vstup na zemi" loading="lazy"></div>
+<figcaption><b>Obr. P4.1</b> Millerův integrátor (stejné schéma jako v Z4; na slidu je navíc rezistor \(R\) mezi neinvertujícím vstupem a zemí).</figcaption></figure>
+
+<div class="box definice" id="def-analogova-pamet"><div class="box-t">Definice: kondenzátor jako analogová paměť</div>
+<p>Kondenzátor ve zpětné vazbě integrátoru <b>integruje napětí v čase</b> a slouží jako <b>analogová paměť</b>: náboj, který na něm vstupní proud nahromadil, na něm zůstane, a výstupní napětí \(u_o = -u_C\) se proto nemění, dokud je vstupní napětí nulové.</p>
+<p class="jinak">kondenzátor je „kbelík na náboj“. Vstup do něj přilévá nebo z něj ubírá; když vstup přestane, hladina (napětí) zůstane stát. Výstup integrátoru tak ukazuje součet všeho, co na vstup přišlo od začátku integrace.</p></div>
+
+<div class="box postup"><div class="box-t">Odvození (slide „Millerův integrátor“)</div>
+<ol>
+<li>Invertující vstup je díky <a href="03_oz.html#def-virtualni-zkrat">virtuálnímu zkratu</a> na 0 V, rezistorem teče proud \(i(t) = u_i(t)/R\).</li>
+<li>Do vstupu OZ proud neteče, celý proud nabíjí kondenzátor. Napětí na kondenzátoru je náboj lomeno kapacitou:
+\[ u_C = \frac{q}{C} = \frac{1}{C} \int i(t)\,dt = \frac{1}{C} \int \frac{u_i(t)}{R}\,dt \]</li>
+<li>Levá strana kondenzátoru je na 0 V, pravá na výstupu, takže výstupní napětí je
+\[ u_o = -u_C \]</li>
+</ol></div>
+
+<div class="box vzorec"><div class="box-t">Millerův integrátor</div>
+\[ u_o(t) = -\frac{1}{RC} \int_0^t u_i(t)\,dt + u_o(0) \]
+<table class="vars">
+<tr><td>\(u_o(t)\)</td><td>výstupní napětí v čase \(t\) od spuštění integrátoru</td></tr>
+<tr><td>\(u_i(t)\)</td><td>vstupní napětí</td></tr>
+<tr><td>\(RC\)</td><td>integrační časová konstanta [s]</td></tr>
+<tr><td>\(u_o(0)\)</td><td>výstupní napětí v čase spuštění integrátoru \(t = 0\) (daná nábojem kondenzátoru na začátku)</td></tr>
+</table></div>
+
+<div class="box pozor"><div class="box-t">Pozor: znaménko počátečního členu na slidu</div>
+<p>Slide píše vztah jako \(u_o = -\frac{1}{RC}\int u_i\,dt - u_o\), kde poslední člen znamená počáteční stav „při \(t = 0\)“. Se znaménkem minus to platí, když se počátečním stavem myslí napětí <b>kondenzátoru</b> \(u_C(0)\), protože \(u_o = -u_C\). Pokud počáteční stav zapíšeme jako <b>výstupní</b> napětí \(u_o(0)\), je znaménko plus (vzorec výše). Fyzikálně jde o totéž: integrátor pokračuje z napětí, které na kondenzátoru už bylo.</p></div>
+
+<h3 id="prubehy">Časové průběhy Millerova integrátoru</h3>
+<figure><div class="paper"><img src="figures/fig14_int_prubeh.png" alt="Dva sloupce grafů: vlevo skok vstupu na +0,5 V a výstup lineárně klesající z 0 na −12 V, kde zůstane v saturaci; vpravo skok na −0,5 V a výstup rostoucí na +12 V" loading="lazy"></div>
+<figcaption><b>Obr. P4.2</b> Odezva integrátoru na skok vstupního napětí, modelově pro symetrické napájení ±12 V jako na slidu (vlastní čísla: \(u_i = \pm 0{,}5\) V, \(RC\) = 10 ms).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>Kladný vstup → výstup klesá</b> (přímka se sklonem \(-U_i/RC\)), záporný vstup → výstup roste. Integrátor je invertující.</li>
+<li>Výstup nemůže překročit napájení: po dosažení asi ±12 V zůstane v <b>saturaci</b> a integrace končí.</li>
+<li>Bez zásahu by integrátor v saturaci zůstal i po skončení vstupního signálu – proto potřebuje nulovací obvod (níže).</li>
+</ul></div>
+
+<div class="box priklad"><div class="box-t">Příklad: kdy integrátor dojde do saturace (vlastní čísla)</div>
+<p>\(R\) = 100 kΩ, \(C\) = 100 nF, na vstupu skok na \(U_i\) = 0,5 V, napájení ±12 V. Časová konstanta:</p>
+\[ RC = 10^5 \cdot 10^{-7} = 0{,}01\ \text{s} = 10\ \text{ms} \]
+<p>1. Rychlost změny výstupu:</p>
+\[ \frac{du_o}{dt} = -\frac{U_i}{RC} = -\frac{0{,}5}{0{,}01} = -50\ \text{V/s} \]
+<p>2. Za 20 ms je na výstupu:</p>
+\[ u_o = -50 \cdot 0{,}02 = -1\ \text{V} \]
+<p>3. Saturace −12 V nastane za:</p>
+\[ t = \frac{12\ \text{V}}{50\ \text{V/s}} = 0{,}24\ \text{s} = 240\ \text{ms} \]
+<p>4. Pokud byl kondenzátor na začátku nabitý tak, že \(u_o(0) = +2\) V, potřebuje výstup urazit 14 V:</p>
+\[ t = \frac{14\ \text{V}}{50\ \text{V/s}} = 0{,}28\ \text{s} \]</div>
+
+<h3 id="nulovani">Millerův integrátor s nulovacím obvodem</h3>
+<p>V průběhu integrace je průběžně integrováno vstupní napětí. Pro zahájení „nové“ integrace je třeba obvod <b>vybít</b> – k tomu slouží nulovací obvod.</p>
+
+<div class="box definice" id="def-nulovaci-obvod"><div class="box-t">Definice: nulovací obvod integrátoru</div>
+<p><b>Nulovací obvod</b> je spínač (na slidu tranzistor \(T_1\) řízený napětím \(U_G\)) zapojený paralelně ke kondenzátoru ve zpětné vazbě integrátoru. Před začátkem integrace je sepnut, kondenzátor <b>zkratuje</b>, a tím jej vybije; po vypnutí tranzistoru je zahájena integrace.</p>
+<p class="jinak">tlačítko „vynulovat“. Integrátor si pamatuje všechno, co se na vstup dostalo; nulovací obvod paměť smaže, aby se další měření začalo počítat od nuly.</p></div>
+
+<figure><div class="paper"><img src="figures/fig14_nulovani.png" alt="Integrátor: R1 ze vstupu Ui na invertující vstup, kondenzátor C ve zpětné vazbě, nad ním paralelně spínač T1 řízený UG, neinvertující vstup na zemi, výstup Uo" loading="lazy"></div>
+<figcaption><b>Obr. P4.3</b> Millerův integrátor s nulovacím obvodem. Tranzistor \(T_1\) je nakreslen jako spínač paralelně ke kondenzátoru.</figcaption></figure>
+
+<figure><div class="paper"><img src="figures/fig14_nulovani_prubeh.png" alt="Tři grafy pod sebou: vstup se dvěma pulzy −1 V, stav tranzistoru T1 sepnutý na začátku a mezi 50 a 60 ms, výstup roste během pulzu na 2 V, drží 2 V, při sepnutí T1 spadne na 0 a při druhém pulzu znovu roste na 2 V" loading="lazy"></div>
+<figcaption><b>Obr. P4.4</b> Integrátor jako analogová paměť a jeho nulování (vlastní ilustrace, \(RC\) = 10 ms).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Během pulzu −1 V výstup roste rychlostí 100 V/s, za 20 ms o 2 V. Po skončení pulzu je vstup nulový a výstup <b>drží 2 V</b> – to je analogová paměť.</li>
+<li>Sepnutím \(T_1\) se kondenzátor zkratuje a výstup spadne na 0 V. Po vypnutí \(T_1\) začne nová integrace od nuly.</li>
+</ul></div>
+
+<h2 id="neinv-int">Neinvertující integrační zesilovač</h2>
+<div class="box definice" id="def-neinvertujici-integrator"><div class="box-t">Definice: neinvertující integrační zesilovač</div>
+<p><b>Neinvertující integrační zesilovač</b> je zapojení OZ, které integruje vstupní napětí bez změny znaménka:</p>
+<p>\[ u_o = \frac{1}{RC} \int u_i(t)\,dt \]</p>
+<p>Signál se přivádí přes rezistor \(R\) na neinvertující vstup, ze kterého je kondenzátor \(C\) na zem; invertující vstup má rezistor \(R\) na zem a kondenzátor \(C\) ve zpětné vazbě.</p>
+<p class="jinak">stejný integrátor jako Millerův, jen bez minus: kladný vstup dá rostoucí výstup.</p></div>
+
+<figure><div class="paper"><img src="figures/fig14_neinv_int.png" alt="Neinvertující integrátor: invertující vstup přes R na zem a kondenzátor C do výstupu; vstup ui přes R na neinvertující vstup, z něj C na zem" loading="lazy"></div>
+<figcaption><b>Obr. P4.5</b> Neinvertující integrační zesilovač (podle slidu).</figcaption></figure>
+
+<div class="box postup"><div class="box-t">Proč to integruje (vlastní odvození, nad rámec slidu)</div>
+<p>Ve frekvenční oblasti (\(s = j\omega\)) jde o dva bloky za sebou.</p>
+<p>1. Článek \(RC\) na neinvertujícím vstupu je dolní propust:</p>
+\[ u_+ = \frac{u_i}{1 + sRC} \]
+<p>2. OZ s \(R\) na zem a \(C\) ve zpětné vazbě je <a href="03_oz.html#def-neinvertujici">neinvertující zesilovač</a> se zesílením \(1 + Z_2/Z_1\):</p>
+\[ \frac{u_o}{u_+} = 1 + \frac{1}{sRC} = \frac{1 + sRC}{sRC} \]
+<p>3. Vynásobením se člen \((1 + sRC)\) zkrátí:</p>
+\[ \frac{u_o}{u_i} = \frac{1}{sRC} \]
+<p>A \(1/s\) je ve frekvenční oblasti integrál – proto \(u_o = \frac{1}{RC}\int u_i\,dt\). Podmínkou je, že oba rezistory i oba kondenzátory jsou stejné.</p></div>
+
+<h2 id="dif-int">Diferenční integrační zesilovač</h2>
+<div class="box definice" id="def-diferencni-integrator"><div class="box-t">Definice: diferenční integrační zesilovač</div>
+<p><b>Diferenční integrační zesilovač</b> integruje obě vstupní napětí rozdílově (diferenčně). Výsledné napětí je</p>
+<p>\[ u_o = \frac{1}{RC} \int (u_2 - u_1)\,dt \]</p>
+<p class="jinak">je to neinvertující integrátor, u kterého rezistor invertujícího vstupu nevede na zem, ale na druhý vstup \(u_1\). Integruje se jen <b>rozdíl</b> vstupů, stejná napětí na obou vstupech se odečtou.</p></div>
+
+<figure><div class="paper"><img src="figures/fig14_dif_int.png" alt="Diferenční integrátor: u1 přes R na invertující vstup, kondenzátor C do výstupu; u2 přes R na neinvertující vstup, z něj C na zem" loading="lazy"></div>
+<figcaption><b>Obr. P4.6</b> Diferenční integrační zesilovač (podle slidu).</figcaption></figure>
+
+<div class="box priklad"><div class="box-t">Příklad (vlastní čísla)</div>
+<p>\(RC\) = 10 ms, \(u_1\) = 1 V, \(u_2\) = 1,5 V (stálá). Rozdíl je 0,5 V, výstup roste rychlostí:</p>
+\[ \frac{du_o}{dt} = \frac{u_2 - u_1}{RC} = \frac{0{,}5}{0{,}01} = 50\ \text{V/s} \]
+<p>Za 20 ms:</p>
+\[ u_o = 50 \cdot 0{,}02 = 1\ \text{V} \]
+<p>Kdyby byly oba vstupy 1 V, výstup by se neměnil.</p></div>
+
+<h3 id="int-frekvence">Frekvenční závislost integrátoru</h3>
+<p>Zapojení je však <b>frekvenčně velmi závislé</b>: s dvojnásobkem frekvence klesá zisk na polovinu – o 6 dB na oktávu. Zisk se počítá stejně jako u <a href="03_oz.html#def-invertujici">invertujícího zesilovače</a>, jen místo odporů dosadíme impedance (vedlejší poznámka na slidu: \(R_\text{in} \approx \bar Z_1 = R\), \(R_\text{ZV} \approx \bar Z_2 = 1/(j\omega C)\)).</p>
+
+<div class="box vzorec"><div class="box-t">Zisk integrátoru ve frekvenční oblasti</div>
+\[ \bar A = -\frac{\bar Z_2}{\bar Z_1} = -\frac{1}{j\omega RC} = \frac{j}{\omega RC} \]
+\[ |\bar A| = \frac{1}{\omega RC} \]
+<table class="vars">
+<tr><td>\(\bar A\)</td><td>komplexní zisk (přenos) zesilovače</td></tr>
+<tr><td>\(\bar Z_1\), \(\bar Z_2\)</td><td>impedance na vstupu (\(R\)) a ve zpětné vazbě (\(1/(j\omega C)\))</td></tr>
+<tr><td>\(\omega\)</td><td>úhlová frekvence, \(\omega = 2\pi f\) [rad/s]</td></tr>
+<tr><td>\(j\)</td><td>imaginární jednotka; \(j\) v čitateli = výstup předbíhá vstup o 90°</td></tr>
+</table></div>
+
+<div class="box definice" id="def-oktava"><div class="box-t">Definice: oktáva a sklon 6 dB na oktávu</div>
+<p><b>Oktáva</b> je frekvenční interval, ve kterém se frekvence zdvojnásobí (\(f \to 2f\)). Sklon <b>6 dB na oktávu</b> znamená, že se zisk při každém zdvojnásobení frekvence změní dvakrát:</p>
+<p>\[ 20 \log_{10} 2 \approx 6{,}02\ \text{dB} \]</p>
+<p class="jinak">jiný zápis téhož sklonu jako 20 dB na dekádu (desetinásobek frekvence). Integrátor má −6 dB/okt (zisk klesá), derivátor +6 dB/okt (zisk roste).</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad: zisk integrátoru při zdvojování frekvence (vlastní čísla, \(RC\) = 1 ms)</div>
+<div class="tablewrap"><table>
+<thead><tr><th>\(f\) [Hz]</th><th>\(\omega = 2\pi f\) [rad/s]</th><th>\(|A| = 1/(\omega RC)\)</th><th>zisk [dB]</th></tr></thead>
+<tbody>
+<tr><td>159,2</td><td>1000</td><td>1</td><td>0</td></tr>
+<tr><td>318,3</td><td>2000</td><td>0,5</td><td>−6,02</td></tr>
+<tr><td>636,6</td><td>4000</td><td>0,25</td><td>−12,04</td></tr>
+</tbody></table></div>
+<p>Každé zdvojnásobení frekvence zisk <b>půlí</b> – o 6 dB.</p></div>
+
+<h2 id="derivator">Derivační zesilovač</h2>
+<p>Derivační zesilovač je <a href="04_dalsi_zapojeni.html#def-derivator">derivátor</a> ze základů. Podle slidu <b>provádí derivaci invertovaného vstupního signálu podle času</b>. Na vstupu je připojen kondenzátor, který lépe <i>propouští</i> vyšší kmitočty a <i>nepropouští</i> stejnosměrnou složku – derivace konstanty je nula (\(c' = 0\)).</p>
+
+<figure><div class="paper"><img src="figures/fig04_derivator.png" alt="Schéma derivátoru: kondenzátor C na vstupu, R ve zpětné vazbě, neinvertující vstup na zemi" loading="lazy"></div>
+<figcaption><b>Obr. P4.7</b> Derivační zesilovač (stejné schéma jako v Z4; na slidu je navíc \(R\) mezi neinvertujícím vstupem a zemí).</figcaption></figure>
+
+<div class="box vzorec"><div class="box-t">Derivační zesilovač</div>
+<p>V čase (proud kondenzátorem \(i_C = C\,du_i/dt\) teče celý přes \(R\)):</p>
+\[ u_o = -R \cdot i_C = -RC\,\frac{du_i}{dt} \]
+<p>Ve frekvenční oblasti:</p>
+\[ \bar A_d = -\frac{\bar Z_2}{\bar Z_1} = -j\omega RC \]
+<table class="vars">
+<tr><td>\(i_C\)</td><td>proud kondenzátorem na vstupu</td></tr>
+<tr><td>\(du_i/dt\)</td><td>rychlost změny vstupního napětí [V/s]</td></tr>
+<tr><td>\(\bar Z_1 = 1/(j\omega C)\)</td><td>impedance kondenzátoru na vstupu</td></tr>
+<tr><td>\(\bar Z_2 = R\)</td><td>rezistor ve zpětné vazbě</td></tr>
+<tr><td>\(|\bar A_d| = \omega RC\)</td><td>zisk roste s frekvencí: +6 dB/okt</td></tr>
+</table></div>
+
+<h3 id="nestabilita">Ošetření nestability derivačního zesilovače</h3>
+<p>Stejně jako u integrujícího zesilovače, resp. naopak, dochází ke <b>zvýšení zisku o 6 dB na oktávu</b> (při každém zdvojnásobení frekvence). Vysoké frekvence mohou způsobit <b>nestabilitu OZ</b> (resp. fázový posun proudu na vstupu).</p>
+
+<div class="box intuice"><div class="box-t">Proč je derivátor nestabilní (vlastní doplnění)</div>
+<p>Zisk derivátoru roste s frekvencí neomezeně, ale zisk samotného OZ s frekvencí klesá (<a href="12_uprava.html#def-gbw">GBW</a>, P2). Někde nahoře se obě křivky setkají a fázové posuvy kondenzátoru na vstupu a vnitřku OZ se sečtou až na 180°. Záporná zpětná vazba se pak změní na kladnou a zapojení se rozkmitá. K tomu derivátor nejvíc zesiluje vysokofrekvenční <b>šum</b>.</p></div>
+
+<p>Toto lze ošetřit zapojením \(R_1\) pro <b>omezení zisku</b> (zeslabení vstupu) a \(C_1\) do zpětné vazby pro <b>kmitočtově závislé omezení zisku</b>. Vazba \(R \cdot C_1\) frekvenčně omezí horní pásmo derivačního zesilovače – zesilovač se stává <b>derivačně-integračním</b>.</p>
+
+<div class="box definice" id="def-derivacne-integracni"><div class="box-t">Definice: derivačně-integrační zesilovač</div>
+<p><b>Derivačně-integrační zesilovač</b> je derivační zesilovač ošetřený proti nestabilitě: do série se vstupním kondenzátorem \(C\) je zařazen rezistor \(R_1\) a paralelně k rezistoru \(R\) ve zpětné vazbě kondenzátor \(C_1\). Pod zlomovou frekvencí \(\omega_K\) derivuje, kolem ní zesiluje (propust) a nad ní integruje.</p>
+<p class="jinak">derivátor, kterému jsme „přistřihli“ zisk na vysokých frekvencích. Pomalé změny derivuje jako dřív, ale šum a rychlé zákmity už nezesiluje, takže se nerozkmitá.</p></div>
+
+<figure><div class="paper"><img src="figures/fig14_der_osetreny.png" alt="Derivátor s ošetřením: vstup ui přes kondenzátor C a rezistor R1 na invertující vstup; ve zpětné vazbě paralelně R a C1; neinvertující vstup přes R na zem" loading="lazy"></div>
+<figcaption><b>Obr. P4.8</b> Ošetřený derivační zesilovač (podle slidu): oranžově přidané \(R_1\) a \(C_1\).</figcaption></figure>
+
+<div class="box vzorec"><div class="box-t">Zlomová frekvence (slide)</div>
+\[ \omega_K = \frac{1}{R_1 C} = \frac{1}{R C_1} \]
+<table class="vars">
+<tr><td>\(\omega_K\)</td><td>zlomová úhlová frekvence – střed propustného pásma [rad/s]</td></tr>
+<tr><td>\(R_1 C\)</td><td>časová konstanta vstupu (sériové \(R_1\) a \(C\))</td></tr>
+<tr><td>\(R C_1\)</td><td>časová konstanta zpětné vazby (paralelní \(R\) a \(C_1\)); součástky se volí tak, aby obě byly stejné</td></tr>
+</table>
+<p>Asymptoty zisku (vlastní odvození z \(|\bar Z_2 / \bar Z_1|\)):</p>
+<ul>
+<li>pod \(\omega_K\): \(|A| \approx \omega C R\) – <b>derivace</b>, +6 dB/okt,</li>
+<li>kolem \(\omega_K\): \(|A| \approx R / R_1\) – <b>propust</b>, zisk omezený rezistorem \(R_1\),</li>
+<li>nad \(\omega_K\): \(|A| \approx 1/(\omega C_1 R_1)\) – <b>integrace</b>, −6 dB/okt.</li>
+</ul></div>
+
+<figure><div class="paper"><img src="figures/fig14_der_bode.png" alt="Graf zisku v dB na úhlové frekvenci v logaritmickém měřítku: od 0 dB při 10 rad/s roste 20 dB na dekádu, vrchol 34 dB při 1000 rad/s, pak klesá 20 dB na dekádu na 0 dB při 100 000 rad/s; čárkované asymptoty se protínají ve 40 dB" loading="lazy"></div>
+<figcaption><b>Obr. P4.9</b> Zisk derivačně-integračního zesilovače: oblasti DERIVACE – PROPUST – INTEGRACE jako na slidu (vlastní čísla: \(R\) = 100 kΩ, \(R_1\) = 1 kΩ, \(C\) = 1 µF, \(C_1\) = 10 nF).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Vlevo zisk roste (+6 dB/okt) – obvod <b>derivuje</b>. Vpravo klesá (−6 dB/okt) – obvod <b>integruje</b>, takže vysoké frekvence (šum) už nezesiluje.</li>
+<li>Uprostřed je <b>propust</b>: asymptoty se protnou v \(R/R_1\) = 100 (40 dB). Skutečná křivka je ve vrcholu o 6 dB níž (50×, 34 dB), protože se v \(\omega_K\) sejdou dva zlomy po 3 dB.</li>
+<li>Derivátor tedy derivuje jen signály <b>pod</b> \(\omega_K\) – frekvence \(\omega_K\) se volí nad nejvyšší užitečnou frekvencí signálu.</li>
+</ul></div>
+
+<div class="box priklad"><div class="box-t">Příklad: návrh ošetřeného derivátoru (vlastní čísla)</div>
+<p>\(R\) = 100 kΩ, \(C\) = 1 µF, zisk v propustném pásmu omezíme na 100 rezistorem \(R_1\) = 1 kΩ.</p>
+<p>1. Zlomová frekvence ze vstupu:</p>
+\[ \omega_K = \frac{1}{R_1 C} = \frac{1}{10^3 \cdot 10^{-6}} = 1000\ \text{rad/s} \]
+\[ f_K = \frac{\omega_K}{2\pi} \approx 159{,}2\ \text{Hz} \]
+<p>2. Kondenzátor do zpětné vazby, aby \(R C_1 = R_1 C\):</p>
+\[ C_1 = \frac{R_1 C}{R} = \frac{10^3 \cdot 10^{-6}}{10^5} = 10\ \text{nF} \]
+<p>3. Kontrola (přesný výpočet z impedancí): při \(\omega\) = 100 rad/s je zisk 9,90 (asymptota \(\omega CR\) = 10), při \(\omega_K\) je 50 (34,0 dB), při 10 000 rad/s opět 9,90.</p></div>
+
+<div class="box pozor"><div class="box-t">Pozor: popisek asymptoty na slidu</div>
+<p>Na slidu je u klesající části grafu napsáno \(1/(\omega C_1 R)\). Při \(\omega = \omega_K = 1/(R C_1)\) by to dalo zisk 1 (0 dB), ale graf má v tomto místě zisk kolem 100. Odvození z impedancí dává \(1/(\omega C_1 R_1)\), které v \(\omega_K\) vychází \(R/R_1\) a na graf sedí. Tvar grafu (derivace – propust – integrace) i vzorec pro \(\omega_K\) platí beze změny.</p></div>
+
+<h3 id="trojuhelnik">Reakce derivátoru na trojúhelník</h3>
+<p>Ukázka na slidu: na vstupu je trojúhelníkový průběh napětí a zapojení <b>reaguje na změny</b>. Dochází tak k „modulaci“ průběhu se změnami (např. trojúhelníků) na pravoúhlé signály, které je snadné čítat nebo detekovat hrany (RE – <i>rising edge</i>, náběžná hrana; FE – <i>falling edge</i>, sestupná hrana).</p>
+
+<figure><div class="paper"><img src="figures/fig14_der_trojuhelnik.png" alt="Nahoře dva trojúhelníky ±1 V: rychlý s periodou 4 ms a pomalý čárkovaný s periodou 8 ms; dole výstupy derivátoru: obdélník ∓1 V pro rychlý a ∓0,5 V pro pomalý trojúhelník" loading="lazy"></div>
+<figcaption><b>Obr. P4.10</b> Derivátor (\(RC\) = 1 ms) a dva trojúhelníky stejné amplitudy, ale různé rychlosti – plná a čárkovaná čára jako na slidu (vlastní čísla).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Výstup je <b>obdélník</b>: dokud trojúhelník roste, je výstup záporný (derivátor je invertující), když klesá, kladný. Hrany obdélníku jsou přesně ve vrcholech trojúhelníku.</li>
+<li>Výška obdélníku udává <b>rychlost</b> změny, ne velikost signálu: rychlý trojúhelník (1000 V/s) dá ∓1 V, pomalý (500 V/s) jen ∓0,5 V.</li>
+</ul></div>
+
+<div class="box priklad"><div class="box-t">Příklad (čísla z obr. P4.10)</div>
+<p>Trojúhelník ±1 V s periodou 4 ms urazí 2 V za půl periody (2 ms):</p>
+\[ \frac{du_i}{dt} = \frac{2\ \text{V}}{2\ \text{ms}} = 1000\ \text{V/s} \]
+\[ u_o = -RC\,\frac{du_i}{dt} = -10^{-3} \cdot 1000 = -1\ \text{V} \]
+<p>Při periodě 8 ms je sklon poloviční (500 V/s) a výstup ∓0,5 V.</p></div>
+
+<p>Této reakce na změny lze využít v aplikaci např. při <b>měření rychlosti vibrací</b> (derivace polohy podle času je rychlost), tedy v aplikaci měření <b>rychlých změn v pomalých signálech</b>.</p>
+
+<h2 id="usmernovac">Usměrňovač</h2>
+<p>Použití klasického diodového usměrňovače na <b>malých signálech</b> by vedlo k deformaci signálu. Kromě malé (vstupní) impedance, která zatěžuje zdroj signálu, se projevuje i <b>napěťový práh PN přechodu</b>.</p>
+
+<div class="box definice" id="def-prah-pn"><div class="box-t">Definice: napěťový práh PN přechodu</div>
+<p><b>Napěťový práh PN přechodu</b> je napětí v propustném směru (u křemíkové diody asi 0,35 – 0,7 V), pod kterým dioda prakticky nevede proud. Teprve nad ním proud diodou prudce roste.</p>
+<p class="jinak">dioda je „dveře se pružinou“: dokud signál netlačí aspoň 0,7 V, neprojde nic. Signál 0,5 V obyčejná dioda vůbec neusměrní a signálu 1 V „ukousne“ 0,7 V.</p></div>
+
+<div class="box definice" id="def-schottkyho-dioda"><div class="box-t">Definice: Schottkyho dioda</div>
+<p><b>Schottkyho dioda</b> je dioda s přechodem kov–polovodič, která má malý úbytek napětí v propustném směru (asi 0,1 – 0,3 V).</p>
+<p class="jinak">dioda s „lehčí pružinou“. Ani ona ale práh neodstraní úplně – to dokáže až zapojení s OZ.</p></div>
+
+<div class="box definice" id="def-precizni-usmernovac"><div class="box-t">Definice: usměrňovač s OZ (precizní usměrňovač)</div>
+<p><b>Usměrňovač s OZ</b> (precizní, aktivní usměrňovač) je zapojení, ve kterém je dioda zapojena do obvodu operačního zesilovače, takže se usměrní i napěťově malé signály. Vysoká vstupní impedance OZ nezatíží vstupní signál a k jeho usměrnění dochází <b>na výstupu</b>, <b>ve zpětné vazbě</b>, nebo <b>v kaskádě mezi více OZ</b>.</p>
+<p class="jinak">OZ „přidá“ diodě přesně tolik napětí, kolik potřebuje na otevření. Zpětná vazba hlídá výstup, ne výstup OZ, takže úbytek na diodě se ve výsledku neprojeví. Výhodné je navíc použít diody s malým úbytkem, např. Schottkyho.</p></div>
+
+<figure><div class="paper"><img src="figures/fig14_usm_prubeh.png" alt="Nahoře sinus 1 V: precizní jednocestný usměrňovač propustí celé kladné půlvlny do 1 V, samotná dioda jen špičky do 0,3 V; dole precizní dvoucestný usměrňovač dává absolutní hodnotu sinusu" loading="lazy"></div>
+<figcaption><b>Obr. P4.11</b> Sinus s amplitudou 1 V: samotná dioda s prahem 0,7 V proti usměrňovačům s OZ (vlastní ilustrace).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Samotná dioda propustí jen to, co je nad prahem: z půlvlny 1 V zbude špička 0,3 V a změní se i tvar. Signál pod 0,7 V by zmizel úplně.</li>
+<li>Usměrňovač s OZ propustí <b>celou</b> kladnou půlvlnu (jednocestný), nebo udělá absolutní hodnotu \(|u_i|\) (dvoucestný).</li>
+</ul></div>
+
+<h3 id="jednocestny">Jednocestný usměrňovač</h3>
+<div class="box definice" id="def-jednocestny-usmernovac"><div class="box-t">Definice: jednocestný usměrňovač s OZ</div>
+<p><b>Jednocestný usměrňovač</b> propustí na výstup jen jednu polaritu vstupního signálu (jednu půlvlnu); druhou polaritu zablokuje a výstup je při ní nulový. V zapojení ze slidu je dioda \(D\) mezi výstupem OZ a zátěží \(R_L\) a zpětná vazba se bere až za diodou.</p>
+<p class="jinak">„ventil“, který pustí jen kladné půlvlny. Protože OZ hlídá napětí za diodou, propustí i milivoltové signály celé.</p></div>
+
+<figure><div class="paper"><img src="figures/fig14_jednocestny.png" alt="Jednocestný usměrňovač: vstup ui na neinvertující vstup, výstup OZ u1 přes diodu D na uzel uo, z něj RL na zem a zpětná vazba zpět na invertující vstup" loading="lazy"></div>
+<figcaption><b>Obr. P4.12</b> Jednocestný usměrňovač (podle slidu): sledovač, ve kterém je dioda uvnitř zpětné vazby.</figcaption></figure>
+
+<div class="box postup"><div class="box-t">Jak pracuje a vliv úbytku \(U_D\)</div>
+<ol>
+<li><b>\(u_i > 0\):</b> výstup OZ \(u_1\) jde nahoru, dioda se otevře a obvod je <a href="04_dalsi_zapojeni.html#def-sledovac">sledovač</a>: \(u_o \approx u_i\). OZ si sám nastaví \(u_1 = u_o + U_D\), tedy o úbytek diody výš.</li>
+<li><b>\(u_i &lt; 0\):</b> výstup OZ jde dolů, dioda D je v závěrném směru. \(u_o\) by pak mohl tvořit jen výstupní proud OZ přes diodu, ten je však (ideálně) nulový – přes \(R_L\) neteče proud a \(u_o = 0\).</li>
+</ol>
+<p>Reálnou hodnotu zesílení ovlivňuje úbytek \(U_D\). Z \(u_1 = A\,(u_i - u_o)\) a \(u_1 = u_o + U_D\) plyne vztah ze slidu:</p>
+\[ u_i = \frac{U_D}{A} + \frac{u_o}{A} + u_o \]
+<p>Pro výstup (vlastní úprava):</p>
+\[ u_o = \frac{A\,u_i - U_D}{A + 1} \approx u_i - \frac{U_D}{A} \]</div>
+
+<div class="box vzorec"><div class="box-t">Jednocestný usměrňovač s OZ</div>
+\[ u_i = \frac{U_D}{A} + \frac{u_o}{A} + u_o \]
+<table class="vars">
+<tr><td>\(u_i\), \(u_o\)</td><td>vstupní a výstupní napětí</td></tr>
+<tr><td>\(U_D\)</td><td>úbytek na diodě v propustném směru (0,35 – 0,7 V, Schottky 0,1 – 0,3 V)</td></tr>
+<tr><td>\(A\)</td><td>zesílení OZ bez zpětné vazby (např. \(10^5\)); práh diody se jím dělí</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad: jak malý je práh s OZ (vlastní čísla)</div>
+<p>\(A = 10^5\), \(U_D\) = 0,7 V, na vstupu \(u_i\) = 10 mV.</p>
+<p>1. Efektivní práh diody:</p>
+\[ \frac{U_D}{A} = \frac{0{,}7}{10^5} = 7\ \mu\text{V} \]
+<p>2. Výstup:</p>
+\[ u_o = \frac{10^5 \cdot 0{,}01 - 0{,}7}{10^5 + 1} \approx 9{,}993\ \text{mV} \]
+<p>3. Výstup OZ je o úbytek diody výš:</p>
+\[ u_1 = u_o + U_D \approx 0{,}710\ \text{V} \]
+<p>Samotná dioda by signál 10 mV vůbec nepropustila, s OZ projde s chybou 7 µV.</p></div>
+
+<h3 id="ruzna-reseni">Jednocestný usměrňovač – různá řešení</h3>
+<p>Slide ukazuje další dvě zapojení (jen schémata a průběhy). Obě vycházejí z <a href="03_oz.html#def-invertujici">invertujícího zesilovače</a> s diodami ve zpětné vazbě; rozbor je vlastní.</p>
+
+<figure><div class="paper"><img src="figures/fig14_usm_a.png" alt="Invertující usměrňovač: vstup přes R1 na invertující vstup; z invertujícího vstupu dioda D1 k výstupu OZ a rezistor R2 k výstupní svorce; dioda D2 z výstupu OZ k výstupní svorce" loading="lazy"></div>
+<figcaption><b>Obr. P4.13</b> Varianta s \(D_1\) a \(D_2\): na výstupu jsou kladné půlvlny (podle slidu, vlevo).</figcaption></figure>
+<ul>
+<li><b>Vstup kladný:</b> výstup OZ jde do záporu, otevře se \(D_1\) a uzavře zpětnou vazbu; \(D_2\) je zavřená. Výstupní svorka je přes \(R_2\) spojena s virtuální nulou → výstup 0 V.</li>
+<li><b>Vstup záporný:</b> výstup OZ jde do kladu, \(D_1\) se zavře, otevře se \(D_2\). Obvod je invertující zesilovač:
+\[ u_\text{výst} = -\frac{R_2}{R_1}\,u_\text{vst} > 0 \]</li>
+<li>Výstupem jsou tedy kladné půlvlny (invertované záporné půlvlny vstupu). Výhoda proti obr. P4.12 (nad rámec slidu): OZ má zpětnou vazbu vždy uzavřenou přes jednu z diod, nikdy nejde do saturace, a proto je rychlejší.</li>
+</ul>
+
+<figure><div class="paper"><img src="figures/fig14_usm_b.png" alt="Usměrňovač se dvěma výstupy: vstup přes R na invertující vstup, z něj R1 k výstupu A a R2 k výstupu B; výstup OZ je mezi diodami D1 (od A) a D2 (k B)" loading="lazy"></div>
+<figcaption><b>Obr. P4.14</b> Varianta se dvěma výstupy: A dává záporné, B kladné půlvlny (podle slidu, vpravo).</figcaption></figure>
+<ul>
+<li><b>Vstup kladný:</b> výstup OZ jde do záporu, vede \(D_1\): \(u_A = -\frac{R_1}{R}\,u_\text{vst}\) (záporné půlvlny), \(D_2\) zavřená, \(u_B = 0\).</li>
+<li><b>Vstup záporný:</b> vede \(D_2\): \(u_B = -\frac{R_2}{R}\,u_\text{vst}\) (kladné půlvlny), \(u_A = 0\).</li>
+</ul>
+
+<h2 id="dvoucestny">Precizní dvoucestný usměrňovač</h2>
+<div class="box definice" id="def-dvoucestny-usmernovac"><div class="box-t">Definice: precizní dvoucestný usměrňovač</div>
+<p><b>Precizní dvoucestný usměrňovač</b> je zapojení s OZ, jehož výstupní napětí je při obou polaritách vstupního napětí kladné a rovné absolutní hodnotě vstupu, \(u_o = |u_i|\). Zapojení ze slidu má tři OZ: OZ1 a OZ3 tvoří napěťové sledovače, OZ2 invertuje příchozí napětí.</p>
+<p class="jinak">„převracečka“ záporných půlvln: kladné projdou beze změny, záporné se otočí nahoru. Díky OZ to funguje i pro signály v milivoltech.</p></div>
+
+<figure><div class="paper"><img src="figures/fig14_dvoucestny.png" alt="Tři OZ: OZ1 sledovač se vstupem ui přes Rs; jeho výstup ui přes R1 na invertující vstup OZ2 a přes druhý R1 na uzel u+; OZ2 má neinvertující vstup na zemi a výstup přes diodu D na uzel u+; u+ jde na OZ3 zapojený jako sledovač s výstupem uo = |ui|" loading="lazy"></div>
+<figcaption><b>Obr. P4.15</b> Precizní dvoucestný usměrňovač (podle slidu).</figcaption></figure>
+
+<div class="box postup"><div class="box-t">Jak pracuje (slide + doplnění)</div>
+<ol>
+<li><b>OZ1</b> (sledovač) má velký vstupní odpor – nezatíží zdroj signálu s vnitřním odporem \(R_s\) a na svém výstupu dá \(u_i\).</li>
+<li><b>Je-li \(u_i\) záporné:</b> výstup OZ2 jde do kladu, dioda D je v propustném směru a napětí <i>projde</i> na OZ3. OZ2 je invertor se dvěma \(R_1\) (zesílení −1):
+\[ u_+ = -u_i = |u_i| \]</li>
+<li><b>Je-li \(u_i\) kladné:</b> výstup OZ2 jde do záporu, D je v závěrném směru a napětí <i>projde</i> přímo přes \(R_1\). Do OZ3 neteče proud, na obou \(R_1\) tedy není úbytek:
+\[ u_+ = u_i = |u_i| \]</li>
+<li><b>OZ3</b> (sledovač) přenese \(u_+\) na výstup, aniž by zátěž zatížila cestu přes rezistory \(R_1\).</li>
+</ol></div>
+
+<div class="box vzorec"><div class="box-t">Dvoucestný usměrňovač</div>
+\[ u_o = |u_i| \]
+<table class="vars">
+<tr><td>\(u_i\)</td><td>vstupní napětí (libovolné polarity)</td></tr>
+<tr><td>\(u_o\)</td><td>výstupní napětí, vždy kladné</td></tr>
+</table></div>
+
+<div class="box pozor"><div class="box-t">Pozor: překlep na slidu</div>
+<p>Slide říká „<i>Vstupní</i> napětí je tak vždy kladné (při obou polaritách vstupního napětí)“. Vždy kladné je <b>výstupní</b> napětí, \(u_o = |u_i|\) – vstup může mít obě polarity.</p></div>
+
+<div class="box priklad"><div class="box-t">Příklad (vlastní čísla, \(R_1\) = 10 kΩ)</div>
+<p>1. \(u_i = -0{,}3\) V: D vede, OZ2 invertuje:</p>
+\[ u_+ = -\frac{R_1}{R_1} \cdot (-0{,}3) = 0{,}3\ \text{V} \]
+<p>2. \(u_i = +0{,}3\) V: D nevede, proud rezistory neteče:</p>
+\[ u_+ = u_i = 0{,}3\ \text{V} \]
+<p>V obou případech \(u_o\) = 0,3 V. Obyčejný diodový můstek by při 0,3 V nepropustil nic (dvě diody v sérii, asi 1,4 V).</p></div>
+
+<h2 id="vrcholovy">Vrcholový detektor</h2>
+<div class="box definice" id="def-vrcholovy-detektor"><div class="box-t">Definice: vrcholový detektor</div>
+<p><b>Vrcholový detektor</b> je zapojení s OZ, diodou a kondenzátorem, které slouží k detekci a <i>zapamatování si</i> předchozího vyššího napětí na vstupu. Kondenzátor se přes diodu dobíjí na vrcholovou hodnotu vstupního napětí a dioda mu nedovolí se zpět vybít.</p>
+<p class="jinak">„ručička maxima“ na teploměru: ukazuje nejvyšší hodnotu, kterou signál od posledního vynulování dosáhl. Používá se např. k měření amplitudy signálu.</p></div>
+
+<figure><div class="paper"><img src="figures/fig14_vrcholovy.png" alt="Vrcholový detektor: ui na neinvertující vstup OZ1, výstup OZ1 přes diodu D na uzel, odkud je zpětná vazba na invertující vstup OZ1; z uzlu kondenzátor C na zem, čárkovaný RV se spínačem obnovení nuly na zem a neinvertující vstup OZ2 zapojeného jako sledovač s výstupem uo" loading="lazy"></div>
+<figcaption><b>Obr. P4.16</b> Vrcholový detektor (podle slidu).</figcaption></figure>
+
+<div class="box postup"><div class="box-t">Jak pracuje (slide)</div>
+<ol>
+<li><b>Je-li \(u_i > u_C\):</b> dioda je otevřena, dobíjí se C na vrcholovou hodnotu napětí. Zpětná vazba OZ1 se bere až za diodou, takže \(u_C = u_i\) přesně (úbytek diody se neprojeví).</li>
+<li><b>Je-li \(u_i &lt; u_C\):</b> dioda D je v závěrném směru, kondenzátor C je vybíjen pouze vnitřním odporem a odporem OZ2 (\(R_{OZ2} \approx 10^{12}\ \Omega\)). Napětí na C se tedy prakticky nemění.</li>
+<li><b>OZ2</b> je sledovač: na výstup dá \(u_o = u_C\) a kondenzátor přitom nezatíží.</li>
+<li><b>Obnovení „nuly“:</b> sepnutím spínače se \(u_C\) vybije přes \(R_V\) do GND a detektor začne hledat nový vrchol.</li>
+</ol></div>
+
+<div class="box definice" id="def-obnoveni-nuly"><div class="box-t">Definice: obnovení nuly (vybíjecí obvod)</div>
+<p><b>Obnovení nuly</b> je vybíjecí obvod vrcholového detektoru, který po sepnutí spínače vybíjí napětí kondenzátoru \(u_C\) přes rezistor \(R_V\) do GND.</p>
+<p class="jinak">„vynulování ručičky maxima“ – stejná myšlenka jako nulovací obvod integrátoru. \(R_V\) omezí vybíjecí proud, aby spínač nezatížil kondenzátor zkratem.</p></div>
+
+<figure><div class="paper"><img src="figures/fig14_vrchol_prubeh.png" alt="Graf napětí v čase: čárkovaný vstup kolísá; plné napětí kondenzátoru sleduje vstup při růstu a drží vrcholy 1,8 V a 2,5 V, ve 70 ms spadne při obnovení nuly na 0 a pak drží nové vrcholy" loading="lazy"></div>
+<figcaption><b>Obr. P4.17</b> Průběh napětí vrcholového detektoru: vstup čárkovaně, \(u_C\) plně (tvar podle slidu, vlastní čísla; v 70 ms obnovení nuly).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Když vstup roste nad dosavadní maximum, \(u_C\) ho <b>sleduje</b>. Když vstup klesá, \(u_C\) <b>drží</b> poslední vrchol (vodorovné úseky – na slidu označené šipkami).</li>
+<li>Rozdíl mezi vstupem a \(u_C\) v době držení je rozdílové napětí OZ1 \(|u_d|\) (na slidu).</li>
+<li>Menší vrchol po větším se nezaznamená – detektor zná jen maximum. Po obnovení nuly začne znovu od nuly.</li>
+</ul></div>
+
+<div class="box priklad"><div class="box-t">Příklad: jak dlouho detektor udrží vrchol (vlastní čísla)</div>
+<p>\(C\) = 100 nF, vybíjení jen odporem OZ2 \(10^{12}\ \Omega\), zapamatováno 5 V.</p>
+<p>1. Časová konstanta vybíjení:</p>
+\[ \tau = R_{OZ2} \cdot C = 10^{12} \cdot 10^{-7} = 10^5\ \text{s} \approx 27{,}8\ \text{h} \]
+<p>2. Počáteční pokles napětí:</p>
+\[ \frac{du_C}{dt} = \frac{u_C}{\tau} = \frac{5}{10^5} = 50\ \mu\text{V/s} \]
+<p>3. Obnovení nuly přes \(R_V\) = 1 kΩ:</p>
+\[ \tau_V = R_V \cdot C = 10^3 \cdot 10^{-7} = 0{,}1\ \text{ms} \]
+<p>Za \(5\tau_V\) = 0,5 ms zbude na C jen \(e^{-5} \approx 0{,}7\ \%\) napětí. Ve skutečnosti drží detektor kratší dobu, protože se přidá svod kondenzátoru a závěrný proud diody.</p></div>
+
+<h2 id="srovnani">Srovnání zapojení</h2>
+<div class="tablewrap"><table class="compact">
+<thead><tr><th>zapojení</th><th>klíčové součástky</th><th>výstup</th><th>použití, problém</th></tr></thead>
+<tbody>
+<tr><td>Millerův integrátor</td><td>\(R\) na vstupu, \(C\) ve ZV</td><td>\(-\frac{1}{RC}\int u_i\,dt\)</td><td>saturace → nulovací obvod (T<sub>1</sub>)</td></tr>
+<tr><td>neinvertující integrátor</td><td>\(RC\) na +, \(R\) na zem a \(C\) ve ZV na −</td><td>\(+\frac{1}{RC}\int u_i\,dt\)</td><td>integrace bez inverze</td></tr>
+<tr><td>diferenční integrátor</td><td>jako neinvertující, \(R\) na − ze vstupu \(u_1\)</td><td>\(\frac{1}{RC}\int (u_2 - u_1)\,dt\)</td><td>−6 dB/okt</td></tr>
+<tr><td>derivátor</td><td>\(C\) na vstupu, \(R\) ve ZV</td><td>\(-RC\,\frac{du_i}{dt}\)</td><td>+6 dB/okt → nestabilita, šum</td></tr>
+<tr><td>derivačně-integrační</td><td>+ \(R_1\) v sérii s \(C\), \(C_1 \parallel R\)</td><td>derivace pod \(\omega_K\)</td><td>ω<sub>K</sub> = 1/(R<sub>1</sub>C) = 1/(RC<sub>1</sub>)</td></tr>
+<tr><td>jednocestný usměrňovač</td><td>D ve zpětné vazbě</td><td>jedna půlvlna</td><td>práh U<sub>D</sub>/A místo U<sub>D</sub></td></tr>
+<tr><td>dvoucestný usměrňovač</td><td>OZ1, OZ3 sledovače, OZ2 invertor s D</td><td>\(|u_i|\)</td><td>malé signály obou polarit</td></tr>
+<tr><td>vrcholový detektor</td><td>OZ1 + D nabíjí C, OZ2 sledovač</td><td>maximum \(u_i\)</td><td>obnovení nuly přes R<sub>V</sub></td></tr>
+</tbody></table></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Millerův integrátor je invertující zesilovač s kondenzátorem ve zpětné vazbě. Proud \(u_i/R\) nabíjí kondenzátor, ten slouží jako analogová paměť a výstup je \(-\frac{1}{RC}\int u_i\,dt\) plus počáteční stav. Při stálém vstupu výstup lineárně roste nebo klesá až do saturace, proto je paralelně ke kondenzátoru tranzistor, který ho před novou integrací vybije. Existuje i neinvertující a diferenční integrátor, který integruje rozdíl \(u_2 - u_1\); zisk integrátoru klesá 6 dB na oktávu. Derivátor má kondenzátor na vstupu, výstup je \(-RC\,du_i/dt\) a zisk roste 6 dB na oktávu, takže je nestabilní a zesiluje šum. Ošetří se rezistorem \(R_1\) v sérii s kondenzátorem a kondenzátorem \(C_1\) paralelně k \(R\) – vznikne derivačně-integrační zesilovač, který nad \(\omega_K\) integruje. Diodový usměrňovač má práh 0,7 V, proto se malé signály usměrňují s OZ: dioda je ve zpětné vazbě a práh se zmenší \(A\)-krát. Precizní dvoucestný usměrňovač dává \(|u_i|\). Vrcholový detektor nabíjí přes diodu kondenzátor na maximum vstupu, dioda ho nenechá vybít, OZ2 jako sledovač ho nezatíží a obnovení nuly ho vybije přes \(R_V\).“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Kondenzátor ve zpětné vazbě = integrace (paměť, nulování), kondenzátor na vstupu = derivace (ošetřit \(R_1\), \(C_1\)); dioda ve zpětné vazbě OZ = usměrnění bez prahu, dioda + kondenzátor = paměť vrcholu.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p><b>Millerův integrátor</b> má rezistor \(R\) na vstupu a kondenzátor \(C\) ve zpětné vazbě; vstupní proud nabíjí kondenzátor, který slouží jako <b>analogová paměť</b>, a výstup je \(u_o = -\frac{1}{RC}\int u_i\,dt\) plus počáteční stav. Při stálém vstupu výstup lineárně klesá (kladný vstup) nebo roste (záporný vstup), až narazí na <b>saturaci</b> (±12 V při napájení ±12 V). Novou integraci umožní <b>nulovací obvod</b>: tranzistor \(T_1\) paralelně ke kondenzátoru ho před integrací zkratuje.</p>
+<p><b>Neinvertující integrátor</b> integruje bez minus, <b>diferenční integrátor</b> integruje rozdíl \(u_2 - u_1\). Integrátor je frekvenčně velmi závislý: \(|A| = 1/(\omega RC)\), s dvojnásobkem frekvence klesá zisk na polovinu (−6 dB na oktávu).</p>
+<p><b>Derivační zesilovač</b> má kondenzátor na vstupu, \(u_o = -RC\,du_i/dt\), stejnosměrnou složku nepropustí a zisk mu roste o 6 dB na oktávu. Vysoké frekvence ho mohou rozkmitat; ošetří se rezistorem \(R_1\) (omezení zisku na \(R/R_1\)) a kondenzátorem \(C_1\) ve zpětné vazbě – vznikne <b>derivačně-integrační zesilovač</b> se zlomem \(\omega_K = 1/(R_1C) = 1/(RC_1)\). Trojúhelník mění na obdélník, jehož výška udává rychlost změny (měření rychlosti vibrací, detekce hran).</p>
+<p>Obyčejná dioda má <b>napěťový práh</b> 0,35 – 0,7 V (Schottkyho 0,1 – 0,3 V), malé signály by zdeformovala. <b>Usměrňovač s OZ</b> má diodu ve zpětné vazbě, takže se práh zmenší na \(U_D/A\). <b>Jednocestný</b> propustí jednu půlvlnu, <b>precizní dvoucestný</b> se třemi OZ dává \(u_o = |u_i|\). <b>Vrcholový detektor</b> nabíjí přes diodu kondenzátor na vrcholovou hodnotu vstupu, dioda brání vybití, sledovač OZ2 (\(10^{12}\ \Omega\)) ho nezatíží a <b>obnovení nuly</b> ho vybije přes \(R_V\) do GND.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Millerův integrátor: \(u_o = -\frac{1}{RC}\int u_i\,dt + u_o(0)\); kondenzátor = analogová paměť.</li>
+<li>Bez nulování skončí integrátor v saturaci; tranzistor \(T_1\) paralelně k \(C\) ho před novou integrací vybije.</li>
+<li>Neinvertující integrátor \(+\frac{1}{RC}\int u_i\,dt\), diferenční \(\frac{1}{RC}\int(u_2 - u_1)\,dt\).</li>
+<li>Integrátor: \(|A| = 1/(\omega RC)\), −6 dB/okt; derivátor: \(|A| = \omega RC\), +6 dB/okt.</li>
+<li>Derivátor je nestabilní a šumí → \(R_1\) do série s \(C\), \(C_1\) paralelně k \(R\), \(\omega_K = 1/(R_1C) = 1/(RC_1)\).</li>
+<li>Derivátor mění trojúhelník na obdélník; výška obdélníku = rychlost změny (vibrace, hrany RE/FE).</li>
+<li>Dioda ve zpětné vazbě OZ: práh \(U_D/A\) (µV) místo 0,7 V; dvoucestný precizní usměrňovač dává \(|u_i|\).</li>
+<li>Vrcholový detektor: D + C drží maximum, OZ2 sledovač nezatíží C, obnovení nuly přes \(R_V\).</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Nakreslete Millerův integrátor, odvoďte výstupní napětí a vysvětlete, proč se kondenzátoru říká analogová paměť.</summary><div>
+<p>Invertující zesilovač: \(R\) ze vstupu na invertující vstup, \(C\) ve zpětné vazbě, neinvertující vstup přes \(R\) na zem. Invertující vstup je na virtuální nule, rezistorem teče \(i = u_i/R\) a celý nabíjí kondenzátor:</p>
+\[ u_C = \frac{q}{C} = \frac{1}{C}\int \frac{u_i}{R}\,dt \]
+<p>Výstup je \(u_o = -u_C\), tedy</p>
+\[ u_o = -\frac{1}{RC}\int u_i\,dt + u_o(0) \]
+<p>Když vstup klesne na nulu, proud neteče, náboj na kondenzátoru zůstane a výstup drží poslední hodnotu – kondenzátor si „pamatuje“ integrál vstupu.</p></div></details>
+<details class="q"><summary>Co se stane s výstupem integrátoru při stálém kladném vstupu a k čemu je nulovací obvod?</summary><div>
+<p>Výstup lineárně klesá se sklonem \(-U_i/RC\) (např. 0,5 V a \(RC\) = 10 ms dá −50 V/s), až dosáhne záporného napájení – při ±12 V zůstane v saturaci kolem −12 V (za 240 ms). Záporný vstup dá rostoucí výstup až do +12 V.</p>
+<p>Pro zahájení nové integrace je třeba kondenzátor vybít. Nulovací obvod je tranzistor \(T_1\) paralelně ke kondenzátoru: před začátkem integrace je sepnut a kondenzátor zkratuje, po jeho vypnutí začne integrace od nuly.</p></div></details>
+<details class="q"><summary>Nakreslete neinvertující a diferenční integrační zesilovač. Proč je integrátor „frekvenčně velmi závislý“?</summary><div>
+<p>Neinvertující: vstup přes \(R\) na neinvertující vstup, z něj \(C\) na zem; invertující vstup přes \(R\) na zem a \(C\) do výstupu. \(u_o = \frac{1}{RC}\int u_i\,dt\). Diferenční: stejné, jen rezistor invertujícího vstupu vede ze vstupu \(u_1\), signál \(u_2\) jde na neinvertující:</p>
+\[ u_o = \frac{1}{RC}\int (u_2 - u_1)\,dt \]
+<p>Zisk integrátoru je \(\bar A = -\bar Z_2/\bar Z_1 = -1/(j\omega RC)\), tedy \(|A| = 1/(\omega RC)\). S dvojnásobkem frekvence klesne zisk na polovinu, o 6 dB na oktávu.</p></div></details>
+<details class="q"><summary>Nakreslete derivační zesilovač. Proč je nestabilní a jak se to ošetří?</summary><div>
+<p>Kondenzátor \(C\) na vstupu, \(R\) ve zpětné vazbě:</p>
+\[ u_o = -R\,i_C = -RC\,\frac{du_i}{dt} \]
+\[ \bar A_d = -j\omega RC \]
+<p>Zisk roste o 6 dB na oktávu, takže se nejvíc zesílí vysoké frekvence a šum; s fázovým posunem OZ to vede ke kmitání. Ošetření: rezistor \(R_1\) do série se vstupním \(C\) omezí zisk na \(R/R_1\), kondenzátor \(C_1\) paralelně k \(R\) zisk nad zlomem snižuje. Vznikne derivačně-integrační zesilovač: pod \(\omega_K\) derivuje, nad ním integruje,</p>
+\[ \omega_K = \frac{1}{R_1C} = \frac{1}{RC_1} \]</div></details>
+<details class="q"><summary>Co udělá derivátor s trojúhelníkovým signálem a k čemu se to dá využít?</summary><div>
+<p>Trojúhelník má po částech stálý sklon, derivace je proto po částech konstantní – výstup je obdélník (při růstu vstupu záporný, při poklesu kladný, protože zapojení invertuje). Výška obdélníku je úměrná rychlosti změny: s \(RC\) = 1 ms dá trojúhelník ±1 V s periodou 4 ms (1000 V/s) obdélník ∓1 V, pomalejší s periodou 8 ms jen ∓0,5 V. Využití: měření rychlosti vibrací, rychlých změn v pomalých signálech; pravoúhlé signály se snadno čítají a detekují se na nich hrany (RE, FE).</p></div></details>
+<details class="q"><summary>Proč se malé signály neusměrňují obyčejnou diodou a jak funguje jednocestný usměrňovač s OZ?</summary><div>
+<p>Dioda má napěťový práh PN přechodu 0,35 – 0,7 V (Schottkyho 0,1 – 0,3 V): signál pod prahem neprojde a větší signál se zdeformuje. Klasický usměrňovač má navíc malou vstupní impedanci a zatěžuje zdroj.</p>
+<p>V jednocestném usměrňovači s OZ je dioda mezi výstupem OZ a zátěží \(R_L\) a zpětná vazba se bere za diodou. Pro \(u_i > 0\) dioda vede a obvod je sledovač, OZ si sám přidá úbytek diody. Pro \(u_i &lt; 0\) je dioda zavřená a výstup je nulový. Z rovnice ze slidu</p>
+\[ u_i = \frac{U_D}{A} + \frac{u_o}{A} + u_o \]
+<p>plyne, že se práh zmenší \(A\)-krát: s \(A = 10^5\) je to 7 µV místo 0,7 V.</p></div></details>
+<details class="q"><summary>Nakreslete precizní dvoucestný usměrňovač se třemi OZ a vysvětlete, co se děje při kladném a záporném vstupu.</summary><div>
+<p>OZ1 je sledovač (nezatíží zdroj s \(R_s\)), jeho výstup jde přes \(R_1\) na invertující vstup OZ2 a dalším \(R_1\) na uzel \(u_+\); výstup OZ2 jde přes diodu D na \(u_+\), neinvertující vstup OZ2 je na zemi. \(u_+\) jde na OZ3 zapojený jako sledovač.</p>
+<ul>
+<li>\(u_i &lt; 0\): D vede, OZ2 je invertor se ziskem −1, \(u_+ = -u_i\).</li>
+<li>\(u_i > 0\): D je zavřená, napětí projde přímo přes \(R_1\); do OZ3 neteče proud, takže \(u_+ = u_i\).</li>
+</ul>
+<p>Výsledek \(u_o = |u_i|\) – výstupní napětí je vždy kladné.</p></div></details>
+<details class="q"><summary>Popište vrcholový detektor. Proč je za kondenzátorem sledovač a k čemu je obnovení nuly?</summary><div>
+<p>Vstup \(u_i\) jde na OZ1, jeho výstup přes diodu D nabíjí kondenzátor C; zpětná vazba OZ1 se bere z kondenzátoru, takže úbytek diody se neprojeví. Je-li \(u_i > u_C\), dioda je otevřená a C se dobije na vrcholovou hodnotu. Je-li \(u_i &lt; u_C\), dioda je v závěrném směru a C se vybíjí jen vnitřním odporem a vstupním odporem OZ2 (asi \(10^{12}\ \Omega\)) – napětí drží.</p>
+<p>OZ2 je sledovač, aby výstup šlo zatížit, aniž by se kondenzátor vybíjel (např. se 100 nF je časová konstanta \(10^5\) s). Obnovení nuly je vybíjecí obvod: spínač vybije \(u_C\) přes \(R_V\) do GND a detektor může hledat nový vrchol.</p></div></details>
