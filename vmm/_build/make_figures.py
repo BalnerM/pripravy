@@ -450,6 +450,38 @@ def fig06_zateze():
     save(fig, "fig06_zateze")
 
 
+def fig06_s_vs_r():
+    X = PROT.values
+    var = X.var(axis=0, ddof=1)
+
+    def pc1(M):
+        w, V = np.linalg.eigh(M)
+        i = w.argsort()[::-1]; w, V = w[i], V[:, i]
+        v = V[:, 0] * np.sign(V[5, 0])  # obiloviny kladně jako v přednášce
+        return v, w[0] / w.sum() * 100
+
+    vS, pS = pc1(np.cov(X.T))
+    vR, pR = pc1(np.corrcoef(X.T))
+    y = np.arange(len(VARCZ))[::-1]
+    fig, (a, b) = plt.subplots(1, 2, figsize=(10.5, 4.4), gridspec_kw={"width_ratios": [1, 1.25]})
+    a.barh(y, var, color=C1, height=0.6)
+    for yi, v in zip(y, var):
+        a.text(v + 2, yi, f"{v:.1f}".replace(".", ","), va="center", fontsize=8.5, color=INK2)
+    a.set_yticks(y); a.set_yticklabels(VARCZ)
+    a.set_xlim(0, 145); a.set_xlabel("rozptyl (jednotky spotřeby²)"); a.set_axisbelow(True); b.set_axisbelow(True)
+    a.set_title("diagonála S: rozptyly příznaků"); a.grid(axis="y", visible=False)
+    h = 0.38
+    b.barh(y + h / 2, vS, height=h - 0.04, color=C1, label=f"PCA na S (PC1 = {pS:.0f} %)")
+    b.barh(y - h / 2, vR, height=h - 0.04, color=C2, label=f"PCA na R (PC1 = {pR:.0f} %)")
+    b.axvline(0, color=AXIS, lw=0.8)
+    b.set_yticks(y); b.set_yticklabels(VARCZ)
+    b.set_xlim(-0.6, 1.0); b.set_xlabel("zátěž příznaku v PC1 (prvek vlastního vektoru)")
+    b.set_title("PC1 z kovarianční vs. korelační matice"); b.grid(axis="y", visible=False)
+    b.legend(loc="lower right", fontsize=9)
+    fig.tight_layout()
+    save(fig, "fig06_s_vs_r")
+
+
 def fig06_biplot():
     from adjustText import adjust_text
     _, w, V, Y = protein_pca()
@@ -778,7 +810,7 @@ if __name__ == "__main__":
               fig03_skalovani, fig03_log,
               fig04_korelace_tvary, fig04_regrese, fig04_logit, fig04_anova,
               fig05_vazby, fig05_dendrogram, fig05_pocet_k, fig05_kmeans_dbscan,
-              fig06_princip, fig06_scree, fig06_zateze, fig06_biplot, fig06_limitace,
+              fig06_princip, fig06_scree, fig06_zateze, fig06_s_vs_r, fig06_biplot, fig06_limitace,
               fig07_limity, fig07_poly, fig07_kernel_1d, fig07_kpca, fig07_gamma, fig08_svd, fig09_rotace,
               fig10_gauss_t, fig10_perplexita, fig10_swiss, fig11_umap_params, fig11_srovnani]:
         f()

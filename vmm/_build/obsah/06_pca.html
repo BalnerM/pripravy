@@ -52,12 +52,44 @@
 <div class="box definice" id="def-projekce"><div class="box-t">Definice: projekce bodu na osu</div>
 <p><b>(Kolmá) projekce</b> bodu \(\mathbf x\) na přímku procházející počátkem se směrem jednotkového vektoru \(\mathbf v\) je bod přímky nejbližší k \(\mathbf x\). Jeho souřadnice na přímce je skalární součin \(\mathbf x \cdot \mathbf v = x_1v_1 + \dots + x_pv_p\).</p>
 <p class="jinak">„stín“ bodu na ose, když na něj svítím kolmo. Číslo, kde stín dopadne, je nová souřadnice bodu na této ose – komponentní skóre.</p></div>
+<div class="box vzorec"><div class="box-t">Matematické okénko: skalární součin</div>
+<p>Celá PCA stojí na jedné operaci: každá komponenta je <b>skalární součin</b> objektu s transformačním vektorem (přesná definice je v <a href="07_kernel_pca.html#def-skalarni-soucin">kapitole 7</a>). Výsledkem skalárního součinu dvou vektorů je jedno číslo: násobí se složky na stejných pozicích a součiny se sečtou.</p>
+<p>1. Po složkách:</p>
+\[ \mathbf a\cdot\mathbf b = a_1b_1 + a_2b_2 + \dots + a_pb_p = \sum_{j=1}^{p} a_jb_j \]
+<p>2. Maticově jako řádek krát sloupec:</p>
+\[ \mathbf a^T\mathbf b = \begin{pmatrix} a_1 & a_2 & \cdots & a_p \end{pmatrix} \begin{pmatrix} b_1\\ b_2\\ \vdots\\ b_p \end{pmatrix} \]
+<p>3. Geometricky:</p>
+\[ \mathbf a^T\mathbf b = \lVert\mathbf a\rVert\,\lVert\mathbf b\rVert\cos\theta \]
+<table class="vars">
+<tr><td>\(\mathbf a, \mathbf b\)</td><td>dva vektory o stejném počtu složek \(p\) (např. objekt a transformační vektor)</td></tr>
+<tr><td>\(a_j, b_j\)</td><td>\(j\)-té složky vektorů</td></tr>
+<tr><td>\(\mathbf a^T\)</td><td>transpozice: sloupcový vektor „položený“ do řádku, aby šlo násobit řádek × sloupec</td></tr>
+<tr><td>\(\lVert\mathbf a\rVert\)</td><td>délka (norma) vektoru, \(\lVert\mathbf a\rVert = \sqrt{\mathbf a^T\mathbf a}\)</td></tr>
+<tr><td>\(\theta\)</td><td>úhel mezi vektory</td></tr>
+</table>
+<p>Co z toho plyne pro PCA:</p>
+<ul>
+<li>\(\mathbf a^T\mathbf a = \lVert\mathbf a\rVert^2\) – podmínka \(\mathbf v^T\mathbf v = 1\) tedy znamená, že transformační vektor má délku 1;</li>
+<li>\(\mathbf a^T\mathbf b = 0\) ⇔ \(\cos\theta = 0\) ⇔ vektory jsou <b>kolmé</b> – tak se ověřuje kolmost os PC;</li>
+<li>je-li \(\lVert\mathbf v\rVert = 1\), je \(\mathbf x^T\mathbf v = \lVert\mathbf x\rVert\cos\theta\) přesně délka „stínu“ bodu na ose \(\mathbf v\) – tedy <b>projekce = komponentní skóre</b>.</li>
+</ul>
+<p><b>Maticově pro všechny objekty a všechny komponenty najednou.</b> Násobení matic je jen hromada skalárních součinů: prvek \(y_{ik}\) součinu \(\mathbf Y = \mathbf X\mathbf V\) je skalární součin \(i\)-tého <b>řádku</b> \(\mathbf X\) (objekt) a \(k\)-tého <b>sloupce</b> \(\mathbf V\) (transformační vektor):</p>
+\[ y_{ik} = \sum_{j=1}^{p} x_{ij}\,v_{jk} \]
+<p>Příklad z přednášky: objekt \(\mathbf x = (0{,}6;\ 1{,}4)\) a matice \(\mathbf V\) s otočením o 45°.</p>
+\[ \begin{pmatrix} 0{,}6 & 1{,}4 \end{pmatrix} \begin{pmatrix} 0{,}7071 & -0{,}7071\\ 0{,}7071 & 0{,}7071 \end{pmatrix} = \begin{pmatrix} y_1 & y_2 \end{pmatrix} \]
+<p>První sloupec:</p>
+\[ \begin{aligned} y_1 &= 0{,}6\cdot 0{,}7071 + 1{,}4\cdot 0{,}7071 \\ &= 0{,}424 + 0{,}990 = 1{,}414 \end{aligned} \]
+<p>Druhý sloupec:</p>
+\[ \begin{aligned} y_2 &= 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071 \\ &= -0{,}424 + 0{,}990 = 0{,}566 \end{aligned} \]
+<p><b>Most ke kovarianční matici.</b> Stejně se dá zapsat i kovarianční matice: když \(\mathbf X_c\) jsou centrovaná data (sloupec = příznak), pak</p>
+\[ \mathbf S = \frac{1}{n-1}\,\mathbf X_c^T\mathbf X_c \]
+<p>Každá kovariance \(s_{jk}\) je tedy (vydělený) skalární součin centrovaných sloupců \(j\) a \(k\). Korelace je pak kosinus úhlu mezi nimi: \(r_{jk} = \cos\theta_{jk}\). Stejný směr sloupců = korelace 1, kolmé sloupce = 0, opačné = −1.</p></div>
 <p>Představ si 2D mrak bodů (příznak 1 a příznak 2). PCA hledá novou soustavu souřadnic otočenou kolem počátku (data jsou centrovaná, takže počátek = centroid):</p>
 <ol>
 <li>Všechny body promítneme kolmo na zvolenou osu skrz počátek. Hodnoty projekcí = nové souřadnice objektů. Jejich rozptyl \(s_1\) říká, kolik variability tato osa zachycuje.</li>
 <li>Os lze zvolit nekonečně mnoho (nejednoznačnost) – <b>která je „nejlepší“?</b> PCA odpovídá: ta s <b>největším rozptylem projekcí</b>, \(\max(s_1, s_2, \dots)\). To je osa <b>PC1</b> – reprezentuje největší rozptyl v datech, ale ne celkový rozptyl.</li>
 <li><b>PC2</b> je kolmá na PC1 a zachycuje největší <b>zbývající</b> rozptyl. Kolmost znamená, že PC1 a PC2 jsou <b>nekorelované</b> – každá nese unikátní informaci.</li>
-<li>Takto pokračujeme; ve \(p\) rozměrech dostaneme \(p\) navzájem kolmých komponent.</li>
+<li>Takto pokračujeme; ve \(p\) rozměrech dostaneme \(p\) navzájem kolmých komponent. Víc jich být nemůže: v \(p\) rozměrech existuje nejvýš \(p\) navzájem kolmých směrů. Nových os je tedy vždy stejně jako původních příznaků.</li>
 </ol>
 <div data-demo="pca-rotace"></div>
 <figure class="wide"><div class="paper"><img src="figures/fig06_princip.png" alt="Data s osami PC1 a PC2 a stejná data v nových souřadnicích" loading="lazy"></div>
@@ -72,15 +104,72 @@
 <p>Skóre = skalární součin objektu s každým sloupcem:</p>
 \[ \begin{aligned} y_1 = \mathbf{x}\cdot\mathbf{v}_1 &= 0{,}6\cdot 0{,}7071 + 1{,}4\cdot 0{,}7071 \approx 1{,}4\\
 y_2 = \mathbf{x}\cdot\mathbf{v}_2 &= 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071 \approx 0{,}6 \end{aligned} \]
-<p>Nové souřadnice objektu jsou \((1{,}4;\ 0{,}6)\) – skalární součin = projekce na novou osu. Osy jsou otočené o 45°. Vektory tvoří <b>ortonormální bázi</b>:</p>
+<p>Nové souřadnice objektu jsou \((1{,}4;\ 0{,}6)\) – skalární součin = projekce na novou osu. Osy jsou otočené o 45°. Vektory tvoří <b>ortonormální bázi</b>, což se ověřuje opět skalárními součiny:</p>
 <div class="box definice" id="def-ortonormalni"><div class="box-t">Definice: ortonormální báze</div>
 <p><b>Ortonormální báze</b> \(p\)-rozměrného prostoru je soustava \(p\) vektorů, které jsou navzájem <b>kolmé</b> (ortogonální: skalární součin každé dvojice je 0) a mají <b>jednotkovou délku</b> (normované: \(\mathbf v^T\mathbf v = 1\)). Každý bod prostoru lze jednoznačně zapsat pomocí souřadnic v této bázi. Matice \(\mathbf V\), jejímiž sloupci jsou, splňuje \(\mathbf V^T\mathbf V = \mathbf I\) (ortogonální matice) a násobení jí je otočení (případně zrcadlení).</p>
 <p class="jinak">nová sada „pravítek“: navzájem kolmých a se stejnou délkou dílku jako původní. Proto se při přechodu do nich nic nezdeformuje, jen otočí.</p></div>
+<p>Ověření transformačních vektorů:</p>
 <ul>
 <li>\(\mathbf{v}_1\cdot\mathbf{v}_2 = 0\) → nová soustava je pravoúhlá (stejně jako původní);</li>
 <li>\(\mathbf{v}_1^T\mathbf{v}_1 = \mathbf{v}_2^T\mathbf{v}_2 = 1\) → vektory mají délku 1, takže se nezkreslí měřítko na osách (nic se neprotáhne ani nezkrátí).</li>
 </ul>
 <p>Pro celou matici: \(\mathbf{P} = \mathbf{Z}\mathbf{V}\) (standardizovaná data × transformační vektory). Kovarianční matice nových proměnných v příkladu vyšla \(\begin{pmatrix} 1{,}0225 & 0\\ 0 & 0{,}5775\end{pmatrix}\): mimo diagonálu nuly → <b>komponenty jsou nekorelované</b>; na diagonále rozptyly PC (sestupně).</p></div>
+
+<h2 id="kov-kor">Kovarianční a korelační matice: vstup do PCA</h2>
+<p>PCA nepracuje přímo s tabulkou dat, ale s maticí, která shrnuje vztahy mezi příznaky „<b>každý s každým</b>“: s <b>kovarianční maticí</b> \(\mathbf S\), nebo s <b>korelační maticí</b> \(\mathbf R\). Obě jsou čtvercové \(p\times p\) a symetrické (definice viz <a href="02_vicerozmerne_rozdeleni.html#def-kovariancni-matice">kovarianční matice</a> a <a href="02_vicerozmerne_rozdeleni.html#def-korelacni-matice">korelační matice</a> v kapitole 2). Před výpočtem kovariance se příznaky vždy <b>centrují</b> – odečte se průměr.</p>
+<div class="box vzorec"><div class="box-t">Prvky matic S a R</div>
+<p>Kovariance (prvek \(\mathbf S\)):</p>
+\[ s_{ij} = \frac{1}{N-1}\sum_{n=1}^{N}\left[x_{n,i}-\mu_i\right]\left[x_{n,j}-\mu_j\right] \]
+<p>Korelace (prvek \(\mathbf R\)) = kovariance vydělená směrodatnými odchylkami obou příznaků:</p>
+\[ \rho_{ij} = \frac{s_{ij}}{\sqrt{s_{ii}\,s_{jj}}} \]
+<table class="vars">
+<tr><td>\(x_{n,i}\)</td><td>hodnota \(i\)-tého příznaku u \(n\)-tého objektu</td></tr>
+<tr><td>\(\mu_i\)</td><td>průměr \(i\)-tého příznaku; \(x_{n,i}-\mu_i\) je <b>centrování</b></td></tr>
+<tr><td>\(N\)</td><td>počet objektů (na slidu je jen součet bez \(\frac{1}{N-1}\); v korelaci se tento faktor stejně vykrátí)</td></tr>
+<tr><td>\(s_{ij}\)</td><td>kovariance příznaků \(i\) a \(j\); pro \(i = j\) je to rozptyl \(s_{ii}\)</td></tr>
+<tr><td>\(\sqrt{s_{ii}},\ \sqrt{s_{jj}}\)</td><td>směrodatná odchylka prvního a druhého příznaku – jimi kovarianci dělím</td></tr>
+<tr><td>\(\rho_{ij}\)</td><td>(Pearsonova) korelace příznaků \(i\) a \(j\), vždy mezi −1 a 1</td></tr>
+</table></div>
+<h3>Co z které matice vyčtu</h3>
+<div class="tablewrap"><table>
+<tr><th></th><th>kovarianční matice \(\mathbf S\)</th><th>korelační matice \(\mathbf R\)</th></tr>
+<tr><td>diagonála</td><td><b>rozptyly</b> příznaků – jak moc je každý příznak „rozházený“ (v jednotkách²)</td><td>samé <b>jedničky</b> (každý příznak koreluje sám se sebou 1)</td></tr>
+<tr><td>mimo diagonálu</td><td><b>kovariance</b>: znaménko říká směr vztahu (rostou spolu / proti sobě), velikost ale závisí na jednotkách</td><td><b>korelace</b>: směr i <b>síla</b> lineárního vztahu na škále −1 až 1, dají se přímo porovnávat</td></tr>
+<tr><td>součet diagonály (stopa)</td><td>celkový rozptyl dat</td><td>vždy \(p\) (počet příznaků)</td></tr>
+<tr><td>změna jednotek (např. g → mg)</td><td>matice se změní</td><td>matice zůstane stejná</td></tr>
+<tr><td>geometricky</td><td>velikost, protažení i natočení mraku bodů</td><td>tvar a natočení mraku po standardizaci (bez vlivu měřítka)</td></tr>
+</table></div>
+<div class="box intuice"><div class="box-t">Rozdíl jednou větou</div>
+<p><b>Korelační matice je kovarianční matice standardizovaných dat</b>, \(\mathbf R(\mathbf x) = \mathbf S(\mathbf z)\). Standardizace posune střed dat do [0; 0] a každému příznaku dá směrodatnou odchylku 1 – všechny příznaky pak mají „stejný hlas“. \(\mathbf S\) tedy říká „jak velké jsou rozdíly a jak spolu příznaky kolísají v původních jednotkách“, \(\mathbf R\) jen „jak těsně spolu příznaky souvisejí“.</p></div>
+<div class="box intuice"><div class="box-t">Jak to souvisí s PCA</div>
+<ul>
+<li>PCA hledá takové <b>otočení os</b>, po kterém má kovarianční matice nových proměnných mimo diagonálu <b>samé nuly</b> – komponenty jsou nekorelované (viz matice PC v příkladu výše). Říká se tomu diagonalizace matice.</li>
+<li><b>Vlastní vektory</b> \(\mathbf S\) (nebo \(\mathbf R\)) jsou směry nových os, <b>vlastní čísla</b> jsou čísla na nové diagonále – rozptyly komponent.</li>
+<li>Otočení nemění celkový rozptyl: \(\sum\lambda_j\) = stopa matice. U \(\mathbf S\) je to celkový rozptyl dat, u \(\mathbf R\) je to \(p\). Proto u \(\mathbf R\) platí <b>Kaiserovo kritérium</b> λ &gt; 1: komponenta musí nést víc než jeden standardizovaný příznak.</li>
+<li>Velké korelace mimo diagonálu \(\mathbf R\) = příznaky sdílejí informaci = PCA má co slučovat. Je-li \(\mathbf R = \mathbf I\), není co slučovat (Bartlettův test, viz níže).</li>
+<li>Která matice se použije, mění výsledek: <b>PCA na S a PCA na R dávají jiné komponenty</b>, ne jen jinak škálované.</li>
+</ul></div>
+<div class="box priklad"><div class="box-t">Příklad: stejná data, dvě matice</div>
+<p>Tep a teplota tří pacientů z <a href="02_vicerozmerne_rozdeleni.html#def-korelacni-matice">kapitoly 2</a>: rozptyl tepu 100, rozptyl teploty 0,12, kovariance 3.</p>
+<p>1. Kovarianční a korelační matice:</p>
+\[ \mathbf S = \begin{pmatrix} 100 & 3\\ 3 & 0{,}12 \end{pmatrix} \]
+\[ r = \frac{3}{\sqrt{100\cdot 0{,}12}} = 0{,}866 \]
+\[ \mathbf R = \begin{pmatrix} 1 & 0{,}866\\ 0{,}866 & 1 \end{pmatrix} \]
+<p>2. PCA na \(\mathbf S\) – charakteristická rovnice:</p>
+\[ \lambda^2 - 100{,}12\,\lambda + 3 = 0 \]
+\[ \begin{aligned} \lambda_1 &\approx 100{,}09, & \mathbf v_1 &\approx (1{,}00;\ 0{,}03) \\ \lambda_2 &\approx 0{,}03, & \mathbf v_2 &\approx (-0{,}03;\ 1{,}00) \end{aligned} \]
+<p>PC1 nese 99,97 % rozptylu a je to <b>prakticky jen tep</b> – teplota má v PC1 váhu 0,03. Ne proto, že by byla nedůležitá, ale protože se měří v číslech s malým rozptylem.</p>
+<p>3. PCA na \(\mathbf R\) – charakteristická rovnice:</p>
+\[ (1-\lambda)^2 - r^2 = 0 \]
+\[ \begin{aligned} \lambda_{1} &= 1 + r = 1{,}866, & \mathbf v_1 &= (0{,}7071;\ 0{,}7071) \\ \lambda_{2} &= 1 - r = 0{,}134, & \mathbf v_2 &= (-0{,}7071;\ 0{,}7071) \end{aligned} \]
+<p>PC1 nese 1,866/2 = 93 % rozptylu a bere <b>tep i teplotu stejnou vahou</b> – vystihuje to, že spolu silně souvisejí.</p>
+<p>Pointa: u dvou příznaků dá korelační matice vždy směry pod 45° (váhy 0,7071) a vlastní čísla \(1 \pm r\). Proto vyšly váhy 0,7071 i v příkladu z přednášky.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig06_s_vs_r.png" alt="Rozptyly příznaků dat o proteinech a zátěže PC1 z kovarianční a z korelační matice" loading="lazy"></div>
+<figcaption><b>Obr. 6.2</b> Data o spotřebě proteinů. Vlevo diagonála \(\mathbf S\) (rozptyly 9 příznaků), vpravo zátěže PC1, když PCA počítám z \(\mathbf S\) (modře) a z \(\mathbf R\) (oranžově).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Obiloviny mají rozptyl 125, vejce jen 1,2. PCA na \(\mathbf S\) proto udělá z PC1 skoro jen „obiloviny proti mléku“ (zátěže 0,87 a −0,42) a vejce téměř ignoruje (−0,07) – přestože vejce s obilovinami korelují −0,70. PCA na \(\mathbf R\) dá všem příznakům stejnou výchozí váhu, a PC1 tak zachytí skutečný vzor „rostlinné vs. živočišné bílkoviny“. Že PC1 z \(\mathbf S\) „vysvětluje“ 72 % a z \(\mathbf R\) jen 44 %, neznamená, že je lepší: z velké části jen kopíruje příznak s největšími čísly.</p></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Kovarianční matice má na diagonále rozptyly příznaků a mimo ni kovariance, obojí v původních jednotkách. Korelační matice je kovarianční matice standardizovaných dat: na diagonále jedničky, mimo ni korelace od −1 do 1. PCA hledá vlastní vektory jedné z nich – to jsou směry komponent – a vlastní čísla – to jsou jejich rozptyly. Když mají příznaky různé jednotky nebo rozptyly, použiju korelační matici, jinak by PC1 jen kopírovala příznak s největšími čísly.“</p></div>
 
 <h2 id="vypocet">Matematika: vlastní čísla a vlastní vektory</h2>
 <p>Jak najít směry s maximálním rozptylem bez zkoušení všech úhlů? Pro centrovaná data platí klíčová věta:</p>
@@ -127,20 +216,25 @@ y_2 = \mathbf{x}\cdot\mathbf{v}_2 &= 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <tr><td><b>vlastní čísla</b></td><td>rozptyly komponent</td><td>volba počtu komponent, % vysvětleného rozptylu</td></tr>
 </table></div>
 <p>Pozn.: v grafech se zátěže často kreslí přenásobené \(\sqrt{\lambda}\) – pak jsou to přímo <b>korelace příznaku s komponentou</b> (a leží uvnitř jednotkové kružnice).</p>
+<div class="box pozor"><div class="box-t">Zátěž ≠ přímo korelace</div>
+<p>Prvek vlastního vektoru je korelaci jen <b>úměrný</b> – podle něj lze příznaky v jedné komponentě porovnat. Samotná korelace příznaku s komponentou (u PCA na \(\mathbf R\)) je až po přenásobení \(\sqrt{\lambda_k}\).</p>
+<p>Příklad: červené maso má v PC1 zátěž −0,305 a \(\lambda_1 = 3{,}97\).</p>
+\[ r = -0{,}305\cdot\sqrt{3{,}97} \approx -0{,}61 \]</div>
 
 <h2 id="predpoklady">Předpoklady a volba S vs. R</h2>
 <p>PCA vychází z kovarianční matice \(\mathbf{S}\) (vyžaduje <b>centrování</b> příznaků) nebo z korelační matice \(\mathbf{R}\). Korelační matice původních dat = kovarianční matice standardizovaných dat:</p>
 \[ \mathbf{R}(\mathbf{x}) = \mathbf{S}(\mathbf{z}),\qquad \mathbf{z} = \frac{\mathbf{x}-\boldsymbol\mu}{\sigma} \]
 <div class="box pozor"><div class="box-t">Kdy použít korelační matici</div>
 <p>Když mají příznaky <b>nehomogenní rozptyl</b> nebo <b>nesrovnatelné měřítko</b> (jednotky). Jinak PC1 jen „najde“ proměnnou s největšími čísly: koncentrace v tisících by přebila teplotu ve stupních, ne protože je důležitější, ale protože má větší rozptyl v absolutních číslech.</p></div>
+<p>Co z které matice vyčtu a jak se výsledky PCA na \(\mathbf S\) a \(\mathbf R\) liší, ukazuje sekce <a href="#kov-kor">Kovarianční a korelační matice</a>.</p>
 <p>Předpoklady (protože PCA pracuje s \(\mathbf{S}\) a \(\mathbf{R}\)):</p>
 <ul>
 <li>vícerozměrná normalita (ideálně);</li>
 <li><b>lineární</b> korelace mezi příznaky (PCA vidí jen lineární vztahy);</li>
 <li>relativně homogenní rozptyly (homoskedasticita);</li>
 <li>nepřítomnost odlehlých hodnot (pokud nejsou hlavním zájmem) – rozptyl je na ně citlivý;</li>
-<li>nepřítomnost skupin v datech (pokud nejsou hlavním zájmem);</li>
-<li>více objektů než příznaků (\(N \gg p\));</li>
+<li>nepřítomnost skupin v datech (pokud nejsou hlavním zájmem) – když skupiny nebo odlehlé objekty naopak hledám, v datech je nechám;</li>
+<li>více objektů než příznaků (\(N \gg p\)) – jinak je problém s výpočtem: při \(N \le p\) je \(\mathbf S\) singulární (hodnost nejvýš \(N-1\)), část vlastních čísel je nulová a odhady směrů jsou nestabilní;</li>
 <li>PC jsou umělé → nemusí dávat věcný smysl.</li>
 </ul>
 <h3>Kdy má PCA smysl: Bartlettův test sféricity</h3>
@@ -158,7 +252,7 @@ y_2 = \mathbf{x}\cdot\mathbf{v}_2 &= 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p><b>Scree plot</b> (graf úpatí, sutě) je graf vlastních čísel seřazených sestupně proti pořadí komponenty; počet komponent se volí v místě zlomu, za kterým křivka už jen pozvolna klesá. <b>Kaiserovo kritérium</b> ponechá ty komponenty, jejichž vlastní číslo je větší než 1 (pro PCA na korelační matici).</p>
 <p class="jinak">scree = „suť pod skalou“: strmá skála jsou důležité komponenty, plochá suť pod ní šum. Kaiser: komponenta musí nést víc rozptylu než jeden průměrný původní příznak, jinak se nevyplatí.</p></div>
 <ol>
-<li><b>Test rovnosti zbývajících vlastních čísel</b> – jsou-li zbylá vlastní čísla stejná, jejich vektory nejsou určeny jednoznačně (v těch směrech je data „kulatá“, jen šum) a nemá smysl je používat. Statistika má rozdělení χ².</li>
+<li><b>Test rovnosti zbývajících vlastních čísel</b> – jsou-li zbylá vlastní čísla stejná, jejich vektory nejsou určeny jednoznačně (v těch směrech je data „kulatá“, jen šum) a nemá smysl je používat. Statistika má rozdělení χ². V praxi se téměř nepoužívá.</li>
 <li><b>Scree plot</b> (graf úpatí) – vlastní čísla seřazená sestupně; \(K\) = pořadí posledního „velkého“ vlastního čísla před zlomem. Jednoduché, názorné, ale subjektivní.</li>
 <li><b>Kumulativní vysvětlený rozptyl</b> – \(\frac{\lambda_1 + \dots + \lambda_K}{\sum_{j=1}^{p}\lambda_j}\cdot 100\,\%\); obvykle \(K\) pro 75–85 %. Čím větší \(K\) potřebujeme, tím méně je PCA užitečná.</li>
 <li><b>Kaiserovo kritérium</b> (pro PCA na korelační matici): \(K\) = počet vlastních čísel <b>větších než 1</b>.</li>
@@ -166,7 +260,7 @@ y_2 = \mathbf{x}\cdot\mathbf{v}_2 &= 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <div class="box intuice"><div class="box-t">Proč zrovna λ &gt; 1 (Kaiser)</div>
 <p>Po standardizaci má každý původní příznak rozptyl 1; součet všech vlastních čísel je \(p\) (= 100 % rozptylu). Vlastní číslo je rozptyl komponenty. Komponenta s \(\lambda &lt; 1\) tedy nese <b>méně informace než kterýkoli jednotlivý původní příznak</b> – nemá smysl ji ponechat místo něj.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig06_scree.png" alt="Scree plot a kumulativní vysvětlený rozptyl pro data spotřeby proteinů" loading="lazy"></div>
-<figcaption><b>Obr. 6.2</b> Data o spotřebě proteinů z přednášky (25 zemí, 9 skupin potravin, PCA na korelační matici).</figcaption></figure>
+<figcaption><b>Obr. 6.3</b> Data o spotřebě proteinů z přednášky (25 zemí, 9 skupin potravin, PCA na korelační matici).</figcaption></figure>
 <div class="tablewrap"><table>
 <tr><th>PC</th><th class="num">1</th><th class="num">2</th><th class="num">3</th><th class="num">4</th><th class="num">5</th><th class="num">6</th><th class="num">7</th><th class="num">8</th><th class="num">9</th></tr>
 <tr><td>vlastní číslo</td><td class="num">3,97</td><td class="num">1,64</td><td class="num">1,14</td><td class="num">0,96</td><td class="num">0,47</td><td class="num">0,32</td><td class="num">0,28</td><td class="num">0,12</td><td class="num">0,10</td></tr>
@@ -196,7 +290,7 @@ y_2 = \mathbf{x}\cdot\mathbf{v}_2 &= 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <li><b>PC2</b> (18 %): kladně ryby, ovoce a zelenina, škrob → osa „<b>středomořská / rybí strava</b>“.</li>
 </ul>
 <figure><div class="paper"><img src="figures/fig06_zateze.png" alt="Graf komponentních zátěží PC1 a PC2" loading="lazy" style="max-width:520px"></div>
-<figcaption><b>Obr. 6.3</b> Graf komponentních zátěží: každý příznak je šipka se souřadnicemi = korelace s PC1 a PC2.</figcaption></figure>
+<figcaption><b>Obr. 6.4</b> Graf komponentních zátěží: každý příznak je šipka se souřadnicemi = korelace s PC1 a PC2.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Jak číst graf zátěží</div>
 <ul>
 <li><b>Délka šipky</b>: čím blíž jednotkové kružnici, tím víc rozptylu příznaku popisují PC1+PC2. Příznaky blízko počátku jsou v těchto komponentách málo důležité.</li>
@@ -208,13 +302,14 @@ y_2 = \mathbf{x}\cdot\mathbf{v}_2 &= 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <p><b>Biplot</b> je graf, který v jedné soustavě souřadnic (typicky PC1 × PC2) současně zobrazuje <b>objekty</b> jako body (jejich komponentní skóre) a <b>proměnné</b> jako šipky (jejich zátěže).</p>
 <p class="jinak">„mapa“ objektů s „kompasem“ proměnných. Z polohy bodu vůči šipkám lze vyčíst, čím se objekt vyznačuje – leží-li ve směru šipky „obiloviny“, má vysokou spotřebu obilovin.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig06_biplot.png" alt="Biplot států a potravin s barvami podle k-means" loading="lazy"></div>
-<figcaption><b>Obr. 6.4</b> Biplot: komponentní skóre (normovaná, státy) a zátěže (šipky) v jednom grafu. Barvy: k-means (K = 3) na PC1 a PC2.</figcaption></figure>
+<figcaption><b>Obr. 6.5</b> Biplot: komponentní skóre (normovaná, státy) a zátěže (šipky) v jednom grafu. Barvy: k-means (K = 3) na PC1 a PC2.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Jak číst biplot</div>
 <ul>
 <li>Objekty <b>blízko sebe</b> mají podobný profil (podobná strava) – shluky států: západ a sever (maso, mléko), Balkán (obiloviny, ořechy), Pyrenejský poloostrov (ryby).</li>
 <li>Objekt <b>ve směru šipky</b> „obsahuje“ hodně daného příznaku – Albánie, Bulharsko, Jugoslávie leží ve směru obilovin; Portugalsko ve směru ryb.</li>
 <li>Objekty <b>daleko od počátku</b> jsou extrémní – Portugalsko a Španělsko. Pozor: osamělé objekty <b>nemusí být odlehlé</b> (chybné), mohou být jen jiné.</li>
 <li>Interakce příznaků a objektů vysvětluje umístění objektů vpravo/vlevo (PC1) a nahoře/dole (PC2).</li>
+<li>Biplot je silný nástroj na hledání <b>skrytých vazeb</b>: vidím je ve 2D, a přitom jsou v něm započítané všechny původní příznaky.</li>
 </ul></div>
 
 <h3>Redukce dimenze v praxi: výběr příznaků vs. komponenty</h3>
@@ -238,12 +333,12 @@ y_2 = \mathbf{x}\cdot\mathbf{v}_2 &= 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 
 <h2 id="limity">Limity PCA</h2>
 <figure class="wide"><div class="paper"><img src="figures/fig06_limitace.png" alt="Dvě třídy oddělené ve směru PC2, ne PC1" loading="lazy"></div>
-<figcaption><b>Obr. 6.5</b> Největší rozptyl ≠ nejlepší rozlišení tříd.</figcaption></figure>
+<figcaption><b>Obr. 6.6</b> Největší rozptyl ≠ nejlepší rozlišení tříd.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>PCA <b>nezná třídy</b> (je bez učitele) – maximalizuje rozptyl, ne oddělení skupin. Nemáme zaručeno, že nejvýznamnější komponenta nejvíc přispěje k rozlišení tříd. Tady PC1 (drtivá většina rozptylu) třídy vůbec nerozliší a dokonale je odděluje „nevýznamná“ PC2. Kdybychom slepě ponechali jen PC1, informaci o třídách zahodíme.</p></div>
 <ul>
 <li><b>Jen lineární vztahy</b> – nelineární struktury (kruhy, zakřivené plochy) PCA nezachytí → <a href="07_kernel_pca.html">kernel PCA</a>, <a href="10_tsne.html">t-SNE</a>, <a href="11_umap.html">UMAP</a>.</li>
-<li><b>Kategoriální data</b> – technicky to jde (one-hot), ale interpretace přes rozptyl má sporný smysl.</li>
+<li><b>Kategoriální data</b> – technicky to jde (one-hot), ale interpretace přes rozptyl má sporný smysl. V praxi se kategoriální příznaky z PCA vyčlení a zpracují jinými metodami.</li>
 <li>Citlivost na <b>odlehlé hodnoty</b> a na <b>měřítko</b> (→ standardizace / korelační matice).</li>
 <li>Komponenty jsou <b>umělé</b> a nemusí mít věcný význam.</li>
 <li>Implementace: popsaný spektrální rozklad (ED); výpočetně efektivnější a stabilnější je <b>SVD</b> (<a href="08_maticove_rozklady.html">přednáška 8</a>), výsledky jsou podobné.</li>
@@ -251,12 +346,13 @@ y_2 = \mathbf{x}\cdot\mathbf{v}_2 &= 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 
 <section class="souhrn" id="shrnuti">
 <h2 id="shrnuti-h">Shrnutí</h2>
-<p>PCA je lineární transformace původních příznaků na nové nekorelované proměnné – <b>hlavní komponenty</b>. Geometricky otočí osy kolem centroidu: PC1 míří ve směru největšího rozptylu, PC2 je k ní kolmá a nese největší zbývající rozptyl atd. Matematicky jsou směry <b>vlastní vektory</b> kovarianční (korelační) matice a jejich rozptyly <b>vlastní čísla</b>. Komponenty se řadí podle klesajícího rozptylu; většina informace je v prvních, nejméně v posledních. Redukce dimenze = ponechat prvních \(K\) komponent (scree plot, 75–85 % rozptylu, Kaiser λ &gt; 1). <b>Zátěže</b> říkají, jak příznaky tvoří komponenty (a umožní interpretaci), <b>skóre</b> jsou nové souřadnice objektů. Biplot obojí spojuje. Při různých jednotkách se používá korelační matice. PCA vidí jen lineární vztahy, je citlivá na odlehlé hodnoty a maximalizuje rozptyl, ne oddělení tříd.</p>
+<p>PCA je lineární transformace původních příznaků na nové nekorelované proměnné – <b>hlavní komponenty</b>. Geometricky otočí osy kolem centroidu: PC1 míří ve směru největšího rozptylu, PC2 je k ní kolmá a nese největší zbývající rozptyl atd. Matematicky jsou směry <b>vlastní vektory</b> kovarianční (korelační) matice a jejich rozptyly <b>vlastní čísla</b>. Komponenty se řadí podle klesajícího rozptylu; většina informace je v prvních, nejméně v posledních. Redukce dimenze = ponechat prvních \(K\) komponent (scree plot, 75–85 % rozptylu, Kaiser λ &gt; 1). <b>Zátěže</b> říkají, jak příznaky tvoří komponenty (a umožní interpretaci), <b>skóre</b> jsou nové souřadnice objektů. Biplot obojí spojuje. Kovarianční matice nese rozptyly a kovariance v původních jednotkách; korelační matice je kovarianční matice standardizovaných dat (jedničky na diagonále, korelace mimo ni). Při různých jednotkách se používá korelační matice, protože PCA na kovarianční matici by jen kopírovala příznak s největším rozptylem. PCA vidí jen lineární vztahy, je citlivá na odlehlé hodnoty a maximalizuje rozptyl, ne oddělení tříd.</p>
 <div class="takehome"><h3>Take-home messages</h3><ol>
 <li>PCA = otočení os do směru největšího rozptylu; nic víc, nic míň.</li>
 <li>Vlastní vektor = směr komponenty (zátěže); vlastní číslo = její rozptyl (důležitost).</li>
 <li>Komponenty jsou navzájem nekorelované a seřazené podle vysvětleného rozptylu.</li>
 <li>Různé jednotky → korelační matice (= PCA na standardizovaných datech).</li>
+<li>S = rozptyly a kovariance v jednotkách, R = korelace bez jednotek; PCA = otočení, po kterém je S (R) diagonální.</li>
 <li>Počet PC: scree plot, 75–85 % rozptylu, Kaiser λ &gt; 1 – kombinovat.</li>
 <li>PCA má smysl jen pro korelované příznaky (Bartlettův test).</li>
 <li>Největší rozptyl ≠ nejlepší rozlišení tříd; PCA je lineární a nezná labely.</li>
@@ -274,7 +370,8 @@ y_2 = \mathbf{x}\cdot\mathbf{v}_2 &= 0{,}6\cdot(-0{,}7071) + 1{,}4\cdot 0{,}7071
 <details class="q"><summary>Jak určíte počet hlavních komponent?</summary><div>
 <p>Podle vlastních čísel: scree plot (zlom), kumulativní vysvětlený rozptyl (typicky 75–85 %), Kaiserovo kritérium pro korelační matici (λ &gt; 1, protože komponenta s menším rozptylem nese méně informace než jeden standardizovaný příznak), případně test rovnosti zbývajících vlastních čísel. Kritéria kombinuji. Příklad proteiny: λ = 3,97; 1,64; 1,14 → K = 3, 75 % rozptylu.</p></div></details>
 <details class="q"><summary>Kdy použít kovarianční a kdy korelační matici?</summary><div>
-<p>Kovarianční, když jsou příznaky ve stejných jednotkách a srovnatelném rozsahu a absolutní rozptyl má význam. Korelační (= PCA na standardizovaných datech), když mají příznaky různé jednotky nebo velmi rozdílné rozptyly – jinak by PC1 jen kopírovala proměnnou s největšími čísly.</p></div></details>
+<p>Kovarianční, když jsou příznaky ve stejných jednotkách a srovnatelném rozsahu a absolutní rozptyl má význam. Korelační (= PCA na standardizovaných datech), když mají příznaky různé jednotky nebo velmi rozdílné rozptyly – jinak by PC1 jen kopírovala proměnnou s největšími čísly.</p>
+<p>Co z nich vyčtu: kovarianční matice má na diagonále rozptyly příznaků a mimo ni kovariance (směr vztahu, velikost závisí na jednotkách); součet diagonály je celkový rozptyl. Korelační matice má na diagonále jedničky a mimo ni korelace −1 až 1 (směr i síla vztahu, srovnatelné mezi dvojicemi); součet diagonály je \(p\). Do PCA vstupují tak, že vlastní vektory zvolené matice jsou směry komponent a vlastní čísla jejich rozptyly. Proto u korelační matice platí Kaiserovo kritérium λ &gt; 1.</p></div></details>
 <details class="q"><summary>Jaké má PCA předpoklady a limity?</summary><div>
 <p>Předpoklady: lineární korelace mezi příznaky (jinak nemá co redukovat – Bartlettův test), ideálně vícerozměrná normalita, homogenní rozptyly, žádné odlehlé hodnoty a skupiny (pokud nejsou cílem), N ≫ p. Limity: zachytí jen lineární vztahy; maximalizuje rozptyl, ne oddělení tříd (třídy může oddělovat až „malá“ komponenta); citlivá na odlehlé hodnoty a měřítko; komponenty jsou umělé a nemusí mít význam; u kategoriálních dat je interpretace sporná.</p></div></details>
 <details class="q"><summary>Jak interpretovat graf zátěží a biplot?</summary><div>
