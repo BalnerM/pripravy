@@ -10,19 +10,27 @@ Pro nový předmět se mění jen KONFIGURACE (nahoře), engine pod ní je spole
 # =====================================================================================================================
 LANG = "cs"                                   # jazyk skript: "cs" nebo "en" (texty rozhraní, <html lang>)
 SHORT = "SAD"                                 # zkratka předmětu (titulky stránek)
-BRAND = "SAD – příprava na test"              # název v horní liště a tiskové hlavičce (en: "XYZ – exam notes")
-BRAND_SUB = "obvody, filtry, operační zesilovače"
+BRAND = "SAD – test a zkouška"               # název v horní liště a tiskové hlavičce (en: "XYZ – exam notes")
+BRAND_SUB = "základy obvodů a přednášky 1–10"
 GLOSSARY = "99_slovnik"                       # stránka slovníku generovaná z rámečků definic (None = bez slovníku)
 
 # (soubor fragmentu bez .html, číslo přednášky / značka, název, krátký popis)
-# Stránky s číselným „číslem“ jsou kapitoly přednášek – musí mít definice, #shrnuti, take-home a #otazky.
+# Stránky s „číslem“ ve tvaru 1, Z1 nebo P1 jsou kapitoly – musí mít definice, #shrnuti, take-home a #otazky.
+# Skripta mají dvě části (PARTS = písmeno štítku → nadpis v záhlaví kapitoly):
+#   Z1–Z4  = základy (soubory 01–05, vznikly bez přednášek; adresy a id se nemění),
+#   P1–P10 = kapitoly přednášek MPC_SAD_01–10, soubory 11_…–20_… (P4 = 14_oz_zapojeni, P5 = 15_aktivni_filtry),
+#            tahák ke zkoušce 29_tahak_zkouska. Pojem vysvětlený v základech se v přednášce znovu nedefinuje:
+#            kapitola odkáže na jeho rámeček (např. 03_oz.html#def-…) a jde dál podle slidů. Nová stránka se
+#            do PAGES přidává až hotová (build kontroluje povinné sekce); zároveň se v obsah/index.html
+#            v tabulce #prednasky nahradí „připravuje se“ odkazem a přidá se karta kapitoly.
+PARTS = {"Z": "Základy", "P": "Přednáška"}
 PAGES = [
     ("index", "", "Mapa kurzu", "Jak skripta používat a jak spolu témata souvisí."),
-    ("01_obvody", "1", "Ohmův zákon, Kirchhoff, dělič napětí", "Základní zákony obvodů a jak s nimi počítat."),
-    ("02_filtry", "2", "Analogové RC filtry", "Dolní, horní a pásmová propust, zádrž; mezní frekvence a Bodeho graf."),
-    ("03_oz", "3", "Operační zesilovače", "Invertující, neinvertující, rozdílové a přístrojové zapojení; CMRR."),
-    ("04_dalsi_zapojeni", "4", "Sledovač, integrátor, derivátor", "Princip a schéma dalších zapojení s OZ."),
-    ("05_tahak", "★", "Tahák: vzorce a schémata", "Všechny vzorce na jedné stránce a typické chytáky."),
+    ("01_obvody", "Z1", "Ohmův zákon, Kirchhoff, dělič napětí", "Základní zákony obvodů a jak s nimi počítat."),
+    ("02_filtry", "Z2", "Analogové RC filtry", "Dolní, horní a pásmová propust, zádrž; mezní frekvence a Bodeho graf."),
+    ("03_oz", "Z3", "Operační zesilovače", "Invertující, neinvertující, rozdílové a přístrojové zapojení; CMRR."),
+    ("04_dalsi_zapojeni", "Z4", "Sledovač, integrátor, derivátor", "Princip a schéma dalších zapojení s OZ."),
+    ("05_tahak", "★", "Tahák: základy", "Vzorce a schémata základů na jedné stránce a typické chytáky."),
     ("99_slovnik", "Aa", "Slovník pojmů (definice)", "Všechny definice ze skript na jednom místě."),
 ]
 
@@ -97,6 +105,18 @@ def make_sites():
     return sites
 
 
+def is_chapter(num):
+    """Kapitola = číslo, případně s písmenem části (Z1, P3)."""
+    return bool(re.fullmatch(r"[A-Z]?\d+", num))
+
+
+def kicker_html(T, num):
+    if not is_chapter(num):
+        return ""
+    label = f"{PARTS[num[0]]} {num[1:]}" if num[0] in PARTS else f'{T["lecture"]} {num}'
+    return f'<p class="kicker">{label}</p>'
+
+
 SITES = make_sites()
 
 
@@ -108,7 +128,7 @@ def make_glossary(s):
     parts = [f'<h1>{T["gl_title"]}</h1>', f'<p class="lead">{T["gl_lead"]}</p>']
     count = 0
     for slug, num, title, _ in s["pages"]:
-        if not num.isdigit():
+        if not is_chapter(num):
             continue
         body = (s["src"] / f"{slug}.html").read_text(encoding="utf-8")
         defs = DEF_RE.findall(body)
@@ -214,7 +234,7 @@ def make_all(s, bodies, nav):
         body = body.replace('href="#', f'href="#{p}-').replace("url(#", f"url(#{p}-")
         body = link_re.sub(lambda m: f'href="#{pref(m.group(1))}' + (f'-{m.group(2)}' if m.group(2) else "") + '"',
                            body)
-        kicker = f'<p class="kicker">{T["lecture"]} {num}</p>' if num.isdigit() else ""
+        kicker = kicker_html(T, num)
         parts.append(f'<section class="kapitola" id="{p}">\n{kicker}\n{body}\n</section>')
     page_title = f'{T["all_title"]} – {SHORT}'
     pdfbtn, printhead = chrome(s, ALL, page_title)
@@ -255,7 +275,7 @@ def build_site(s):
         if nxt:
             pager += f'<a class="next" href="{nxt[0]}.html"><small>{T["next"]}</small>{nxt[2]}</a>'
         pager += "</nav>"
-        kicker = f'<p class="kicker">{T["lecture"]} {num}</p>' if num.isdigit() else ""
+        kicker = kicker_html(T, num)
         page_title = f"{title} – {SHORT}" if slug != "index" else s["brand"]
         pdfbtn, printhead = chrome(s, slug, page_title)
         out = render(s, slug, title=page_title, desc=html.escape(desc), nav=nav, toc=toc, pdfbtn=pdfbtn,
@@ -272,7 +292,7 @@ def build_site(s):
 
 def check_site(s, built, errors):
     """Obrázky, odkazy a kotvy, povinné sekce kapitol, formát definic a duplicitní id."""
-    lectures = {x for x, n, *_ in s["pages"] if n.isdigit()}
+    lectures = {x for x, n, *_ in s["pages"] if is_chapter(n)}
     tag = f'{s["lang"]}/' if s["up"] else ""
     ids = {x: set(re.findall(r'id="([^"]+)"', h)) for x, h in built.items()}
     for slug, h in built.items():

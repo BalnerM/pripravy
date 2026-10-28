@@ -15,7 +15,7 @@
 <body>
 <header class="topbar">
   <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
-  <a class="brand" href="index.html">SAD – příprava na test<small>obvody, filtry, operační zesilovače</small></a>
+  <a class="brand" href="index.html">SAD – test a zkouška<small>základy obvodů a přednášky 1–10</small></a>
   <span class="spacer"></span>
   <a class="iconbtn back" href="../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
   
@@ -27,29 +27,83 @@
   <h4>Kapitoly</h4>
   <ol>
     <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
-    <li><a href="01_obvody.html"><span class="n">1</span><span>Ohmův zákon, Kirchhoff, dělič napětí</span></a></li>
-    <li><a href="02_filtry.html"><span class="n">2</span><span>Analogové RC filtry</span></a></li>
-    <li><a href="03_oz.html"><span class="n">3</span><span>Operační zesilovače</span></a></li>
-    <li><a href="04_dalsi_zapojeni.html"><span class="n">4</span><span>Sledovač, integrátor, derivátor</span></a></li>
-    <li><a href="05_tahak.html"><span class="n">★</span><span>Tahák: vzorce a schémata</span></a></li>
+    <li><a href="01_obvody.html"><span class="n">Z1</span><span>Ohmův zákon, Kirchhoff, dělič napětí</span></a></li>
+    <li><a href="02_filtry.html"><span class="n">Z2</span><span>Analogové RC filtry</span></a></li>
+    <li><a href="03_oz.html"><span class="n">Z3</span><span>Operační zesilovače</span></a></li>
+    <li><a href="04_dalsi_zapojeni.html"><span class="n">Z4</span><span>Sledovač, integrátor, derivátor</span></a></li>
+    <li><a href="05_tahak.html"><span class="n">★</span><span>Tahák: základy</span></a></li>
     <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
   </ol>
 
 </nav>
 <main>
-<p class="printhead">SAD – příprava na test · Celá skripta – SAD · https://balnerm.github.io/pripravy/sad/skripta_vse.html</p>
+<p class="printhead">SAD – test a zkouška · Celá skripta – SAD · https://balnerm.github.io/pripravy/sad/skripta_vse.html</p>
 
 <section class="kapitola" id="k00">
 
-<h1>SAD – příprava na půlsemestrální test</h1>
-<p class="lead">Skripta k předmětu <b>Měření a zpracování biosignálů</b> pokrývají elektrotechnický základ: zákony obvodů a dělič napětí, analogové RC filtry a operační zesilovače. Důraz je na <b>pochopení principu</b> (proč zapojení funguje, co v něm dělá která součástka) a na <b>výpočty</b>, které se objevují v testu – každý vzorec má řešený příklad krok za krokem.</p>
+<h1>SAD – příprava na test a zkoušku</h1>
+<p class="lead">Skripta k předmětu <b>Měření a zpracování biosignálů</b> mají dvě části. <b>Základy</b> vysvětlují elektrotechniku, bez které se přednášky nedají pochopit: zákony obvodů a dělič napětí, analogové RC filtry a operační zesilovače. <b>Přednášky</b> pak po jedné kapitole procházejí látku předmětu – od signálu přes jeho úpravu, napájení a reference až po komparátor, A/D a D/A převodníky a multiplexaci. Důraz je na <b>pochopení principu</b> a na <b>výpočty</b>; každý vzorec má řešený příklad krok za krokem.</p>
 
-<h2 id="k00-mapa">Jak spolu témata souvisí</h2>
+<h2 id="k00-casti">Dvě části skript a co patří ke které zkoušce</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Část</th><th>Obsah</th><th>K čemu</th></tr></thead>
+<tbody>
+<tr><td><b>Základy</b> (Z1–Z4)</td><td>Ohm, Kirchhoff, dělič; RC filtry; zapojení s OZ; sledovač, integrátor, derivátor</td><td>předpoklad pro všechno ostatní – test i zkouška</td></tr>
+<tr><td><b>Přednášky 1–8</b> (P1–P8) + 2 další</td><td>látka přednášek předmětu</td><td>půlsemestrální test</td></tr>
+<tr><td><b>Přednášky 1–10</b> (P1–P10)</td><td>celý semestr, opírá se o základy</td><td>závěrečná zkouška</td></tr>
+</tbody></table></div>
+<p>Kapitoly přednášek pojmy ze základů znovu nevysvětlují – odkazují na ně. Když v přednášce narazíš na dělič, mezní frekvenci nebo zesílení invertujícího zesilovače a nejsi si jistý, klikni na odkaz a vrať se.</p>
+
+<h2 id="k00-retezec">Měřicí řetězec: kde je která přednáška</h2>
+<div class="schema">
+<svg viewBox="0 0 760 220" role="img" aria-label="Měřicí řetězec: senzor a signál (P1), úprava signálu zesílením a filtrací (P2, P4, P5), multiplexace (P8), A/D převodník (P7) a číslicové zpracování; napájení a reference (P3) napájí zesilovače i převodník, komparátor (P6) je stavební blok převodníku">
+  <defs><marker id="k00-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="10" y="20" width="130" height="64" rx="8" class="node fl1"/>
+  <text x="75" y="46" text-anchor="middle">senzor, signál</text><text x="75" y="66" text-anchor="middle" class="t2">P1</text>
+  <rect x="162" y="20" width="130" height="64" rx="8" class="node fl2"/>
+  <text x="227" y="46" text-anchor="middle">úprava signálu</text><text x="227" y="66" text-anchor="middle" class="t2">P2, P4, P5</text>
+  <rect x="314" y="20" width="130" height="64" rx="8" class="node fl2"/>
+  <text x="379" y="46" text-anchor="middle">multiplexace</text><text x="379" y="66" text-anchor="middle" class="t2">P8</text>
+  <rect x="466" y="20" width="130" height="64" rx="8" class="node fl3"/>
+  <text x="531" y="46" text-anchor="middle">A/D převodník</text><text x="531" y="66" text-anchor="middle" class="t2">P7</text>
+  <rect x="618" y="20" width="132" height="64" rx="8" class="node"/>
+  <text x="684" y="46" text-anchor="middle">číslicově</text><text x="684" y="66" text-anchor="middle" class="t2">zpět přes D/A (P7)</text>
+  <rect x="162" y="140" width="282" height="60" rx="8" class="node fl1"/>
+  <text x="303" y="166" text-anchor="middle">napájení a reference</text><text x="303" y="186" text-anchor="middle" class="t2">P3 – pro zesilovače i převodník</text>
+  <rect x="466" y="140" width="130" height="60" rx="8" class="node fl3"/>
+  <text x="531" y="166" text-anchor="middle">komparátor</text><text x="531" y="186" text-anchor="middle" class="t2">P6</text>
+  <path d="M140 52 H157" class="ln" marker-end="url(#k00-arr)"/>
+  <path d="M292 52 H309" class="ln" marker-end="url(#k00-arr)"/>
+  <path d="M444 52 H461" class="ln" marker-end="url(#k00-arr)"/>
+  <path d="M596 52 H613" class="ln" marker-end="url(#k00-arr)"/>
+  <path d="M227 140 V89" class="ln dash" marker-end="url(#k00-arr)"/>
+  <path d="M420 140 L500 89" class="ln dash" marker-end="url(#k00-arr)"/>
+  <path d="M531 140 V89" class="ln dash" marker-end="url(#k00-arr)"/>
+</svg></div>
+<p>Signál ze senzoru je slabý a zarušený, a tak se nejdřív <b>upraví</b> (zesílí, odfiltruje). Pak se jedním převodníkem postupně měří víc kanálů (<b>multiplexace</b>). <b>A/D převodník</b> ho převede na čísla – uvnitř pracuje s <b>komparátory</b> a porovnává signál s <b>referenčním napětím</b>. Celý řetězec potřebuje stabilní <b>napájení</b>.</p>
+
+<h2 id="k00-prednasky">Přednášky</h2>
+<p>Kapitoly přednášek přibývají postupně; dokud kapitola není hotová, uč se z příslušných kapitol základů.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Přednáška</th><th>Téma</th><th>Kapitola</th></tr></thead>
+<tbody>
+<tr><td>P1</td><td>Úvod, signál</td><td class="muted">připravuje se</td></tr>
+<tr><td>P2</td><td>Úprava signálu</td><td class="muted">připravuje se (základ: <a href="#k02">Z2</a>, <a href="#k03">Z3</a>)</td></tr>
+<tr><td>P3</td><td>Napájení a zdroje referenčního napětí</td><td class="muted">připravuje se</td></tr>
+<tr><td>P4</td><td>Aplikace OZ I – zapojení</td><td class="muted">připravuje se (základ: <a href="#k03">Z3</a>, <a href="#k04">Z4</a>)</td></tr>
+<tr><td>P5</td><td>Aplikace OZ II – aktivní filtry</td><td class="muted">připravuje se (základ: <a href="#k02">Z2</a>)</td></tr>
+<tr><td>P6</td><td>Komparátor</td><td class="muted">připravuje se</td></tr>
+<tr><td>P7</td><td>A/D a D/A převodníky</td><td class="muted">připravuje se</td></tr>
+<tr><td>P8</td><td>Multiplexace signálů</td><td class="muted">připravuje se</td></tr>
+<tr><td>P9, P10</td><td>další přednášky (ke zkoušce)</td><td class="muted">zatím nevyšly</td></tr>
+</tbody></table></div>
+
+<h2 id="k00-mapa">Základy: jak spolu témata souvisí</h2>
 <div class="schema">
 <svg viewBox="0 0 760 200" role="img" aria-label="Mapa kurzu: Ohmův a Kirchhoffovy zákony vedou k děliči napětí, z děliče vychází RC filtr a zpětná vazba operačního zesilovače">
   <defs><marker id="k00-arm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
   <rect x="10" y="70" width="150" height="60" rx="8" class="node fl1"/>
-  <text x="85" y="96" text-anchor="middle">Ohm + Kirchhoff</text><text x="85" y="116" text-anchor="middle" class="t2">kap. 1</text>
+  <text x="85" y="96" text-anchor="middle">Ohm + Kirchhoff</text><text x="85" y="116" text-anchor="middle" class="t2">Z1</text>
   <rect x="215" y="70" width="140" height="60" rx="8" class="node fl1"/>
   <text x="285" y="96" text-anchor="middle">dělič napětí</text><text x="285" y="116" text-anchor="middle" class="t2">nezatížený / zatížený</text>
   <rect x="420" y="10" width="160" height="60" rx="8" class="node fl2"/>
@@ -75,20 +129,20 @@
 <li><b>PDF na tablet:</b> tlačítko <span class="pill">PDF</span> v horní liště stáhne aktuální stránku; na této úvodní stránce stáhne <a href="pdf/skripta_vse.pdf" download>celá skripta v jednom PDF</a>.</li>
 </ul>
 
-<h2 id="k00-kapitoly">Kapitoly</h2>
+<h2 id="k00-kapitoly">Kapitoly základů</h2>
 <div class="cards">
-<a class="card" href="#k01"><div class="n">Kapitola 1</div><div class="t">Ohmův zákon, Kirchhoff, dělič napětí</div><div class="d">Výpočet obvodu Kirchhoffovými zákony, odvození nezatíženého a zatíženého děliče.</div></a>
-<a class="card" href="#k02"><div class="n">Kapitola 2</div><div class="t">Analogové RC filtry</div><div class="d">Dolní a horní propust (princip), pásmová propust a zádrž, mezní frekvence, kreslení Bodeho grafu.</div></a>
-<a class="card" href="#k03"><div class="n">Kapitola 3</div><div class="t">Operační zesilovače</div><div class="d">Invertující, neinvertující, rozdílový a přístrojový zesilovač, výpočet zesílení a CMRR.</div></a>
-<a class="card" href="#k04"><div class="n">Kapitola 4</div><div class="t">Sledovač, integrátor, derivátor</div><div class="d">Princip a schéma zapojení.</div></a>
-<a class="card" href="#k05"><div class="n">★ Opakování</div><div class="t">Tahák</div><div class="d">Všechny vzorce a schémata na jedné stránce, typické chytáky.</div></a>
+<a class="card" href="#k01"><div class="n">Základy Z1</div><div class="t">Ohmův zákon, Kirchhoff, dělič napětí</div><div class="d">Výpočet obvodu Kirchhoffovými zákony, odvození nezatíženého a zatíženého děliče.</div></a>
+<a class="card" href="#k02"><div class="n">Základy Z2</div><div class="t">Analogové RC filtry</div><div class="d">Dolní a horní propust (princip), pásmová propust a zádrž, mezní frekvence, kreslení Bodeho grafu.</div></a>
+<a class="card" href="#k03"><div class="n">Základy Z3</div><div class="t">Operační zesilovače</div><div class="d">Invertující, neinvertující, rozdílový a přístrojový zesilovač, výpočet zesílení a CMRR.</div></a>
+<a class="card" href="#k04"><div class="n">Základy Z4</div><div class="t">Sledovač, integrátor, derivátor</div><div class="d">Princip a schéma zapojení.</div></a>
+<a class="card" href="#k05"><div class="n">★ Opakování</div><div class="t">Tahák: základy</div><div class="d">Vzorce a schémata základů na jedné stránce, typické chytáky.</div></a>
 <a class="card" href="#k99"><div class="n">Opakování</div><div class="t">Slovník pojmů</div><div class="d">Všechny definice na jednom místě.</div></a>
 </div>
-<p class="muted">Skripta nevycházejí z přednášek předmětu (nebyly k dispozici), ale ze standardní elektrotechniky. Pokud přednášející používá jiné značení (např. \(K\) nebo \(P\) pro přenos, \(A_\text{cm}\) pro souhlasné zesílení), význam je stejný.</p>
+<p class="muted">Základy (Z1–Z4) nevycházejí z přednášek předmětu, ale ze standardní elektrotechniky; kapitoly přednášek (P1–P10) se drží slidů. Pokud přednášející používá jiné značení (např. \(K\) nebo \(P\) pro přenos, \(A_\text{cm}\) pro souhlasné zesílení), význam je stejný.</p>
 
 </section>
 <section class="kapitola" id="k01">
-<p class="kicker">Kapitola 1</p>
+<p class="kicker">Základy 1</p>
 <h1>Ohmův zákon, Kirchhoffovy zákony a dělič napětí</h1>
 <p class="lead">Každý měřicí řetězec pro biosignály (elektrody → zesilovač → filtr → převodník) je složený z obvodů. Tři pravidla – Ohmův zákon a dva Kirchhoffovy zákony – stačí na výpočet libovolného obvodu z rezistorů a zdrojů. Nejdůležitější aplikací je <b>dělič napětí</b>: je základem filtrů (kap. 2) i zpětné vazby operačních zesilovačů (kap. 3).</p>
 
@@ -368,7 +422,7 @@
 
 </section>
 <section class="kapitola" id="k02">
-<p class="kicker">Kapitola 2</p>
+<p class="kicker">Základy 2</p>
 <h1>Analogové RC filtry</h1>
 <p class="lead">Biosignál nikdy nepřichází čistý: EKG je zatížené driftem izolinie (pomalé pohyby, dýchání), síťovým brumem 50 Hz a vysokofrekvenčním šumem svalů. Filtr propustí jen frekvence, které nás zajímají. Nejjednodušší analogové filtry jsou <b>RC články</b> – a nejsou nic jiného než <b>dělič napětí</b> z kap. 1, ve kterém je jeden rezistor nahrazen kondenzátorem.</p>
 
@@ -709,7 +763,7 @@
 
 </section>
 <section class="kapitola" id="k03">
-<p class="kicker">Kapitola 3</p>
+<p class="kicker">Základy 3</p>
 <h1>Operační zesilovače</h1>
 <p class="lead">Biosignály jsou slabé – EKG má jednotky mV, EEG desítky µV – a přicházejí ze zdroje s velkým vnitřním odporem a s rušením, které je mnohonásobně větší než signál. Operační zesilovač (OZ) je univerzální stavební kámen, ze kterého se pár rezistory postaví zesilovač s přesně daným zesílením, velkým vstupním odporem a schopností potlačit rušení. Celá kapitola stojí na dvou jednoduchých pravidlech.</p>
 
@@ -1039,7 +1093,7 @@
 
 </section>
 <section class="kapitola" id="k04">
-<p class="kicker">Kapitola 4</p>
+<p class="kicker">Základy 4</p>
 <h1>Napěťový sledovač, integrátor a derivátor</h1>
 <p class="lead">Tři další zapojení s operačním zesilovačem, u kterých stačí znát <b>princip a schéma</b>. Sledovač nic nezesiluje, ale řeší problém zatěžování z kap. 1. Integrátor a derivátor vzniknou z invertujícího zesilovače, když jeden z rezistorů nahradíme kondenzátorem – a z frekvenčního pohledu jsou to aktivní dolní a horní propust z kap. 2.</p>
 
@@ -1307,112 +1361,112 @@
 
 <h1>Slovník pojmů</h1>
 <p class="lead">Všechny definice ze skript na jednom místě, seřazené podle kapitol. Hodí se na rychlé opakování: zakryj text, řekni definici nahlas a pak si ji zkontroluj. Odkaz „výklad“ vede k místu, kde je pojem vysvětlen podrobně.</p>
-<h2 id="k99-k1" class="slovnik-kap">1 · Ohmův zákon, Kirchhoff, dělič napětí</h2>
+<h2 id="k99-kZ1" class="slovnik-kap">Z1 · Ohmův zákon, Kirchhoff, dělič napětí</h2>
 <div class="box definice" id="k99-s-proud"><div class="box-t">elektrický proud</div>
 <p><b>Elektrický proud</b> \(I\) je množství elektrického náboje, které projde průřezem vodiče za jednotku času: \(I = Q/t\). Jednotkou je ampér (A).</p>
-<p class="jinak">kolik náboje „proteče“ vodičem za sekundu. Proud teče <b>skrz</b> součástku – co do ní vteče, to z ní vyteče.</p><p class="slovnik-odkaz"><a href="#k01-def-proud">výklad v kapitole 1 →</a></p></div>
+<p class="jinak">kolik náboje „proteče“ vodičem za sekundu. Proud teče <b>skrz</b> součástku – co do ní vteče, to z ní vyteče.</p><p class="slovnik-odkaz"><a href="#k01-def-proud">výklad v kapitole Z1 →</a></p></div>
 <div class="box definice" id="k99-s-napeti"><div class="box-t">elektrické napětí</div>
 <p><b>Elektrické napětí</b> \(U\) mezi dvěma body je rozdíl elektrických potenciálů těchto bodů; odpovídá práci, kterou elektrické pole vykoná při přenesení jednotkového náboje z jednoho bodu do druhého. Jednotkou je volt (V).</p>
-<p class="jinak">„tlak“, který žene proud obvodem. Napětí se vždy měří <b>mezi</b> dvěma body (na součástce, proti zemi) – nikdy „v jednom bodě“.</p><p class="slovnik-odkaz"><a href="#k01-def-napeti">výklad v kapitole 1 →</a></p></div>
+<p class="jinak">„tlak“, který žene proud obvodem. Napětí se vždy měří <b>mezi</b> dvěma body (na součástce, proti zemi) – nikdy „v jednom bodě“.</p><p class="slovnik-odkaz"><a href="#k01-def-napeti">výklad v kapitole Z1 →</a></p></div>
 <div class="box definice" id="k99-s-odpor"><div class="box-t">elektrický odpor</div>
 <p><b>Elektrický odpor</b> \(R\) součástky je poměr napětí na součástce a proudu, který jí protéká: \(R = U/I\). Jednotkou je ohm (Ω). Součástka s (přibližně) stálým odporem se nazývá <b>rezistor</b>.</p>
-<p class="jinak">jak moc součástka „brání“ průtoku proudu. Větší odpor = při stejném napětí menší proud.</p><p class="slovnik-odkaz"><a href="#k01-def-odpor">výklad v kapitole 1 →</a></p></div>
+<p class="jinak">jak moc součástka „brání“ průtoku proudu. Větší odpor = při stejném napětí menší proud.</p><p class="slovnik-odkaz"><a href="#k01-def-odpor">výklad v kapitole Z1 →</a></p></div>
 <div class="box definice" id="k99-s-ohmuv-zakon"><div class="box-t">Ohmův zákon</div>
 <p><b>Ohmův zákon</b> říká, že proud procházející rezistorem je přímo úměrný napětí na rezistoru a nepřímo úměrný jeho odporu: \(I = U/R\), neboli \(U = R \cdot I\).</p>
-<p class="jinak">dvojnásobné napětí na stejném rezistoru = dvojnásobný proud; dvojnásobný odpor při stejném napětí = poloviční proud. Stačí znát dvě ze tří veličin a třetí dopočítám.</p><p class="slovnik-odkaz"><a href="#k01-def-ohmuv-zakon">výklad v kapitole 1 →</a></p></div>
+<p class="jinak">dvojnásobné napětí na stejném rezistoru = dvojnásobný proud; dvojnásobný odpor při stejném napětí = poloviční proud. Stačí znát dvě ze tří veličin a třetí dopočítám.</p><p class="slovnik-odkaz"><a href="#k01-def-ohmuv-zakon">výklad v kapitole Z1 →</a></p></div>
 <div class="box definice" id="k99-s-vykon"><div class="box-t">elektrický výkon</div>
 <p><b>Elektrický výkon</b> \(P\) je práce (energie), kterou elektrický proud vykoná za jednotku času. Na součástce je roven součinu napětí na součástce a proudu, který jí protéká: \[ P = U \cdot I \] Jednotkou je watt (W = V · A).</p>
-<p class="jinak">kolik energie za sekundu součástka spotřebuje – v rezistoru se celá mění na teplo. Po dosazení Ohmova zákona platí i \(P = R \cdot I^2 = U^2/R\), takže stačí znát dvě ze tří veličin. Rezistor z příkladu výše (9 V na 4,7 kΩ) hřeje výkonem asi 17 mW.</p><p class="slovnik-odkaz"><a href="#k01-def-vykon">výklad v kapitole 1 →</a></p></div>
+<p class="jinak">kolik energie za sekundu součástka spotřebuje – v rezistoru se celá mění na teplo. Po dosazení Ohmova zákona platí i \(P = R \cdot I^2 = U^2/R\), takže stačí znát dvě ze tří veličin. Rezistor z příkladu výše (9 V na 4,7 kΩ) hřeje výkonem asi 17 mW.</p><p class="slovnik-odkaz"><a href="#k01-def-vykon">výklad v kapitole Z1 →</a></p></div>
 <div class="box definice" id="k99-s-uzel-smycka"><div class="box-t">uzel, větev a smyčka</div>
 <p><b>Uzel</b> je místo obvodu, kde se spojují alespoň tři vodiče. <b>Větev</b> je část obvodu mezi dvěma sousedními uzly; protéká jí v celé délce stejný proud. <b>Smyčka</b> je uzavřená cesta obvodem, která projde každým uzlem nejvýše jednou.</p>
-<p class="jinak">uzel = „křižovatka“, kde se proud dělí nebo slévá; větev = „silnice“ mezi křižovatkami; smyčka = „okruh“, který mě vrátí tam, kde jsem začal.</p><p class="slovnik-odkaz"><a href="#k01-def-uzel-smycka">výklad v kapitole 1 →</a></p></div>
+<p class="jinak">uzel = „křižovatka“, kde se proud dělí nebo slévá; větev = „silnice“ mezi křižovatkami; smyčka = „okruh“, který mě vrátí tam, kde jsem začal.</p><p class="slovnik-odkaz"><a href="#k01-def-uzel-smycka">výklad v kapitole Z1 →</a></p></div>
 <div class="box definice" id="k99-s-1kz"><div class="box-t">1. Kirchhoffův zákon (proudový)</div>
 <p><b>1. Kirchhoffův zákon</b> říká, že algebraický součet proudů v každém uzlu je roven nule: \(\sum I_k = 0\). Proudy do uzlu vtékající bereme s jedním znaménkem, vytékající s opačným.</p>
-<p class="jinak">kolik proudu do uzlu přiteče, tolik z něj musí odtéct – náboj se v uzlu nehromadí ani neztrácí (zákon zachování náboje).</p><p class="slovnik-odkaz"><a href="#k01-def-1kz">výklad v kapitole 1 →</a></p></div>
+<p class="jinak">kolik proudu do uzlu přiteče, tolik z něj musí odtéct – náboj se v uzlu nehromadí ani neztrácí (zákon zachování náboje).</p><p class="slovnik-odkaz"><a href="#k01-def-1kz">výklad v kapitole Z1 →</a></p></div>
 <div class="box definice" id="k99-s-2kz"><div class="box-t">2. Kirchhoffův zákon (napěťový)</div>
 <p><b>2. Kirchhoffův zákon</b> říká, že algebraický součet všech napětí podél libovolné uzavřené smyčky je roven nule: \(\sum U_k = 0\). Napětí zdrojů a úbytky napětí na součástkách bereme se znaménkem podle zvoleného směru oběhu.</p>
-<p class="jinak">když obejdu smyčku a vrátím se na start, jsem na stejném potenciálu – kolik napětí zdroje „dodají“, tolik se ho na součástkách „spotřebuje“ (zákon zachování energie).</p><p class="slovnik-odkaz"><a href="#k01-def-2kz">výklad v kapitole 1 →</a></p></div>
+<p class="jinak">když obejdu smyčku a vrátím se na start, jsem na stejném potenciálu – kolik napětí zdroje „dodají“, tolik se ho na součástkách „spotřebuje“ (zákon zachování energie).</p><p class="slovnik-odkaz"><a href="#k01-def-2kz">výklad v kapitole Z1 →</a></p></div>
 <div class="box definice" id="k99-s-delic"><div class="box-t">dělič napětí</div>
 <p><b>Dělič napětí</b> je zapojení dvou sériově řazených rezistorů \(R_1\) a \(R_2\) připojených ke vstupnímu napětí \(U_1\); výstupní napětí \(U_2\) se odebírá z jednoho z rezistorů (\(R_2\)) a je částí vstupního napětí v poměru odporů. <b>Nezatížený</b> dělič je takový, z jehož výstupu se neodebírá žádný proud.</p>
-<p class="jinak">dva rezistory za sebou si rozdělí napětí – každý dostane podíl úměrný svému odporu. Výstup „odbočkou“ mezi nimi dá zmenšenou kopii vstupu.</p><p class="slovnik-odkaz"><a href="#k01-def-delic">výklad v kapitole 1 →</a></p></div>
+<p class="jinak">dva rezistory za sebou si rozdělí napětí – každý dostane podíl úměrný svému odporu. Výstup „odbočkou“ mezi nimi dá zmenšenou kopii vstupu.</p><p class="slovnik-odkaz"><a href="#k01-def-delic">výklad v kapitole Z1 →</a></p></div>
 <div class="box definice" id="k99-s-zatez"><div class="box-t">zátěž a zatížený dělič</div>
 <p><b>Zátěž</b> je obvod nebo součástka připojená k výstupu zdroje signálu, která z něj odebírá proud; modelujeme ji odporem \(R_\text{z}\). <b>Zatížený dělič</b> je dělič napětí, k jehož výstupu je zátěž připojena – zátěž je pak paralelně k rezistoru \(R_2\).</p>
-<p class="jinak">jakmile na výstup děliče něco připojím (voltmetr, další stupeň), odebírá to proud a výstupní napětí klesne pod hodnotu spočítanou pro nezatížený dělič.</p><p class="slovnik-odkaz"><a href="#k01-def-zatez">výklad v kapitole 1 →</a></p></div>
-<h2 id="k99-k2" class="slovnik-kap">2 · Analogové RC filtry</h2>
+<p class="jinak">jakmile na výstup děliče něco připojím (voltmetr, další stupeň), odebírá to proud a výstupní napětí klesne pod hodnotu spočítanou pro nezatížený dělič.</p><p class="slovnik-odkaz"><a href="#k01-def-zatez">výklad v kapitole Z1 →</a></p></div>
+<h2 id="k99-kZ2" class="slovnik-kap">Z2 · Analogové RC filtry</h2>
 <div class="box definice" id="k99-s-filtr"><div class="box-t">analogový filtr</div>
 <p><b>Analogový filtr</b> je obvod, který propouští složky spojitého signálu v určitém rozsahu frekvencí (<b>propustné pásmo</b>) a potlačuje složky v jiném rozsahu (<b>nepropustné pásmo</b>). Podle polohy propustného pásma rozlišujeme dolní propust, horní propust, pásmovou propust a pásmovou zádrž.</p>
-<p class="jinak">„síto na frekvence“ – co je v propustném pásmu, projde beze změny, co je v nepropustném, se ztlumí. Filtr je <b>pasivní</b>, pokud obsahuje jen R, C (L), a <b>aktivní</b>, pokud obsahuje i zesilovač.</p><p class="slovnik-odkaz"><a href="#k02-def-filtr">výklad v kapitole 2 →</a></p></div>
+<p class="jinak">„síto na frekvence“ – co je v propustném pásmu, projde beze změny, co je v nepropustném, se ztlumí. Filtr je <b>pasivní</b>, pokud obsahuje jen R, C (L), a <b>aktivní</b>, pokud obsahuje i zesilovač.</p><p class="slovnik-odkaz"><a href="#k02-def-filtr">výklad v kapitole Z2 →</a></p></div>
 <div class="box definice" id="k99-s-prenos"><div class="box-t">přenos a frekvenční charakteristika</div>
 <p><b>Přenos</b> (napěťový) obvodu je poměr výstupního a vstupního napětí harmonického signálu: \(H = U_\text{výst}/U_\text{vst}\). Jeho závislost na frekvenci je <b>frekvenční (přenosová) charakteristika</b>; skládá se z <b>amplitudové</b> charakteristiky \(|H(f)|\) (kolikrát se změní amplituda) a <b>fázové</b> charakteristiky \(\varphi(f)\) (o kolik se posune fáze).</p>
-<p class="jinak">pošlu na vstup sinusovku dané frekvence a podívám se, jak velká a jak posunutá vyjde na výstupu. Když to udělám pro všechny frekvence, dostanu „otisk“ filtru. (V literatuře se přenos značí také \(K\) nebo \(P\).)</p><p class="slovnik-odkaz"><a href="#k02-def-prenos">výklad v kapitole 2 →</a></p></div>
+<p class="jinak">pošlu na vstup sinusovku dané frekvence a podívám se, jak velká a jak posunutá vyjde na výstupu. Když to udělám pro všechny frekvence, dostanu „otisk“ filtru. (V literatuře se přenos značí také \(K\) nebo \(P\).)</p><p class="slovnik-odkaz"><a href="#k02-def-prenos">výklad v kapitole Z2 →</a></p></div>
 <div class="box definice" id="k99-s-decibel"><div class="box-t">decibel</div>
 <p><b>Decibel</b> (dB) je logaritmická jednotka poměru. Napěťový přenos v decibelech je \(A_\text{dB} = 20 \log_{10} |H|\).</p>
-<p class="jinak">místo násobení sčítám a velký rozsah (1 až 0,0001) se vejde do malého rozsahu čísel (0 až −80 dB). 0 dB = beze změny, záporné dB = zeslabení, kladné = zesílení. Každých 20 dB je desetinásobek.</p><p class="slovnik-odkaz"><a href="#k02-def-decibel">výklad v kapitole 2 →</a></p></div>
+<p class="jinak">místo násobení sčítám a velký rozsah (1 až 0,0001) se vejde do malého rozsahu čísel (0 až −80 dB). 0 dB = beze změny, záporné dB = zeslabení, kladné = zesílení. Každých 20 dB je desetinásobek.</p><p class="slovnik-odkaz"><a href="#k02-def-decibel">výklad v kapitole Z2 →</a></p></div>
 <div class="box definice" id="k99-s-kondenzator"><div class="box-t">kondenzátor a kapacita</div>
 <p><b>Kondenzátor</b> je součástka tvořená dvěma vodivými elektrodami oddělenými izolantem, která uchovává elektrický náboj. <b>Kapacita</b> \(C\) je poměr náboje na elektrodách a napětí mezi nimi: \(C = Q/U\); jednotkou je farad (F). Proud kondenzátorem je úměrný rychlosti změny napětí: \(i = C \cdot \frac{du}{dt}\).</p>
-<p class="jinak">kondenzátor je „zásobník náboje“. Stejnosměrným proudem neprochází (izolant), ale střídavý signál přes něj „projde“, protože se elektrody pořád nabíjejí a vybíjejí. Čím rychleji se napětí mění, tím větší proud teče.</p><p class="slovnik-odkaz"><a href="#k02-def-kondenzator">výklad v kapitole 2 →</a></p></div>
+<p class="jinak">kondenzátor je „zásobník náboje“. Stejnosměrným proudem neprochází (izolant), ale střídavý signál přes něj „projde“, protože se elektrody pořád nabíjejí a vybíjejí. Čím rychleji se napětí mění, tím větší proud teče.</p><p class="slovnik-odkaz"><a href="#k02-def-kondenzator">výklad v kapitole Z2 →</a></p></div>
 <div class="box definice" id="k99-s-reaktance"><div class="box-t">kapacitní reaktance</div>
 <p><b>Kapacitní reaktance</b> \(X_C\) je „odpor“ kondenzátoru vůči harmonickému (sinusovému) proudu, tedy poměr amplitud napětí a proudu na kondenzátoru: \(X_C = \frac{1}{2\pi f C} = \frac{1}{\omega C}\). Je nepřímo úměrná frekvenci; proud kondenzátorem předbíhá napětí o 90°.</p>
-<p class="jinak">pro <b>nízké frekvence</b> má kondenzátor obrovský odpor (stejnosměrně = rozpojený obvod), pro <b>vysoké frekvence</b> malý (blíží se zkratu). Právě tato závislost na frekvenci dělá z RC článku filtr.</p><p class="slovnik-odkaz"><a href="#k02-def-reaktance">výklad v kapitole 2 →</a></p></div>
+<p class="jinak">pro <b>nízké frekvence</b> má kondenzátor obrovský odpor (stejnosměrně = rozpojený obvod), pro <b>vysoké frekvence</b> malý (blíží se zkratu). Právě tato závislost na frekvenci dělá z RC článku filtr.</p><p class="slovnik-odkaz"><a href="#k02-def-reaktance">výklad v kapitole Z2 →</a></p></div>
 <div class="box definice" id="k99-s-dp"><div class="box-t">dolní propust</div>
 <p><b>Dolní propust</b> (low-pass filter) je filtr, který propouští složky signálu s frekvencí nižší než mezní frekvence \(f_c\) a složky s vyšší frekvencí potlačuje. Pasivní dolní propust 1. řádu tvoří rezistor v podélné větvi a kondenzátor v příčné větvi (výstup na kondenzátoru).</p>
-<p class="jinak">pomalé změny projdou, rychlé „zahladí“. Výstup je vyhlazená verze vstupu.</p><p class="slovnik-odkaz"><a href="#k02-def-dp">výklad v kapitole 2 →</a></p></div>
+<p class="jinak">pomalé změny projdou, rychlé „zahladí“. Výstup je vyhlazená verze vstupu.</p><p class="slovnik-odkaz"><a href="#k02-def-dp">výklad v kapitole Z2 →</a></p></div>
 <div class="box definice" id="k99-s-hp"><div class="box-t">horní propust</div>
 <p><b>Horní propust</b> (high-pass filter) je filtr, který propouští složky signálu s frekvencí vyšší než mezní frekvence \(f_c\) a složky s nižší frekvencí (včetně stejnosměrné) potlačuje. Pasivní horní propust 1. řádu tvoří kondenzátor v podélné větvi a rezistor v příčné větvi (výstup na rezistoru).</p>
-<p class="jinak">rychlé změny projdou, pomalé a stálé hodnoty se odstraní. V EKG tak zmizí stejnosměrný offset elektrod a pomalé „plavání“ izolinie.</p><p class="slovnik-odkaz"><a href="#k02-def-hp">výklad v kapitole 2 →</a></p></div>
+<p class="jinak">rychlé změny projdou, pomalé a stálé hodnoty se odstraní. V EKG tak zmizí stejnosměrný offset elektrod a pomalé „plavání“ izolinie.</p><p class="slovnik-odkaz"><a href="#k02-def-hp">výklad v kapitole Z2 →</a></p></div>
 <div class="box definice" id="k99-s-mezni"><div class="box-t">mezní frekvence</div>
 <p><b>Mezní frekvence</b> \(f_c\) (zlomová, −3dB frekvence) je frekvence, při které modul přenosu klesne na \(1/\sqrt{2} \approx 0{,}707\) své hodnoty v propustném pásmu, tj. o 3 dB. Pro RC článek 1. řádu (dolní i horní propust) platí \(f_c = \frac{1}{2\pi RC}\).</p>
-<p class="jinak">„hranice“ mezi propustným a nepropustným pásmem. Je to frekvence, kdy má kondenzátor stejnou reaktanci jako rezistor (\(X_C = R\)), výstupní výkon klesne na polovinu a amplituda na 70,7 %.</p><p class="slovnik-odkaz"><a href="#k02-def-mezni">výklad v kapitole 2 →</a></p></div>
+<p class="jinak">„hranice“ mezi propustným a nepropustným pásmem. Je to frekvence, kdy má kondenzátor stejnou reaktanci jako rezistor (\(X_C = R\)), výstupní výkon klesne na polovinu a amplituda na 70,7 %.</p><p class="slovnik-odkaz"><a href="#k02-def-mezni">výklad v kapitole Z2 →</a></p></div>
 <div class="box definice" id="k99-s-rad"><div class="box-t">řád filtru</div>
 <p><b>Řád filtru</b> je řád přenosové funkce, u pasivních RC filtrů daný počtem kondenzátorů (nezávislých reaktančních prvků). Filtr \(n\)-tého řádu má v nepropustném pásmu sklon amplitudové charakteristiky \(20n\) dB na dekádu.</p>
-<p class="jinak">jeden RC článek = 1. řád = pokles o 20 dB na každý desetinásobek frekvence. Chci-li strmější „hranu“, řadím víc článků (2. řád = 40 dB/dek atd.).</p><p class="slovnik-odkaz"><a href="#k02-def-rad">výklad v kapitole 2 →</a></p></div>
+<p class="jinak">jeden RC článek = 1. řád = pokles o 20 dB na každý desetinásobek frekvence. Chci-li strmější „hranu“, řadím víc článků (2. řád = 40 dB/dek atd.).</p><p class="slovnik-odkaz"><a href="#k02-def-rad">výklad v kapitole Z2 →</a></p></div>
 <div class="box definice" id="k99-s-bode"><div class="box-t">Bodeho graf</div>
 <p><b>Bodeho graf</b> je zobrazení frekvenční charakteristiky ve dvou grafech nad společnou logaritmickou osou frekvence: amplitudová charakteristika v decibelech (\(20\log_{10}|H|\)) a fázová charakteristika ve stupních.</p>
-<p class="jinak">díky logaritmům na obou osách se z křivek stanou téměř přímky, které jde nakreslit od ruky – stačí znát mezní frekvenci a sklon.</p><p class="slovnik-odkaz"><a href="#k02-def-bode">výklad v kapitole 2 →</a></p></div>
+<p class="jinak">díky logaritmům na obou osách se z křivek stanou téměř přímky, které jde nakreslit od ruky – stačí znát mezní frekvenci a sklon.</p><p class="slovnik-odkaz"><a href="#k02-def-bode">výklad v kapitole Z2 →</a></p></div>
 <div class="box definice" id="k99-s-pp"><div class="box-t">pásmová propust</div>
 <p><b>Pásmová propust</b> (band-pass filter) je filtr, který propouští složky signálu s frekvencemi mezi dolní mezní frekvencí \(f_d\) a horní mezní frekvencí \(f_h\) a potlačuje frekvence pod \(f_d\) i nad \(f_h\). <b>Šířka pásma</b> je \(B = f_h - f_d\).</p>
-<p class="jinak">„okno“ ve frekvencích – propustí jen pásmo, ve kterém je užitečný signál (EKG asi 0,05–150 Hz), a ořízne drift i šum zároveň.</p><p class="slovnik-odkaz"><a href="#k02-def-pp">výklad v kapitole 2 →</a></p></div>
+<p class="jinak">„okno“ ve frekvencích – propustí jen pásmo, ve kterém je užitečný signál (EKG asi 0,05–150 Hz), a ořízne drift i šum zároveň.</p><p class="slovnik-odkaz"><a href="#k02-def-pp">výklad v kapitole Z2 →</a></p></div>
 <div class="box definice" id="k99-s-pz"><div class="box-t">pásmová zádrž</div>
 <p><b>Pásmová zádrž</b> (band-stop filter) je filtr, který potlačuje složky signálu v pásmu frekvencí kolem střední frekvence \(f_0\) a frekvence pod tímto pásmem i nad ním propouští. Úzká pásmová zádrž potlačující jedinou frekvenci se nazývá <b>notch filtr</b> (odlaďovač).</p>
-<p class="jinak">opak pásmové propusti – „vyřízne“ jedno pásmo a vše ostatní nechá. Typické použití: odstranění síťového brumu 50 Hz z EKG nebo EEG.</p><p class="slovnik-odkaz"><a href="#k02-def-pz">výklad v kapitole 2 →</a></p></div>
-<h2 id="k99-k3" class="slovnik-kap">3 · Operační zesilovače</h2>
+<p class="jinak">opak pásmové propusti – „vyřízne“ jedno pásmo a vše ostatní nechá. Typické použití: odstranění síťového brumu 50 Hz z EKG nebo EEG.</p><p class="slovnik-odkaz"><a href="#k02-def-pz">výklad v kapitole Z2 →</a></p></div>
+<h2 id="k99-kZ3" class="slovnik-kap">Z3 · Operační zesilovače</h2>
 <div class="box definice" id="k99-s-oz"><div class="box-t">operační zesilovač</div>
 <p><b>Operační zesilovač</b> je stejnosměrně vázaný rozdílový zesilovač s velmi velkým zesílením, se dvěma vstupy – <b>neinvertujícím</b> (+) a <b>invertujícím</b> (−) – a jedním výstupem. Výstupní napětí je úměrné rozdílu vstupních napětí: \(U_\text{výst} = A_0\,(U_+ - U_-)\).</p>
-<p class="jinak">„porovnává“ napětí na dvou vstupech a jejich rozdíl obrovsky zesílí. Sám o sobě je nepoužitelný (zesílení je příliš velké a nepřesné); teprve s rezistory ve <b>zpětné vazbě</b> z něj vznikne zesilovač s přesným zesílením.</p><p class="slovnik-odkaz"><a href="#k03-def-oz">výklad v kapitole 3 →</a></p></div>
+<p class="jinak">„porovnává“ napětí na dvou vstupech a jejich rozdíl obrovsky zesílí. Sám o sobě je nepoužitelný (zesílení je příliš velké a nepřesné); teprve s rezistory ve <b>zpětné vazbě</b> z něj vznikne zesilovač s přesným zesílením.</p><p class="slovnik-odkaz"><a href="#k03-def-oz">výklad v kapitole Z3 →</a></p></div>
 <div class="box definice" id="k99-s-zpetna-vazba"><div class="box-t">záporná zpětná vazba</div>
 <p><b>Záporná zpětná vazba</b> je přivedení části výstupního signálu zpět na vstup tak, aby působila proti změně, která ji vyvolala. U OZ se realizuje propojením výstupu s <b>invertujícím</b> vstupem (přímo nebo přes rezistory). Výsledné zesílení pak určují jen prvky ve zpětné vazbě, ne \(A_0\).</p>
-<p class="jinak">zesilovač „sám sebe hlídá“: když výstup vzroste víc, než má, zvedne se i napětí na invertujícím vstupu, rozdíl \(U_+ - U_-\) se zmenší a výstup klesne zpět. Ustálí se tam, kde jsou oba vstupy (téměř) stejné.</p><p class="slovnik-odkaz"><a href="#k03-def-zpetna-vazba">výklad v kapitole 3 →</a></p></div>
+<p class="jinak">zesilovač „sám sebe hlídá“: když výstup vzroste víc, než má, zvedne se i napětí na invertujícím vstupu, rozdíl \(U_+ - U_-\) se zmenší a výstup klesne zpět. Ustálí se tam, kde jsou oba vstupy (téměř) stejné.</p><p class="slovnik-odkaz"><a href="#k03-def-zpetna-vazba">výklad v kapitole Z3 →</a></p></div>
 <div class="box definice" id="k99-s-virtualni-zkrat"><div class="box-t">virtuální zkrat (virtuální nula)</div>
 <p><b>Virtuální zkrat</b> je stav OZ se zápornou zpětnou vazbou v lineárním režimu, kdy je napětí mezi jeho vstupy prakticky nulové: \(U_+ \approx U_-\), protože \(U_d = U_\text{výst}/A_0\) a \(A_0\) je obrovské. Je-li neinvertující vstup uzemněn, je invertující vstup na potenciálu země – mluvíme o <b>virtuální nule</b> (zemi).</p>
-<p class="jinak">vstupy jsou na stejném napětí, jako by byly zkratované – ale proud mezi nimi neteče (proto „virtuální“). Pro výstup 10 V a \(A_0 = 10^5\) je rozdíl vstupů jen 0,1 mV.</p><p class="slovnik-odkaz"><a href="#k03-def-virtualni-zkrat">výklad v kapitole 3 →</a></p></div>
+<p class="jinak">vstupy jsou na stejném napětí, jako by byly zkratované – ale proud mezi nimi neteče (proto „virtuální“). Pro výstup 10 V a \(A_0 = 10^5\) je rozdíl vstupů jen 0,1 mV.</p><p class="slovnik-odkaz"><a href="#k03-def-virtualni-zkrat">výklad v kapitole Z3 →</a></p></div>
 <div class="box definice" id="k99-s-invertujici"><div class="box-t">invertující zesilovač</div>
 <p><b>Invertující zesilovač</b> je zapojení OZ, ve kterém je vstupní signál přiveden přes rezistor \(R_1\) na invertující vstup, neinvertující vstup je uzemněn a rezistor \(R_2\) tvoří zpětnou vazbu z výstupu na invertující vstup. Zesílení je \(A = -R_2/R_1\).</p>
-<p class="jinak">zesílí signál v poměru rezistorů a otočí jeho znaménko (fázový posun 180°). Zesílení může být i menší než 1 (zeslabení).</p><p class="slovnik-odkaz"><a href="#k03-def-invertujici">výklad v kapitole 3 →</a></p></div>
+<p class="jinak">zesílí signál v poměru rezistorů a otočí jeho znaménko (fázový posun 180°). Zesílení může být i menší než 1 (zeslabení).</p><p class="slovnik-odkaz"><a href="#k03-def-invertujici">výklad v kapitole Z3 →</a></p></div>
 <div class="box definice" id="k99-s-neinvertujici"><div class="box-t">neinvertující zesilovač</div>
 <p><b>Neinvertující zesilovač</b> je zapojení OZ, ve kterém je vstupní signál přiveden přímo na neinvertující vstup a na invertující vstup se přivádí část výstupního napětí z děliče \(R_2\) (z výstupu) a \(R_1\) (k zemi). Zesílení je \(A = 1 + R_2/R_1\).</p>
-<p class="jinak">zesílí signál bez otočení znaménka, zesílení je vždy aspoň 1 a – hlavně – do vstupu neteče proud, takže zdroj signálu vůbec nezatěžuje.</p><p class="slovnik-odkaz"><a href="#k03-def-neinvertujici">výklad v kapitole 3 →</a></p></div>
+<p class="jinak">zesílí signál bez otočení znaménka, zesílení je vždy aspoň 1 a – hlavně – do vstupu neteče proud, takže zdroj signálu vůbec nezatěžuje.</p><p class="slovnik-odkaz"><a href="#k03-def-neinvertujici">výklad v kapitole Z3 →</a></p></div>
 <div class="box definice" id="k99-s-rozdilovy"><div class="box-t">rozdílový zesilovač</div>
 <p><b>Rozdílový (diferenční) zesilovač</b> je zapojení jednoho OZ se čtyřmi rezistory, které zesiluje rozdíl dvou vstupních napětí: signál \(U_1\) jde přes \(R_1\) na invertující vstup (zpětná vazba \(R_2\)), signál \(U_2\) přes dělič \(R_3\), \(R_4\) na neinvertující vstup. Při \(R_3 = R_1\) a \(R_4 = R_2\) platí \(U_\text{výst} = \frac{R_2}{R_1}(U_2 - U_1)\).</p>
-<p class="jinak">kombinace invertujícího a neinvertujícího zesilovače: co je na obou vstupech stejné, se odečte, zesílí se jen rozdíl. Přesně to potřebujeme u EKG – signál srdce je rozdíl napětí mezi elektrodami, rušení je na obou stejné.</p><p class="slovnik-odkaz"><a href="#k03-def-rozdilovy">výklad v kapitole 3 →</a></p></div>
+<p class="jinak">kombinace invertujícího a neinvertujícího zesilovače: co je na obou vstupech stejné, se odečte, zesílí se jen rozdíl. Přesně to potřebujeme u EKG – signál srdce je rozdíl napětí mezi elektrodami, rušení je na obou stejné.</p><p class="slovnik-odkaz"><a href="#k03-def-rozdilovy">výklad v kapitole Z3 →</a></p></div>
 <div class="box definice" id="k99-s-rozdilove-souhlasne"><div class="box-t">rozdílové a souhlasné napětí</div>
 <p>Pro dvojici vstupních napětí \(U_1\), \(U_2\) je <b>rozdílové napětí</b> \(U_d = U_2 - U_1\) a <b>souhlasné napětí</b> \(U_s = \frac{U_1 + U_2}{2}\) (průměr obou vstupů, angl. common-mode, \(U_\text{cm}\)). Každou dvojici vstupů lze zapsat jako \(U_{1,2} = U_s \mp U_d/2\).</p>
-<p class="jinak">rozdílové napětí je to, co se mezi elektrodami liší (užitečný biosignál), souhlasné to, co mají obě elektrody společné (síťový brum 50 Hz, offset). Rušení se do těla indukuje skoro stejně všude, proto je souhlasné.</p><p class="slovnik-odkaz"><a href="#k03-def-rozdilove-souhlasne">výklad v kapitole 3 →</a></p></div>
+<p class="jinak">rozdílové napětí je to, co se mezi elektrodami liší (užitečný biosignál), souhlasné to, co mají obě elektrody společné (síťový brum 50 Hz, offset). Rušení se do těla indukuje skoro stejně všude, proto je souhlasné.</p><p class="slovnik-odkaz"><a href="#k03-def-rozdilove-souhlasne">výklad v kapitole Z3 →</a></p></div>
 <div class="box definice" id="k99-s-cmrr"><div class="box-t">CMRR – činitel potlačení souhlasného signálu</div>
 <p><b>CMRR</b> (common-mode rejection ratio, činitel potlačení souhlasného signálu) je poměr rozdílového zesílení \(A_d\) a souhlasného zesílení \(A_s\) zesilovače: \(\text{CMRR} = A_d / A_s\); obvykle se udává v decibelech: \(\text{CMRR}_\text{dB} = 20 \log_{10}(A_d/A_s)\).</p>
-<p class="jinak">kolikrát víc zesilovač zesílí užitečný rozdíl než společné rušení. Ideální rozdílový zesilovač má \(A_s = 0\) a CMRR nekonečné; reálný má 60–120 dB. Čím víc, tím čistší biosignál.</p><p class="slovnik-odkaz"><a href="#k03-def-cmrr">výklad v kapitole 3 →</a></p></div>
+<p class="jinak">kolikrát víc zesilovač zesílí užitečný rozdíl než společné rušení. Ideální rozdílový zesilovač má \(A_s = 0\) a CMRR nekonečné; reálný má 60–120 dB. Čím víc, tím čistší biosignál.</p><p class="slovnik-odkaz"><a href="#k03-def-cmrr">výklad v kapitole Z3 →</a></p></div>
 <div class="box definice" id="k99-s-pristrojovy"><div class="box-t">přístrojový zesilovač</div>
 <p><b>Přístrojový (instrumentační) zesilovač</b> je rozdílový zesilovač složený ze tří OZ: dva neinvertující zesilovače na vstupu (s rezistory \(R\) ve zpětných vazbách propojenými rezistorem \(R_G\)) a za nimi rozdílový zesilovač. Má velmi velký a stejný vstupní odpor obou vstupů, vysoké CMRR a zesílení nastavitelné jediným rezistorem \(R_G\).</p>
-<p class="jinak">„vylepšený“ rozdílový zesilovač: vstupní stupeň nezatěžuje elektrody a sám zesílí rozdíl, výstupní stupeň odečte zbytek souhlasného napětí. Je základem každého EKG, EEG a EMG zesilovače.</p><p class="slovnik-odkaz"><a href="#k03-def-pristrojovy">výklad v kapitole 3 →</a></p></div>
-<h2 id="k99-k4" class="slovnik-kap">4 · Sledovač, integrátor, derivátor</h2>
+<p class="jinak">„vylepšený“ rozdílový zesilovač: vstupní stupeň nezatěžuje elektrody a sám zesílí rozdíl, výstupní stupeň odečte zbytek souhlasného napětí. Je základem každého EKG, EEG a EMG zesilovače.</p><p class="slovnik-odkaz"><a href="#k03-def-pristrojovy">výklad v kapitole Z3 →</a></p></div>
+<h2 id="k99-kZ4" class="slovnik-kap">Z4 · Sledovač, integrátor, derivátor</h2>
 <div class="box definice" id="k99-s-sledovac"><div class="box-t">napěťový sledovač</div>
 <p><b>Napěťový sledovač</b> (impedanční oddělovač, buffer) je zapojení OZ, ve kterém je vstupní signál přiveden na neinvertující vstup a výstup je přímo spojen s invertujícím vstupem (100% záporná zpětná vazba). Výstupní napětí je rovno vstupnímu (\(A = 1\)), vstupní odpor je velmi velký a výstupní odpor velmi malý.</p>
-<p class="jinak">výstup „kopíruje“ vstup, ale proud pro zátěž dodává OZ ze svého napájení, ne zdroj signálu. Zdroj tak není zatěžován a zátěž dostane plné napětí.</p><p class="slovnik-odkaz"><a href="#k04-def-sledovac">výklad v kapitole 4 →</a></p></div>
+<p class="jinak">výstup „kopíruje“ vstup, ale proud pro zátěž dodává OZ ze svého napájení, ne zdroj signálu. Zdroj tak není zatěžován a zátěž dostane plné napětí.</p><p class="slovnik-odkaz"><a href="#k04-def-sledovac">výklad v kapitole Z4 →</a></p></div>
 <div class="box definice" id="k99-s-integrator"><div class="box-t">integrační zesilovač (integrátor)</div>
 <p><b>Integrátor</b> je zapojení OZ odvozené z invertujícího zesilovače, ve kterém je rezistor ve zpětné vazbě nahrazen kondenzátorem \(C\) (na vstupu zůstává rezistor \(R\)). Výstupní napětí je úměrné časovému integrálu vstupního napětí: \(u_\text{výst}(t) = -\frac{1}{RC}\int u_\text{vst}\,dt\).</p>
-<p class="jinak">výstup „sčítá“ vstup v čase. Stálé vstupní napětí dá na výstupu lineárně rostoucí (klesající) rampu; obdélník se změní na trojúhelník.</p><p class="slovnik-odkaz"><a href="#k04-def-integrator">výklad v kapitole 4 →</a></p></div>
+<p class="jinak">výstup „sčítá“ vstup v čase. Stálé vstupní napětí dá na výstupu lineárně rostoucí (klesající) rampu; obdélník se změní na trojúhelník.</p><p class="slovnik-odkaz"><a href="#k04-def-integrator">výklad v kapitole Z4 →</a></p></div>
 <div class="box definice" id="k99-s-derivator"><div class="box-t">derivační zesilovač (derivátor)</div>
 <p><b>Derivátor</b> je zapojení OZ odvozené z invertujícího zesilovače, ve kterém je vstupní rezistor nahrazen kondenzátorem \(C\) (ve zpětné vazbě zůstává rezistor \(R\)). Výstupní napětí je úměrné časové derivaci vstupního napětí: \(u_\text{výst}(t) = -RC\,\frac{du_\text{vst}}{dt}\).</p>
-<p class="jinak">výstup ukazuje, <b>jak rychle</b> se vstup mění. Stálé napětí dá nulu, rampa dá stálé napětí, trojúhelník se změní na obdélník.</p><p class="slovnik-odkaz"><a href="#k04-def-derivator">výklad v kapitole 4 →</a></p></div>
+<p class="jinak">výstup ukazuje, <b>jak rychle</b> se vstup mění. Stálé napětí dá nulu, rampa dá stálé napětí, trojúhelník se změní na obdélník.</p><p class="slovnik-odkaz"><a href="#k04-def-derivator">výklad v kapitole Z4 →</a></p></div>
 
 </section>
 

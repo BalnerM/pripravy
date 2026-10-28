@@ -1,12 +1,66 @@
-<h1>SAD – příprava na půlsemestrální test</h1>
-<p class="lead">Skripta k předmětu <b>Měření a zpracování biosignálů</b> pokrývají elektrotechnický základ: zákony obvodů a dělič napětí, analogové RC filtry a operační zesilovače. Důraz je na <b>pochopení principu</b> (proč zapojení funguje, co v něm dělá která součástka) a na <b>výpočty</b>, které se objevují v testu – každý vzorec má řešený příklad krok za krokem.</p>
+<h1>SAD – příprava na test a zkoušku</h1>
+<p class="lead">Skripta k předmětu <b>Měření a zpracování biosignálů</b> mají dvě části. <b>Základy</b> vysvětlují elektrotechniku, bez které se přednášky nedají pochopit: zákony obvodů a dělič napětí, analogové RC filtry a operační zesilovače. <b>Přednášky</b> pak po jedné kapitole procházejí látku předmětu – od signálu přes jeho úpravu, napájení a reference až po komparátor, A/D a D/A převodníky a multiplexaci. Důraz je na <b>pochopení principu</b> a na <b>výpočty</b>; každý vzorec má řešený příklad krok za krokem.</p>
 
-<h2 id="mapa">Jak spolu témata souvisí</h2>
+<h2 id="casti">Dvě části skript a co patří ke které zkoušce</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Část</th><th>Obsah</th><th>K čemu</th></tr></thead>
+<tbody>
+<tr><td><b>Základy</b> (Z1–Z4)</td><td>Ohm, Kirchhoff, dělič; RC filtry; zapojení s OZ; sledovač, integrátor, derivátor</td><td>předpoklad pro všechno ostatní – test i zkouška</td></tr>
+<tr><td><b>Přednášky 1–8</b> (P1–P8) + 2 další</td><td>látka přednášek předmětu</td><td>půlsemestrální test</td></tr>
+<tr><td><b>Přednášky 1–10</b> (P1–P10)</td><td>celý semestr, opírá se o základy</td><td>závěrečná zkouška</td></tr>
+</tbody></table></div>
+<p>Kapitoly přednášek pojmy ze základů znovu nevysvětlují – odkazují na ně. Když v přednášce narazíš na dělič, mezní frekvenci nebo zesílení invertujícího zesilovače a nejsi si jistý, klikni na odkaz a vrať se.</p>
+
+<h2 id="retezec">Měřicí řetězec: kde je která přednáška</h2>
+<div class="schema">
+<svg viewBox="0 0 760 220" role="img" aria-label="Měřicí řetězec: senzor a signál (P1), úprava signálu zesílením a filtrací (P2, P4, P5), multiplexace (P8), A/D převodník (P7) a číslicové zpracování; napájení a reference (P3) napájí zesilovače i převodník, komparátor (P6) je stavební blok převodníku">
+  <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="10" y="20" width="130" height="64" rx="8" class="node fl1"/>
+  <text x="75" y="46" text-anchor="middle">senzor, signál</text><text x="75" y="66" text-anchor="middle" class="t2">P1</text>
+  <rect x="162" y="20" width="130" height="64" rx="8" class="node fl2"/>
+  <text x="227" y="46" text-anchor="middle">úprava signálu</text><text x="227" y="66" text-anchor="middle" class="t2">P2, P4, P5</text>
+  <rect x="314" y="20" width="130" height="64" rx="8" class="node fl2"/>
+  <text x="379" y="46" text-anchor="middle">multiplexace</text><text x="379" y="66" text-anchor="middle" class="t2">P8</text>
+  <rect x="466" y="20" width="130" height="64" rx="8" class="node fl3"/>
+  <text x="531" y="46" text-anchor="middle">A/D převodník</text><text x="531" y="66" text-anchor="middle" class="t2">P7</text>
+  <rect x="618" y="20" width="132" height="64" rx="8" class="node"/>
+  <text x="684" y="46" text-anchor="middle">číslicově</text><text x="684" y="66" text-anchor="middle" class="t2">zpět přes D/A (P7)</text>
+  <rect x="162" y="140" width="282" height="60" rx="8" class="node fl1"/>
+  <text x="303" y="166" text-anchor="middle">napájení a reference</text><text x="303" y="186" text-anchor="middle" class="t2">P3 – pro zesilovače i převodník</text>
+  <rect x="466" y="140" width="130" height="60" rx="8" class="node fl3"/>
+  <text x="531" y="166" text-anchor="middle">komparátor</text><text x="531" y="186" text-anchor="middle" class="t2">P6</text>
+  <path d="M140 52 H157" class="ln" marker-end="url(#arr)"/>
+  <path d="M292 52 H309" class="ln" marker-end="url(#arr)"/>
+  <path d="M444 52 H461" class="ln" marker-end="url(#arr)"/>
+  <path d="M596 52 H613" class="ln" marker-end="url(#arr)"/>
+  <path d="M227 140 V89" class="ln dash" marker-end="url(#arr)"/>
+  <path d="M420 140 L500 89" class="ln dash" marker-end="url(#arr)"/>
+  <path d="M531 140 V89" class="ln dash" marker-end="url(#arr)"/>
+</svg></div>
+<p>Signál ze senzoru je slabý a zarušený, a tak se nejdřív <b>upraví</b> (zesílí, odfiltruje). Pak se jedním převodníkem postupně měří víc kanálů (<b>multiplexace</b>). <b>A/D převodník</b> ho převede na čísla – uvnitř pracuje s <b>komparátory</b> a porovnává signál s <b>referenčním napětím</b>. Celý řetězec potřebuje stabilní <b>napájení</b>.</p>
+
+<h2 id="prednasky">Přednášky</h2>
+<p>Kapitoly přednášek přibývají postupně; dokud kapitola není hotová, uč se z příslušných kapitol základů.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Přednáška</th><th>Téma</th><th>Kapitola</th></tr></thead>
+<tbody>
+<tr><td>P1</td><td>Úvod, signál</td><td class="muted">připravuje se</td></tr>
+<tr><td>P2</td><td>Úprava signálu</td><td class="muted">připravuje se (základ: <a href="02_filtry.html">Z2</a>, <a href="03_oz.html">Z3</a>)</td></tr>
+<tr><td>P3</td><td>Napájení a zdroje referenčního napětí</td><td class="muted">připravuje se</td></tr>
+<tr><td>P4</td><td>Aplikace OZ I – zapojení</td><td class="muted">připravuje se (základ: <a href="03_oz.html">Z3</a>, <a href="04_dalsi_zapojeni.html">Z4</a>)</td></tr>
+<tr><td>P5</td><td>Aplikace OZ II – aktivní filtry</td><td class="muted">připravuje se (základ: <a href="02_filtry.html">Z2</a>)</td></tr>
+<tr><td>P6</td><td>Komparátor</td><td class="muted">připravuje se</td></tr>
+<tr><td>P7</td><td>A/D a D/A převodníky</td><td class="muted">připravuje se</td></tr>
+<tr><td>P8</td><td>Multiplexace signálů</td><td class="muted">připravuje se</td></tr>
+<tr><td>P9, P10</td><td>další přednášky (ke zkoušce)</td><td class="muted">zatím nevyšly</td></tr>
+</tbody></table></div>
+
+<h2 id="mapa">Základy: jak spolu témata souvisí</h2>
 <div class="schema">
 <svg viewBox="0 0 760 200" role="img" aria-label="Mapa kurzu: Ohmův a Kirchhoffovy zákony vedou k děliči napětí, z děliče vychází RC filtr a zpětná vazba operačního zesilovače">
   <defs><marker id="arm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
   <rect x="10" y="70" width="150" height="60" rx="8" class="node fl1"/>
-  <text x="85" y="96" text-anchor="middle">Ohm + Kirchhoff</text><text x="85" y="116" text-anchor="middle" class="t2">kap. 1</text>
+  <text x="85" y="96" text-anchor="middle">Ohm + Kirchhoff</text><text x="85" y="116" text-anchor="middle" class="t2">Z1</text>
   <rect x="215" y="70" width="140" height="60" rx="8" class="node fl1"/>
   <text x="285" y="96" text-anchor="middle">dělič napětí</text><text x="285" y="116" text-anchor="middle" class="t2">nezatížený / zatížený</text>
   <rect x="420" y="10" width="160" height="60" rx="8" class="node fl2"/>
@@ -32,13 +86,13 @@
 <li><b>PDF na tablet:</b> tlačítko <span class="pill">PDF</span> v horní liště stáhne aktuální stránku; na této úvodní stránce stáhne <a href="pdf/skripta_vse.pdf" download>celá skripta v jednom PDF</a>.</li>
 </ul>
 
-<h2 id="kapitoly">Kapitoly</h2>
+<h2 id="kapitoly">Kapitoly základů</h2>
 <div class="cards">
-<a class="card" href="01_obvody.html"><div class="n">Kapitola 1</div><div class="t">Ohmův zákon, Kirchhoff, dělič napětí</div><div class="d">Výpočet obvodu Kirchhoffovými zákony, odvození nezatíženého a zatíženého děliče.</div></a>
-<a class="card" href="02_filtry.html"><div class="n">Kapitola 2</div><div class="t">Analogové RC filtry</div><div class="d">Dolní a horní propust (princip), pásmová propust a zádrž, mezní frekvence, kreslení Bodeho grafu.</div></a>
-<a class="card" href="03_oz.html"><div class="n">Kapitola 3</div><div class="t">Operační zesilovače</div><div class="d">Invertující, neinvertující, rozdílový a přístrojový zesilovač, výpočet zesílení a CMRR.</div></a>
-<a class="card" href="04_dalsi_zapojeni.html"><div class="n">Kapitola 4</div><div class="t">Sledovač, integrátor, derivátor</div><div class="d">Princip a schéma zapojení.</div></a>
-<a class="card" href="05_tahak.html"><div class="n">★ Opakování</div><div class="t">Tahák</div><div class="d">Všechny vzorce a schémata na jedné stránce, typické chytáky.</div></a>
+<a class="card" href="01_obvody.html"><div class="n">Základy Z1</div><div class="t">Ohmův zákon, Kirchhoff, dělič napětí</div><div class="d">Výpočet obvodu Kirchhoffovými zákony, odvození nezatíženého a zatíženého děliče.</div></a>
+<a class="card" href="02_filtry.html"><div class="n">Základy Z2</div><div class="t">Analogové RC filtry</div><div class="d">Dolní a horní propust (princip), pásmová propust a zádrž, mezní frekvence, kreslení Bodeho grafu.</div></a>
+<a class="card" href="03_oz.html"><div class="n">Základy Z3</div><div class="t">Operační zesilovače</div><div class="d">Invertující, neinvertující, rozdílový a přístrojový zesilovač, výpočet zesílení a CMRR.</div></a>
+<a class="card" href="04_dalsi_zapojeni.html"><div class="n">Základy Z4</div><div class="t">Sledovač, integrátor, derivátor</div><div class="d">Princip a schéma zapojení.</div></a>
+<a class="card" href="05_tahak.html"><div class="n">★ Opakování</div><div class="t">Tahák: základy</div><div class="d">Vzorce a schémata základů na jedné stránce, typické chytáky.</div></a>
 <a class="card" href="99_slovnik.html"><div class="n">Opakování</div><div class="t">Slovník pojmů</div><div class="d">Všechny definice na jednom místě.</div></a>
 </div>
-<p class="muted">Skripta nevycházejí z přednášek předmětu (nebyly k dispozici), ale ze standardní elektrotechniky. Pokud přednášející používá jiné značení (např. \(K\) nebo \(P\) pro přenos, \(A_\text{cm}\) pro souhlasné zesílení), význam je stejný.</p>
+<p class="muted">Základy (Z1–Z4) nevycházejí z přednášek předmětu, ale ze standardní elektrotechniky; kapitoly přednášek (P1–P10) se drží slidů. Pokud přednášející používá jiné značení (např. \(K\) nebo \(P\) pro přenos, \(A_\text{cm}\) pro souhlasné zesílení), význam je stejný.</p>

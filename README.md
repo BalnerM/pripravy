@@ -7,7 +7,7 @@ Studijní materiály k jednotlivým předmětům, zveřejněné přes GitHub Pag
 |---|---|---|
 | `vmm/` | Vícerozměrné metody (VMM) | https://balnerm.github.io/pripravy/vmm/ |
 | `mlr/` | Strojové učení (MPA-MLR), přednášky 1–7; i anglicky | https://balnerm.github.io/pripravy/mlr/ (EN: …/mlr/en/) |
-| `sad/` | Měření a zpracování biosignálů (SAD), příprava na půlsemestrální test | https://balnerm.github.io/pripravy/sad/ |
+| `sad/` | Měření a zpracování biosignálů (SAD), příprava na půlsemestrální test a závěrečnou zkoušku (základy + kapitoly přednášek) | https://balnerm.github.io/pripravy/sad/ |
 
 ## Jak to funguje
 - `index.html` v kořeni je rozcestník: úvodní stránka ukazuje předměty, po rozkliknutí se objeví materiály
