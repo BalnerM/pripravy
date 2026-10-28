@@ -39,6 +39,8 @@ PAGES = [
      "Parametry napěťové reference, stabilizátor se Zenerovou diodou a OZ, proudové posílení a omezení, vlečný zdroj, zdroj proudu."),
     ("14_oz_zapojeni", "P4", "Aplikace OZ: integrátor, derivátor, usměrňovač",
      "Millerův integrátor a nulování, neinvertující a diferenční integrátor, ošetřený derivátor, precizní usměrňovače, vrcholový detektor."),
+    ("15_aktivni_filtry", "P5", "Aplikace OZ II: aktivní filtry",
+     "Přenosová funkce, ideální a reálný filtr, strmost dB/okt a dB/dek; DP, HP, PP a PZ v zapojení Sallen-Key a MFB, dvojitý T, Wienův-Robinsonův můstek; Butterworth, Čebyšev, Bessel."),
     ("99_slovnik", "Aa", "Slovník pojmů (definice)", "Všechny definice ze skript na jednom místě."),
 ]
 

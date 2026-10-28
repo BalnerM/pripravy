@@ -12,6 +12,7 @@ import sys
 import warnings
 
 import numpy as np
+from scipy import signal
 import matplotlib
 
 matplotlib.use("Agg")
@@ -2000,6 +2001,457 @@ def fig14_vrchol_prubeh():
     save(fig, "fig14_vrchol_prubeh")
 
 
+# =====================================================================  přednáška 5: aktivní filtry
+VST, VYST = "$U_\\mathrm{vst}$", "$U_\\mathrm{výst}$"
+
+
+def _sledovac_zv(d, op, hloubka=0.45):
+    """Zpětná vazba sledovače: invertující vstup (dole, flip=True) přímo na výstup."""
+    elm.Line().at(op.in1).left(d.unit * 0.25)
+    elm.Line().down(d.unit * hloubka)
+    elm.Line().right().tox(op.out)
+    elm.Line().up().toy(op.out).dot()
+
+
+def _rad1(name, hp, inv):
+    """Filtr 1. řádu (slidy „Aktivní filtr – DP/HP 1. řádu“): neinvertující nebo invertující varianta."""
+    with schema(name, unit=2.3) as d:
+        u = d.unit
+        if inv:
+            op = elm.Opamp(leads=True)                           # − nahoře, + dole
+            _vstup_zem(d, op)
+            elm.Line().at(op.in1).left(u * 0.25)
+            n = elm.Dot()
+            if hp:
+                elm.Resistor().left().label("$R_1$", loc="bottom")
+                elm.Capacitor().left().label("$C_1$", loc="bottom")
+            else:
+                elm.Resistor().left().label("$R_1$", loc="bottom")
+            elm.Dot(open=True).label(VST, loc="left")
+            elm.Line().at(n.center).up(u * 0.5)
+            m = elm.Dot()
+            elm.Resistor().right().tox(op.out).label("$R_2$")
+            k = elm.Dot()
+            elm.Line().down().toy(op.out).dot()
+            if not hp:
+                elm.Line().at(m.center).up(u * 0.5)
+                elm.Capacitor().right().tox(op.out).label("$C_1$")
+                elm.Line().down().toy(k.center)
+        else:
+            op = elm.Opamp(leads=True, flip=True).right()        # + nahoře, − dole
+            elm.Line().at(op.in2).left(u * 0.7)
+            n = elm.Dot()
+            if hp:
+                elm.Capacitor().left().label("$C_1$")
+                elm.Dot(open=True).label(VST, loc="left")
+                elm.Resistor().at(n.center).down().label("$R_1$", loc="bottom")
+            else:
+                elm.Resistor().left().label("$R_1$")
+                elm.Dot(open=True).label(VST, loc="left")
+                elm.Capacitor().at(n.center).down().label("$C_1$", loc="bottom")
+            elm.Ground()
+            elm.Line().at(op.in1).left(u * 0.25)
+            elm.Line().down(u * 0.45)
+            m = elm.Dot()
+            elm.Resistor().right().tox(op.out).label("$R_2$", loc="bottom")
+            elm.Line().up().toy(op.out).dot()
+            elm.Resistor().at(m.center).down().label("$R_3$", loc="bottom")
+            elm.Ground()
+        _vystup(d, op, VYST)
+
+
+def fig15_dp1_neinv():
+    _rad1("fig15_dp1_neinv", hp=False, inv=False)
+
+
+def fig15_dp1_inv():
+    _rad1("fig15_dp1_inv", hp=False, inv=True)
+
+
+def fig15_hp1_neinv():
+    _rad1("fig15_hp1_neinv", hp=True, inv=False)
+
+
+def fig15_hp1_inv():
+    _rad1("fig15_hp1_inv", hp=True, inv=True)
+
+
+def _sallen_key(name, hp):
+    """Sallen-Key 2. řádu se ziskem 1 (slidy „DP/HP typu Sallen-Key“, „Pásmová propust“: záměna R ↔ C)."""
+    with schema(name, unit=2.3) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True, flip=True).right()            # + nahoře, − dole
+        elm.Line().at(op.in2).left(u * 0.6)
+        p = elm.Dot()
+        if hp:
+            elm.Capacitor().left().label("$C$")
+            a = elm.Dot()
+            elm.Capacitor().left().label("$C$")
+            elm.Dot(open=True).label(VST, loc="left")
+            elm.Resistor().at(p.center).down().label("$R_1$", loc="bottom")
+        else:
+            elm.Resistor().left().label("$R_2$")
+            a = elm.Dot()
+            elm.Resistor().left().label("$R_1$")
+            elm.Dot(open=True).label(VST, loc="left")
+            elm.Capacitor().at(p.center).down().label("$C_1$", loc="bottom")
+        elm.Ground()
+        _sledovac_zv(d, op)
+        elm.Line().at(a.center).up(u * 0.75)
+        if hp:
+            elm.Resistor().right().tox(op.out).label("$R_2$")
+        else:
+            elm.Capacitor().right().tox(op.out).label("$C_2$")
+        elm.Line().down().toy(op.out)
+        _vystup(d, op, VYST)
+
+
+def fig15_sk_dp():
+    _sallen_key("fig15_sk_dp", hp=False)
+
+
+def fig15_sk_hp():
+    _sallen_key("fig15_sk_hp", hp=True)
+
+
+def _mfb(name, vstup, zem, k_minus, zv_dole, zv_nahore):
+    """Struktura MFB (slidy „… typu MFB“): vstupní prvek → uzel a, z něj prvek na zem, prvek k invertujícímu
+    vstupu a horní zpětná vazba na výstup; dolní zpětná vazba z invertujícího vstupu na výstup.
+    Každý prvek je dvojice (třída prvku, popisek)."""
+    with schema(name, unit=2.3) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True)                               # − nahoře, + dole
+        _vstup_zem(d, op)
+        elm.Line().at(op.in1).left(u * 0.25)
+        n = elm.Dot()
+        k_minus[0]().left().label(k_minus[1], loc="bottom")
+        a = elm.Dot()
+        vstup[0]().left().label(vstup[1], loc="bottom")
+        elm.Dot(open=True).label(VST, loc="left")
+        zem[0]().at(a.center).down().label(zem[1], loc="bottom")
+        elm.Ground()
+        elm.Line().at(n.center).up(u * 0.5)
+        zv_dole[0]().right().tox(op.out).label(zv_dole[1])
+        k = elm.Dot()
+        elm.Line().down().toy(op.out).dot()
+        elm.Line().at(a.center).up(u * 1.05)
+        zv_nahore[0]().right().tox(op.out).label(zv_nahore[1])
+        elm.Line().down().toy(k.center)
+        _vystup(d, op, VYST)
+
+
+def fig15_mfb_dp():
+    R, C = elm.Resistor, elm.Capacitor
+    _mfb("fig15_mfb_dp", (R, "$R_1$"), (C, "$C_2$"), (R, "$R_3$"), (C, "$C_1$"), (R, "$R_2$"))
+
+
+def fig15_mfb_hp():
+    R, C = elm.Resistor, elm.Capacitor
+    _mfb("fig15_mfb_hp", (C, "$C_1 = C$"), (R, "$R_2$"), (C, "$C_3 = C$"), (R, "$R_1$"), (C, "$C_2$"))
+
+
+def fig15_mfb_pp():
+    R, C = elm.Resistor, elm.Capacitor
+    _mfb("fig15_mfb_pp", (R, "$R_1$"), (R, "$R_3$"), (C, "$C$"), (R, "$R_2$"), (C, "$C$"))
+
+
+def fig15_twint():
+    """Aktivní pásmová zádrž s dvojitým T-článkem (slide „Pásmová zádrž – dvojitý T článek“): R/2 vede na výstup."""
+    with schema("fig15_twint", unit=2.2) as d:
+        u = d.unit
+        svorka(d, (0, 0), VST)
+        elm.Line().right(u * 0.3)
+        v = elm.Dot()
+        elm.Resistor().right().label("$R$", loc="bottom")
+        b = elm.Dot()
+        elm.Resistor().right().label("$R$", loc="bottom")
+        p = elm.Dot()
+        elm.Capacitor().at(b.center).down().label("$2C$", loc="bottom")
+        elm.Ground()
+        elm.Line().at(v.center).up(u * 1.4)
+        elm.Capacitor().right().label("$C$", loc="bottom")
+        a = elm.Dot()
+        elm.Capacitor().right().label("$C$", loc="bottom")
+        elm.Line().down().toy(p.center)
+        op = elm.Opamp(leads=True, flip=True).right().anchor("in2").at((p.center[0] + u * 0.5, p.center[1]))
+        elm.Line().at(p.center).tox(op.in2)
+        elm.Line().at(op.in1).left(u * 0.25)
+        elm.Line().down(u * 0.5)
+        m = elm.Dot()
+        elm.Resistor().right().tox(op.out).label("$R_2$", loc="bottom")
+        elm.Line().up().toy(op.out).dot()
+        elm.Resistor().at(m.center).down().label("$R_1$", loc="bottom")
+        elm.Ground()
+        elm.Resistor().at(a.center).up(u * 0.7).label("$R/2$", loc="bottom", color=C2).color(C2)
+        elm.Line().right().tox(op.out).color(C2)
+        elm.Line().down().toy(op.out).color(C2)
+        _vystup(d, op, VYST)
+
+
+def fig15_wien():
+    """Wienův-Robinsonův můstek (pasivní, slide „Pásmová zádrž – Wienův-Robinsonův můstek“ vpravo)."""
+    with schema("fig15_wien", unit=2.0) as d:
+        u = d.unit
+        svorka(d, (0, 0), VST)
+        elm.Line().right(u * 0.9)
+        t1 = elm.Dot()
+        elm.Line().right(u * 2.4)
+        elm.Resistor().down(u * 1.2).label("$2R_1$")
+        y = elm.Dot()
+        elm.Resistor().down().label("$R_1$")
+        elm.Ground()
+        elm.Resistor().at(t1.center).down(u).label("$R$", loc="bottom")
+        elm.Capacitor().down(u).label("$C$", loc="bottom")
+        x = elm.Dot()
+        elm.Resistor().down().label("$R$", loc="bottom")
+        elm.Ground()
+        elm.Line().at(x.center).left(u * 0.8)
+        elm.Capacitor().down().label("$C$", loc="top")
+        elm.Ground()
+        xm = t1.center[0] + u * 1.2
+        elm.Line().at(x.center).tox(xm)
+        elm.Dot(open=True).label("$-$", loc="left")
+        elm.Line().at(y.center).tox(xm)
+        elm.Dot(open=True).label("$+$", loc="left")
+        elm.Label().at((xm + u * 0.15, (x.center[1] + y.center[1]) / 2)).label(VYST, loc="right")
+
+
+def fig15_kaskada_schema():
+    """Kaskáda čtyř RC článků oddělených sledovači (slide „Příklad kaskády filtrů“)."""
+    with schema("fig15_kaskada_schema", unit=1.9) as d:
+        u = d.unit
+        svorka(d, (0, 0), VST)
+        bod = (0, 0)
+        for i in range(4):
+            elm.Resistor().at(bod).right().label("$R$")
+            n = elm.Dot()
+            elm.Capacitor().at(n.center).down().label("$C$", loc="bottom")
+            elm.Ground()
+            op = elm.Opamp(leads=True, flip=True).right().anchor("in2").at((n.center[0] + u * 0.4, n.center[1]))
+            elm.Line().at(n.center).tox(op.in2)
+            _sledovac_zv(d, op, 0.35)
+            bod = elm.Line().at(op.out).right(u * 0.3).end
+        elm.Dot(open=True).at(bod).label(VYST, loc="right")
+
+
+def _h_ab(om, a1, b1, a0=1.0):
+    s = 1j * om
+    return a0 / (1 + a1 * s + b1 * s * s)
+
+
+def fig15_idealni_realny():
+    """Ideální a reálná DP (slidy „Charakteristika ideálního / reálného filtru“), reálná = Butterworth 4. řádu."""
+    om = np.logspace(-1, 1, 800)
+    real = -10 * np.log10(1 + om ** 8)
+    w1 = (10 ** 4 - 1) ** (1 / 8)                       # kde reálná DP klesne na A2 = −40 dB
+    fig, ax = plt.subplots(figsize=(7.8, 3.9))
+    ax.axvspan(0.1, 1, color=C1, alpha=0.08, lw=0)
+    ax.axvspan(1, w1, color=C2, alpha=0.10, lw=0)
+    ax.axvspan(w1, 10, color=C3, alpha=0.08, lw=0)
+    ax.plot([0.1, 1, 1, 10], [0, 0, -70, -70], color=INK2, lw=1.4, ls="--", label="ideální DP")
+    ax.plot(om, real, color=C1, label="reálná DP (4. řád)")
+    ax.axhline(-3.01, color=MUTED, lw=0.8, ls=":")
+    ax.axhline(-40, color=MUTED, lw=0.8, ls=":")
+    ax.plot([1, w1], [-3.01, -40], "o", color=C1, mec=SURF)
+    ax.text(0.105, -4.5, "$A_1$ = −3 dB", fontsize=9.5, color=INK2, va="top")
+    ax.text(0.105, -41.5, "$A_2$ = −40 dB", fontsize=9.5, color=INK2, va="top")
+    for x, txt in [(0.3, "pásmo\npropustnosti"), (np.sqrt(w1), "přechodová\noblast"), (6.0, "pásmo\nútlumu")]:
+        ax.text(x, -58, txt, fontsize=9.5, color=INK2, ha="center", weight="semibold")
+    ax.set_xscale("log")
+    ax.set_xticks([0.1, 1, w1, 10])
+    ax.set_xticklabels(["0,1", "$\\omega_0$", "$\\omega_1$", "10"])
+    ax.xaxis.set_minor_locator(mticker.NullLocator())
+    ax.set_xlim(0.1, 10)
+    ax.set_ylim(-72, 5)
+    ax.set_xlabel("normovaná frekvence Ω = ω/ω₀ (log. osa)")
+    ax.set_ylabel("|A| [dB]")
+    ax.legend(loc="upper right", fontsize=9)
+    ax.set_title("Ideální a reálná dolní propust", loc="left")
+    save(fig, "fig15_idealni_realny")
+
+
+def fig15_strmost():
+    """HP 1. řádu s f_M = 1,8 kHz: oktávy a dekády pod mezní frekvencí (příklad ze slidů „Řád filtru a strmost“)."""
+    fM = 1800.0
+    f = np.logspace(1, 5, 800)
+    fig, ax = plt.subplots(figsize=(7.8, 4.0))
+    ax.plot(f, np.minimum(0, 20 * np.log10(f / fM)), color=MUTED, lw=1.2, ls="--", label="asymptota")
+    ax.plot(f, db(h_hp(f, fM)), color=C1, label="HP 1. řádu, $f_M$ = 1,8 kHz")
+    body = [(1800, "o", C1, (12, -10)), (900, "s", C2, (10, -14)), (450, "s", C2, (8, -4)),
+            (180, "^", C3, (8, -4)), (18, "^", C3, (8, -4))]
+    for fx, mk, col, off in body:
+        y = db(h_hp(fx, fM))
+        ax.plot(fx, y, mk, color=col, ms=7, mec=SURF)
+        ax.annotate(f"{cz(fx, 0)} Hz: {cz(y, 1)} dB".replace("-", "−"), (fx, y), xytext=off,
+                    textcoords="offset points", fontsize=9, color=INK2)
+    ax.text(25, -14, "oktáva (½ f): asi −6 dB\ndekáda (⅒ f): −20 dB", fontsize=9.5, color=INK2)
+    log_osa(ax, "frekvence f [Hz] (log. osa)")
+    ax.set_xticks([10, 100, 1000, 10000, 100000])
+    ax.set_xticklabels(["10", "100", "1 k", "10 k", "100 k"])
+    ax.set_xlim(10, 1e5)
+    ax.set_ylim(-50, 5)
+    ax.set_ylabel("|H| [dB]")
+    ax.legend(loc="lower right", fontsize=9)
+    ax.set_title("Strmost 6 dB/okt = 20 dB/dek (horní propust 1. řádu)", loc="left")
+    save(fig, "fig15_strmost")
+
+
+def fig15_sk_q():
+    """DP 2. řádu s koeficienty z tabulky slidu „DP typu Sallen-Key“ (normovaná frekvence)."""
+    om = np.logspace(-1, 1, 800)
+    fig, ax = plt.subplots(figsize=(7.8, 3.9))
+    for (nazev, a1, b1), col, mk in zip([("Bessel, Q = 0,58", 1.3617, 0.6180),
+                                         ("Butterworth, Q = 0,71", 1.4142, 1.0),
+                                         ("Čebyšev 3 dB, Q = 1,3", 1.065, 1.9305)], CAT, MARK):
+        y = db(_h_ab(om, a1, b1))
+        ax.plot(om, y, color=col, label=nazev, marker=mk, markevery=80, ms=5)
+    ax.axhline(-3.01, color=MUTED, lw=0.8, ls=":")
+    ax.axvline(1, color=MUTED, lw=0.8, ls=":")
+    ax.text(0.105, -2.4, "−3 dB", fontsize=9, color=INK2)
+    ax.set_xscale("log")
+    ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:g}".replace(".", ",")))
+    ax.set_xlim(0.1, 10)
+    ax.set_ylim(-45, 6)
+    ax.set_xlabel("normovaná frekvence $\\Omega = f/f_c$ (log. osa)")
+    ax.set_ylabel("|A| [dB]")
+    ax.legend(loc="lower left", fontsize=9)
+    ax.set_title("Dolní propust 2. řádu: stejné zapojení, jiné a₁, b₁", loc="left")
+    save(fig, "fig15_sk_q")
+
+
+def _mfb_pp(f, fm, Q, Am, C):
+    R2 = Q / (np.pi * fm * C)
+    R1 = R2 / (2 * Am)
+    K = (2 * np.pi * fm * C) ** 2 * R2
+    R3 = R1 / (K * R1 - 1)
+    s = 1j * 2 * np.pi * f
+    return -(s / (R1 * C)) / (s * s + 2 * s / (R2 * C) + (1 / R1 + 1 / R3) / (R2 * C * C))
+
+
+def fig15_pp_mfb():
+    """Pásmová propust MFB: f_m = 1 kHz, |A_m| = 2, C = 10 nF; Q = 5 a Q = 2 (vlastní čísla; R3 > 0 vyžaduje |A_m| < 2Q²)."""
+    f = np.logspace(2, 4, 1200)
+    fig, ax = plt.subplots(figsize=(7.8, 3.9))
+    for Q, col, mk in [(5, C1, "o"), (2, C2, "s")]:
+        ax.plot(f, db(_mfb_pp(f, 1000, Q, 2, 10e-9)), color=col, marker=mk, markevery=150, ms=5,
+                label=f"Q = {Q}: B = {1000 // Q:.0f} Hz")
+    pk = 20 * np.log10(2)
+    ax.axhline(pk - 3.01, color=MUTED, lw=0.8, ls=":")
+    for fx in (905.0, 1105.0):
+        ax.plot(fx, pk - 3.01, "o", color=INK, ms=5, mec=SURF)
+    ax.annotate("905 Hz a 1105 Hz:\n−3 dB pod vrcholem", (905, pk - 3.01), xytext=(-150, -30),
+                textcoords="offset points", fontsize=9, color=INK2,
+                arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.annotate("vrchol $|A_m|$ = 2 (6,02 dB)\nna $f_m$ = 1 kHz", (1000, pk), xytext=(30, 2),
+                textcoords="offset points", fontsize=9, color=INK2)
+    log_osa(ax, "frekvence f [Hz] (log. osa)")
+    ax.set_xticks([100, 1000, 10000])
+    ax.set_xticklabels(["100", "1 k", "10 k"])
+    ax.set_ylim(-30, 12)
+    ax.set_ylabel("|A| [dB]")
+    ax.legend(loc="upper left", fontsize=9)
+    ax.set_title("Pásmová propust MFB: Q určuje šířku pásma", loc="left")
+    save(fig, "fig15_pp_mfb")
+
+
+def fig15_pz_q():
+    """Pásmová zádrž A(s) = (1 + s²)/(1 + s/Q + s²) na 50 Hz pro Q = 0,25; 1; 10 (jako graf na slidu)."""
+    f = np.logspace(0, 4, 3000)
+    fig, ax = plt.subplots(figsize=(7.8, 3.9))
+    for Q, col, mk in [(0.25, C1, "o"), (1, C2, "s"), (10, C3, "^")]:
+        s = 1j * f / 50
+        ax.plot(f, db((1 + s * s) / (1 + s / Q + s * s)), color=col, marker=mk, markevery=300, ms=5,
+                label=f"Q = {cz(Q, 2).rstrip('0').rstrip(',')}")
+    ax.axhline(-3.01, color=MUTED, lw=0.8, ls=":")
+    ax.text(1.1, -2.5, "−3 dB", fontsize=9, color=INK2)
+    log_osa(ax, "frekvence f [Hz] (log. osa)")
+    ax.set_xticks([1, 10, 50, 100, 1000, 10000])
+    ax.set_xticklabels(["1", "10", "50", "100", "1 k", "10 k"])
+    ax.set_ylim(-40, 3)
+    ax.set_ylabel("|A| [dB]")
+    ax.legend(loc="lower left", fontsize=9)
+    ax.set_title("Pásmová zádrž na 50 Hz: čím větší Q, tím užší zářez", loc="left")
+    save(fig, "fig15_pz_q")
+
+
+def fig15_kaskada():
+    """1. řád, kaskáda 4 RC článků (každý s mezní frekvencí 2,3 Ω) a Butterworth 4. řádu: amplituda a fáze."""
+    om = np.logspace(-2, 2, 1200)
+    k = 1 / np.sqrt(2 ** 0.25 - 1)
+    b4, a4 = signal.butter(4, 1, analog=True)
+    _, hb = signal.freqs(b4, a4, worN=om)
+    krivky = [("1. řád (jeden RC článek)", 1 / (1 + 1j * om)),
+              ("4 RC články za sebou", (1 / (1 + 1j * om / k)) ** 4),
+              ("Butterworth 4. řádu", hb)]
+    fig, axs = plt.subplots(2, 1, figsize=(7.8, 5.6), sharex=True)
+    for (nazev, h), col, mk in zip(krivky, CAT, MARK):
+        axs[0].plot(om, db(h), color=col, marker=mk, markevery=150, ms=5, label=nazev)
+        axs[1].plot(om, np.degrees(np.unwrap(np.angle(h))), color=col, marker=mk, markevery=150, ms=5)
+    axs[0].axhline(-3.01, color=MUTED, lw=0.8, ls=":")
+    axs[0].set_ylim(-80, 5)
+    axs[0].set_ylabel("|A| [dB]")
+    axs[0].legend(loc="lower left", fontsize=9)
+    axs[0].set_title("Kaskáda filtrů: 4 stejné články nejsou „ideální“ 4. řád", loc="left")
+    axs[1].set_ylim(-370, 10)
+    axs[1].set_yticks([0, -90, -180, -270, -360])
+    axs[1].set_ylabel("fáze φ [°]")
+    axs[1].set_xscale("log")
+    axs[1].xaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:g}".replace(".", ",")))
+    axs[1].set_xlabel("normovaná frekvence $\\Omega = f/f_c$ (log. osa)")
+    save(fig, "fig15_kaskada")
+
+
+def fig15_butterworth():
+    """Butterworthova DP řádu 1, 2, 4 a 10 (slide „Butterworthova aproximace DP“)."""
+    om = np.logspace(-1, 2, 1200)
+    fig, ax = plt.subplots(figsize=(7.8, 3.9))
+    barvy = [C1, C2, C3, INK2]
+    for n, col, mk in zip([1, 2, 4, 10], barvy, ["o", "s", "^", "D"]):
+        ax.plot(om, -10 * np.log10(1 + om ** (2 * n)), color=col, marker=mk, markevery=150, ms=5,
+                label=f"{n}. řád")
+    ax.axhline(-3.01, color=MUTED, lw=0.8, ls=":")
+    ax.set_xscale("log")
+    ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:g}".replace(".", ",")))
+    ax.set_xlim(0.1, 100)
+    ax.set_ylim(-60, 5)
+    ax.set_xlabel("normovaná frekvence $\\Omega = f/f_c$ (log. osa)")
+    ax.set_ylabel("|A| [dB]")
+    ax.legend(loc="lower left", fontsize=9)
+    ax.set_title("Butterworth: plochý vršek, s řádem strmější pokles", loc="left")
+    save(fig, "fig15_butterworth")
+
+
+def fig15_aproximace():
+    """Bessel, Butterworth a Čebyšev (zvlnění 3 dB), vše 4. řád s −3 dB v Ω = 1: amplituda, fáze, skupinové zpoždění."""
+    om = np.logspace(-1, 1, 2000)
+    filtry = [("Butterworth", signal.butter(4, 1, analog=True)),
+              ("Čebyšev (zvlnění 3 dB)", signal.cheby1(4, 3, 1, analog=True)),
+              ("Bessel", signal.bessel(4, 1, analog=True, norm="mag"))]
+    fig, axs = plt.subplots(3, 1, figsize=(7.8, 7.6), sharex=True)
+    for (nazev, (b, a)), col, mk in zip(filtry, CAT, MARK):
+        _, h = signal.freqs(b, a, worN=om)
+        faze = np.unwrap(np.angle(h))
+        tg = -np.gradient(faze, om)
+        kw = dict(color=col, marker=mk, markevery=250, ms=5)
+        axs[0].plot(om, db(h), label=nazev, **kw)
+        axs[1].plot(om, np.degrees(faze), **kw)
+        axs[2].plot(om, tg, **kw)
+    axs[0].axhline(-3.01, color=MUTED, lw=0.8, ls=":")
+    axs[0].set_ylim(-60, 5)
+    axs[0].set_ylabel("|A| [dB]")
+    axs[0].legend(loc="lower left", fontsize=9)
+    axs[0].set_title("Tři aproximace dolní propusti 4. řádu", loc="left")
+    axs[1].set_ylim(-370, 10)
+    axs[1].set_yticks([0, -90, -180, -270, -360])
+    axs[1].set_ylabel("fáze φ [°]")
+    axs[2].set_ylabel("skup. zpoždění $\\tau_g \\omega_c$")
+    axs[2].set_ylim(0, 6)
+    axs[2].set_xscale("log")
+    axs[2].xaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:g}".replace(".", ",")))
+    axs[2].set_xlabel("normovaná frekvence $\\Omega = \\omega/\\omega_c$ (log. osa)")
+    save(fig, "fig15_aproximace")
+
+
 ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig02_xc, fig02_dp_hp, fig02_bode_dp, fig02_bode_hp, fig02_postup, fig02_typy, fig02_pp_schema,
        fig02_bode_pp, fig02_pz_schema, fig02_bode_pz,
@@ -2014,7 +2466,10 @@ ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig13_omezeni_va, fig13_vlecny, fig13_proudovy,
        fig14_nulovani, fig14_neinv_int, fig14_dif_int, fig14_der_osetreny, fig14_jednocestny, fig14_usm_a,
        fig14_usm_b, fig14_dvoucestny, fig14_vrcholovy, fig14_int_prubeh, fig14_nulovani_prubeh, fig14_der_bode,
-       fig14_der_trojuhelnik, fig14_usm_prubeh, fig14_vrchol_prubeh]
+       fig14_der_trojuhelnik, fig14_usm_prubeh, fig14_vrchol_prubeh,
+       fig15_dp1_neinv, fig15_dp1_inv, fig15_hp1_neinv, fig15_hp1_inv, fig15_sk_dp, fig15_sk_hp, fig15_mfb_dp,
+       fig15_mfb_hp, fig15_mfb_pp, fig15_twint, fig15_wien, fig15_kaskada_schema, fig15_idealni_realny,
+       fig15_strmost, fig15_sk_q, fig15_pp_mfb, fig15_pz_q, fig15_kaskada, fig15_butterworth, fig15_aproximace]
 
 if __name__ == "__main__":
     vyber = sys.argv[1:]

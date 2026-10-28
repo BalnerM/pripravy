@@ -307,3 +307,73 @@
 <div class="box definice" id="s-obnoveni-nuly"><div class="box-t">obnovení nuly (vybíjecí obvod)</div>
 <p><b>Obnovení nuly</b> je vybíjecí obvod vrcholového detektoru, který po sepnutí spínače vybíjí napětí kondenzátoru \(u_C\) přes rezistor \(R_V\) do GND.</p>
 <p class="jinak">„vynulování ručičky maxima“ – stejná myšlenka jako nulovací obvod integrátoru. \(R_V\) omezí vybíjecí proud, aby spínač nezatížil kondenzátor zkratem.</p><p class="slovnik-odkaz"><a href="14_oz_zapojeni.html#def-obnoveni-nuly">výklad v kapitole P4 →</a></p></div>
+<h2 id="kP5" class="slovnik-kap">P5 · Aplikace OZ II: aktivní filtry</h2>
+<div class="box definice" id="s-prenosova-funkce"><div class="box-t">přenosová funkce filtru</div>
+<p><b>Přenosová funkce</b> \(H(p)\) je podíl výstupního a vstupního napětí v operátorovém tvaru. Obecně je to podíl dvou polynomů v proměnné \(p = j\omega\) s reálnými koeficienty \(c\) a \(b\), přičemž stupeň čitatele \(m\) není větší než stupeň jmenovatele \(n\):</p>
+<p>\[ H(p) = \frac{U_o(p)}{U_i(p)} = \frac{c_m p^m + \dots + c_1 p + c_0}{b_n p^n + \dots + b_1 p + b_0} \]</p>
+<p class="jinak">vzorec, který o filtru říká všechno. Dosadím-li \(p = j\omega\), dostanu komplexní číslo: jeho velikost je zesílení na frekvenci \(\omega\), jeho úhel fázový posun. Stupeň jmenovatele \(n\) je řád filtru.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-prenosova-funkce">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-idealni-filtr"><div class="box-t">ideální filtr</div>
+<p><b>Ideální filtr</b> má v propustném pásmu přenos beze změny (\(A = 1\)), na mezní frekvenci \(\omega_0\) absolutní strmost a za mezní frekvencí nulový přenos. Odpovídá filtru nekonečného řádu, \(n \to \infty\).</p>
+<p class="jinak">dokonalé „síto“: všechno pod \(\omega_0\) projde beze změny, nic nad \(\omega_0\) neprojde. Takový filtr nejde postavit – každý skutečný filtr má mezi propouštěním a potlačením přechod.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-idealni-filtr">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-pasma-filtru"><div class="box-t">pásmo propustnosti, přechodová oblast a pásmo útlumu</div>
+<p>Amplitudová charakteristika reálného filtru má tři části. <b>Pásmo propustnosti</b> sahá k mezní frekvenci \(\omega_0\), kde přenos neklesne pod \(A_1\). <b>Pásmo útlumu</b> začíná na frekvenci \(\omega_1\), od které přenos nepřekročí \(A_2\). Mezi nimi leží <b>přechodová oblast</b>, kde přenos postupně klesá; nemá absolutní strmost.</p>
+<p class="jinak">„tolerance“ filtru. Čím menší je přechodová oblast (\(\omega_1\) blíž \(\omega_0\)), tím je filtr lepší, ale potřebuje vyšší řád.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-pasma-filtru">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-strmost"><div class="box-t">strmost charakteristiky</div>
+<p><b>Strmost</b> charakteristiky filtru je změna přenosu (v dB) v nepropustném pásmu na jednotku logaritmu frekvence. Udává se v dB na oktávu (dB/okt, změna při zdvojnásobení nebo zpoložení frekvence) nebo v dB na dekádu (dB/dek, změna při desetinásobné nebo desetinové frekvenci). Filtr \(n\)-tého řádu má strmost \(n \cdot 6\) dB/okt, tedy \(n \cdot 20\) dB/dek.</p>
+<p class="jinak">jak prudký je „sráz“ za mezní frekvencí. 1. řád: o oktávu dál je signál zhruba poloviční (−6 dB), o dekádu dál desetinový (−20 dB). Každý další řád přidá stejný kus.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-strmost">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-dekada"><div class="box-t">dekáda</div>
+<p><b>Dekáda</b> je frekvenční interval, ve kterém se frekvence zdesetinásobí, resp. klesne na desetinu (\(f \to 10f\) nebo \(f \to f/10\)).</p>
+<p class="jinak">jeden „dílek“ na logaritmické ose: 10 Hz → 100 Hz → 1 kHz. Oktáva (<a href="14_oz_zapojeni.html#def-oktava">P4</a>) je menší krok – dvojnásobek frekvence; do jedné dekády se vejde asi 3,3 oktávy.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-dekada">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-pasivni-filtr"><div class="box-t">pasivní filtr</div>
+<p><b>Pasivní filtr</b> je tvořen jen pasivními obvodovými prvky (R, L, C), přinejmenším jedním prvkem s reaktancí, tedy prvkem s frekvenční závislostí (L, C).</p>
+<p class="jinak">RC nebo LC článek bez zesilovače. Nepotřebuje napájení, ale signál může jen zeslabit.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-pasivni-filtr">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-aktivni-filtr"><div class="box-t">aktivní filtr</div>
+<p><b>Aktivní filtr</b> používá kromě pasivních obvodových prvků i aktivní prvky, především operační zesilovače. Vyžaduje externí zdroj energie (napájení OZ \(\pm U_{CC}\)).</p>
+<p class="jinak">RC článek „obalený“ operačním zesilovačem. OZ dodá energii, takže filtr může signál i zesílit, a díky zpětné vazbě dosáhne RC zapojení stejné strmosti jako cívky.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-aktivni-filtr">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-normovana-frekvence"><div class="box-t">normovaná frekvence</div>
+<p><b>Normovaná frekvence</b> \(\Omega\) je frekvence vztažená k mezní frekvenci filtru:</p>
+<p>\[ \Omega = \frac{f}{f_c} = \frac{\omega}{\omega_c} \]</p>
+<p>Normovaná komplexní proměnná je \(s = j\omega/\omega_c = j\Omega\).</p>
+<p class="jinak">místo „kolik je to hertzů“ se ptám „kolikrát je to nad mezní frekvencí“. Mezní frekvence je pak vždy \(\Omega = 1\) a jeden graf platí pro filtr na 10 Hz i na 10 kHz.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-normovana-frekvence">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-cinitel-jakosti"><div class="box-t">činitel jakosti Q</div>
+<p><b>Činitel jakosti</b> \(Q\) popisuje, jak výrazný „hrb“ má článek 2. řádu kolem mezní frekvence. Pro dolní nebo horní propust 2. řádu je</p>
+<p>\[ Q = \frac{\sqrt{b_1}}{a_1} \]</p>
+<p>a pro pásmovou propust nebo zádrž je to poměr střední frekvence a šířky pásma:</p>
+<p>\[ Q = \frac{f_m}{B} \]</p>
+<p class="jinak">„ostrost“ filtru. U pásmové propusti či zádrže znamená velké \(Q\) úzké pásmo (\(Q\) = 10 propustí jen desetinu \(f_m\)). U dolní propusti malé \(Q\) dá pozvolný ohyb, velké \(Q\) převýšení před zlomem.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-cinitel-jakosti">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-sallen-key"><div class="box-t">zapojení Sallen-Key</div>
+<p><b>Sallen-Key</b> je zapojení aktivního filtru 2. řádu se dvěma rezistory, dvěma kondenzátory a OZ zapojeným jako <a href="04_dalsi_zapojeni.html#def-sledovac">sledovač</a> (nebo neinvertující zesilovač). Jeden reaktanční prvek vede na zem z neinvertujícího vstupu, druhý vede kladnou zpětnou vazbu z výstupu do uzlu mezi oběma vstupními prvky.</p>
+<p class="jinak">dva RC články za sebou, ale druhý kondenzátor (u DP) není na zemi – je připojen k výstupu. Výstup tak „pomáhá“ signálu kolem mezní frekvence a charakteristika se v ohybu zostří. Zisk je kladný (neinvertující).</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-sallen-key">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-mfb"><div class="box-t">zapojení MFB (Multiple FeedBack)</div>
+<p><b>MFB</b> (Multiple FeedBack, vícenásobná zpětná vazba) je zapojení aktivního filtru 2. řádu s OZ v invertujícím zapojení, ve kterém vedou z výstupu <b>dvě</b> zpětné vazby: jedna na invertující vstup a druhá do uzlu mezi vstupními prvky.</p>
+<p class="jinak">invertující zesilovač se dvěma zpětnými vazbami. Zisk je záporný (signál se otočí), zapojení je málo citlivé na tolerance součástek a hodí se i pro velké \(Q\) (pásmové propusti).</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-mfb">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-aktivni-dvojity-t"><div class="box-t">aktivní pásmová zádrž s dvojitým T-článkem</div>
+<p><b>Aktivní dvojitý T-článek</b> je pásmová zádrž, ve které je výstup dvojitého T-článku připojen na neinvertující zesilovač se ziskem \(G = 1 + R_2/R_1\) a příčný rezistor \(R/2\) není uzemněn, ale připojen na výstup OZ. Činitel jakosti pak závisí na zisku: \(Q = 1/(2(2 - G))\).</p>
+<p class="jinak">stejný T-článek jako v základech, jen jeho „zemní“ rezistor dostává zpět výstupní signál. Tím se zářez zúží – a jak úzký bude, nastavím jedním poměrem rezistorů.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-aktivni-dvojity-t">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-wien-robinson"><div class="box-t">Wienův-Robinsonův můstek</div>
+<p><b>Wienův-Robinsonův můstek</b> je pásmová zádrž tvořená dvěma děliči ze stejného vstupního napětí: frekvenčně závislým (sériový \(RC\) a paralelní \(RC\)) a odporovým (\(2R_1\) a \(R_1\)). Výstupní napětí se bere mezi středy obou děličů. Na frekvenci \(f_m = 1/(2\pi RC)\) dávají oba děliče třetinu vstupního napětí a výstup je nulový.</p>
+<p class="jinak">dvě „váhy“ vedle sebe. Odporový dělič dá vždy 1/3 vstupu, RC dělič dá 1/3 jen na \(f_m\) – jinde víc nebo méně. Rozdíl mezi nimi je proto nulový právě na \(f_m\).</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-wien-robinson">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-kaskada-filtru"><div class="box-t">kaskáda filtrů</div>
+<p><b>Kaskáda filtrů</b> je sériové řazení filtračních článků, kdy výstup jednoho článku je vstupem dalšího. Je-li každý článek oddělen OZ (nízký výstupní a vysoký vstupní odpor), přenosy článků se násobí (v dB sčítají) a řády se sčítají.</p>
+<p class="jinak">filtry „za sebou“. Čtyři články 1. řádu dají filtr 4. řádu (80 dB/dek). OZ mezi nimi zajistí, aby se nezatěžovaly – každý článek se pak dá spočítat samostatně.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-kaskada-filtru">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-aproximace-filtru"><div class="box-t">aproximace filtru</div>
+<p><b>Aproximace filtru</b> je volba koeficientů přenosové funkce (\(a_i\), \(b_i\)) daného řádu tak, aby se charakteristika co nejvíc přiblížila ideálnímu filtru podle jednoho zvoleného kritéria – plochosti propustného pásma, strmosti přechodu nebo linearity fáze.</p>
+<p class="jinak">ideální filtr postavit nejde, tak si vyberu, v čem se mu má reálný filtr podobat nejvíc. Zapojení zůstane stejné (Sallen-Key, MFB), změní se jen hodnoty součástek.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-aproximace-filtru">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-butterworth"><div class="box-t">Butterworthův filtr</div>
+<p><b>Butterworthův filtr</b> má maximálně plochou amplitudovou charakteristiku v propustném pásmu (bez zvlnění). Dolní propust \(n\)-tého řádu má</p>
+<p>\[ |A| = \frac{1}{\sqrt{1 + \Omega^{2n}}} \]</p>
+<p class="jinak">„nejrovnější vršek“: signál v propustném pásmu projde se stejným zesílením, žádná frekvence se nezvýrazní. Proto se podle slidu používá jako antialiasingový filtr pro precizní zpracování signálů.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-butterworth">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-antialiasingovy-filtr"><div class="box-t">antialiasingový filtr</div>
+<p><b>Antialiasingový filtr</b> je analogová dolní propust zařazená před A/D převodník, která potlačí složky signálu s frekvencí nad polovinou vzorkovací frekvence, aby se po vzorkování nepřeložily do užitečného pásma (aliasing).</p>
+<p class="jinak">„strážce“ před převodníkem. Co by převodník nedokázal správně navzorkovat, musí se odfiltrovat dřív, než se to stane – digitálně už to opravit nejde. Vzorkování a aliasing patří k přednášce o A/D převodnících.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-antialiasingovy-filtr">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-cebysev"><div class="box-t">Čebyševův filtr</div>
+<p><b>Čebyševův filtr</b> má rychlý pokles útlumu mezi propustným a nepropustným pásmem za cenu zvlnění přenosu ke konci propustného pásma. Velikost zvlnění (např. 3 dB) je parametrem návrhu.</p>
+<p class="jinak">nejstrmější „sráz“ při daném řádu, ale vršek není rovný – v propustném pásmu se zesílení trochu „vlní“.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-cebysev">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-bessel"><div class="box-t">Besselův filtr</div>
+<p><b>Besselův filtr</b> má lineární fázi do mezního kmitočtu, tedy konstantní <a href="15_aktivni_filtry.html#def-skupinove-zpozdeni">skupinové zpoždění</a> v propustném pásmu. Jeho amplitudová charakteristika má nejpozvolnější přechod ze tří aproximací.</p>
+<p class="jinak">filtr, který nemění tvar signálu: všechny složky v propustném pásmu zpozdí o stejný čas. Hodí se tam, kde záleží na tvaru křivky (např. QRS komplex v EKG) a ne na ostrém oddělení frekvencí.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-bessel">výklad v kapitole P5 →</a></p></div>
+<div class="box definice" id="s-skupinove-zpozdeni"><div class="box-t">skupinové zpoždění</div>
+<p><b>Skupinové zpoždění</b> je záporná derivace fázové charakteristiky podle úhlové frekvence:</p>
+<p>\[ \tau_g = -\frac{d\varphi}{d\omega} \]</p>
+<p>Udává, o jakou dobu filtr zpozdí složky signálu kolem frekvence \(\omega\).</p>
+<p class="jinak">je-li fáze lineární (přímka), je \(\tau_g\) konstantní: všechny frekvence dorazí se stejným zpožděním a tvar signálu se zachová. Kde \(\tau_g\) kolísá, se signál „rozmaže“ nebo zakmitá.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-skupinove-zpozdeni">výklad v kapitole P5 →</a></p></div>
