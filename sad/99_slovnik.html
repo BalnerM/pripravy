@@ -34,6 +34,7 @@
     <li><a href="05_tahak.html"><span class="n">★</span><span>Tahák: základy</span></a></li>
     <li><a href="11_signal.html"><span class="n">P1</span><span>Úvod: signál a jeho převod na napětí</span></a></li>
     <li><a href="12_uprava.html"><span class="n">P2</span><span>Úprava signálu: tranzistorové zesilovače a OZ</span></a></li>
+    <li><a href="13_napajeni.html"><span class="n">P3</span><span>Napájení a zdroje referenčního napětí</span></a></li>
     <li><a href="99_slovnik.html" class="active"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
   </ol>
   <h4>Na této stránce</h4>
@@ -44,6 +45,7 @@
     <li><a href="#kZ4">Z4 · Sledovač, integrátor, derivátor</a></li>
     <li><a href="#kP1">P1 · Úvod: signál a jeho převod na napětí</a></li>
     <li><a href="#kP2">P2 · Úprava signálu: tranzistorové zesilovače a OZ</a></li>
+    <li><a href="#kP3">P3 · Napájení a zdroje referenčního napětí</a></li>
   </ul>
 </nav>
 <main>
@@ -271,8 +273,51 @@
 <div class="box definice" id="s-komparator"><div class="box-t">napěťový komparátor</div>
 <p><b>Napěťový komparátor</b> je zapojení OZ <b>bez zpětné vazby</b> s maximálním zesílením, jehož výstup nabývá jen hodnoty maxima nebo minima napětí (saturace) podle toho, které ze dvou vstupních napětí je větší.</p>
 <p class="jinak">komparátor neměří, o kolik se napětí liší, jen <b>které je větší</b>. Výstup je „ano / ne“ – most mezi analogovým signálem a logikou. Je to jediná běžná aplikace OZ bez zpětné vazby.</p><p class="slovnik-odkaz"><a href="12_uprava.html#def-komparator">výklad v kapitole P2 →</a></p></div>
+<h2 id="kP3" class="slovnik-kap">P3 · Napájení a zdroje referenčního napětí</h2>
+<div class="box definice" id="s-napetova-reference"><div class="box-t">napěťová reference</div>
+<p><b>Napěťová reference</b> (zdroj referenčního napětí) je vysoce precizní zdroj napětí, který dlouhodobě, v čase i při různé teplotě udržuje neměnný potenciál. Nejdůležitějšími vlastnostmi reference jsou <b>přesnost</b> a <b>stabilita</b>.</p>
+<p class="jinak">reference je „elektrické pravítko“. Napětí ze senzoru má smysl jen ve srovnání s něčím, co se nemění – proto se jí říká reference. Hraje velkou roli všude, kde se měří elektrické veličiny, hlavně v A/D převodníku.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-napetova-reference">výklad v kapitole P3 →</a></p></div>
+<div class="box definice" id="s-chyba-reference"><div class="box-t">chyba reference</div>
+<p><b>Chyba reference</b> je odchylka skutečného napětí reference od jeho definované (jmenovité) hodnoty.</p>
+<p class="jinak">o kolik „lže pravítko“. Chyba má několik složek: výrobní odchylku (počáteční přesnost), vliv teploty (teplotní drift a hystereze) a stárnutí (dlouhodobá stabilita).</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-chyba-reference">výklad v kapitole P3 →</a></p></div>
+<div class="box definice" id="s-pocatecni-presnost"><div class="box-t">počáteční přesnost (Initial Accuracy)</div>
+<p><b>Počáteční přesnost</b> reference udává možný rozdíl jejího napětí od definovaného napětí, měřený obvykle při teplotě \(\tau\) = 25 °C.</p>
+<p class="jinak">výrobní tolerance: jak moc se smí konkrétní kus lišit od hodnoty v katalogu hned po vybalení. Bez dalších vlivů (teplota, čas) se chyba z tohoto rozmezí nevychýlí.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-pocatecni-presnost">výklad v kapitole P3 →</a></p></div>
+<div class="box definice" id="s-teplotni-drift"><div class="box-t">teplotní drift</div>
+<p><b>Teplotní drift</b> (teplotní koeficient) udává, jak se mění odchylka napětí reference s teplotou. Uvádí se v ppm/°C a představuje možnou odchylku napětí při změně teploty o 1 °C.</p>
+<p class="jinak">o kolik se „pravítko roztáhne“, když se ohřeje. Příčinou je nedokonalost polovodičové struktury a nelinearity referenčních prvků. Samotný drift je nelineární; na menším rozsahu teplot je proto menší.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-teplotni-drift">výklad v kapitole P3 →</a></p></div>
+<div class="box definice" id="s-dlouhodoba-stabilita"><div class="box-t">dlouhodobá stabilita (Long Term Stability)</div>
+<p><b>Dlouhodobá stabilita</b> reference popisuje sklon referenčního napětí ke změnám v čase nezávisle na dalších proměnných či podmínkách. Odpovídá „stárnutí“ obvodu reference a zahrnuje změny elektrických vlastností obvodu, např. ustálení některých hodnot. Často se udává v jednotkách drift/\(\sqrt{\text{kHr}}\).</p>
+<p class="jinak">jak pravítko „stárne“. Nejvíc se napětí mění na začátku provozu, pak se součástky ustálí a změny se zpomalují – proto se drift počítá s <b>odmocninou</b> času, ne s časem.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-dlouhodoba-stabilita">výklad v kapitole P3 →</a></p></div>
+<div class="box definice" id="s-teplotni-hystereze"><div class="box-t">teplotní hystereze</div>
+<p><b>Teplotní hystereze</b> reference je změna výstupního napětí při dané teplotě, která následuje po teplotním cyklu s větší tepelnou náročností. Je to přirozená vlastnost, která odráží různé teplotní namáhání obvodu v jednotlivých cyklech.</p>
+<p class="jinak">po ohřátí a zchladnutí zpět na stejnou teplotu už reference nemá úplně stejné napětí jako předtím – „pamatuje si“, čím prošla. Nezávisí na teplotním koeficientu ani na časovém driftu, ale dokáže snížit účinnost výchozí napěťové kalibrace.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-teplotni-hystereze">výklad v kapitole P3 →</a></p></div>
+<div class="box definice" id="s-zdroj-napeti"><div class="box-t">zdroj napětí</div>
+<p><b>Zdroj napětí</b> je elektrický zdroj, který na svém výstupu udržuje stálé elektrické napětí bez ohledu na odebíraný elektrický proud. Reálný zdroj napětí má limit odebíraného proudu.</p>
+<p class="jinak">ideální zdroj napětí je dokonale <a href="11_signal.html#def-tvrdy-mekky-zdroj">tvrdý</a>: ať odebírám jakýkoli proud, napětí se nepohne. Skutečný zdroj dá jen omezený proud.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-zdroj-napeti">výklad v kapitole P3 →</a></p></div>
+<div class="box definice" id="s-nesymetricke-napajeni"><div class="box-t">nesymetrické napájecí napětí</div>
+<p><b>Nesymetrické napájecí napětí</b> je takové, kdy zdroj udržuje vůči referenčnímu potenciálu v obvodu (tj. zemi, GND, 0 V) jednu hodnotu napětí, např. +5 V měřeno proti GND.</p>
+<p class="jinak">jedna větev: „plus“ a zem. Tak je napájena většina číslicových obvodů.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-nesymetricke-napajeni">výklad v kapitole P3 →</a></p></div>
+<div class="box definice" id="s-symetricke-napajeni"><div class="box-t">symetrické napájecí napětí</div>
+<p><b>Symetrické napájecí napětí</b> je takové, kdy je zdrojem dodáváno vůči GND napětí ve dvou větvích stejné velikosti a opačné polarity, např. ±5 V.</p>
+<p class="jinak">dvě větve, kladná a záporná, a zem uprostřed. Potřebuje ho např. OZ, který zpracovává střídavé napětí – výstup se musí umět pohnout nad i pod nulu. Důležité je zachovat symetrii i při chybových stavech v napájení.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-symetricke-napajeni">výklad v kapitole P3 →</a></p></div>
+<div class="box definice" id="s-stabilizator"><div class="box-t">stabilizátor napětí</div>
+<p><b>Stabilizátor napětí</b> je obvod, který z kolísajícího vstupního napětí vytváří stálé výstupní elektrické napětí. Stabilizátory mohou být pevné (konkrétní hodnota napětí) nebo regulovatelné.</p>
+<p class="jinak">„uhlazovač“ napájení: na vstupu napětí kolísá (síť, baterie, zátěž), na výstupu je pořád stejné. Uvnitř je vždy nějaká reference, se kterou se výstup porovnává.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-stabilizator">výklad v kapitole P3 →</a></p></div>
+<div class="box definice" id="s-zenerova-dioda"><div class="box-t">Zenerova dioda</div>
+<p><b>Zenerova dioda</b> (ZD) je dioda určená k práci v závěrném směru, ve kterém při dosažení <b>Zenerova napětí</b> \(U_Z\) začne vést a napětí na ní se pak při změnách proudu mění jen málo. V propustném směru se chová jako běžná dioda (asi 0,7 V).</p>
+<p class="jinak">ZD zapojená přes rezistor do závěrného směru „drží“ své napětí: přebytečné napětí zůstane na rezistoru a na diodě je pořád zhruba \(U_Z\). Je to nejjednodušší reference i stabilizátor.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-zenerova-dioda">výklad v kapitole P3 →</a></p></div>
+<div class="box definice" id="s-proudove-omezeni"><div class="box-t">proudové omezení</div>
+<p><b>Proudové omezení</b> (omezovač proudu) je část zdroje, která při překročení nastaveného maximálního výstupního proudu \(I_{omax}\) přestane udržovat výstupní napětí a dál proud nezvyšuje.</p>
+<p class="jinak">do \(I_{omax}\) se zdroj chová jako zdroj napětí, nad ním jako zdroj proudu. Při zkratu nic neshoří – teče jen nastavený maximální proud.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-proudove-omezeni">výklad v kapitole P3 →</a></p></div>
+<div class="box definice" id="s-vlecny-zdroj"><div class="box-t">vlečný zdroj</div>
+<p><b>Vlečný zdroj</b> je zdroj symetrického napětí, ve kterém se napětí jedné větve nastavuje a napětí druhé větve je od něj odvozeno tak, aby mělo vždy stejnou velikost a opačnou polaritu.</p>
+<p class="jinak">záporná větev se „vleče“ za kladnou: nastavím kladné napětí a záporné ho automaticky kopíruje se znaménkem minus. Symetrie se zachová, i když kladnou větev přenastavím.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-vlecny-zdroj">výklad v kapitole P3 →</a></p></div>
+<div class="box definice" id="s-zdroj-proudu"><div class="box-t">zdroj konstantního proudu</div>
+<p><b>Zdroj konstantního proudu</b> je zdroj, který do zátěže dodává stálý proud nezávisle na napětí na zátěži. Ideální proudový zdroj má nekonečně velký výstupní odpor (výstup nezávislý na napětí).</p>
+<p class="jinak">opak zdroje napětí: tady se drží proud a napětí se přizpůsobí zátěži. Používá se při měření odporů, napájení LED, generování pilového průběhu apod.</p><p class="slovnik-odkaz"><a href="13_napajeni.html#def-zdroj-proudu">výklad v kapitole P3 →</a></p></div>
 
-<nav class="pager"><a class="prev" href="12_uprava.html"><small>← předchozí</small>Úprava signálu: tranzistorové zesilovače a OZ</a></nav>
+<nav class="pager"><a class="prev" href="13_napajeni.html"><small>← předchozí</small>Napájení a zdroje referenčního napětí</a></nav>
 </main>
 </div>
 </body>

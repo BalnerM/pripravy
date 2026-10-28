@@ -35,6 +35,8 @@ PAGES = [
      "Akviziční cesta, druhy signálů, měkký zdroj; převod proudu, frekvence a odporu na napětí; Wheatstoneův můstek."),
     ("12_uprava", "P2", "Úprava signálu: tranzistorové zesilovače a OZ",
      "Zesilovač s BJT (SE, SC, Darlington, rozdílový, laděný), pracovní bod, MOSFET; reálný OZ, slew rate, 3 dB, komparátor."),
+    ("13_napajeni", "P3", "Napájení a zdroje referenčního napětí",
+     "Parametry napěťové reference, stabilizátor se Zenerovou diodou a OZ, proudové posílení a omezení, vlečný zdroj, zdroj proudu."),
     ("99_slovnik", "Aa", "Slovník pojmů (definice)", "Všechny definice ze skript na jednom místě."),
 ]
 

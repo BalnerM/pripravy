@@ -1287,6 +1287,328 @@ def fig12_komparator():
         elm.Label().at((op.out[0] - 0.4, op.out[1] - 1.3)).label("bez zpětné vazby", fontsize=11, color=C2)
 
 
+# =====================================================================  přednáška 3: napájení a reference
+def fig13_teplota():
+    """Teplotní drift s nelineární složkou: u 100 ppm/°C ji velikost driftu skryje, u 5 ppm/°C ne (ilustrační model)."""
+    t = np.linspace(-50, 125, 300)
+    b = -0.02                                                    # zakřivení [ppm/°C²], stejné pro obě reference
+    fig, axs = plt.subplots(1, 2, figsize=(9.2, 3.7), sharex=True)
+    for ax, a, barva, zn in ((axs[0], 100, C1, "o"), (axs[1], 5, C2, "s")):
+        prim = a * (t - 25)
+        skut = prim + b * (t - 25) ** 2
+        ax.plot(t, prim, color=MUTED, ls="--", lw=1.4, label="přímka (jen lineární drift)")
+        ax.plot(t, skut, color=barva, label="skutečná odchylka")
+        ax.plot([25], [0], zn, color=barva, mec=SURF, ms=7)
+        ax.set_title(f"reference {a} ppm/°C", loc="left")
+        ax.set_xlabel("teplota [°C]")
+        ax.legend(loc="upper left", fontsize=9)
+    axs[0].set_ylabel("odchylka napětí od hodnoty při 25 °C [ppm]")
+    axs[1].text(35, -380, "křivka se od přímky\nviditelně odchyluje", fontsize=9.5, color=INK2)
+    axs[0].text(10, -6500, "křivka a přímka\nskoro splývají", fontsize=9.5, color=INK2)
+    save(fig, "fig13_teplota")
+
+
+def fig13_dlouhodoba():
+    """Dlouhodobá stabilita 200 ppm/√kHr: drift roste s odmocninou času (čísla ze slidu)."""
+    roky = np.linspace(0, 10, 400)
+    drift = 200 * np.sqrt(8.766 * roky)
+    fig, ax = plt.subplots(figsize=(7.6, 3.7))
+    ax.plot(roky, 592.15 * roky, color=MUTED, ls="--", lw=1.4, label="kdyby drift rostl lineárně (10 × 592 ppm)")
+    ax.plot(roky, drift, color=C1, label="skutečný drift 200 ppm/√kHr")
+    ax.plot([1, 10], [200 * np.sqrt(8.766), 200 * np.sqrt(87.66)], "o", color=C1, mec=SURF, ms=7)
+    ax.annotate("1 rok: 592 ppm", (1, 592), xytext=(1.6, 1500), fontsize=9.5, color=INK2,
+                arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.annotate("10 let: ≈ 1873 ppm (na slidu 1875)", (10, 1873), xytext=(4.6, 3300), fontsize=9.5, color=INK2,
+                arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.set_xlabel("doba provozu [roky]")
+    ax.set_ylabel("drift napětí reference [ppm]")
+    ax.set_xlim(0, 10.3)
+    ax.set_ylim(0, 6200)
+    ax.legend(loc="upper left")
+    ax.set_title("Stárnutí reference: za 10 let jen asi 3,2× víc než za rok, ne 10×", loc="left")
+    save(fig, "fig13_dlouhodoba")
+
+
+def fig13_zener_va():
+    """VA charakteristika Zenerovy diody (ilustrační model, U_Z = 5,1 V)."""
+    u = np.linspace(-6.4, 1.0, 800)
+    uz, rz, a = 5.1, 15.0, 0.08
+    i_f = 1e-12 * (np.exp(u / 0.029) - 1)                    # propustný směr (Shockley)
+    i_r = -(a / rz) * np.log1p(np.exp((-u - uz) / a))         # průraz v závěrném směru, sklon 1/r_z
+    i = (i_f + i_r) * 1e3
+    fig, ax = plt.subplots(figsize=(7.6, 3.8))
+    ax.axhline(0, color=AXIS, lw=0.9)
+    ax.axvline(0, color=AXIS, lw=0.9)
+    ax.plot(u, np.where(np.abs(i) < 45, i, np.nan), color=C1)
+    m = (i < -5) & (i > -40)
+    ax.plot(u[m], i[m], color=C2, lw=4.5, alpha=0.45, solid_capstyle="round")
+    ax.annotate("pracovní oblast stabilizátoru:\nproud se mění hodně, napětí málo", (-5.55, -22), xytext=(-4.6, -36),
+                fontsize=9.5, color=INK2, arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.annotate("Zenerovo napětí $U_Z$ ≈ 5,1 V\n(závěrný směr)", (-5.1, -1), xytext=(-4.4, 14), fontsize=9.5,
+                color=INK2, arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.annotate("propustný směr ≈ 0,7 V", (0.7, 20), xytext=(-2.6, 32), fontsize=9.5, color=INK2,
+                arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.set_xlabel("napětí na diodě U [V]")
+    ax.set_ylabel("proud diodou I [mA]")
+    ax.set_ylim(-45, 45)
+    ax.set_title("Zenerova dioda: v závěrném směru drží napětí $U_Z$", loc="left")
+    save(fig, "fig13_zener_va")
+
+
+def fig13_zd_stab():
+    """Stabilizátor s referenční ZD a neinvertujícím OZ (slide „Stabilizace napětí se Zenerovou diodou“)."""
+    with schema("fig13_zd_stab", unit=2.2) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True, flip=True).right()          # + (in2) nahoře, − (in1) dole
+        yb = op.in1[1] - u * 1.75                               # zem
+        # neinvertující vstup: filtr R3C1 a Zenerova dioda
+        elm.Line().at(op.in2).left(u * 0.9)
+        p = elm.Dot()
+        elm.Capacitor().down().toy(yb).label("$C_1$", loc="top")
+        elm.Ground(lead=False)
+        elm.Resistor().at(p.center).left().label("$R_3$")
+        z = elm.Dot()
+        elm.Zener().down().toy(yb).reverse().label("$U_{ZD}$", loc="top")
+        elm.Ground(lead=False)
+        elm.Resistor().at(z.center).up(u * 0.9).label("$R_D$", loc="bottom")
+        elm.Dot(open=True).label("$U_{CC} > 0$", loc="top")
+        # zpětná vazba R2 ∥ C2, R1 do země
+        elm.Line().at(op.in1).left(u * 0.2)
+        elm.Line().down(u * 0.6)
+        m = elm.Dot()
+        elm.Resistor().right().tox(op.out).label("$R_2$")
+        elm.Line().up().toy(op.out).dot()
+        elm.Line().at(m.center).down(u * 0.5)
+        elm.Capacitor().right().tox(op.out).label("$C_2$", loc="bottom")
+        elm.Line().up(u * 0.5)
+        elm.Line().at(m.center).left(u * 0.25)
+        elm.Resistor().down().toy(yb).label("$R_1$", loc="top")
+        elm.Ground(lead=False)
+        elm.Line().at(op.out).right(u * 0.35)
+        elm.Dot(open=True).label("$U_0 = (1 + R_2/R_1)\\,U_{ZD}$", loc="right")
+
+
+def fig13_zd_alt():
+    """Alternativní zapojení: ZD napájená ze stabilizovaného výstupu, D1 jako ochrana (slidy 14–15)."""
+    with schema("fig13_zd_alt", unit=2.2) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True, flip=True).right()          # + (in2) nahoře, − (in1) dole
+        ytop = op.in2[1] + u * 1.0
+        yb = op.in1[1] - u * 1.75
+        xo = op.out[0] + u * 0.45
+        # výstup → horní vodič → R3 → + vstup → D1 → ZD → zem
+        elm.Line().at(op.out).right(u * 0.45)
+        o = elm.Dot()
+        elm.Line().right(u * 0.35)
+        elm.Dot(open=True).label("$U_0$", loc="right")
+        elm.Line().at(o.center).toy(ytop)
+        xz = op.in2[0] - u * 0.75
+        elm.Line().tox(xz)
+        elm.Resistor().down().toy(op.in2[1]).label("$R_3$", loc="top")
+        p = elm.Dot()
+        elm.Line().at(op.in2).tox(xz)
+        elm.Diode().at(p.center).down(u * 0.7).label("$D_1$", loc="bottom", color=C2).color(C2)
+        elm.Zener().down().toy(yb).reverse().label("ZD", loc="bottom")
+        elm.Ground(lead=False)
+        # − vstup ← dělič R2 / R1 z výstupu (vpravo)
+        elm.Resistor().at(o.center).down().toy(op.in1[1] - u * 0.6).label("$R_2$", loc="bottom")
+        m = elm.Dot()
+        elm.Resistor().down().toy(yb).label("$R_1$", loc="bottom")
+        elm.Ground(lead=False)
+        elm.Line().at(op.in1).left(u * 0.25)
+        elm.Line().down().toy(m.center[1])
+        elm.Line().right().tox(m.center)
+        elm.Label().at(((xz + o.center[0]) / 2, ytop + 0.35)).label("napájení ZD ze stabilizovaného výstupu",
+                                                                  fontsize=10, color=C1)
+
+
+def fig13_posileni():
+    """Stabilizátor s proudovým zesílením: emitorový sledovač za OZ (slide „… s proudovým zesílením“)."""
+    with schema("fig13_posileni", unit=2.0) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True, flip=True).right()          # + (in2) nahoře, − (in1) dole
+        t = elm.BjtNpn(circle=True).anchor("base").at((op.out[0] + u * 0.3, op.out[1])).label("$T$", loc="right")
+        elm.Line().at(op.out).tox(t.base)
+        ytop = op.in2[1] + u * 1.2
+        yb = op.in1[1] - u * 2.4
+        elm.Line().at(t.collector).toy(ytop)
+        elm.Dot(open=True).label("$U_{CC}^+$", loc="top")
+        e = elm.Line().at(t.emitter).down(u * 0.3).dot().end
+        elm.Resistor().at(e).down().label("$R_2$", loc="bottom")
+        m = elm.Dot()
+        elm.Resistor().down().toy(yb).label("$R_1$", loc="bottom")
+        elm.Ground(lead=False)
+        elm.Line().at(op.in1).left(u * 0.25)
+        elm.Line().down().toy(m.center[1])
+        elm.Line().right().tox(m.center)
+        elm.Line().at(e).right(u * 0.9)
+        z = elm.Dot()
+        elm.Resistor().down().toy(yb).label("$R_Z$ (zátěž)", loc="bottom")
+        elm.Ground(lead=False)
+        elm.Line().at(z.center).right(u * 0.3)
+        elm.Dot(open=True).label("$U_0$", loc="right")
+        # reference: R_D z napájení a ZD
+        elm.Line().at(op.in2).left(u * 0.7)
+        p = elm.Dot()
+        elm.Zener().down().toy(yb).reverse().label("$U_{ZD}$", loc="top")
+        elm.Ground(lead=False)
+        elm.Resistor().at(p.center).up(u * 0.9).label("$R_D$", loc="bottom")
+        elm.Dot(open=True).label("$U_{CC}^+$", loc="top")
+        elm.Label().at((t.emitter[0] + 0.9, t.emitter[1] + 1.6)).label("emitorový\nsledovač", fontsize=10,
+                                                                        color=C1, halign="left")
+
+
+def fig13_omezeni():
+    """Stabilizátor s Darlingtonem a proudovým omezením tranzistorem T3 (slidy „… s proudovým omezením“)."""
+    with schema("fig13_omezeni", unit=2.0) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True, flip=True).right()          # + (in2) nahoře, − (in1) dole
+        elm.Line().at(op.in2).left(u * 0.4)
+        elm.Dot(open=True).label("$U_\\mathrm{REF} > 0$", loc="left")
+        o = elm.Line().at(op.out).right(u * 0.3).dot().end
+        t1 = elm.BjtNpn(circle=True).right().anchor("base").at((o[0] + u * 0.3, o[1])).label("$T_1$", loc="right")
+        elm.Line().at(o).tox(t1.base)
+        t2 = elm.BjtNpn(circle=True).right().anchor("base").at(
+            (t1.emitter[0] + u * 0.35, t1.emitter[1] - u * 0.45)).label("$T_2$", loc="right")
+        elm.Line().at(t1.emitter).toy(t2.base)
+        elm.Line().tox(t2.base)
+        ytop = t1.collector[1] + u * 0.45
+        elm.Line().at(t1.collector).toy(ytop).dot()
+        elm.Line().at(t2.collector).toy(ytop)
+        elm.Line().tox(t1.collector)
+        elm.Line().at((t2.collector[0], ytop)).right(u * 0.3)
+        elm.Dot(open=True).label("$+U_N$", loc="right")
+        # snímací rezistor R_I mezi emitorem T2 (A) a výstupem (B)
+        a = elm.Line().at(t2.emitter).down(u * 0.25).dot().end
+        elm.Line().at(a).right(u * 0.3)
+        elm.Resistor().right(u * 1.1).label("$R_I$", loc="bottom", color=C2).color(C2)
+        b = elm.Dot().center
+        elm.Line().at(b).right(u * 1.1)
+        z = elm.Dot()
+        elm.Line().right(u * 0.3)
+        elm.Dot(open=True).label("$U_0$", loc="right")
+        yb = a[1] - u * 2.9
+        elm.Resistor().at(z.center).down().toy(yb).label("$R_Z$ (zátěž)", loc="bottom")
+        elm.Ground(lead=False)
+        b2 = elm.Line().at(b).down(u * 0.95).dot().end
+        elm.Resistor().at(b2).down(u * 0.95).label("$R_2$", loc="bottom")
+        m = elm.Dot()
+        elm.Resistor().down().toy(yb).label("$R_1$", loc="bottom")
+        elm.Ground(lead=False)
+        # T3: báze na A, emitor na B, kolektor do báze T1
+        t3 = elm.BjtNpn(circle=True).right().reverse().anchor("collector").at((o[0], a[1] - u * 0.35)).label(
+            "$T_3$", loc="left", color=C2)
+        t3.color(C2)
+        elm.Line().at(o).toy(t3.collector)
+        elm.Line().at(t3.base).tox(a).color(C2)
+        elm.Line().toy(a).color(C2)
+        elm.Line().at(t3.emitter).toy(b2).color(C2)
+        elm.Line().tox(b2).color(C2)
+        # zpětná vazba z děliče na − vstup
+        elm.Line().at(op.in1).left(u * 0.25)
+        elm.Line().down().toy(m.center[1])
+        elm.Line().right().tox(m.center)
+        elm.Label().at(((a[0] + b[0]) / 2 + u * 0.15, a[1] + 0.55)).label("$U_{R_I} \\approx 0{,}5$ V", fontsize=11, color=C2)
+
+
+def fig13_omezeni_va():
+    """Výstupní charakteristika stabilizátoru s omezením proudu a s foldbackem (ilustrační hodnoty 10 V, 1 A)."""
+    io = np.linspace(0, 1.0, 300)
+    uo = 10 - 0.25 * np.exp((io - 1.0) / 0.02)                 # měkké koleno těsně před I_omax
+    fig, ax = plt.subplots(figsize=(7.6, 3.8))
+    ax.plot(np.r_[io, 1.0, 1.0], np.r_[uo, 9.75, 0], color=C1, label="omezení proudu: zkratový proud = $I_{omax}$")
+    ax.plot([0, 1.0, 0.3], [10.08, 10.08, 0], color=C2, ls="--", label="foldback: při zkratu proud klesne")
+    ax.plot([1.0], [0], "o", color=C1, mec=SURF, ms=7)
+    ax.plot([0.3], [0], "s", color=C2, mec=SURF, ms=7)
+    ax.annotate("zkrat: 1 A", (1.0, 0), xytext=(0.78, 2.2), fontsize=9.5, color=INK2,
+                arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.annotate("zkrat: 0,3 A", (0.3, 0), xytext=(0.06, 2.2), fontsize=9.5, color=INK2,
+                arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.text(0.03, 8.6, "stabilizace: $U_0$ drží 10 V", fontsize=9.5, color=INK2)
+    ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: cz(v, 1)))
+    ax.set_xlabel("výstupní proud $I_o$ [A]")
+    ax.set_ylabel("výstupní napětí $U_o$ [V]")
+    ax.set_xlim(0, 1.15)
+    ax.set_ylim(0, 13.5)
+    ax.legend(loc="upper left", ncol=1, fontsize=9)
+    ax.set_title("Výstupní charakteristika zdroje s omezením proudu", loc="left")
+    save(fig, "fig13_omezeni_va")
+
+
+def fig13_vlecny():
+    """Vlečný zdroj, zjednodušeno: kladná větev = neinvertující zesilovač reference 3,3 V, záporná = invertor −1."""
+    with schema("fig13_vlecny", unit=2.0) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True, flip=True).right().label("OZ1", loc="center", ofst=(-0.3, 0), fontsize=10)
+        yb = op.in1[1] - u * 1.8
+        # reference: R z +U_N a ZD 3V3
+        elm.Line().at(op.in2).left(u * 1.0)
+        p = elm.Dot()
+        elm.Zener().down().toy(yb).reverse().label("$D_2$\n3V3", loc="top")
+        elm.Ground(lead=False)
+        elm.Resistor().at(p.center).up(u * 0.85).label("$R$", loc="bottom")
+        elm.Dot(open=True).label("$+U_N$", loc="top")
+        # zpětná vazba Ra / Rb
+        elm.Line().at(op.in1).left(u * 0.2)
+        elm.Line().down(u * 0.7)
+        m = elm.Dot()
+        elm.ResistorVar().right().tox(op.out).label("$R_a$", loc="bottom")
+        elm.Line().up().toy(op.out).dot()
+        elm.Line().at(m.center).left(u * 0.25)
+        elm.Resistor().down().toy(yb).label("$R_b$", loc="top")
+        elm.Ground(lead=False)
+        # výstup U_o1 a invertor OZ2
+        o1 = elm.Line().at(op.out).right(u * 0.5).dot().end
+        elm.Line().at(o1).up(u * 0.6)
+        elm.Dot(open=True).label("$U_{o1} = 3{,}3\\,(1 + R_a/R_b)$", loc="top")
+        elm.Resistor().at(o1).right().label("330 k", loc="bottom")
+        n = elm.Dot()
+        op2 = elm.Opamp(leads=True).right().anchor("in1").at((n.center[0] + u * 0.35, n.center[1])).label(
+            "OZ2", loc="center", ofst=(-0.3, 0), fontsize=10)
+        elm.Line().at(n.center).tox(op2.in1)
+        elm.Line().at(op2.in2).down(u * 0.3)
+        elm.Ground(lead=False)
+        elm.Line().at(n.center).up(u * 0.6)
+        elm.Resistor().right().tox(op2.out).label("330 k")
+        elm.Line().down().toy(op2.out).dot()
+        elm.Line().at(op2.out).right(u * 0.35)
+        elm.Dot(open=True).label("$U_{o2} = -U_{o1}$", loc="right")
+        elm.Label().at((n.center[0], n.center[1] - 0.55)).label("0 V", fontsize=11, color=C2)
+
+
+def fig13_proudovy():
+    """Zdroj konstantního proudu: OZ + Darlington, proud nastaví U_REF a R1 (slide „Zdroje (konstantního) proudu“)."""
+    with schema("fig13_proudovy", unit=2.0) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True, flip=True).right()          # + (in2) nahoře, − (in1) dole
+        elm.Line().at(op.in2).left(u * 0.4)
+        elm.Dot(open=True).label("$U_\\mathrm{REF}$", loc="left")
+        t1 = elm.BjtNpn(circle=True).right().anchor("base").at((op.out[0] + u * 0.4, op.out[1])).label(
+            "$T_1$", loc="right")
+        elm.Line().at(op.out).tox(t1.base)
+        t2 = elm.BjtNpn(circle=True).right().anchor("base").at((t1.emitter[0] + u * 0.35, t1.emitter[1] - u * 0.45)).label(
+            "$T_2$", loc="right")
+        elm.Line().at(t1.emitter).toy(t2.base)
+        elm.Line().tox(t2.base)
+        yc = t1.collector[1] + u * 0.35
+        elm.Line().at(t1.collector).toy(yc).dot()
+        elm.Line().at(t2.collector).toy(yc)
+        c = elm.Line().tox(t1.collector).end
+        elm.Dot().at((t2.collector[0], yc)).label("C", loc="right")
+        elm.Resistor().at((t2.collector[0], yc)).up(u * 0.9).label("zátěž", loc="top", color=C2).color(C2)
+        elm.Dot(open=True).label("$+U_N$", loc="top")
+        elm.Label().at((t2.collector[0] + 0.8, yc + 0.45)).label("$I_o$ ↓", fontsize=12, color=C2, halign="left")
+        e = elm.Line().at(t2.emitter).down(u * 0.3).dot().end
+        yb = e[1] - u * 1.2
+        elm.Resistor().at(e).down().toy(yb).label("$R_1$", loc="bottom")
+        elm.Ground(lead=False)
+        elm.Label().at((e[0] - 0.75, e[1] - u * 0.5)).label("$U_1 = U_\\mathrm{REF}$", fontsize=11, color=C1,
+                                                             halign="right")
+        elm.Line().at(op.in1).left(u * 0.25)
+        elm.Line().down().toy(e[1])
+        elm.Line().right().tox(e)
+
+
 ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig02_xc, fig02_dp_hp, fig02_bode_dp, fig02_bode_hp, fig02_postup, fig02_typy, fig02_pp_schema,
        fig02_bode_pp, fig02_pz_schema, fig02_bode_pz,
@@ -1296,7 +1618,9 @@ ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig11_mustek,
        fig12_beta, fig12_se, fig12_se_zv, fig12_se_delic, fig12_stabilita, fig12_sc, fig12_darlington,
        fig12_rozdilovy, fig12_rozdilovy_prubeh, fig12_selektivni, fig12_mosfet_char, fig12_mosfet_ss,
-       fig12_mosfet_sd, fig12_spinace, fig12_slew, fig12_zisk_f, fig12_komparator]
+       fig12_mosfet_sd, fig12_spinace, fig12_slew, fig12_zisk_f, fig12_komparator,
+       fig13_teplota, fig13_dlouhodoba, fig13_zener_va, fig13_zd_stab, fig13_zd_alt, fig13_posileni, fig13_omezeni,
+       fig13_omezeni_va, fig13_vlecny, fig13_proudovy]
 
 if __name__ == "__main__":
     vyber = sys.argv[1:]
