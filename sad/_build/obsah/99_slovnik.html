@@ -106,3 +106,61 @@
 <div class="box definice" id="s-derivator"><div class="box-t">derivační zesilovač (derivátor)</div>
 <p><b>Derivátor</b> je zapojení OZ odvozené z invertujícího zesilovače, ve kterém je vstupní rezistor nahrazen kondenzátorem \(C\) (ve zpětné vazbě zůstává rezistor \(R\)). Výstupní napětí je úměrné časové derivaci vstupního napětí: \(u_\text{výst}(t) = -RC\,\frac{du_\text{vst}}{dt}\).</p>
 <p class="jinak">výstup ukazuje, <b>jak rychle</b> se vstup mění. Stálé napětí dá nulu, rampa dá stálé napětí, trojúhelník se změní na obdélník.</p><p class="slovnik-odkaz"><a href="04_dalsi_zapojeni.html#def-derivator">výklad v kapitole Z4 →</a></p></div>
+<h2 id="kP1" class="slovnik-kap">P1 · Úvod: signál a jeho převod na napětí</h2>
+<div class="box definice" id="s-akvizicni-cesta"><div class="box-t">akviziční cesta</div>
+<p><b>Akviziční cesta</b> (měřicí řetězec) je posloupnost bloků, kterými prochází signál od snímané fyzikální veličiny až po číslicová data v počítači: fyzikální převodník, úprava signálu, případně multiplexace a galvanické oddělení, a analogově-digitální převod.</p>
+<p class="jinak">„trubka“, kterou teče signál z pacienta do počítače. Každý blok má jednu práci: převést, zesílit a vyčistit, přepínat kanály, oddělit pacienta od sítě, převést na čísla.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-akvizicni-cesta">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-fyzikalni-prevodnik"><div class="box-t">fyzikální převodník</div>
+<p><b>Fyzikální převodník</b> (senzor) je první blok akviziční cesty, který převádí měřenou fyzikální veličinu (teplotu, tlak, proud iontů, světlo…) na veličinu elektrickou – nejlépe na napětí.</p>
+<p class="jinak">„tlumočník“ mezi světem fyziky a elektronikou. Za ním už všechno zpracovávají elektrické obvody.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-fyzikalni-prevodnik">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-uprava-signalu"><div class="box-t">úprava signálu</div>
+<p><b>Úprava signálu</b> je blok akviziční cesty mezi převodníkem a A/D převodem, který signál zesílí, odfiltruje rušení a přizpůsobí jeho rozsah vstupu převodníku.</p>
+<p class="jinak">signál ze senzoru je slabý a zarušený; úprava z něj udělá „čisté“ napětí ve správném rozsahu. Stavebními kameny jsou zesilovače s OZ (<a href="03_oz.html">Z3</a>) a filtry (<a href="02_filtry.html">Z2</a>).</p><p class="slovnik-odkaz"><a href="11_signal.html#def-uprava-signalu">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-multiplexace"><div class="box-t">multiplexace</div>
+<p><b>Multiplexace</b> (MPX) je postupné přepínání více vstupních signálů na jednu společnou cestu (vodič, převodník, kanál přenosu), takže se signály o tuto cestu dělí v čase.</p>
+<p class="jinak">jeden A/D převodník nebo jeden přenosový kanál obslouží víc signálů tím, že je „obchází“ jeden po druhém. Podrobně v přednášce P8.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-multiplexace">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-galvanicke-oddeleni"><div class="box-t">galvanické oddělení</div>
+<p><b>Galvanické oddělení</b> je přenos signálu mezi dvěma částmi obvodu bez vodivého (galvanického) spojení – např. opticky, magneticky nebo kapacitně – takže mezi nimi nemůže protékat proud.</p>
+<p class="jinak">signál „přeskočí“ přes izolační bariéru, ale proud ne. U zdravotnických přístrojů tak chrání pacienta před proudem ze sítě a přerušuje rušivé zemní smyčky.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-galvanicke-oddeleni">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-signal"><div class="box-t">signál</div>
+<p><b>Signál</b> je záměrný fyzikální jev nesoucí informaci. V (elektro)technice jde o sled informací v čase.</p>
+<p class="jinak">signál je „nosič“ informace – průběh nějaké veličiny v čase, ze kterého něco vyčteme (např. z EKG srdeční rytmus). Pro snímání a zpracování je nejvhodnějším nosičem <b>elektrické napětí</b>.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-signal">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-analogovy-signal"><div class="box-t">analogový (spojitý) signál</div>
+<p><b>Analogový</b>, též <b>spojitý</b> signál nabývá nespočetného počtu hodnot.</p>
+<p class="jinak">amplituda může být jakékoliv reálné číslo v daném rozsahu – mezi dvěma hodnotami vždy leží další. Takové jsou signály v analogových obvodech.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-analogovy-signal">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-cislicovy-signal"><div class="box-t">číslicový (diskrétní) signál</div>
+<p><b>Číslicový</b>, též <b>diskrétní</b> signál nabývá spočetného počtu hodnot, tj. jeho hodnoty lze očíslovat, vyjádřit celými čísly a zakódovat do posloupnosti celých čísel.</p>
+<p class="jinak">amplituda smí mít jen některé hodnoty („schody“) – každou lze zapsat jako celé číslo, se kterým už umí pracovat počítač.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-cislicovy-signal">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-spojity-cas"><div class="box-t">signál se spojitým časem</div>
+<p><b>Signál se spojitým časem</b> je signál, jehož definičním oborem je časový interval.</p>
+<p class="jinak">hodnotu signálu známe v každém okamžiku – \(x(t)\) pro libovolné \(t\).</p><p class="slovnik-odkaz"><a href="11_signal.html#def-spojity-cas">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-posloupnost"><div class="box-t">posloupnost (signál s diskrétním časem)</div>
+<p><b>Posloupnost</b> je signál, jehož definičním oborem je spočetná množina hodnot času; nejčastěji jsou to okamžiky, ve kterých je signál určen <b>vzorkováním</b>.</p>
+<p class="jinak">hodnotu známe jen v jednotlivých okamžicích (vzorcích) – \(x(n)\), kde \(n\) je pořadové číslo vzorku.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-posloupnost">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-tvrdy-mekky-zdroj"><div class="box-t">tvrdý a měkký zdroj</div>
+<p><b>Tvrdý zdroj</b> je zdroj s malým vnitřním odporem, jehož svorkové napětí se se zatěžovacím proudem mění jen málo. <b>Měkký zdroj</b> má velký vnitřní odpor a jeho svorkové napětí s odebíraným proudem výrazně klesá. <b>Ideální zdroj</b> napětí má nulový vnitřní odpor a stálé napětí \(U_e\) při jakémkoliv proudu.</p>
+<p class="jinak">tvrdý zdroj „vydrží“ zátěž, měkký se pod zátěží „prohne“. Biosignály jsou měkké zdroje – jakýkoliv větší odběr proudu by změnil tvar měřeného signálu.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-tvrdy-mekky-zdroj">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-prevodnik-iu"><div class="box-t">převodník proudu na napětí</div>
+<p><b>Převodník proudu na napětí</b> s OZ vychází z <a href="03_oz.html#def-invertujici">invertujícího zesilovače</a>, u kterého je vynechán vstupní odpor \(R_1\): měřený proud teče přímo do invertujícího vstupu (virtuální nuly) a celý projde rezistorem \(R\) ve zpětné vazbě, takže výstupní napětí je \(U_2 = -i_1 R\).</p>
+<p class="jinak">proud „prochází“ zpětnou vazbou a vytvoří na ní napětí. Protože vstup je na 0 V, měří se proud <b>bez úbytku napětí</b> – měřený obvod nepozná, že v něm měříme.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-prevodnik-iu">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-snimaci-rezistor"><div class="box-t">snímací rezistor (bočník)</div>
+<p><b>Snímací rezistor</b> (bočník, <i>shunt resistor</i>, \(R_\text{SENSE}\)) je rezistor s malým a přesným odporem zařazený do proudové cesty; měřený proud na něm vytvoří úbytek napětí \(U = R_\text{SENSE} \cdot I\), který se měří.</p>
+<p class="jinak">„převodník R na U“ v nejjednodušší podobě. Odpor je malý (desetiny Ω), aby úbytek a ztrátový výkon byly malé a obvod se měřením skoro neovlivnil.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-snimaci-rezistor">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-high-low-side"><div class="box-t">High-Side a Low-Side Current Sensing</div>
+<p>Při <b>High-Side Current Sensing</b> (měření v „horní větvi“) je snímací rezistor mezi napájecím zdrojem a zátěží a měří se úbytek na vysokém potenciálu. Při <b>Low-Side Current Sensing</b> (měření v „dolní větvi“) je snímací rezistor mezi zátěží a zemí a měří se úbytek mezi zemí a místem „po“ zátěži.</p>
+<p class="jinak">high-side = rezistor „nad“ zátěží (u plusu), low-side = rezistor „pod“ zátěží (u země). Rozdíl je v tom, na jakém napětí „sedí“ měřený úbytek.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-high-low-side">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-proudovy-transformator"><div class="box-t">proudový transformátor</div>
+<p><b>Proudový transformátor</b> je transformátor určený ke snímání velkých (střídavých) proudů: měřený proud protéká primárním vinutím s malým počtem závitů \(N_P\) a v sekundárním vinutí s \(N_S\) závity vznikne proud zmenšený v poměru závitů, který se měří na zátěži.</p>
+<p class="jinak">velký proud se magneticky „zmenší“ na malý a bezpečný. Měřicí obvod není s měřeným vodičem vodivě spojen a sám skoro nic nespotřebuje – lze tak měřit i extrémně vysoké proudy.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-proudovy-transformator">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-prevodnik-fu"><div class="box-t">převodník frekvence na napětí</div>
+<p><b>Převodník frekvence na napětí</b> (f/U) je kmitočtem řízený zdroj napětí: jeho výstupní napětí je úměrné frekvenci vstupního signálu. Jednou z možných realizací je převodník s <b>nábojovou pumpou</b>.</p>
+<p class="jinak">každá perioda vstupního signálu „napumpuje“ do výstupního obvodu stejnou dávku náboje. Čím víc period za sekundu, tím víc náboje a tím vyšší výstupní napětí.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-prevodnik-fu">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-mereni-odporu-oz"><div class="box-t">měření odporu s OZ (Rx ve zpětné vazbě)</div>
+<p>Při <b>měření odporu s OZ</b> je měřený rezistor \(R_X\) zapojen do zpětné vazby invertujícího zesilovače; konstantní proud \(I_N = U_\text{REF}/R_N\) vytvoří zdroj referenčního napětí \(U_\text{REF}\) a normálový (přesný) odpor \(R_N\). Tento proud teče přes \(R_X\) a výstupní napětí OZ je úměrné \(R_X\).</p>
+<p class="jinak">díky virtuální nule je proud dán jen \(U_\text{REF}\) a \(R_N\), ať je \(R_X\) jakýkoliv – OZ tak funguje jako přesný zdroj proudu i jako voltmetr zároveň. Záměnou \(R_N\) se mění rozsah měření.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-mereni-odporu-oz">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-wheatstone"><div class="box-t">Wheatstoneův můstek</div>
+<p><b>Wheatstoneův můstek</b>, též odporový můstek, je zapojení čtyř rezistorů do dvou paralelních <a href="01_obvody.html#def-delic">odporových děličů</a> – větve \(R_1\), \(R_2\) a větve \(R_3\), \(R_X\) – napájených stejným napětím; mezi středy děličů (uzly B a D) se zapojuje měřidlo \(V_G\). Využívá se pro měření velmi malých změn odporu.</p>
+<p class="jinak">porovnáváme napětí dvou děličů. Nezajímá nás velké napětí na každém z nich, ale jen jejich <b>rozdíl</b> – a ten je u vyrovnaného můstku nulový, takže i malá změna \(R_X\) je dobře vidět.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-wheatstone">výklad v kapitole P1 →</a></p></div>
+<div class="box definice" id="s-vyvazeny-mustek"><div class="box-t">vyvážený můstek</div>
+<p><b>Vyvážený můstek</b> je stav Wheatstoneova můstku, kdy mezi uzly B a D neprotéká žádný proud (napětí \(V_G = 0\)). Pak platí \(R_1/R_2 = R_3/R_X\).</p>
+<p class="jinak">oba děliče dělí napětí ve stejném poměru, středy jsou na stejném potenciálu a měřidlo ukazuje nulu.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-vyvazeny-mustek">výklad v kapitole P1 →</a></p></div>

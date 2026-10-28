@@ -31,6 +31,8 @@ PAGES = [
     ("03_oz", "Z3", "Operační zesilovače", "Invertující, neinvertující, rozdílové a přístrojové zapojení; CMRR."),
     ("04_dalsi_zapojeni", "Z4", "Sledovač, integrátor, derivátor", "Princip a schéma dalších zapojení s OZ."),
     ("05_tahak", "★", "Tahák: základy", "Vzorce a schémata základů na jedné stránce a typické chytáky."),
+    ("11_signal", "P1", "Úvod: signál a jeho převod na napětí",
+     "Akviziční cesta, druhy signálů, měkký zdroj; převod proudu, frekvence a odporu na napětí; Wheatstoneův můstek."),
     ("99_slovnik", "Aa", "Slovník pojmů (definice)", "Všechny definice ze skript na jednom místě."),
 ]
 

@@ -714,11 +714,260 @@ def fig04_prubehy():
     save(fig, "fig04_prubehy")
 
 
+# =====================================================================  přednáška 1: úvod, signál
+def fig11_signaly():
+    t = np.linspace(0, 1, 801)
+    x = lambda tt: 0.6 + 0.35 * np.sin(2 * np.pi * 1.1 * tt + 0.3) - 0.25 * tt ** 2   # libovolný hladký průběh
+    n = np.linspace(0, 1, 13)
+    q = 0.2                                                                       # krok kvantování
+    fig, axs = plt.subplots(2, 2, figsize=(8.8, 5.2), sharex=True, sharey=True)
+    a, b, c, dd = axs.flat
+    a.plot(t, x(t), color=C1)
+    a.set_title("a) analogový $x(t)$", loc="left")
+    b.vlines(n, 0, x(n), color=C1, lw=1.4)
+    b.plot(n, x(n), "o", color=C1, mec=SURF, ms=6)
+    b.plot(t, x(t), color=MUTED, ls=":", lw=1.2)
+    b.set_title("b) diskrétní v čase $x(n)$", loc="left")
+    c.plot(t, q * np.round(x(t) / q), color=C2, drawstyle="steps-post")
+    c.set_title("c) víceúrovňový, spojitý v čase $x_q(t)$", loc="left")
+    xq = q * np.round(x(n) / q)
+    dd.vlines(n, 0, xq, color=C2, lw=1.4)
+    dd.plot(n, xq, "s", color=C2, mec=SURF, ms=6)
+    dd.plot(t, x(t), color=MUTED, ls=":", lw=1.2)
+    dd.set_title("d) číslicový (vzorkovaný a kvantovaný) $x_q(n)$", loc="left")
+    for ax in (c, dd):
+        for lv in np.arange(0, 1.01, q):
+            ax.axhline(lv, color=AXIS, ls="--", lw=0.8, zorder=0)
+    for ax in axs.flat:
+        ax.set_ylim(0, 1.0)
+        ax.set_yticks([])
+        ax.set_xticks([])
+    a.set_ylabel("amplituda spojitá")
+    c.set_ylabel("amplituda kvantovaná")
+    c.set_xlabel("čas spojitý")
+    dd.set_xlabel("čas diskrétní (vzorky)")
+    save(fig, "fig11_signaly")
+
+
+def fig11_zdroj():
+    i = np.linspace(0, 1.2e-3, 200)
+    Ue = 1.0
+    fig, ax = plt.subplots(figsize=(7.6, 3.6))
+    ax.plot(i * 1e3, np.full_like(i, Ue), color=MUTED, ls="--", lw=1.6, label="ideální zdroj ($R_i = 0$)")
+    ax.plot(i * 1e3, Ue - 50 * i, color=C1, label="tvrdý zdroj ($R_i$ = 50 Ω)")
+    ax.plot(i[i <= 1e-3] * 1e3, Ue - 1e3 * i[i <= 1e-3], color=C2, label="měkký zdroj ($R_i$ = 1 kΩ)")
+    ax.plot(1.0, 0, "o", color=C2, mec=SURF, ms=7)
+    ax.annotate("zkratový proud\n$I_z = U_e / R_i$ = 1 mA", (1.0, 0), xytext=(1.03, 0.25), fontsize=9.5,
+                color=INK2, ha="left", arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.set_xlabel("odebíraný proud $I$ [mA]")
+    ax.set_ylabel("svorkové napětí $U$ [V]")
+    ax.set_ylim(0, 1.15)
+    ax.set_xlim(0, 1.2)
+    ax.legend(loc="lower left", bbox_to_anchor=(0.0, 0.18))
+    ax.set_title("Zatěžovací charakteristika zdroje $U = U_e - R_i I$ ($U_e$ = 1 V)", loc="left")
+    for f in (ax.xaxis, ax.yaxis):
+        f.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:g}".replace(".", ",")))
+    save(fig, "fig11_zdroj")
+
+
+def fig11_iu():
+    with schema("fig11_iu") as d:
+        op = elm.Opamp(leads=True)
+        _vstup_zem(d, op)
+        elm.Line().at(op.in1).left(d.unit * 0.25)
+        n = elm.Dot()
+        w = elm.Line().left(d.unit * 1.0)
+        elm.Dot(open=True).label("vstup proudu", loc="left")
+        elm.CurrentLabelInline(direction="out", ofst=0.3).at(w).label("$i_1$", loc="top")
+        elm.Line().at(n.center).up(d.unit * 0.6)
+        elm.Resistor().tox(op.out).label("$R$")
+        elm.Line().toy(op.out).dot()
+        elm.Line().at(op.out).right(d.unit * 0.35)
+        elm.Dot(open=True).label("$U_2 = -i_1 R$", loc="right")
+        elm.Label().at((n.center[0] - 0.55, n.center[1] - 0.45)).label("$U_1$ = 0", fontsize=11, color=C2)
+
+
+def _shunt(d, x0, high):
+    """Snímací rezistor nad zátěží (high-side) nebo pod ní (low-side) a rozdílové měření úbytku."""
+    u = d.unit
+    elm.Line().at((x0, 0)).up(0.01)
+    elm.Label().at((x0, 0.25)).label("$V_\\mathrm{SUPPLY}$", fontsize=12)
+    prvky = [("$R_\\mathrm{SENSE}$", elm.Resistor, C2), ("zátěž", elm.Resistor, INK)]
+    if not high:
+        prvky.reverse()
+    uzly = [(x0, 0)]
+    for lbl, el, col in prvky:
+        e = el().at(uzly[-1]).down().label(lbl, loc="top", color=col).color(col)
+        uzly.append(e.end)
+    elm.Ground().at(uzly[-1])
+    rs = 0 if high else 1                                   # index horního konce snímacího rezistoru
+    op = elm.Opamp(leads=True, flip=True).right().anchor("in2").at((x0 + u * 0.9, uzly[rs][1] - 0.3))
+    elm.Line().at(uzly[rs]).right(u * 0.35).dot()
+    elm.Line().toy(op.in2)
+    elm.Line().tox(op.in2)
+    elm.Line().at(uzly[rs + 1]).right(u * 0.2)
+    elm.Line().toy(op.in1)
+    elm.Line().tox(op.in1)
+    elm.Dot().at(uzly[rs + 1])
+    elm.Line().at(op.out).right(u * 0.3)
+    elm.Dot(open=True).label("výstup", loc="right")
+    elm.Label().at((x0 + u * 1.4, 0.75)).label("High-Side" if high else "Low-Side", fontsize=13,
+                                               color=C1 if high else C3)
+
+
+def fig11_shunt():
+    with schema("fig11_shunt", unit=2.2) as d:
+        _shunt(d, 0, True)
+        _shunt(d, d.unit * 4.6, False)
+
+
+def fig11_trafo():
+    with schema("fig11_trafo", unit=2.4) as d:
+        u = d.unit
+        t = elm.Transformer(t1=5, t2=5, core=True)
+        w = elm.Line().at(t.p1).left(u * 0.8)
+        elm.CurrentLabelInline(direction="out", ofst=0.0).at(w).label("$I_P$", loc="top")
+        elm.SourceSin().down().toy(t.p2).label("$V_P$", loc="bottom")
+        elm.Line().tox(t.p2)
+        w2 = elm.Line().at(t.s1).right(u * 0.8)
+        elm.CurrentLabelInline(direction="in", ofst=0.0).at(w2).label("$I_S$", loc="top")
+        elm.Resistor().down().toy(t.s2).label("$R_B$", loc="bottom")
+        elm.Line().tox(t.s2)
+        xm = (t.p1[0] + t.s1[0]) / 2
+        elm.Label().at((xm, t.p1[1] + 0.55)).label("$N_P : N_S$", fontsize=13)
+        elm.Label().at((t.s1[0] + u * 0.45, (t.s1[1] + t.s2[1]) / 2)).label("$V_S$", fontsize=13)
+        elm.Label().at((xm, t.s2[1] - 0.9)).label(
+            "$\\frac{V_P}{V_S} = \\frac{I_S}{I_P} = \\frac{N_P}{N_S}$", fontsize=18, color=C1)
+
+
+def fig11_fu_schema():
+    with schema("fig11_fu_schema", unit=2.0) as d:
+        u = d.unit
+        a = elm.Opamp(leads=True, flip=True).right().label("OZA", loc="center", ofst=(-0.35, 0), fontsize=11)
+        elm.Line().at(a.in2).left(u * 0.3)
+        elm.Dot(open=True).label("$u_1$", loc="left")
+        elm.Line().at(a.in1).left(u * 0.15)
+        elm.Ground(lead=False)
+        elm.Resistor().at(a.out).right().label("$R_1$")
+        elm.Capacitor().right().label("$C_1$")
+        n = elm.Dot()
+        elm.Diode().at(n.center).down().label("$D_1$", loc="bottom")
+        elm.Ground()
+        elm.Line().at(n.center).up(u * 0.5)
+        elm.Diode().right(u * 0.9).reverse().label("$D_2$")
+        m = elm.Dot()
+        b = elm.Opamp(leads=True).right().anchor("in1").at((m.center[0] + u * 0.25, m.center[1])).label(
+            "OZB", loc="center", ofst=(-0.35, 0), fontsize=11)
+        elm.Line().at(m.center).tox(b.in1)
+        elm.Line().at(b.in2).down(u * 0.15)
+        elm.Ground(lead=False)
+        elm.Line().at(m.center).up(u * 0.55)
+        k = elm.Dot()
+        elm.Capacitor().right().tox(b.out).label("$C_A$")
+        q = elm.Dot()
+        elm.Line().at(k.center).up(u * 0.6)
+        elm.Resistor().right().tox(b.out).label("$R_A$")
+        elm.Line().down().toy(q.center)
+        elm.Line().at(q.center).toy(b.out).dot()
+        elm.Line().at(b.out).right(u * 0.3)
+        elm.Dot(open=True).label("$u_0$", loc="right")
+
+
+def fig11_fu_prubeh():
+    Us, C1f, RA, CA = 13.0, 1e-9, 100e3, 1e-6
+    tau = RA * CA
+    dU = 2 * C1f * Us / CA                                   # skok napětí na C_A po jedné pumpě (Q1 / C_A)
+    fig = plt.figure(figsize=(8.6, 6.0))
+    gs = fig.add_gridspec(3, 1, height_ratios=[1, 1, 1.7])
+    a1 = fig.add_subplot(gs[0])
+    a2 = fig.add_subplot(gs[1], sharex=a1)
+    a3 = fig.add_subplot(gs[2])
+    t = np.linspace(0, 3e-3, 3001)
+    u1 = np.sin(2 * np.pi * 1e3 * t)
+    a1.plot(t * 1e3, u1, color=C1)
+    a1.set_ylabel("$u_1$ [V]")
+    a1.set_title("Vstup $u_1$ (sinus 1 kHz) a výstup komparátoru OZA (obdélník ±$U_\\mathrm{SAT}$)", loc="left")
+    a2.plot(t * 1e3, np.where(u1 >= 0, Us, -Us), color=C2)
+    a2.set_ylabel("OZA [V]")
+    a2.set_xlabel("čas t [ms]")
+    a2.set_yticks([-13, 0, 13])
+    plt.setp(a1.get_xticklabels(), visible=False)
+    for f, col, mk in [(1e3, C1, "o"), (500, C3, "^")]:
+        T = 1 / f
+        tt, uu, v = [], [], 0.0
+        for k in range(int(0.6 / T)):
+            s = np.linspace(0, T, 20, endpoint=False)
+            tt.append(k * T + s)
+            uu.append(v * np.exp(-s / tau))
+            v = v * np.exp(-T / tau) + dU                    # na konci periody vybití + načerpaný náboj
+        tt, uu = np.concatenate(tt), np.concatenate(uu)
+        a3.plot(tt * 1e3, uu, color=col, lw=1.6, label=f"f = {f:g} Hz")
+        ust = 2 * Us * C1f * RA * f
+        a3.axhline(ust, color=col, ls="--", lw=1.0)
+        a3.annotate(f"$u_0 = 2U_\\mathrm{{SAT}}C_1R_Af$ = {cz(ust, 1)} V", (600, ust), xytext=(-4, 5),
+                    textcoords="offset points", ha="right", fontsize=9.5, color=INK2)
+    a3.set_xlabel("čas t [ms]")
+    a3.set_ylabel("$u_0$ [V]")
+    a3.set_ylim(0, 3.1)
+    a3.set_xlim(0, 600)
+    a3.legend(loc="lower right")
+    a3.set_title("Výstup $u_0$ se ustálí na hodnotě úměrné frekvenci ($R_AC_A$ = 100 ms)", loc="left")
+    a3.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:g}".replace(".", ",")))
+    save(fig, "fig11_fu_prubeh")
+
+
+def fig11_rx():
+    with schema("fig11_rx") as d:
+        op = elm.Opamp(leads=True)
+        _vstup_zem(d, op)
+        elm.Line().at(op.in1).left(d.unit * 0.25)
+        n = elm.Dot()
+        w = elm.Line().left(d.unit * 0.6)
+        elm.CurrentLabelInline(direction="out", ofst=0.0).at(w).label("$I_N$", loc="top")
+        elm.Resistor().left().label("$R_N$", loc="bottom")
+        elm.Dot(open=True).label("$U_\\mathrm{REF}$", loc="left")
+        elm.Line().at(n.center).up(d.unit * 0.6)
+        elm.Resistor().tox(op.out).label("$R_X$", color=C2).color(C2)
+        elm.Line().toy(op.out).dot()
+        elm.Line().at(op.out).right(d.unit * 0.35)
+        elm.Dot(open=True).label("$U_X$", loc="right")
+
+
+def fig11_mustek():
+    with schema("fig11_mustek", unit=3.0) as d:
+        u = d.unit
+        s = u / np.sqrt(2)                                   # vodorovný i svislý průmět šikmého rezistoru
+        A = (0, 0)
+        D = elm.Resistor().at(A).theta(-135).end
+        C = elm.ResistorVar().at(D).theta(-45).end
+        B = elm.Resistor().at(A).theta(-45).end
+        elm.Resistor().at(B).theta(-135).color(C2)
+        for xy, lbl, col in [((-s / 2 - 0.55, -s / 2 + 0.4), "$R_1$", INK), ((s / 2 + 0.55, -s / 2 + 0.4), "$R_3$", INK),
+                             ((-s / 2 - 1.05, -1.5 * s - 0.4), "$R_2$ (trimr)", INK),
+                             ((s / 2 + 0.55, -1.5 * s - 0.4), "$R_X$", C2)]:
+            elm.Label().at(xy).label(lbl, fontsize=14, color=col)
+        for p, lbl, ofs in [(A, "A", (0.35, 0.2)), (B, "B", (0.35, 0)), (C, "C", (0.35, -0.2)), (D, "D", (-0.35, 0.25))]:
+            elm.Dot().at(p)
+            elm.Label().at((p[0] + ofs[0], p[1] + ofs[1])).label(lbl, fontsize=14)
+        elm.Line().at(D).right(s * 0.5)
+        elm.MeterV().right().tox((B[0] - s * 0.5, D[1]))
+        elm.Line().tox(B)
+        elm.Label().at((0, D[1] + 0.75)).label("$V_G$", fontsize=13)
+        elm.Line().at(A).up(u * 0.25)
+        elm.Line().left(s + u * 0.45)
+        elm.Battery().down().toy(C[1] - u * 0.25).reverse()
+        elm.Line().tox(C)
+        elm.Line().toy(C)
+        elm.Label().at((-s - u * 0.45 - 0.5, D[1])).label("$U$", fontsize=14)
+
+
 ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig02_xc, fig02_dp_hp, fig02_bode_dp, fig02_bode_hp, fig02_postup, fig02_typy, fig02_pp_schema,
        fig02_bode_pp, fig02_pz_schema, fig02_bode_pz,
        fig03_oz_symbol, fig03_oz_char, fig03_inv, fig03_neinv, fig03_dif, fig03_pristrojovy, fig03_cmrr,
-       fig04_sledovac, fig04_sledovac_delic, fig04_integrator, fig04_derivator, fig04_prubehy]
+       fig04_sledovac, fig04_sledovac_delic, fig04_integrator, fig04_derivator, fig04_prubehy,
+       fig11_signaly, fig11_zdroj, fig11_iu, fig11_shunt, fig11_trafo, fig11_fu_schema, fig11_fu_prubeh, fig11_rx,
+       fig11_mustek]
 
 if __name__ == "__main__":
     vyber = sys.argv[1:]
