@@ -1,0 +1,195 @@
+<h1>Normální rozdělení</h1>
+<p class="lead">Nejdůležitější rozdělení celé statistiky: popisuje chyby měření, výšky lidí, součty mnoha drobných vlivů. Integrál jeho hustoty nejde spočítat ručně, a proto se všechno převádí na jedno <b>normované</b> rozdělení a čte z tabulky Laplaceovy funkce Φ. Celá dovednost sady 5 jsou tedy dva směry: <b>z hodnoty na pravděpodobnost</b> (Φ) a <b>z pravděpodobnosti na hodnotu</b> (kvantil).</p>
+
+<h2 id="definice">Normální a normované normální rozdělení</h2>
+<div class="box definice" id="def-normalni"><div class="box-t">Definice: normální rozdělení <span class="en">normal (Gaussian) distribution</span></div>
+<p>Veličina \(X\) má <b>normální rozdělení</b> No(μ, σ) s parametry \(\mu \in \mathbb{R}\), \(\sigma &gt; 0\), je-li její hustota</p>
+\[ f(x) = \frac{1}{\sigma\sqrt{2\pi}}\, e^{-\frac{(x - \mu)^2}{2\sigma^2}}, \qquad x \in \mathbb{R}. \]
+<p>Platí \(EX = \mu\) a \(DX = \sigma^2\).</p>
+<p class="jinak">zvonovitá křivka symetrická kolem μ; σ určuje šířku zvonu. Vzniká všude, kde výsledek je součtem mnoha malých nezávislých vlivů.</p></div>
+<div class="box pozor"><div class="box-t">Pozor na zápis parametrů</div>
+<p>Skripta předmětu píšou No(μ, σ) – druhý parametr je <b>směrodatná odchylka</b>. V mnoha anglických textech se píše N(μ, σ²) s <b>rozptylem</b>. Čti zadání: „<span class="kw">variance σ² = 4</span>“ znamená σ = 2, a do standardizace dosazuješ vždy σ, ne σ².</p></div>
+<div class="box definice" id="def-normovane"><div class="box-t">Definice: normovaná veličina a normované normální rozdělení <span class="en">standardized variable, standard normal distribution</span></div>
+<p><b>Normovaná (standardizovaná) veličina</b> k veličině X je</p>
+\[ U = \frac{X - EX}{\sqrt{DX}}. \]
+<p>Má-li X rozdělení No(μ, σ), má \(U = (X - \mu)/\sigma\) <b>normované normální rozdělení</b> No(0, 1).</p>
+<p class="jinak">přepočet na „kolik směrodatných odchylek je hodnota od průměru“. Díky tomu stačí jediná tabulka pro všechna normální rozdělení.</p></div>
+<div class="box definice" id="def-laplaceova-funkce"><div class="box-t">Definice: Laplaceova funkce Φ <span class="en">Laplace function, standard normal CDF</span></div>
+<p><b>Laplaceova funkce</b> je distribuční funkce normovaného normálního rozdělení:</p>
+\[ \Phi(u) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{u} e^{-t^2/2}\, dt = p(U &lt; u). \]
+<p class="jinak">plocha pod zvonovou křivkou vlevo od u. Hodnoty se čtou z <a href="13_tabulky.html#phi">tabulky</a>; tabulka obvykle obsahuje jen \(u \ge 0\), záporné se dopočítají ze symetrie.</p></div>
+
+<div class="box vzorec"><div class="box-t">Tři vzorce, které stačí na všechny úlohy</div>
+\[ \Phi(-u) = 1 - \Phi(u) \]
+\[ p(X &lt; x) = \Phi\!\left(\frac{x - \mu}{\sigma}\right) \]
+\[ \begin{aligned} p(x_1 &lt; X &lt; x_2) &amp;= \Phi\!\left(\frac{x_2 - \mu}{\sigma}\right) \\ &amp;\quad - \Phi\!\left(\frac{x_1 - \mu}{\sigma}\right) \end{aligned} \]
+<table class="vars">
+<tr><td>\(\mu\)</td><td>střední hodnota (střed zvonu)</td></tr>
+<tr><td>\(\sigma\)</td><td>směrodatná odchylka (odmocnina z rozptylu)</td></tr>
+<tr><td>\((x - \mu)/\sigma\)</td><td>normovaná hodnota u – o kolik σ je x od μ</td></tr>
+<tr><td>\(\Phi(0) = 0{,}5\)</td><td>polovina plochy je vlevo od středu</td></tr>
+</table></div>
+
+<figure><div class="paper"><img src="figures/fig06_symetrie.png" alt="Normovaná normální hustota; vlevo od minus u a vpravo od u jsou stejně velké vybarvené plochy" loading="lazy"></div>
+<figcaption><b>Obr. 6.1</b> Symetrie Laplaceovy funkce: plocha vlevo od −u je stejná jako plocha vpravo od u.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Pravá plocha je \(1 - \Phi(u)\), levá je \(\Phi(-u)\); protože jsou stejné, platí \(\Phi(-u) = 1 - \Phi(u)\). Tak se z tabulky pro kladná u dostanou i záporná.</p></div>
+
+<h2 id="pravdepodobnosti">Z hodnoty na pravděpodobnost</h2>
+<div class="box postup" id="postup-normalni"><div class="box-t">Jak poznat a jak postupovat: pravděpodobnost u normálního rozdělení</div>
+<p><b>Poznáš to:</b> <span class="kw">normal distribution with mean value μ and variance σ²</span>, <span class="kw">No(0, 1)</span>, „vypočti pravděpodobnost, že bude naměřeno méně / více / mezi“.</p>
+<ol>
+<li>Zjisti μ a <b>σ</b> (z rozptylu odmocni).</li>
+<li>Hranice převeď na \(u = (x - \mu)/\sigma\).</li>
+<li>Převeď na tvar s Φ: „méně než“ → \(\Phi(u)\); „více než“ → \(1 - \Phi(u)\); „mezi“ → \(\Phi(u_2) - \Phi(u_1)\).</li>
+<li>Záporné u: \(\Phi(-u) = 1 - \Phi(u)\). Hodnoty z tabulky.</li>
+<li>Kontrola obrázkem: je výsledek větší, nebo menší než 0,5? Sedí to s tím, kde leží plocha?</li>
+</ol></div>
+
+<div class="box uloha" id="u-s5-2"><div class="box-t">Úloha S5/2 <span class="en">set 5, task 2</span></div>
+<p>U ~ No(0, 1). Spočítej (a) \(p(U &lt; 1{,}67)\), (b) \(p(U &gt; 0{,}35)\), (c) \(p(0{,}35 &lt; U &lt; 1{,}67)\), (d) \(p(U &lt; -0{,}35)\), (e) \(p(U &gt; -1{,}67)\), (f) \(p(-1{,}5 &lt; U &lt; 0{,}5)\).</p>
+<p class="meta"><b>Výsledek:</b> (a) 0,953; (b) 0,363; (c) 0,316; (d) 0,363; (e) 0,953; (f) 0,624.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>Hodnoty z tabulky:</p>
+\[ \begin{aligned} \Phi(1{,}67) &amp;= 0{,}9525 &amp; \Phi(0{,}35) &amp;= 0{,}6368 \\ \Phi(0{,}5) &amp;= 0{,}6915 &amp; \Phi(1{,}5) &amp;= 0{,}9332 \end{aligned} \]
+<p>(a) Méně než:</p>
+\[ p(U &lt; 1{,}67) = \Phi(1{,}67) \approx 0{,}953 \]
+<p>(b) Více než:</p>
+\[ \begin{aligned} p(U &gt; 0{,}35) &amp;= 1 - \Phi(0{,}35) \\ &amp;= 1 - 0{,}6368 \approx 0{,}363 \end{aligned} \]
+<p>(c) Mezi:</p>
+\[ \begin{aligned} p(0{,}35 &lt; U &lt; 1{,}67) &amp;= 0{,}9525 - 0{,}6368 \\ &amp;\approx 0{,}316 \end{aligned} \]
+<p>(d) Záporná hranice – symetrie:</p>
+\[ \begin{aligned} p(U &lt; -0{,}35) &amp;= \Phi(-0{,}35) \\ &amp;= 1 - \Phi(0{,}35) \approx 0{,}363 \end{aligned} \]
+<p>(e) Více než záporné číslo – opět symetrie:</p>
+\[ \begin{aligned} p(U &gt; -1{,}67) &amp;= 1 - \Phi(-1{,}67) \\ &amp;= \Phi(1{,}67) \approx 0{,}953 \end{aligned} \]
+<p>(f) Interval přes nulu:</p>
+\[ \begin{aligned} &amp;p(-1{,}5 &lt; U &lt; 0{,}5) \\ &amp;\quad = \Phi(0{,}5) - \Phi(-1{,}5) \\ &amp;\quad = \Phi(0{,}5) - \big(1 - \Phi(1{,}5)\big) \\ &amp;\quad = 0{,}6915 - 0{,}0668 \approx 0{,}624 \end{aligned} \]
+</div></details></div>
+
+<figure class="wide"><div class="paper"><img src="figures/fig06_plochy.png" alt="Tři normované normální hustoty s vybarvenou plochou: vlevo od 1,67, vpravo od 0,35 a mezi minus 1,5 a 0,5" loading="lazy"></div>
+<figcaption><b>Obr. 6.2</b> Úloha S5/2 (a), (b), (f): každá pravděpodobnost je vybarvená plocha.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Než sáhneš do tabulky, načrtni si zvon a vybarvi plochu. Hned vidíš, zda výsledek má být nad, nebo pod 0,5, a nespleteš si \(\Phi(u)\) s \(1 - \Phi(u)\).</p></div>
+
+<div class="box uloha" id="u-s5-4"><div class="box-t">Úloha S5/4 <span class="en">set 5, task 4</span></div>
+<p>Výsledek měření proudu X má normální rozdělení se střední hodnotou μ = 10 mA a rozptylem σ² = 4 mA². Spočítej pravděpodobnost, že naměříme (a) méně než 13 mA, (b) více než 9 mA, (c) méně než 12 mA, ale více než 5 mA.</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">variance σ² = 4</span> → σ = 2 mA. <b>Výsledek:</b> (a) 0,933; (b) 0,691; (c) 0,835.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. X ~ No(10, 2). Standardizace \(u = (x - 10)/2\).</p>
+<p>2. (a) Méně než 13 mA:</p>
+\[ p(X &lt; 13) = \Phi\!\left(\frac{13 - 10}{2}\right) = \Phi(1{,}5) \approx 0{,}933 \]
+<p>3. (b) Více než 9 mA:</p>
+\[ p(X &gt; 9) = 1 - \Phi(-0{,}5) = \Phi(0{,}5) \approx 0{,}691 \]
+<p>4. (c) Mezi 5 a 12 mA:</p>
+\[ \begin{aligned} p(5 &lt; X &lt; 12) &amp;= \Phi(1) - \Phi(-2{,}5) \\ &amp;= 0{,}8413 - 0{,}0062 \approx 0{,}835 \end{aligned} \]
+</div></details></div>
+
+<h2 id="kvantily">Z pravděpodobnosti na hodnotu: kvantily</h2>
+<div class="box definice" id="def-kvantil-normalni"><div class="box-t">Definice: kvantil normovaného normálního rozdělení <span class="en">quantile of the standard normal distribution</span></div>
+<p><b>p-kvantil</b> \(u_p\) normovaného normálního rozdělení je číslo, pro které \(\Phi(u_p) = p\). Ze symetrie plyne \(u_{1-p} = -u_p\).</p>
+<p class="jinak">„Φ pozpátku“: v tabulce hledám uvnitř hodnotu p a čtu, k jakému u patří. Nejčastější kvantily jsou 1,645 (pro 0,95), 1,96 (pro 0,975) a 2,326 (pro 0,99).</p></div>
+<div class="box postup" id="postup-kvantil"><div class="box-t">Jak poznat a jak postupovat: hledám hranici</div>
+<p><b>Poznáš to:</b> známá pravděpodobnost, neznámá hodnota: <span class="kw">find the value u for which</span>, <span class="kw">above what value … with probability</span>, <span class="kw">in what limits</span>.</p>
+<ol>
+<li>Převeď podmínku na tvar „Φ(u) = číslo“:
+\[ \begin{aligned} p(U &gt; u) = \alpha \;&amp;\Rightarrow\; \Phi(u) = 1 - \alpha \\ p(-u &lt; U &lt; u) = \gamma \;&amp;\Rightarrow\; \Phi(u) = \tfrac{1 + \gamma}{2} \end{aligned} \]</li>
+<li>Najdi \(u\) v tabulce kvantilů (je-li číslo menší než 0,5, je u záporné: \(u_p = -u_{1-p}\)).</li>
+<li>Pro X ~ No(μ, σ) převeď zpět: \(x = \mu + \sigma u\).</li>
+</ol></div>
+
+<div class="box uloha" id="u-s5-3"><div class="box-t">Úloha S5/3 <span class="en">set 5, task 3</span></div>
+<p>U ~ No(0, 1). Najdi u, pro které (a) \(p(U &lt; u) = 0{,}9\), (b) \(p(U &gt; u) = 0{,}05\), (c) \(p(U &gt; u) = 0{,}8\), (d) \(p(-u &lt; U &lt; u) = 0{,}9\).</p>
+<p class="meta"><b>Výsledek:</b> (a) 1,28; (b) 1,645; (c) −0,84; (d) 1,645.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>(a) Přímo kvantil:</p>
+\[ \Phi(u) = 0{,}9 \;\Rightarrow\; u = u_{0{,}9} \approx 1{,}28 \]
+<p>(b) Plocha vpravo 0,05 → vlevo 0,95:</p>
+\[ \Phi(u) = 0{,}95 \;\Rightarrow\; u \approx 1{,}645 \]
+<p>(c) Plocha vpravo 0,8 → vlevo jen 0,2, tedy u je záporné:</p>
+\[ \Phi(u) = 0{,}2 \;\Rightarrow\; u = -u_{0{,}8} \approx -0{,}84 \]
+<p>(d) Symetrický interval s 0,9 uprostřed → na každé straně 0,05:</p>
+\[ \begin{aligned} 2\Phi(u) - 1 &amp;= 0{,}9 \\ \Phi(u) &amp;= 0{,}95 \\ u &amp;\approx 1{,}645 \end{aligned} \]
+<p>Přesné hodnoty: \(u_{0{,}9} = 1{,}2816\), \(u_{0{,}8} = 0{,}8416\); podle toho, jak hrubou tabulku použiješ, se může lišit poslední číslice.</p>
+</div></details></div>
+
+<figure class="wide"><div class="paper"><img src="figures/fig06_kvantily.png" alt="Vlevo jednostranný kvantil 1,645 s plochou 0,05 vpravo; vpravo symetrický interval minus 1,645 až 1,645 s plochou 0,9" loading="lazy"></div>
+<figcaption><b>Obr. 6.3</b> Úloha S5/3 (b) a (d): jednostranná a oboustranná podmínka vedou na stejný kvantil 1,645.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Oboustranná podmínka s 0,9 uprostřed nechá 0,05 na <b>každém</b> konci, proto hledám \(u_{0{,}95}\), ne \(u_{0{,}9}\). Totéž se objeví u intervalů spolehlivosti a testů (\(1 - \alpha/2\)).</p></div>
+
+<div class="box uloha" id="u-s5-5"><div class="box-t">Úloha S5/5 <span class="en">set 5, task 5</span></div>
+<p>Měřicí přístroj má systematickou chybu 1 a k ní náhodnou chybu s normálním rozdělením se směrodatnou odchylkou σ = 0,3. (a) Nad jakou hodnotu se chyba dostane s pravděpodobností 0,01? (b) Pod jakou hodnotou bude chyba s pravděpodobností 0,02? (c) V jakých mezích (symetricky kolem 1) lze čekat chybu u 75 % měření?</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">systematic error</span> = posun střední hodnoty, <span class="kw">random error</span> = rozptyl → celková chyba X ~ No(1; 0,3). <b>Výsledek:</b> (a) ≈ 1,70; (b) ≈ 0,38; (c) (0,655; 1,345).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Celková chyba \(X = 1 + \varepsilon\), kde \(\varepsilon\) ~ No(0; 0,3), takže X ~ No(1; 0,3).</p>
+<p>2. (a) \(p(X &gt; x) = 0{,}01\) → \(\Phi(u) = 0{,}99\) → \(u \approx 2{,}326\):</p>
+\[ x = 1 + 0{,}3 \cdot 2{,}326 \approx 1{,}698 \]
+<p>3. (b) \(p(X &lt; x) = 0{,}02\) → \(u = -u_{0{,}98} \approx -2{,}054\):</p>
+\[ x = 1 - 0{,}3 \cdot 2{,}054 \approx 0{,}384 \]
+<p>4. (c) Uprostřed 0,75 → na každé straně 0,125 → \(\Phi(u) = 0{,}875\), \(u \approx 1{,}15\):</p>
+\[ \begin{aligned} x_1 &amp;= 1 - 0{,}3 \cdot 1{,}15 \approx 0{,}655 \\ x_2 &amp;= 1 + 0{,}3 \cdot 1{,}15 \approx 1{,}345 \end{aligned} \]
+<p>Při kvantilech zaokrouhlených z hrubší tabulky vyjdou čísla v řádu tisícin jinak (např. 1,694 nebo 0,652) – postup je stejný.</p>
+</div></details></div>
+
+<h2 id="pravidlo-3-sigma">Pravidlo tří sigma</h2>
+<div class="box definice" id="def-3sigma"><div class="box-t">Definice: pravidlo tří sigma <span class="en">three-sigma rule</span></div>
+<p>Pro X ~ No(μ, σ) platí</p>
+\[ \begin{aligned} p(\mu - 3\sigma &lt; X &lt; \mu + 3\sigma) &amp;= 2\Phi(3) - 1 \\ &amp;\approx 0{,}997 \end{aligned} \]
+<p class="jinak">prakticky všechny hodnoty normální veličiny leží do tří směrodatných odchylek od průměru. Hodnota dál než 3σ je podezřele vzácná (odlehlá hodnota, chyba).</p></div>
+<figure><div class="paper"><img src="figures/fig06_sigma.png" alt="Normální hustota s vyznačenými podíly 68,3 %, 95,4 % a 99,7 % do jedné, dvou a tří sigma" loading="lazy"></div>
+<figcaption><b>Obr. 6.4</b> Podíl hodnot do 1σ, 2σ a 3σ od střední hodnoty.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Tři čísla na odhad bez tabulky: zhruba 68 % hodnot je do 1σ, 95 % do 2σ a 99,7 % do 3σ. Hodí se na kontrolu, zda výsledek dává smysl.</p></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Normální rozdělení No(μ, σ) má zvonovitou hustotu symetrickou kolem μ, střední hodnota je μ a rozptyl σ². Standardizací – odečtu μ a vydělím σ – ho převedu na normované No(0, 1), jehož distribuční funkcí je Laplaceova funkce Φ. Pravděpodobnost, že X je menší než x, je pak Φ ze standardizované hodnoty a pro záporné argumenty využiji symetrii \(\Phi(-u) = 1 - \Phi(u)\). Obráceně, hodnotu ke známé pravděpodobnosti najdu přes kvantil: \(x = \mu + \sigma u_p\).“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Každé normální rozdělení převedu standardizací na No(0, 1): pravděpodobnost = Φ(u), hranice = μ + σ·kvantil.</p></div>
+
+<div class="box slovicka"><div class="box-t">Anglická slovíčka</div>
+<table>
+<tr><th>česky</th><th>anglicky</th></tr>
+<tr><td>normální (Gaussovo) rozdělení</td><td>normal (Gaussian) distribution</td></tr>
+<tr><td>normované normální rozdělení</td><td>standard normal distribution</td></tr>
+<tr><td>normovaná veličina, standardizace</td><td>standardized variable, standardization (z-score)</td></tr>
+<tr><td>Laplaceova funkce</td><td>Laplace function (standard normal CDF)</td></tr>
+<tr><td>kvantil</td><td>quantile (critical value)</td></tr>
+<tr><td>pravidlo tří sigma</td><td>three-sigma rule</td></tr>
+<tr><td>systematická / náhodná chyba</td><td>systematic / random error</td></tr>
+<tr><td>měřicí přístroj</td><td>measuring device</td></tr>
+<tr><td>symetrický kolem</td><td>symmetrical around</td></tr>
+</table>
+<p><b>Fráze ze zadání:</b> <span class="kw">find the value u for which it holds</span> = najdi u, pro které platí (→ kvantil); <span class="kw">above what value does the error go with probability 0.01</span> = nad jakou hodnotu se chyba dostane s pravděpodobností 0,01; <span class="kw">in what limits can the error be expected for 75 % of measurements</span> = v jakých mezích je chyba u 75 % měření.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Normální rozdělení No(μ, σ) je symetrický zvon se středem μ a šířkou σ. Protože jeho distribuční funkci nelze vyjádřit elementárně, převádí se každá úloha standardizací \(u = (x - \mu)/\sigma\) na normované rozdělení No(0, 1) a čte se z tabulky Laplaceovy funkce Φ. „Méně než“ je Φ(u), „více než“ 1 − Φ(u), „mezi“ rozdíl dvou Φ a záporné argumenty se řeší symetrií. Obrácená úloha – hledání hranice ke známé pravděpodobnosti – vede na kvantil \(u_p\) a zpětný převod \(x = \mu + \sigma u_p\); u symetrických mezí je na každém konci polovina zbytku.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Standardizuj: \(u = (x - \mu)/\sigma\) – vždy se směrodatnou odchylkou, ne rozptylem.</li>
+<li>„Méně než“ = \(\Phi(u)\), „více než“ = \(1 - \Phi(u)\); záporné u přes \(\Phi(-u) = 1 - \Phi(u)\).</li>
+<li>Hledám hranici → kvantil: \(x = \mu + \sigma u_p\).</li>
+<li>Symetrické meze s pravděpodobností γ → \(\Phi(u) = (1 + \gamma)/2\).</li>
+<li>Kreslit zvon a plochu: chrání před záměnou Φ(u) a 1 − Φ(u).</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Popište normální rozdělení a význam jeho parametrů.</summary><div>
+<p>Spojité rozdělení se zvonovitou hustotou symetrickou kolem μ. μ je střední hodnota (poloha středu, zároveň medián a modus), σ směrodatná odchylka (šířka zvonu, inflexní body jsou v μ ± σ). \(DX = \sigma^2\).</p></div></details>
+<details class="q"><summary>Co je standardizace a proč ji děláme?</summary><div>
+<p>Převod \(U = (X - \mu)/\sigma\), který z libovolné normální veličiny udělá normovanou No(0, 1). Hodnota u říká, o kolik směrodatných odchylek je x od průměru. Díky tomu stačí jedna tabulka – Laplaceova funkce Φ.</p></div></details>
+<details class="q"><summary>Co je Laplaceova funkce a jaké má vlastnosti?</summary><div>
+<p>Distribuční funkce normovaného normálního rozdělení, \(\Phi(u) = p(U &lt; u)\). Vlastnosti:</p>
+<ul>
+<li>je rostoucí a \(\Phi(0) = 0{,}5\);</li>
+<li>symetrie \(\Phi(-u) = 1 - \Phi(u)\);</li>
+<li>pravděpodobnost intervalu je rozdíl \(\Phi(u_2) - \Phi(u_1)\) standardizovaných mezí.</li>
+</ul></div></details>
+<details class="q"><summary>Jak najdete hodnotu, kterou normální veličina překročí jen s pravděpodobností α?</summary><div>
+<p>Podmínka „vpravo zbývá α“ znamená, že vlevo je \(1 - \alpha\): hledám kvantil \(u_{1-\alpha}\) z tabulky (pro α = 0,05 je to 1,645). Zpět do jednotek X převedu:</p>
+\[ x = \mu + \sigma\, u_{1-\alpha} \]</div></details>
+<details class="q"><summary>Co říká pravidlo tří sigma?</summary><div>
+<p>Pro normální rozdělení leží v intervalu \((\mu - 3\sigma, \mu + 3\sigma)\) asi 99,7 % hodnot (\(2\Phi(3) - 1\)). Hodnoty dál jsou velmi vzácné. Podobně asi 68 % hodnot leží do 1σ a 95 % do 2σ.</p></div></details>
+<details class="q"><summary>Proč u symetrického intervalu s pravděpodobností 0,9 hledáte kvantil 0,95?</summary><div>
+<p>Zbylá pravděpodobnost 0,1 se rozdělí rovnoměrně na oba konce, 0,05 vlevo a 0,05 vpravo. Horní hranice má tedy vlevo od sebe 0,9 + 0,05 = 0,95, proto \(u = u_{0{,}95} \approx 1{,}645\). Obecně \(\Phi(u) = (1 + \gamma)/2\).</p></div></details>

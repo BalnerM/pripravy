@@ -1,0 +1,325 @@
+<h1>Diskrétní rozdělení</h1>
+<p class="lead">Většina úloh se sadami 2–4 nepotřebuje rozdělení vymýšlet: stačí poznat, který <b>známý typ</b> popisuje situaci, a dosadit do vzorce. Rozhodují tři otázky: počítám úspěchy v pevném počtu pokusů, nebo čekám na první úspěch? Táhnu s vracením, nebo bez? A jde o počet událostí za čas? Tato kapitola dává ke každému typu definici, vzorce a rozpoznávací znaky.</p>
+
+<h2 id="jak-poznat">Které rozdělení použít</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>situace v zadání</th><th>rozdělení</th><th>\(p(X = k)\)</th><th>EX, DX</th></tr>
+<tr><td>jeden pokus, úspěch ano/ne</td><td>alternativní A(p)</td><td>\(p\) pro 1, \(1-p\) pro 0</td><td>\(p\); \(p(1-p)\)</td></tr>
+<tr><td>\(n\) nezávislých pokusů, stejné \(p\), <b>kolik úspěchů</b></td><td>binomické Bi(n, p)</td><td>\(\binom{n}{k} p^k (1-p)^{n-k}\)</td><td>\(np\); \(np(1-p)\)</td></tr>
+<tr><td>opakuji, <b>dokud</b> nenastane úspěch; X = počet neúspěchů před ním</td><td>geometrické Ge(p)</td><td>\(p(1-p)^k\), \(k = 0, 1, \dots\)</td><td>\(\frac{1-p}{p}\); \(\frac{1-p}{p^2}\)</td></tr>
+<tr><td>výběr \(n\) kusů <b>bez vracení</b> z \(N\), v nichž je \(M\) „označených“</td><td>hypergeometrické H(N, M, n)</td><td>\(\binom{M}{k}\binom{N-M}{n-k} / \binom{N}{n}\)</td><td>\(n\frac{M}{N}\); viz níže</td></tr>
+<tr><td><b>počet událostí za čas</b> (průměrně λ), vzácné jevy</td><td>Poissonovo Po(λ)</td><td>\(\frac{\lambda^k}{k!} e^{-\lambda}\)</td><td>\(\lambda\); \(\lambda\)</td></tr>
+</table></div>
+
+<h2 id="binomicke">Binomické rozdělení</h2>
+<div class="box definice" id="def-bernoulli"><div class="box-t">Definice: Bernoulliho posloupnost pokusů <span class="en">Bernoulli sequence of independent trials</span></div>
+<p><b>Bernoulliho posloupnost</b> je řada \(n\) navzájem nezávislých pokusů, z nichž každý má jen dva výsledky (úspěch / neúspěch) a úspěch má v každém pokusu stejnou pravděpodobnost \(p\).</p>
+<p class="jinak">„opakuji totéž pořád dokola a pokusy se navzájem neovlivňují“: hody kostkou, kontrola výrobků z velké série, testy se stejnou šancí na úspěch.</p></div>
+<div class="box definice" id="def-binomicke"><div class="box-t">Definice: binomické rozdělení <span class="en">binomial distribution</span></div>
+<p>Veličina X má <b>binomické rozdělení</b> Bi(n, p), jestliže udává počet úspěchů v Bernoulliho posloupnosti \(n\) pokusů s pravděpodobností úspěchu \(p\):</p>
+\[ p(X = k) = \binom{n}{k} p^k (1 - p)^{n-k} \]
+<p>pro \(k = 0, 1, \dots, n\).</p>
+<p class="jinak">\(p^k (1-p)^{n-k}\) je pravděpodobnost jednoho konkrétního pořadí (k úspěchů, n − k neúspěchů); \(\binom{n}{k}\) je počet pořadí, ve kterých to může nastat.</p></div>
+<div class="box vzorec"><div class="box-t">Charakteristiky Bi(n, p)</div>
+\[ EX = np, \qquad DX = np(1 - p) \]
+<table class="vars">
+<tr><td>\(n\)</td><td>počet pokusů (pevně daný předem)</td></tr>
+<tr><td>\(p\)</td><td>pravděpodobnost úspěchu v jednom pokusu („úspěch“ = to, co počítáme, i kdyby to byl zmetek)</td></tr>
+<tr><td>\(k\)</td><td>počet úspěchů, 0 až \(n\)</td></tr>
+</table></div>
+
+<div class="box postup" id="postup-binomicke"><div class="box-t">Jak poznat a jak postupovat: binomické rozdělení</div>
+<p><b>Poznáš to:</b> pevný počet <span class="kw">n independent repetitions</span> / <span class="kw">n products</span> / <span class="kw">n tests</span>, stejná pravděpodobnost <span class="kw">the same every time</span>, otázka <span class="kw">exactly k</span>, <span class="kw">at least</span>, <span class="kw">at most</span>, <span class="kw">number of …</span>.</p>
+<ol>
+<li>Urči \(n\) a \(p\) – co je „úspěch“ (to, co X počítá).</li>
+<li>„Právě k“ → jeden člen vzorce.</li>
+<li>„Aspoň k“ / „nejvýše k“ → součet členů; je-li jich hodně, vezmi doplněk (\(p(X \ge 2) = 1 - p(0) - p(1)\)).</li>
+<li>Konkrétní pořadí („úspěch právě v 1. a 3. pokusu“) → <b>bez</b> kombinačního čísla, jen součin.</li>
+</ol></div>
+
+<div class="box uloha" id="u-s2-7"><div class="box-t">Úloha S2/7 <span class="en">set 2, task 7</span></div>
+<p>Pět nezávislých hodů kostkou. Jaká je pravděpodobnost, že šestka padne ve 2. a 4. hodu, ale ne v 1., 3. a 5.?</p>
+<p class="meta"><b>V zadání:</b> předepsané pořadí → jen součin, žádné kombinační číslo. <b>Výsledek:</b> \(5^3/6^5 \approx 0{,}0161\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>Hody jsou nezávislé, takže násobíme: dvakrát šestka (\(1/6\)), třikrát ne-šestka (\(5/6\)).</p>
+\[ p(A) = \left(\frac{5}{6}\right)^3 \left(\frac{1}{6}\right)^2 = \frac{125}{7776} \approx 0{,}0161 \]
+</div></details></div>
+
+<div class="box uloha" id="u-s2-8"><div class="box-t">Úloha S2/8 <span class="en">set 2, task 8</span></div>
+<p>Pět nezávislých hodů kostkou. Jaká je pravděpodobnost, že šestka padne právě dvakrát?</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">exactly twice</span>, pořadí libovolné → binomické Bi(5, 1/6). <b>Výsledek:</b> ≈ 0,161.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>Je to S2/7 vynásobená počtem pořadí, ve kterých mohou být dvě šestky mezi pěti hody: \(\binom{5}{2} = 10\).</p>
+\[ \begin{aligned} p(X = 2) &amp;= \binom{5}{2} \left(\frac{1}{6}\right)^2 \left(\frac{5}{6}\right)^3 \\ &amp;= 10 \cdot \frac{125}{7776} \approx 0{,}161 \end{aligned} \]
+</div></details></div>
+
+<div class="box uloha" id="u-s2-4"><div class="box-t">Úloha S2/4 <span class="en">set 2, task 4</span></div>
+<p>Výrobek splní normu s pravděpodobností 0,8. Popiš rozdělení počtu nevyhovujících mezi 3 výrobky.</p>
+<p class="meta"><b>V zadání:</b> počítáme <b>nevyhovující</b> (<span class="kw">nonconforming</span>) → „úspěch“ má \(p = 0{,}2\). <b>Výsledek:</b> 0,512; 0,384; 0,096; 0,008.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>X ~ Bi(3; 0,2), \(X \in \{0, 1, 2, 3\}\):</p>
+\[ \begin{aligned} p(0) &amp;= 0{,}8^3 = 0{,}512 \\ p(1) &amp;= 3 \cdot 0{,}2 \cdot 0{,}8^2 = 0{,}384 \\ p(2) &amp;= 3 \cdot 0{,}2^2 \cdot 0{,}8 = 0{,}096 \\ p(3) &amp;= 0{,}2^3 = 0{,}008 \end{aligned} \]
+</div></details></div>
+
+<div class="box uloha" id="u-s2-9"><div class="box-t">Úloha S2/9 <span class="en">set 2, task 9</span></div>
+<p>Výrobek je kvalitní s pravděpodobností 0,75. Vybereme 5 výrobků; X = počet kvalitních. Urči rozdělení X.</p>
+<p class="meta"><b>Výsledek:</b> \(p(k) = \binom{5}{k} 0{,}75^k\, 0{,}25^{5-k}\), \(k = 0, \dots, 5\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>X ~ Bi(5; 0,75). Číselně:</p>
+<div class="tablewrap"><table class="compact">
+<tr><th>k</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+<tr><th>p(k)</th><td>0,0010</td><td>0,0146</td><td>0,0879</td><td>0,2637</td><td>0,3955</td><td>0,2373</td></tr>
+</table></div>
+<p>\(EX = 5 \cdot 0{,}75 = 3{,}75\), nejpravděpodobnější hodnota je 4.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-s3-1"><div class="box-t">Úloha S3/1 <span class="en">set 3, task 1</span></div>
+<p>Student Adam píše 6 testů, každý zvládne s pravděpodobností 0,85. X = počet úspěšných testů. Urči rozdělení X a pravděpodobnost, že (a) uspěje právě třikrát, (b) aspoň dvakrát, (c) nejvýše dvakrát, (d) uspěje jen v prvním testu, (e) uspěje v prvním testu.</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">exactly</span>, <span class="kw">at least twice</span>, <span class="kw">will not succeed more than twice</span> (= nejvýše dvakrát), <span class="kw">only on the first</span> (konkrétní pořadí). <b>Výsledek:</b> (a) 0,0415; (b) 0,9996; (c) 0,00589; (d) 0,0000645; (e) 0,85.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>X ~ Bi(6; 0,85), \(p(k) = \binom{6}{k} 0{,}85^k\, 0{,}15^{6-k}\).</p>
+<p>(a) Právě tři:</p>
+\[ p(3) = 20 \cdot 0{,}85^3 \cdot 0{,}15^3 \approx 0{,}0415 \]
+<p>(b) Aspoň dva – přes doplněk (stačí dva členy):</p>
+\[ \begin{aligned} p(X \ge 2) &amp;= 1 - p(0) - p(1) \\ &amp;= 1 - 0{,}15^6 - 6 \cdot 0{,}85 \cdot 0{,}15^5 \\ &amp;\approx 0{,}9996 \end{aligned} \]
+<p>(c) Nejvýše dva:</p>
+\[ p(X \le 2) = p(0) + p(1) + p(2) \]
+\[ \begin{aligned} p(X \le 2) &amp;\approx 0{,}0000114 + 0{,}000387 \\ &amp;\quad + 0{,}005486 \\ &amp;\approx 0{,}00589 \end{aligned} \]
+<p>(d) Jen v prvním: přesně předepsané pořadí (úspěch, pak 5 neúspěchů), kombinační číslo se nepíše:</p>
+\[ p = 0{,}85 \cdot 0{,}15^5 \approx 0{,}0000645 \]
+<p>(e) Uspěje v prvním (ostatní libovolně): \(p = 0{,}85\).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-s3-2"><div class="box-t">Úloha S3/2 <span class="en">set 3, task 2</span></div>
+<p>Spočítej střední hodnotu a rozptyl počtu úspěšných testů z S3/1.</p>
+<p class="meta"><b>Výsledek:</b> \(EX = 5{,}1\), \(DX = 0{,}765\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>Pro binomické rozdělení není třeba sčítat tabulku – stačí vzorce:</p>
+\[ EX = np = 6 \cdot 0{,}85 = 5{,}1 \]
+\[ DX = np(1 - p) = 6 \cdot 0{,}85 \cdot 0{,}15 = 0{,}765 \]
+</div></details></div>
+
+<figure class="wide"><div class="paper"><img src="figures/fig04_rozdeleni.png" alt="Čtyři grafy pravděpodobnostních funkcí: binomické Bi(6; 0,85), geometrické pro šestku, hypergeometrické H(100, 20, 10) a Poissonovo Po(8)" loading="lazy"></div>
+<figcaption><b>Obr. 4.1</b> Čtyři základní diskrétní rozdělení na úlohách ze sad 3 a 4.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Binomické a hypergeometrické mají <b>konečně</b> hodnot (0 až n), geometrické a Poissonovo <b>nekonečně</b> (0, 1, 2, …). Geometrické vždy klesá – nejpravděpodobnější je úspěch hned napoprvé; Poissonovo má vrchol kolem λ.</p></div>
+
+<h2 id="geometricke">Geometrické rozdělení: čekání na první úspěch</h2>
+<div class="box definice" id="def-geometricke"><div class="box-t">Definice: geometrické rozdělení <span class="en">geometric distribution</span></div>
+<p>Veličina X má <b>geometrické rozdělení</b> Ge(p), jestliže udává počet neúspěchů před prvním úspěchem v Bernoulliho posloupnosti s pravděpodobností úspěchu \(p\):</p>
+\[ p(X = k) = p\,(1 - p)^k, \qquad k = 0, 1, 2, \dots \]
+<p class="jinak">„k-krát se nepovede, pak se to povede“. Pokusů není pevný počet – opakujeme, dokud se nepovede. Počítá-li X místo neúspěchů číslo pokusu, ve kterém přišel úspěch, je \(p(X = k) = (1-p)^{k-1} p\) pro \(k = 1, 2, \dots\)</p></div>
+<div class="box vzorec"><div class="box-t">Charakteristiky (dvě varianty počítání)</div>
+<ul>
+<li>X = počet neúspěchů před úspěchem (\(k \ge 0\)):
+\[ EX = \frac{1-p}{p} \]</li>
+<li>X = pořadí úspěšného pokusu (\(k \ge 1\)):
+\[ EX = \frac{1}{p} \]</li>
+</ul>
+<table class="vars">
+<tr><td>\(p\)</td><td>pravděpodobnost „ukončující“ události (to, na co čekáme)</td></tr>
+<tr><td>rozptyl</td><td>v obou variantách \(DX = (1-p)/p^2\) (posunutí o 1 rozptyl nemění)</td></tr>
+</table></div>
+<div class="box pozor"><div class="box-t">Častá past: od nuly, nebo od jedničky?</div>
+<p>Přečti, co přesně X počítá. „Počet dní, než poprvé přijde pozdě“ nebo „počet správných odpovědí před chybou“ začíná od 0. „Na kolikátý hod padne šestka“ začíná od 1. A pozor, co je „úspěch“: je to ta událost, která pokus <b>ukončí</b> (pozdní příchod, špatná odpověď), i když je pro studenta nepříjemná.</p></div>
+
+<div class="box uloha" id="u-s2-2"><div class="box-t">Úloha S2/2 <span class="en">set 2, task 2</span></div>
+<p>Adam přijde včas s pravděpodobností 1/4, každý den stejně. X = počet dní, než poprvé přijde pozdě. Urči rozdělení X.</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">the same every day</span> → nezávislé pokusy; <span class="kw">first late arrival</span> → čekáme na první pozdní příchod (p = 3/4). <b>Výsledek:</b> \(p(n) = \tfrac{3}{4} \left(\tfrac{1}{4}\right)^n\), \(n = 0, 1, 2, \dots\)</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>„Úspěch“ (událost, která čekání ukončí) je pozdní příchod: \(p = 1 - 1/4 = 3/4\). X = počet dní včas před ním, takže X ~ Ge(3/4) od nuly:</p>
+\[ p(X = n) = \left(\frac{1}{4}\right)^n \cdot \frac{3}{4}, \qquad n = 0, 1, 2, \dots \]
+<p>Kontrola součtu geometrickou řadou: \(\tfrac{3}{4} \cdot \tfrac{1}{1 - 1/4} = 1\).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-s3-4"><div class="box-t">Úloha S3/4 <span class="en">set 3, task 4</span></div>
+<p>Učitel se ptá studenta tak dlouho, dokud neodpoví špatně. Správná odpověď má pravděpodobnost 0,1. X = počet správných odpovědí. Urči rozdělení X.</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">until he gets an incorrect answer</span> → čekáme na první špatnou (p = 0,9). <b>Výsledek:</b> \(p(k) = 0{,}1^k \cdot 0{,}9\), \(k = 0, 1, 2, \dots\)</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>Ukončující událost je špatná odpověď, \(p = 0{,}9\). X = počet správných před ní:</p>
+\[ p(X = k) = 0{,}1^k \cdot 0{,}9, \qquad k = 0, 1, 2, \dots \]
+<p>Střední hodnota (varianta od nuly):</p>
+\[ EX = \frac{1 - p}{p} = \frac{0{,}1}{0{,}9} \approx 0{,}11 \]
+</div></details></div>
+
+<div class="box uloha" id="u-s3-5"><div class="box-t">Úloha S3/5 <span class="en">set 3, task 5</span></div>
+<p>Házíme kostkou, dokud nepadne šestka. X = počet hodů. Urči pravděpodobnostní funkci a střední hodnotu X.</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">in how many attempts</span> → pořadí úspěšného pokusu, od 1. <b>Výsledek:</b> \(p(k) = \left(\tfrac{5}{6}\right)^{k-1} \tfrac{1}{6}\), \(EX = 6\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Šestka padne v \(k\)-tém hodu, když předchozích \(k - 1\) hodů nebyla:</p>
+\[ p(X = k) = \left(\frac{5}{6}\right)^{k-1} \cdot \frac{1}{6}, \qquad k = 1, 2, \dots \]
+<p>2. Střední hodnota z definice; použijeme derivovanou geometrickou řadu \(\sum_{k \ge 1} k q^{k-1} = 1/(1-q)^2\):</p>
+\[ EX = \sum_{k=1}^{\infty} k \left(\frac{5}{6}\right)^{k-1} \frac{1}{6} = \frac{1}{6} \cdot \frac{1}{(1 - 5/6)^2} = 6 \]
+<p>Intuice: šestka padá v průměru jednou za 6 hodů, takže na ni čekáme průměrně 6 hodů (\(EX = 1/p\)).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-s3-3"><div class="box-t">Úloha S3/3 <span class="en">set 3, task 3</span></div>
+<p>Studenti píšou 6 testů. Kdo některý test nezvládne, další už psát nesmí. Úspěch má vždy pravděpodobnost 0,85. X = počet napsaných testů. Urči rozdělení X.</p>
+<p class="meta"><b>V zadání:</b> čekání na neúspěch, ale <b>nejvýše 6 pokusů</b> → „useknuté“ geometrické rozdělení. <b>Výsledek:</b> \(p(k) = 0{,}85^{k-1} \cdot 0{,}15\) pro \(k = 1, \dots, 5\), \(p(6) = 0{,}85^5\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Napíše právě \(k &lt; 6\) testů, když prvních \(k - 1\) zvládne a \(k\)-tý ne:</p>
+\[ p(X = k) = 0{,}85^{k-1} \cdot 0{,}15, \qquad k = 1, \dots, 5 \]
+<p>2. Šestý test napíše, když zvládne prvních pět – výsledek šestého už na počtu nic nemění:</p>
+\[ \begin{aligned} p(X = 6) &amp;= 0{,}85^5 \cdot 0{,}15 + 0{,}85^6 \\ &amp;= 0{,}85^5 \approx 0{,}444 \end{aligned} \]
+<p>3. Číselně: 0,15; 0,1275; 0,1084; 0,0921; 0,0783; 0,4437 (součet 1).</p>
+</div></details></div>
+
+<h2 id="hypergeometricke">Hypergeometrické rozdělení: výběr bez vracení</h2>
+<div class="box definice" id="def-hypergeometricke"><div class="box-t">Definice: hypergeometrické rozdělení <span class="en">hypergeometric distribution</span></div>
+<p>Veličina X má <b>hypergeometrické rozdělení</b> H(N, M, n), jestliže udává počet prvků se sledovanou vlastností ve výběru \(n\) prvků <b>bez vracení</b> ze souboru \(N\) prvků, z nichž \(M\) vlastnost má:</p>
+\[ p(X = k) = \frac{\binom{M}{k}\binom{N - M}{n - k}}{\binom{N}{n}}. \]
+<p class="jinak">klasická pravděpodobnost: ve jmenovateli všechny možné výběry, v čitateli „k z označených a zbytek z neoznačených“. Na rozdíl od binomického se po každém tahu mění složení.</p></div>
+<div class="box vzorec"><div class="box-t">Charakteristiky H(N, M, n)</div>
+\[ \begin{aligned} EX &amp;= n \frac{M}{N} \\ DX &amp;= n \frac{M}{N}\left(1 - \frac{M}{N}\right) \frac{N - n}{N - 1} \end{aligned} \]
+<table class="vars">
+<tr><td>\(N\)</td><td>velikost celého souboru</td></tr>
+<tr><td>\(M\)</td><td>počet prvků se sledovanou vlastností (zmetky, červivá jablka)</td></tr>
+<tr><td>\(n\)</td><td>velikost výběru</td></tr>
+<tr><td>\(\frac{N-n}{N-1}\)</td><td>korekce na konečný soubor; bez ní by šlo o rozptyl binomického rozdělení s \(p = M/N\)</td></tr>
+</table></div>
+
+<div class="box uloha" id="u-s3-6"><div class="box-t">Úloha S3/6 <span class="en">set 3, task 6</span></div>
+<p>Mezi 100 výrobky je 20 zmetků. Náhodně vybereme 10. X = počet zmetků mezi vybranými. Urči rozdělení X.</p>
+<p class="meta"><b>V zadání:</b> výběr z konečného souboru bez vracení → H(100, 20, 10). <b>Výsledek:</b> \(p(k) = \binom{20}{k}\binom{80}{10-k} / \binom{100}{10}\), \(k = 0, \dots, 10\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>\(N = 100\), \(M = 20\), \(n = 10\):</p>
+\[ p(X = k) = \frac{\binom{20}{k}\binom{80}{10 - k}}{\binom{100}{10}}, \qquad k = 0, 1, \dots, 10 \]
+<p>Číselně (zbylé hodnoty jsou malé):</p>
+<div class="tablewrap"><table class="compact">
+<tr><th>k</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+<tr><th>p(k)</th><td>0,0951</td><td>0,2679</td><td>0,3182</td><td>0,2092</td><td>0,0841</td><td>0,0215</td><td>0,0035</td></tr>
+</table></div>
+<p>Střední hodnota \(EX = n M/N = 10 \cdot 0{,}2 = 2\).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-s3-7"><div class="box-t">Úloha S3/7 <span class="en">set 3, task 7</span></div>
+<p>V košíku je 10 jablek, 30 % z nich je červivých. Náhodně vybereme 4. X = počet červivých. Urči pravděpodobnostní funkci, EX a DX.</p>
+<p class="meta"><b>V zadání:</b> 30 % z 10 = 3 červivá; výběr bez vracení → H(10, 3, 4). <b>Výsledek:</b> \(p(k) = \binom{3}{k}\binom{7}{4-k} / \binom{10}{4}\), \(EX = 1{,}2\), \(DX = 0{,}56\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. \(\binom{10}{4} = 210\), \(X \in \{0, 1, 2, 3\}\):</p>
+\[ \begin{aligned} p(0) &amp;= \tfrac{1 \cdot 35}{210} = \tfrac{1}{6} \\ p(1) &amp;= \tfrac{3 \cdot 35}{210} = \tfrac{1}{2} \\ p(2) &amp;= \tfrac{3 \cdot 21}{210} = \tfrac{3}{10} \\ p(3) &amp;= \tfrac{1 \cdot 7}{210} = \tfrac{1}{30} \end{aligned} \]
+<p>2. Střední hodnota:</p>
+\[ EX = n\frac{M}{N} = 4 \cdot 0{,}3 = 1{,}2 \]
+<p>3. Rozptyl:</p>
+\[ DX = 4 \cdot 0{,}3 \cdot 0{,}7 \cdot \frac{10 - 4}{10 - 1} = 0{,}84 \cdot \frac{6}{9} = 0{,}56 \]
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Častá past: binomické, nebo hypergeometrické?</div>
+<p>„Pravděpodobnost, že výrobek je kvalitní, je 0,75“ (S2/9) → každý kus nezávisle → <b>binomické</b>. „Mezi 100 výrobky je 20 zmetků, vybereme 10“ (S3/6) → konečný soubor se známým složením, bez vracení → <b>hypergeometrické</b>. Když je soubor velký proti výběru, dávají obě skoro stejná čísla.</p></div>
+
+<h2 id="poisson">Poissonovo rozdělení: počet událostí za čas</h2>
+<div class="box definice" id="def-poisson"><div class="box-t">Definice: Poissonovo rozdělení <span class="en">Poisson distribution</span></div>
+<p>Veličina X má <b>Poissonovo rozdělení</b> Po(λ) s parametrem \(\lambda &gt; 0\), jestliže</p>
+\[ p(X = k) = \frac{\lambda^k}{k!}\, e^{-\lambda}, \qquad k = 0, 1, 2, \dots \]
+<p>Platí \(EX = DX = \lambda\).</p>
+<p class="jinak">počet náhodných, navzájem nezávislých událostí v daném čase (nebo prostoru), když známe jen jejich průměrný počet λ: zákazníci za hodinu, požadavky na server, rozpady atomů. λ je střední počet za <b>ten interval, na který se ptáme</b>.</p></div>
+<div class="box postup" id="postup-poisson"><div class="box-t">Jak poznat a jak postupovat: Poissonovo rozdělení</div>
+<p><b>Poznáš to:</b> <span class="kw">an average of 20 people per hour</span>, <span class="kw">requests come to the server</span>, „počet za časový úsek“; žádný horní limit počtu.</p>
+<ol>
+<li><b>Přepočítej λ na interval ze zadání:</b> 20 za hodinu → za 5 minut \(\lambda = 20 \cdot 5/60 = 5/3\).</li>
+<li>„Nikdo“ → \(p(0) = e^{-\lambda}\).</li>
+<li>„Aspoň 2“ → \(1 - p(0) - p(1) = 1 - e^{-\lambda}(1 + \lambda)\).</li>
+<li>„Právě k“ → vzorec přímo.</li>
+</ol></div>
+
+<div class="box uloha" id="u-s4-1"><div class="box-t">Úloha S4/1 <span class="en">set 4, task 1</span></div>
+<p>Do restaurace přijde průměrně 20 lidí za hodinu. Urči pravděpodobnost, že (a) za 5 minut přijdou aspoň 2, (b) za 15 minut nepřijde nikdo, (c) za 5 minut nepřijde nikdo, (d) za hodinu přijde právě 20, (e) za hodinu přijde právě 15 lidí.</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">an average of 20 people per hour</span> → Poisson, λ přepočítat na interval. <b>Výsledek:</b> (a) 0,496; (b) 0,0067; (c) 0,189; (d) 0,0888; (e) 0,0516.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Parametry: za 5 min \(\lambda_1 = 5/3\), za 15 min \(\lambda_2 = 5\), za hodinu \(\lambda = 20\).</p>
+<p>2. (a) Aspoň 2 za 5 minut, přes doplněk:</p>
+\[ p(X_1 \ge 2) = 1 - e^{-5/3}\left(1 + \frac{5}{3}\right) \approx 0{,}496 \]
+<p>3. (b) Nikdo za 15 minut:</p>
+\[ p(X_2 = 0) = e^{-5} \approx 0{,}0067 \]
+<p>4. (c) Nikdo za 5 minut:</p>
+\[ p(X_1 = 0) = e^{-5/3} \approx 0{,}189 \]
+<p>5. (d), (e) Za hodinu:</p>
+\[ p(X = 20) = \frac{20^{20}}{20!} e^{-20} \approx 0{,}0888 \]
+\[ p(X = 15) = \frac{20^{15}}{15!} e^{-20} \approx 0{,}0516 \]
+<p>Všimni si, že i „přesně průměr“ (20) má pravděpodobnost jen asi 9 %.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-s4-3"><div class="box-t">Úloha S4/3 <span class="en">set 4, task 3</span></div>
+<p>Na server přijde průměrně 60 požadavků za hodinu. Jaká je pravděpodobnost, že během restartu (2 minuty) nepřijde žádný?</p>
+<p class="meta"><b>Výsledek:</b> \(e^{-2} \approx 0{,}135\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>60 za hodinu = 1 za minutu, za 2 minuty \(\lambda = 2\):</p>
+\[ p(X = 0) = e^{-2} \approx 0{,}135 \]
+</div></details></div>
+
+<h3 id="aproximace">Poisson jako aproximace binomického</h3>
+<div class="box vzorec"><div class="box-t">Aproximace Bi(n, p) ≈ Po(np)</div>
+<p>Pro velké \(n\) a malé \(p\) (zhruba \(n \ge 30\), \(p \le 0{,}1\)) platí</p>
+\[ \binom{n}{k} p^k (1-p)^{n-k} \approx \frac{(np)^k}{k!}\, e^{-np} \]
+<table class="vars">
+<tr><td>\(\lambda = np\)</td><td>střední počet úspěchů – parametr aproximujícího Poissonova rozdělení</td></tr>
+</table>
+<p>Proč: velký počet nezávislých „příležitostí“, z nichž každá vyjde jen vzácně – přesně situace, kterou Poissonovo rozdělení popisuje.</p></div>
+
+<div class="box uloha" id="u-s4-2"><div class="box-t">Úloha S4/2 <span class="en">set 4, task 2</span></div>
+<p>V síti je 800 počítačů, každý během hodiny pošle požadavek na server s pravděpodobností 0,01. X = počet počítačů, které požadavek poslaly. Urči \(p(X = 6)\) a \(p(X \le 6)\).</p>
+<p class="meta"><b>V zadání:</b> pevný počet nezávislých počítačů → binomické Bi(800; 0,01); \(n\) velké, \(p\) malé → lze aproximovat Po(8). <b>Výsledek:</b> \(p(X = 6)\) = 0,1223 (Bi), 0,1221 (Po); \(p(X \le 6)\) = 0,3121 (Bi), 0,3134 (Po).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Přesně binomicky:</p>
+\[ p(X = 6) = \binom{800}{6}\, 0{,}01^6\, 0{,}99^{794} \approx 0{,}1223 \]
+<p>2. Poissonovou aproximací s \(\lambda = np = 8\):</p>
+\[ p(X = 6) \approx \frac{8^6}{6!}\, e^{-8} \approx 0{,}1221 \]
+<p>3. Nejvýše 6 = součet \(k = 0\) až 6:</p>
+\[ p(X \le 6) \approx \sum_{k=0}^{6} \frac{8^k}{k!}\, e^{-8} \approx 0{,}3134 \]
+<p>Binomicky vyjde 0,3121 – aproximace se liší až ve třetím desetinném místě.</p>
+</div></details></div>
+
+<figure><div class="paper"><img src="figures/fig04_bi_po.png" alt="Porovnání binomického rozdělení Bi(800; 0,01) a Poissonova Po(8): hodnoty téměř splývají" loading="lazy"></div>
+<figcaption><b>Obr. 4.2</b> Úloha S4/2: přesné binomické rozdělení (kolečka) a Poissonova aproximace (čtverečky).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Při \(n = 800\) a \(p = 0{,}01\) jsou obě rozdělení prakticky stejná. Poisson je výpočetně jednodušší (žádné \(\binom{800}{k}\)) a potřebuje jen součin \(np\).</p></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Binomické rozdělení Bi(n, p) popisuje počet úspěchů v n nezávislých pokusech se stejnou pravděpodobností úspěchu; \(EX = np\), \(DX = np(1-p)\). Geometrické popisuje čekání na první úspěch. Hypergeometrické je počet označených prvků ve výběru bez vracení z konečného souboru. Poissonovo Po(λ) je počet nezávislých událostí za časový interval s průměrem λ, má \(EX = DX = \lambda\) a aproximuje binomické pro velké n a malé p s \(\lambda = np\).“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Pevný počet pokusů → binomické; čekám na první úspěch → geometrické; bez vracení z konečného souboru → hypergeometrické; počet za čas → Poissonovo.</p></div>
+
+<div class="box slovicka"><div class="box-t">Anglická slovíčka</div>
+<table>
+<tr><th>česky</th><th>anglicky</th></tr>
+<tr><td>alternativní rozdělení</td><td>alternative (Bernoulli) distribution</td></tr>
+<tr><td>binomické rozdělení</td><td>binomial distribution</td></tr>
+<tr><td>geometrické rozdělení</td><td>geometric distribution</td></tr>
+<tr><td>hypergeometrické rozdělení</td><td>hypergeometric distribution</td></tr>
+<tr><td>Poissonovo rozdělení</td><td>Poisson distribution</td></tr>
+<tr><td>nezávislé opakování pokusu</td><td>independent repetition (trial)</td></tr>
+<tr><td>úspěch / neúspěch</td><td>success / failure</td></tr>
+<tr><td>zmetek, vadný výrobek</td><td>reject, defective (nonconforming) product</td></tr>
+<tr><td>vyhovuje normě</td><td>meets the requirements of the standard</td></tr>
+<tr><td>červivé jablko</td><td>wormy apple</td></tr>
+<tr><td>požadavek na server</td><td>request to the server</td></tr>
+<tr><td>aproximace</td><td>approximation</td></tr>
+</table>
+<p><b>Fráze ze zadání:</b> <span class="kw">an average of … per hour</span> = průměrně … za hodinu (→ Poisson); <span class="kw">until</span> = dokud (→ geometrické); <span class="kw">among 100 products there are 20 rejects</span> = mezi 100 výrobky je 20 zmetků (→ hypergeometrické); <span class="kw">will not succeed more than twice</span> = nejvýše dvakrát; <span class="kw">only on the first test</span> = jen v prvním testu.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Čtyři diskrétní rozdělení pokryjí skoro všechny počítací úlohy. Binomické počítá úspěchy v pevném počtu nezávislých pokusů se stejnou pravděpodobností. Geometrické popisuje čekání na první úspěch (pozor, zda X začíná od 0, nebo od 1). Hypergeometrické je výběr bez vracení z konečného souboru se známým složením. Poissonovo je počet událostí za čas s průměrem λ, přičemž λ se musí přepočítat na interval ze zadání; zároveň aproximuje binomické rozdělení pro velké n a malé p.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Nejdřív urči, co X počítá a co je „úspěch“ – pak rozdělení a jeho parametry.</li>
+<li>Binomické: \(\binom{n}{k} p^k (1-p)^{n-k}\); konkrétní pořadí bez kombinačního čísla.</li>
+<li>„Aspoň“ / „nejvýše“ s mnoha členy → doplněk do jedné.</li>
+<li>Poisson: λ přepočti na interval ze zadání; „nikdo“ = \(e^{-\lambda}\).</li>
+<li>Bez vracení z konečného souboru = hypergeometrické; nezávislé kusy se stejným p = binomické.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Kdy má veličina binomické rozdělení? Odvoďte vzorec pro p(X = k).</summary><div>
+<p>Když počítá úspěchy v n nezávislých pokusech se stejnou pravděpodobností úspěchu p. Jedno konkrétní pořadí s k úspěchy má pravděpodobnost \(p^k(1-p)^{n-k}\) (nezávislost → násobení) a takových pořadí je \(\binom{n}{k}\), proto \(p(X = k) = \binom{n}{k}p^k(1-p)^{n-k}\).</p></div></details>
+<details class="q"><summary>Jaký je rozdíl mezi binomickým a hypergeometrickým rozdělením?</summary><div>
+<p>Binomické předpokládá nezávislé pokusy se stále stejnou pravděpodobností (výběr s vracením nebo z nekonečného souboru). Hypergeometrické popisuje výběr bez vracení z konečného souboru, kde se složení po každém tahu mění. Pro velký soubor a malý výběr se blíží binomickému s \(p = M/N\).</p></div></details>
+<details class="q"><summary>Co popisuje geometrické rozdělení a jaká je jeho střední hodnota?</summary><div>
+<p>Čekání na první úspěch v Bernoulliho posloupnosti. Počítá-li X neúspěchy před úspěchem, je \(p(X = k) = p(1-p)^k\) a \(EX = (1-p)/p\); počítá-li pořadí úspěšného pokusu, je \(EX = 1/p\) (na šestku čekáme průměrně 6 hodů).</p></div></details>
+<details class="q"><summary>Kdy použijete Poissonovo rozdělení a jak určíte parametr λ?</summary><div>
+<p>Pro počet nezávislých událostí za časový interval (nebo v prostoru), když znám jejich průměrný počet. λ je střední počet událostí v intervalu, na který se ptám – průměr za hodinu se přepočítá úměrně délce intervalu. Platí \(EX = DX = \lambda\).</p></div></details>
+<details class="q"><summary>Kdy a proč lze binomické rozdělení nahradit Poissonovým?</summary><div>
+<p>Při velkém počtu pokusů n a malé pravděpodobnosti p, s \(\lambda = np\). Jde o mnoho nezávislých příležitostí, z nichž každá vyjde jen vzácně – právě pro takové situace Poissonovo rozdělení vzniká jako limita binomického. Výpočet je jednodušší (bez velkých kombinačních čísel).</p></div></details>
+<details class="q"><summary>Jak spočítáte pravděpodobnost „aspoň jednoho“ úspěchu?</summary><div>
+<p>Přes doplněk: \(p(X \ge 1) = 1 - p(X = 0)\). U binomického je to \(1 - (1-p)^n\), u Poissonova \(1 - e^{-\lambda}\).</p></div></details>

@@ -1,0 +1,224 @@
+<h1>Slovník pojmů</h1>
+<p class="lead">Všechny definice ze skript na jednom místě, seřazené podle kapitol. Hodí se na rychlé opakování: zakryj text, řekni definici nahlas a pak si ji zkontroluj. Odkaz „výklad“ vede k místu, kde je pojem vysvětlen podrobně.</p>
+<h2 id="k1" class="slovnik-kap">1 · Pravděpodobnost: klasická a geometrická</h2>
+<div class="box definice" id="s-nahodny-pokus"><div class="box-t">náhodný pokus <span class="en">random experiment</span></div>
+<p><b>Náhodný pokus</b> je děj, který lze (aspoň myšlenkově) opakovat za stejných podmínek a jehož výsledek není předem jednoznačně určen.</p>
+<p class="jinak">hod kostkou, tah karty, výběr bodu na obrazovce. Víme, co může nastat, ale ne co nastane.</p><p class="slovnik-odkaz"><a href="01_pravdepodobnost.html#def-nahodny-pokus">výklad v kapitole 1 →</a></p></div>
+<div class="box definice" id="s-jev"><div class="box-t">jev a elementární jev <span class="en">event, elementary event</span></div>
+<p><b>Jev</b> je výsledek (nebo tvrzení o výsledku) náhodného pokusu, o kterém lze po provedení pokusu rozhodnout, zda nastal. <b>Elementární jevy</b> jsou nejjemnější možné výsledky pokusu: navzájem se vylučují a jeden z nich vždy nastane. Jejich množina je <b>prostor elementárních jevů</b> \(\Omega\).</p>
+<p class="jinak">elementární jev je „jedno políčko“ (padla trojka), jev je „skupina políček“ (padlo liché číslo = {1, 3, 5}). Jev je tedy podmnožina \(\Omega\).</p><p class="slovnik-odkaz"><a href="01_pravdepodobnost.html#def-jev">výklad v kapitole 1 →</a></p></div>
+<div class="box definice" id="s-opacny-jev"><div class="box-t">opačný jev <span class="en">complementary event</span></div>
+<p><b>Opačný jev</b> \(\overline{A}\) k jevu \(A\) je jev, který nastane právě tehdy, když nenastane \(A\). Platí \(A \cup \overline{A} = \Omega\) a \(A \cap \overline{A} = \emptyset\).</p>
+<p class="jinak">„všechno ostatní“. Často je mnohem snazší spočítat opačný jev a odečíst ho od jedničky („aspoň jednou“ = 1 − „ani jednou“).</p><p class="slovnik-odkaz"><a href="01_pravdepodobnost.html#def-opacny-jev">výklad v kapitole 1 →</a></p></div>
+<div class="box definice" id="s-neslucitelne"><div class="box-t">neslučitelné jevy <span class="en">mutually exclusive (disjoint) events</span></div>
+<p>Jevy \(A\), \(B\) jsou <b>neslučitelné</b> (disjunktní), jestliže nemohou nastat současně, tj. \(A \cap B = \emptyset\).</p>
+<p class="jinak">jeden vylučuje druhý: na jedné kostce nemůže současně padnout 3 i 6. Jen pro takové jevy smíme pravděpodobnosti prostě sečíst.</p><p class="slovnik-odkaz"><a href="01_pravdepodobnost.html#def-neslucitelne">výklad v kapitole 1 →</a></p></div>
+<div class="box definice" id="s-pravdepodobnost"><div class="box-t">pravděpodobnost (axiomatická) <span class="en">probability</span></div>
+<p><b>Pravděpodobnost</b> je funkce \(p\), která každému jevu \(A\) přiřadí číslo \(p(A)\) tak, že \(p(A) \ge 0\), \(p(\Omega) = 1\) a pro navzájem neslučitelné jevy \(A_1, A_2, \dots\) platí \(p(A_1 \cup A_2 \cup \dots) = p(A_1) + p(A_2) + \dots\)</p>
+<p class="jinak">pravděpodobnost je „podíl jistoty“, který jevu připadne: nikdy záporný, celek má 1 a kousky, které se nepřekrývají, se sčítají.</p><p class="slovnik-odkaz"><a href="01_pravdepodobnost.html#def-pravdepodobnost">výklad v kapitole 1 →</a></p></div>
+<div class="box definice" id="s-klasicka"><div class="box-t">klasická pravděpodobnost <span class="en">classical probability</span></div>
+<p>Má-li pokus konečně mnoho \(n\) <b>stejně možných</b> elementárních jevů a jevu \(A\) z nich příznivých \(m\), pak</p>
+\[ p(A) = \frac{m}{n}. \]
+<p class="jinak">„počet příznivých ku počtu všech“. Funguje jen tehdy, když mají všechny výsledky stejnou šanci – to je třeba si vždycky ověřit.</p><p class="slovnik-odkaz"><a href="01_pravdepodobnost.html#def-klasicka">výklad v kapitole 1 →</a></p></div>
+<div class="box definice" id="s-kombinace"><div class="box-t">kombinace <span class="en">combination</span></div>
+<p><b>Kombinace</b> \(k\)-té třídy z \(n\) prvků je neuspořádaný výběr \(k\) různých prvků z \(n\). Jejich počet je kombinační číslo</p>
+\[ \binom{n}{k} = \frac{n!}{k!\,(n-k)!}. \]
+<p class="jinak">kolika způsoby lze vytáhnout „hrst“ \(k\) věcí najednou, když nezáleží na pořadí (karty v ruce, vybrané výrobky).</p><p class="slovnik-odkaz"><a href="01_pravdepodobnost.html#def-kombinace">výklad v kapitole 1 →</a></p></div>
+<div class="box definice" id="s-variace"><div class="box-t">variace <span class="en">variation (ordered selection)</span></div>
+<p><b>Variace</b> \(k\)-té třídy z \(n\) prvků je uspořádaná \(k\)-tice různých prvků z \(n\). Jejich počet je</p>
+\[ \begin{aligned} V(n,k) &amp;= \frac{n!}{(n-k)!} \\ &amp;= n(n-1)\cdots(n-k+1) \end{aligned} \]
+<p class="jinak">postupné tahání bez vracení, kdy záleží na tom, co bylo první, co druhé… Pro \(k = n\) jde o <b>permutace</b>, jejich počet je \(n!\).</p><p class="slovnik-odkaz"><a href="01_pravdepodobnost.html#def-variace">výklad v kapitole 1 →</a></p></div>
+<div class="box definice" id="s-geometricka"><div class="box-t">geometrická pravděpodobnost <span class="en">geometric probability</span></div>
+<p>Je-li výsledkem pokusu bod zvolený náhodně (rovnoměrně) v oblasti \(\Omega\) s konečnou mírou (délkou, plochou, objemem) a jev \(A\) odpovídá podoblasti \(A \subset \Omega\), pak</p>
+\[ p(A) = \frac{\operatorname{míra}(A)}{\operatorname{míra}(\Omega)}. \]
+<p class="jinak">klasická pravděpodobnost pro nekonečně mnoho bodů: místo „počtu“ výsledků porovnáváme jejich „velikost“. Šance trefit kus terče = jeho plocha ku ploše celého terče.</p><p class="slovnik-odkaz"><a href="01_pravdepodobnost.html#def-geometricka">výklad v kapitole 1 →</a></p></div>
+<h2 id="k2" class="slovnik-kap">2 · Podmíněná pravděpodobnost a Bayes</h2>
+<div class="box definice" id="s-podminena"><div class="box-t">podmíněná pravděpodobnost <span class="en">conditional probability</span></div>
+<p><b>Podmíněná pravděpodobnost</b> jevu \(A\) za podmínky \(B\), kde \(p(B) &gt; 0\), je</p>
+\[ p(A \mid B) = \frac{p(A \cap B)}{p(B)}. \]
+<p class="jinak">víme, že nastalo \(B\), takže svět se „zmenší“ jen na \(B\). Ptáme se, jakou část z \(B\) zabírá i \(A\).</p><p class="slovnik-odkaz"><a href="02_podminena.html#def-podminena">výklad v kapitole 2 →</a></p></div>
+<div class="box definice" id="s-nezavisle"><div class="box-t">nezávislé jevy <span class="en">independent events</span></div>
+<p>Jevy \(A\), \(B\) jsou <b>nezávislé</b>, jestliže</p>
+\[ p(A \cap B) = p(A)\, p(B). \]
+<p class="jinak">informace, že nastal jeden jev, nemění pravděpodobnost druhého: \(p(A \mid B) = p(A)\). Typicky opakované hody kostkou nebo pokusy „se stejnou pravděpodobností každý den“.</p><p class="slovnik-odkaz"><a href="02_podminena.html#def-nezavisle">výklad v kapitole 2 →</a></p></div>
+<div class="box definice" id="s-uplny-system"><div class="box-t">úplný systém jevů (hypotézy) <span class="en">complete system of events, partition</span></div>
+<p>Jevy \(H_1, \dots, H_n\) tvoří <b>úplný systém jevů</b>, jestliže jsou navzájem neslučitelné a jejich sjednocení je jistý jev: vždy nastane právě jeden z nich. Říkáme jim <b>hypotézy</b>.</p>
+<p class="jinak">rozdělení všech možností na „cesty“ nebo „skupiny“, které se nepřekrývají a nic nevynechávají: skupina studentů, krabice, ze které tahám, typ rodičů.</p><p class="slovnik-odkaz"><a href="02_podminena.html#def-uplny-system">výklad v kapitole 2 →</a></p></div>
+<div class="box definice" id="s-bayes"><div class="box-t">Bayesova věta <span class="en">Bayes' theorem</span></div>
+<p>Tvoří-li \(H_1, \dots, H_n\) úplný systém jevů a \(p(A) &gt; 0\), pak pro každé \(k\)</p>
+\[ p(H_k \mid A) = \frac{p(H_k)\, p(A \mid H_k)}{\sum_{i=1}^{n} p(H_i)\, p(A \mid H_i)}. \]
+<p class="jinak">výsledek A už známe a ptáme se „pozpátku“: kterou cestou nejspíš vznikl? Je to podíl jedné větve stromu na celkové pravděpodobnosti A.</p><p class="slovnik-odkaz"><a href="02_podminena.html#def-bayes">výklad v kapitole 2 →</a></p></div>
+<div class="box definice" id="s-apriorni"><div class="box-t">apriorní a aposteriorní pravděpodobnost <span class="en">prior and posterior probability</span></div>
+<p><b>Apriorní pravděpodobnost</b> \(p(H_k)\) je pravděpodobnost hypotézy před provedením pokusu; <b>aposteriorní pravděpodobnost</b> \(p(H_k \mid A)\) je pravděpodobnost téže hypotézy poté, co víme, že nastal jev \(A\).</p>
+<p class="jinak">„co jsem si myslel předtím“ a „co si myslím teď, když vím výsledek“. Bayesova věta je recept, jak názor aktualizovat.</p><p class="slovnik-odkaz"><a href="02_podminena.html#def-apriorni">výklad v kapitole 2 →</a></p></div>
+<h2 id="k3" class="slovnik-kap">3 · Diskrétní náhodná veličina</h2>
+<div class="box definice" id="s-nv"><div class="box-t">náhodná veličina <span class="en">random variable</span></div>
+<p><b>Náhodná veličina</b> \(X\) je funkce, která každému elementárnímu jevu přiřadí reálné číslo tak, že pro každé \(x\) má jev \(\{X &lt; x\}\) definovanou pravděpodobnost.</p>
+<p class="jinak">„číslo, které je výsledkem pokusu“. Místo „padla dvě orla a panna“ říkáme „X = 2 orli“. S čísly umíme počítat průměry a rozptyly.</p><p class="slovnik-odkaz"><a href="03_diskretni_nv.html#def-nv">výklad v kapitole 3 →</a></p></div>
+<div class="box definice" id="s-diskretni-nv"><div class="box-t">diskrétní náhodná veličina <span class="en">discrete random variable</span></div>
+<p>Náhodná veličina je <b>diskrétní</b>, jestliže nabývá jen konečně nebo spočetně mnoha hodnot \(x_1, x_2, \dots\) (její distribuční funkce je schodovitá).</p>
+<p class="jinak">hodnoty se dají očíslovat a vypsat: 0, 1, 2, … Typicky <b>počty</b> (kolik, kolikrát, na kolikátý pokus). Opakem je spojitá veličina (kapitola 5) – délka, čas, napětí.</p><p class="slovnik-odkaz"><a href="03_diskretni_nv.html#def-diskretni-nv">výklad v kapitole 3 →</a></p></div>
+<div class="box definice" id="s-pravdepodobnostni-funkce"><div class="box-t">pravděpodobnostní funkce <span class="en">probability (frequency) function</span></div>
+<p><b>Pravděpodobnostní funkce</b> diskrétní veličiny \(X\) je \(p(x_i) = p(X = x_i)\) pro všechny hodnoty \(x_i\), kterých \(X\) nabývá. Platí \(p(x_i) \ge 0\) a \(\sum_i p(x_i) = 1\).</p>
+<p class="jinak">tabulka „hodnota → pravděpodobnost“. V anglických skriptech předmětu se jí říká <i>frequency function</i> \(f(x_i)\), jinde <i>probability mass function</i>. „Urči rozdělení“ (<span class="kw">determine its distribution</span>) znamená právě tuto tabulku nebo vzorec.</p><p class="slovnik-odkaz"><a href="03_diskretni_nv.html#def-pravdepodobnostni-funkce">výklad v kapitole 3 →</a></p></div>
+<div class="box definice" id="s-distribucni-funkce"><div class="box-t">distribuční funkce <span class="en">distribution function (CDF)</span></div>
+<p><b>Distribuční funkce</b> náhodné veličiny \(X\) je funkce</p>
+\[ F(x) = p(X &lt; x), \qquad x \in \mathbb{R}. \]
+<p class="jinak">„pravděpodobnost, že X vyjde menší než x“ – nasčítané pravděpodobnosti všech hodnot <b>vlevo</b> od x. U diskrétní veličiny je to schodovitá funkce, která v každé hodnotě \(x_i\) vyskočí o \(p(x_i)\).</p><p class="slovnik-odkaz"><a href="03_diskretni_nv.html#def-distribucni-funkce">výklad v kapitole 3 →</a></p></div>
+<div class="box definice" id="s-stredni-hodnota"><div class="box-t">střední hodnota <span class="en">expected value, mean</span></div>
+<p><b>Střední hodnota</b> diskrétní náhodné veličiny je</p>
+\[ EX = \sum_i x_i\, p(x_i), \]
+<p>pokud řada absolutně konverguje.</p>
+<p class="jinak">vážený průměr hodnot, kde vahami jsou pravděpodobnosti. Kdybychom pokus opakovali mnohokrát, průměr výsledků by se blížil EX. Je to „těžiště“ sloupců grafu.</p><p class="slovnik-odkaz"><a href="03_diskretni_nv.html#def-stredni-hodnota">výklad v kapitole 3 →</a></p></div>
+<div class="box definice" id="s-rozptyl"><div class="box-t">rozptyl a směrodatná odchylka <span class="en">variance, standard deviation</span></div>
+<p><b>Rozptyl</b> je střední hodnota čtverce odchylky od střední hodnoty, \(DX = E(X - EX)^2\); <b>směrodatná odchylka</b> je \(\sigma = \sqrt{DX}\).</p>
+<p class="jinak">jak daleko od průměru hodnoty typicky padají. Rozptyl je v „jednotkách na druhou“, proto se pro představu bere jeho odmocnina σ ve stejných jednotkách jako X. Skripta značí rozptyl \(DX\) nebo \(D(X)\), anglicky též \(\operatorname{Var} X\).</p><p class="slovnik-odkaz"><a href="03_diskretni_nv.html#def-rozptyl">výklad v kapitole 3 →</a></p></div>
+<h2 id="k4" class="slovnik-kap">4 · Diskrétní rozdělení</h2>
+<div class="box definice" id="s-bernoulli"><div class="box-t">Bernoulliho posloupnost pokusů <span class="en">Bernoulli sequence of independent trials</span></div>
+<p><b>Bernoulliho posloupnost</b> je řada \(n\) navzájem nezávislých pokusů, z nichž každý má jen dva výsledky (úspěch / neúspěch) a úspěch má v každém pokusu stejnou pravděpodobnost \(p\).</p>
+<p class="jinak">„opakuji totéž pořád dokola a pokusy se navzájem neovlivňují“: hody kostkou, kontrola výrobků z velké série, testy se stejnou šancí na úspěch.</p><p class="slovnik-odkaz"><a href="04_diskretni_rozdeleni.html#def-bernoulli">výklad v kapitole 4 →</a></p></div>
+<div class="box definice" id="s-binomicke"><div class="box-t">binomické rozdělení <span class="en">binomial distribution</span></div>
+<p>Veličina X má <b>binomické rozdělení</b> Bi(n, p), jestliže udává počet úspěchů v Bernoulliho posloupnosti \(n\) pokusů s pravděpodobností úspěchu \(p\):</p>
+\[ p(X = k) = \binom{n}{k} p^k (1 - p)^{n-k} \]
+<p>pro \(k = 0, 1, \dots, n\).</p>
+<p class="jinak">\(p^k (1-p)^{n-k}\) je pravděpodobnost jednoho konkrétního pořadí (k úspěchů, n − k neúspěchů); \(\binom{n}{k}\) je počet pořadí, ve kterých to může nastat.</p><p class="slovnik-odkaz"><a href="04_diskretni_rozdeleni.html#def-binomicke">výklad v kapitole 4 →</a></p></div>
+<div class="box definice" id="s-geometricke"><div class="box-t">geometrické rozdělení <span class="en">geometric distribution</span></div>
+<p>Veličina X má <b>geometrické rozdělení</b> Ge(p), jestliže udává počet neúspěchů před prvním úspěchem v Bernoulliho posloupnosti s pravděpodobností úspěchu \(p\):</p>
+\[ p(X = k) = p\,(1 - p)^k, \qquad k = 0, 1, 2, \dots \]
+<p class="jinak">„k-krát se nepovede, pak se to povede“. Pokusů není pevný počet – opakujeme, dokud se nepovede. Počítá-li X místo neúspěchů číslo pokusu, ve kterém přišel úspěch, je \(p(X = k) = (1-p)^{k-1} p\) pro \(k = 1, 2, \dots\)</p><p class="slovnik-odkaz"><a href="04_diskretni_rozdeleni.html#def-geometricke">výklad v kapitole 4 →</a></p></div>
+<div class="box definice" id="s-hypergeometricke"><div class="box-t">hypergeometrické rozdělení <span class="en">hypergeometric distribution</span></div>
+<p>Veličina X má <b>hypergeometrické rozdělení</b> H(N, M, n), jestliže udává počet prvků se sledovanou vlastností ve výběru \(n\) prvků <b>bez vracení</b> ze souboru \(N\) prvků, z nichž \(M\) vlastnost má:</p>
+\[ p(X = k) = \frac{\binom{M}{k}\binom{N - M}{n - k}}{\binom{N}{n}}. \]
+<p class="jinak">klasická pravděpodobnost: ve jmenovateli všechny možné výběry, v čitateli „k z označených a zbytek z neoznačených“. Na rozdíl od binomického se po každém tahu mění složení.</p><p class="slovnik-odkaz"><a href="04_diskretni_rozdeleni.html#def-hypergeometricke">výklad v kapitole 4 →</a></p></div>
+<div class="box definice" id="s-poisson"><div class="box-t">Poissonovo rozdělení <span class="en">Poisson distribution</span></div>
+<p>Veličina X má <b>Poissonovo rozdělení</b> Po(λ) s parametrem \(\lambda &gt; 0\), jestliže</p>
+\[ p(X = k) = \frac{\lambda^k}{k!}\, e^{-\lambda}, \qquad k = 0, 1, 2, \dots \]
+<p>Platí \(EX = DX = \lambda\).</p>
+<p class="jinak">počet náhodných, navzájem nezávislých událostí v daném čase (nebo prostoru), když známe jen jejich průměrný počet λ: zákazníci za hodinu, požadavky na server, rozpady atomů. λ je střední počet za <b>ten interval, na který se ptáme</b>.</p><p class="slovnik-odkaz"><a href="04_diskretni_rozdeleni.html#def-poisson">výklad v kapitole 4 →</a></p></div>
+<h2 id="k5" class="slovnik-kap">5 · Spojitá náhodná veličina</h2>
+<div class="box definice" id="s-spojita-nv"><div class="box-t">spojitá náhodná veličina a hustota <span class="en">continuous random variable, density function</span></div>
+<p>Náhodná veličina \(X\) je <b>spojitá</b>, jestliže existuje nezáporná funkce \(f(x)\) – <b>hustota pravděpodobnosti</b> – taková, že pro distribuční funkci platí</p>
+\[ F(x) = \int_{-\infty}^{x} f(t)\, dt \quad \text{pro každé } x. \]
+<p class="jinak">hustota říká, „kde je pravděpodobnost nahuštěná“. Sama není pravděpodobnost (může být i větší než 1), pravděpodobností je teprve plocha pod ní.</p><p class="slovnik-odkaz"><a href="05_spojita_nv.html#def-spojita-nv">výklad v kapitole 5 →</a></p></div>
+<div class="box definice" id="s-kvantil"><div class="box-t">kvantil a medián <span class="en">quantile, median</span></div>
+<p><b>p-kvantil</b> \(x_p\) spojité veličiny (\(0 &lt; p &lt; 1\)) je číslo, pro které \(F(x_p) = p\). <b>Medián</b> je 0,5-kvantil.</p>
+<p class="jinak">bod, vlevo od kterého leží podíl p pravděpodobnosti. Medián dělí plochu pod hustotou na dvě poloviny. Kvantily normálního rozdělení budeme hledat v kapitole 6.</p><p class="slovnik-odkaz"><a href="05_spojita_nv.html#def-kvantil">výklad v kapitole 5 →</a></p></div>
+<div class="box definice" id="s-modus"><div class="box-t">modus <span class="en">mode</span></div>
+<p><b>Modus</b> spojité veličiny je bod, ve kterém má hustota maximum.</p>
+<p class="jinak">nejpravděpodobnější „místo“. U symetrické hustoty s jedním vrcholem splývá modus, medián i střední hodnota.</p><p class="slovnik-odkaz"><a href="05_spojita_nv.html#def-modus">výklad v kapitole 5 →</a></p></div>
+<div class="box definice" id="s-rovnomerne"><div class="box-t">rovnoměrné rozdělení <span class="en">uniform distribution</span></div>
+<p>Veličina má <b>rovnoměrné rozdělení</b> na \(\langle a, b\rangle\), je-li její hustota \(f(x) = 1/(b - a)\) na \(\langle a, b\rangle\) a 0 jinde. Pak \(EX = (a+b)/2\) a \(DX = (b-a)^2/12\).</p>
+<p class="jinak">„každé místo intervalu je stejně možné“ – to je přesně předpoklad geometrické pravděpodobnosti z kapitoly 1.</p><p class="slovnik-odkaz"><a href="05_spojita_nv.html#def-rovnomerne">výklad v kapitole 5 →</a></p></div>
+<div class="box definice" id="s-exponencialni"><div class="box-t">exponenciální rozdělení <span class="en">exponential distribution</span></div>
+<p>Veličina má <b>exponenciální rozdělení</b> s parametrem \(\lambda &gt; 0\), je-li její hustota \(f(x) = \lambda e^{-\lambda x}\) pro \(x \ge 0\) a 0 jinde. Pak \(F(x) = 1 - e^{-\lambda x}\), \(EX = 1/\lambda\), \(DX = 1/\lambda^2\).</p>
+<p class="jinak">doba čekání na první událost Poissonova procesu (λ událostí za jednotku času): doba do příchodu dalšího zákazníka, doba života součástky bez stárnutí. Je spojitou obdobou geometrického rozdělení.</p><p class="slovnik-odkaz"><a href="05_spojita_nv.html#def-exponencialni">výklad v kapitole 5 →</a></p></div>
+<div class="box definice" id="s-laplace"><div class="box-t">Laplaceovo rozdělení <span class="en">Laplace distribution</span></div>
+<p>Veličina má <b>Laplaceovo rozdělení</b> s parametrem \(\lambda &gt; 0\), je-li její hustota</p>
+\[ f(x) = \frac{\lambda}{2}\, e^{-\lambda |x|}, \qquad x \in \mathbb{R}. \]
+<p class="jinak">„dvě exponenciály zrcadlově slepené v nule“. Symetrické kolem nuly s ostrým vrcholem; používá se pro chyby, které jsou většinou malé, ale občas velké.</p><p class="slovnik-odkaz"><a href="05_spojita_nv.html#def-laplace">výklad v kapitole 5 →</a></p></div>
+<h2 id="k6" class="slovnik-kap">6 · Normální rozdělení</h2>
+<div class="box definice" id="s-normalni"><div class="box-t">normální rozdělení <span class="en">normal (Gaussian) distribution</span></div>
+<p>Veličina \(X\) má <b>normální rozdělení</b> No(μ, σ) s parametry \(\mu \in \mathbb{R}\), \(\sigma &gt; 0\), je-li její hustota</p>
+\[ f(x) = \frac{1}{\sigma\sqrt{2\pi}}\, e^{-\frac{(x - \mu)^2}{2\sigma^2}}, \qquad x \in \mathbb{R}. \]
+<p>Platí \(EX = \mu\) a \(DX = \sigma^2\).</p>
+<p class="jinak">zvonovitá křivka symetrická kolem μ; σ určuje šířku zvonu. Vzniká všude, kde výsledek je součtem mnoha malých nezávislých vlivů.</p><p class="slovnik-odkaz"><a href="06_normalni.html#def-normalni">výklad v kapitole 6 →</a></p></div>
+<div class="box definice" id="s-normovane"><div class="box-t">normovaná veličina a normované normální rozdělení <span class="en">standardized variable, standard normal distribution</span></div>
+<p><b>Normovaná (standardizovaná) veličina</b> k veličině X je</p>
+\[ U = \frac{X - EX}{\sqrt{DX}}. \]
+<p>Má-li X rozdělení No(μ, σ), má \(U = (X - \mu)/\sigma\) <b>normované normální rozdělení</b> No(0, 1).</p>
+<p class="jinak">přepočet na „kolik směrodatných odchylek je hodnota od průměru“. Díky tomu stačí jediná tabulka pro všechna normální rozdělení.</p><p class="slovnik-odkaz"><a href="06_normalni.html#def-normovane">výklad v kapitole 6 →</a></p></div>
+<div class="box definice" id="s-laplaceova-funkce"><div class="box-t">Laplaceova funkce Φ <span class="en">Laplace function, standard normal CDF</span></div>
+<p><b>Laplaceova funkce</b> je distribuční funkce normovaného normálního rozdělení:</p>
+\[ \Phi(u) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{u} e^{-t^2/2}\, dt = p(U &lt; u). \]
+<p class="jinak">plocha pod zvonovou křivkou vlevo od u. Hodnoty se čtou z <a href="13_tabulky.html#phi">tabulky</a>; tabulka obvykle obsahuje jen \(u \ge 0\), záporné se dopočítají ze symetrie.</p><p class="slovnik-odkaz"><a href="06_normalni.html#def-laplaceova-funkce">výklad v kapitole 6 →</a></p></div>
+<div class="box definice" id="s-kvantil-normalni"><div class="box-t">kvantil normovaného normálního rozdělení <span class="en">quantile of the standard normal distribution</span></div>
+<p><b>p-kvantil</b> \(u_p\) normovaného normálního rozdělení je číslo, pro které \(\Phi(u_p) = p\). Ze symetrie plyne \(u_{1-p} = -u_p\).</p>
+<p class="jinak">„Φ pozpátku“: v tabulce hledám uvnitř hodnotu p a čtu, k jakému u patří. Nejčastější kvantily jsou 1,645 (pro 0,95), 1,96 (pro 0,975) a 2,326 (pro 0,99).</p><p class="slovnik-odkaz"><a href="06_normalni.html#def-kvantil-normalni">výklad v kapitole 6 →</a></p></div>
+<div class="box definice" id="s-3sigma"><div class="box-t">pravidlo tří sigma <span class="en">three-sigma rule</span></div>
+<p>Pro X ~ No(μ, σ) platí</p>
+\[ \begin{aligned} p(\mu - 3\sigma &lt; X &lt; \mu + 3\sigma) &amp;= 2\Phi(3) - 1 \\ &amp;\approx 0{,}997 \end{aligned} \]
+<p class="jinak">prakticky všechny hodnoty normální veličiny leží do tří směrodatných odchylek od průměru. Hodnota dál než 3σ je podezřele vzácná (odlehlá hodnota, chyba).</p><p class="slovnik-odkaz"><a href="06_normalni.html#def-3sigma">výklad v kapitole 6 →</a></p></div>
+<h2 id="k7" class="slovnik-kap">7 · Limitní věty</h2>
+<div class="box definice" id="s-cebysev"><div class="box-t">Čebyševova nerovnost <span class="en">Chebyshev's inequality</span></div>
+<p>Pro každou náhodnou veličinu X s konečným rozptylem a pro každé \(\varepsilon &gt; 0\) platí</p>
+\[ p\big(|X - EX| \ge \varepsilon\big) \le \frac{DX}{\varepsilon^2}. \]
+<p class="jinak">velká odchylka od průměru je vzácná, a to <b>pro jakékoli rozdělení</b>. Odhad je hrubý (u normálního rozdělení vychází skutečnost mnohem lépe), ale nepotřebuje znát tvar rozdělení.</p><p class="slovnik-odkaz"><a href="07_limitni_vety.html#def-cebysev">výklad v kapitole 7 →</a></p></div>
+<div class="box definice" id="s-zakon-velkych-cisel"><div class="box-t">zákon velkých čísel (Bernoulliova věta) <span class="en">law of large numbers</span></div>
+<p>Je-li \(X\) počet výskytů jevu s pravděpodobností \(p\) v \(n\) nezávislých pokusech, pak pro každé \(\varepsilon &gt; 0\)</p>
+\[ \lim_{n \to \infty} p\!\left(\left|\frac{X}{n} - p\right| &lt; \varepsilon\right) = 1. \]
+<p class="jinak">relativní četnost se s rostoucím počtem pokusů ustálí na pravděpodobnosti. Proto má smysl pravděpodobnost odhadovat z dat – a proto se průměr měření blíží skutečné hodnotě.</p><p class="slovnik-odkaz"><a href="07_limitni_vety.html#def-zakon-velkych-cisel">výklad v kapitole 7 →</a></p></div>
+<div class="box definice" id="s-clv"><div class="box-t">centrální limitní věta <span class="en">central limit theorem (Lindeberg–Lévy)</span></div>
+<p>Jsou-li \(X_1, \dots, X_n\) nezávislé veličiny se stejnou střední hodnotou μ a stejným rozptylem σ², pak pro dostatečně velké \(n\) má součet \(Y = X_1 + \dots + X_n\) přibližně normální rozdělení:</p>
+\[ Y \approx \text{No}\big(n\mu,\; \sigma\sqrt{n}\big), \qquad \frac{Y - n\mu}{\sigma\sqrt{n}} \approx \text{No}(0, 1). \]
+<p class="jinak">sečti hodně nezávislých náhodných vlivů a výsledek bude zvon. Střední hodnoty se sčítají (\(n\mu\)), rozptyly také (\(n\sigma^2\)), takže směrodatná odchylka roste jen jako \(\sqrt{n}\).</p><p class="slovnik-odkaz"><a href="07_limitni_vety.html#def-clv">výklad v kapitole 7 →</a></p></div>
+<div class="box definice" id="s-moivre"><div class="box-t">Moivreova–Laplaceova věta <span class="en">de Moivre–Laplace theorem</span></div>
+<p>Má-li X binomické rozdělení Bi(n, p) a je-li n velké a p ne blízko 0 ani 1, lze X aproximovat normálním rozdělením</p>
+\[ X \approx \text{No}\big(np,\; \sqrt{np(1-p)}\big). \]
+<p>Aproximace je vhodná přibližně pro \(np(1-p) &gt; 9\).</p>
+<p class="jinak">binomická veličina je součet n nezávislých nul a jedniček (alternativních veličin), takže na ni platí CLV. Místo sčítání tisíců binomických členů stačí jedna hodnota Φ.</p><p class="slovnik-odkaz"><a href="07_limitni_vety.html#def-moivre">výklad v kapitole 7 →</a></p></div>
+<h2 id="k8" class="slovnik-kap">8 · Náhodný vektor</h2>
+<div class="box definice" id="s-nahodny-vektor"><div class="box-t">náhodný vektor a sdružená distribuční funkce <span class="en">random vector, joint distribution function</span></div>
+<p><b>Náhodný vektor</b> (X, Y) je dvojice náhodných veličin definovaných na stejném pokusu. Jeho <b>sdružená distribuční funkce</b> je</p>
+\[ F(x, y) = p(X &lt; x,\; Y &lt; y). \]
+<p class="jinak">jeden pokus, dvě čísla. Čárka v \(p(X &lt; x, Y &lt; y)\) znamená „a současně“ (průnik jevů).</p><p class="slovnik-odkaz"><a href="08_nahodny_vektor.html#def-nahodny-vektor">výklad v kapitole 8 →</a></p></div>
+<div class="box definice" id="s-sdruzena-hustota"><div class="box-t">sdružená hustota <span class="en">joint (simultaneous) density function</span></div>
+<p>Spojitý náhodný vektor má <b>sdruženou hustotu</b> \(f(x, y) \ge 0\), jestliže pro každou oblast \(G\) v rovině</p>
+\[ \begin{aligned} p\big((X, Y) \in G\big) &amp;= \iint_G f(x, y)\, dx\, dy \\ \iint_{\mathbb{R}^2} f(x, y)\, dx\, dy &amp;= 1 \end{aligned} \]
+<p class="jinak">„krajina“ nad rovinou xy, jejíž celkový objem je 1. Pravděpodobnost, že bod (X, Y) padne do oblasti G, je objem krajiny nad G.</p><p class="slovnik-odkaz"><a href="08_nahodny_vektor.html#def-sdruzena-hustota">výklad v kapitole 8 →</a></p></div>
+<div class="box definice" id="s-marginalni"><div class="box-t">marginální hustota <span class="en">marginal density</span></div>
+<p><b>Marginální hustoty</b> spojitého vektoru (X, Y) se sdruženou hustotou f jsou</p>
+\[ \begin{aligned} f_X(x) &amp;= \int_{-\infty}^{\infty} f(x, y)\, dy \\ f_Y(y) &amp;= \int_{-\infty}^{\infty} f(x, y)\, dx \end{aligned} \]
+<p class="jinak">rozdělení jedné veličiny, když o druhé nic nevíme: druhou proměnnou „vyintegrujeme“ (u tabulky sečteme řádek či sloupec – součty se píšou na okraj, latinsky <i>margo</i>).</p><p class="slovnik-odkaz"><a href="08_nahodny_vektor.html#def-marginalni">výklad v kapitole 8 →</a></p></div>
+<div class="box definice" id="s-nezavisle-nv"><div class="box-t">nezávislé náhodné veličiny <span class="en">independent random variables</span></div>
+<p>Veličiny X, Y jsou <b>nezávislé</b>, jestliže \(F(x, y) = F_X(x)\,F_Y(y)\) pro všechna x, y; u spojitého vektoru ekvivalentně</p>
+\[ f(x, y) = f_X(x)\, f_Y(y). \]
+<p class="jinak">sdružená hustota se „rozpadne“ na součin funkce jen x a funkce jen y (a oblast je obdélník). Pak hodnota jedné veličiny nic neříká o druhé.</p><p class="slovnik-odkaz"><a href="08_nahodny_vektor.html#def-nezavisle-nv">výklad v kapitole 8 →</a></p></div>
+<div class="box definice" id="s-kovariance"><div class="box-t">kovariance <span class="en">covariance</span></div>
+<p><b>Kovariance</b> veličin X, Y je</p>
+\[ \begin{aligned} \operatorname{cov}(X, Y) &amp;= E\big[(X - EX)(Y - EY)\big] \\ &amp;= E(XY) - EX \cdot EY \end{aligned} \]
+<p class="jinak">zda veličiny rostou spolu (kladná), proti sobě (záporná), nebo spolu lineárně nesouvisí (nulová). Pro nezávislé veličiny je nulová.</p><p class="slovnik-odkaz"><a href="08_nahodny_vektor.html#def-kovariance">výklad v kapitole 8 →</a></p></div>
+<div class="box definice" id="s-korelacni-koeficient"><div class="box-t">korelační koeficient <span class="en">correlation coefficient</span></div>
+<p><b>Korelační koeficient</b> je</p>
+\[ \rho(X, Y) = \frac{\operatorname{cov}(X, Y)}{\sqrt{DX}\,\sqrt{DY}}, \qquad -1 \le \rho \le 1. \]
+<p class="jinak">kovariance zbavená jednotek. \(\rho = \pm 1\): body leží přesně na přímce; \(\rho = 0\): žádná <b>lineární</b> závislost (nějaká jiná být může).</p><p class="slovnik-odkaz"><a href="08_nahodny_vektor.html#def-korelacni-koeficient">výklad v kapitole 8 →</a></p></div>
+<h2 id="k9" class="slovnik-kap">9 · Odhady a intervaly spolehlivosti</h2>
+<div class="box definice" id="s-vyber"><div class="box-t">náhodný výběr <span class="en">random sample</span></div>
+<p><b>Náhodný výběr</b> rozsahu \(n\) z rozdělení veličiny X je n nezávislých veličin \(X_1, \dots, X_n\), z nichž každá má stejné rozdělení jako X. Jeho konkrétní hodnoty \(x_1, \dots, x_n\) jsou <b>realizace</b> (naměřená data).</p>
+<p class="jinak">X popisuje celý <b>základní soubor</b> (všechna možná měření), výběr je pár kusů, které jsme opravdu změřili. Z nich chceme usuzovat na celek.</p><p class="slovnik-odkaz"><a href="09_odhady.html#def-vyber">výklad v kapitole 9 →</a></p></div>
+<div class="box definice" id="s-vyberovy-prumer"><div class="box-t">výběrový průměr a výběrový rozptyl <span class="en">sample mean, sample variance</span></div>
+<p><b>Výběrový průměr</b> a <b>výběrový rozptyl</b> jsou</p>
+\[ \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i, \qquad s^2 = \frac{1}{n - 1}\sum_{i=1}^{n} (x_i - \bar{x})^2; \]
+<p><b>výběrová směrodatná odchylka</b> je \(s = \sqrt{s^2}\).</p>
+<p class="jinak">průměr dat a „průměrný čtverec odchylky od průměru“. Dělí se \(n - 1\), ne \(n\): odchylky se měří od \(\bar{x}\), které je spočítané ze stejných dat, a proto vycházejí systematicky trochu menší. Dělení \(n - 1\) to vyrovná.</p><p class="slovnik-odkaz"><a href="09_odhady.html#def-vyberovy-prumer">výklad v kapitole 9 →</a></p></div>
+<div class="box definice" id="s-nestranny-odhad"><div class="box-t">bodový odhad, nestranný a konzistentní odhad <span class="en">point estimate, unbiased and consistent estimate</span></div>
+<p><b>Bodový odhad</b> parametru θ je číslo spočítané z výběru, které θ nahrazuje. Odhad \(T_n\) je <b>nestranný</b>, je-li \(E(T_n) = \theta\), a <b>konzistentní</b>, jestliže s rostoucím n konverguje k θ (\(\lim p(|T_n - \theta| &lt; \varepsilon) = 1\)).</p>
+<p class="jinak">nestranný = „v průměru se netrefuje vedle“, konzistentní = „s více daty je přesnější“. \(\bar{x}\) je nestranný a konzistentní odhad μ, \(s^2\) (s dělením n − 1) je nestranný a konzistentní odhad σ².</p><p class="slovnik-odkaz"><a href="09_odhady.html#def-nestranny-odhad">výklad v kapitole 9 →</a></p></div>
+<div class="box definice" id="s-stupne-volnosti"><div class="box-t">počet stupňů volnosti <span class="en">degrees of freedom</span></div>
+<p><b>Počet stupňů volnosti</b> ν odhadu je počet nezávislých údajů, ze kterých se odhad počítá; u výběrového rozptylu je \(\nu = n - 1\).</p>
+<p class="jinak">když je průměr pevný, stačí znát \(n - 1\) odchylek – poslední je dopočítaná (součet odchylek od průměru je 0). Jeden „stupeň volnosti“ jsme spotřebovali na odhad μ.</p><p class="slovnik-odkaz"><a href="09_odhady.html#def-stupne-volnosti">výklad v kapitole 9 →</a></p></div>
+<div class="box definice" id="s-t-rozdeleni"><div class="box-t">Studentovo t-rozdělení <span class="en">Student t-distribution</span></div>
+<p><b>Studentovo t-rozdělení</b> s ν stupni volnosti je rozdělení veličiny \(T = U/\sqrt{V/\nu}\), kde U ~ No(0, 1) a V ~ χ²(ν) jsou nezávislé. Je symetrické kolem 0 a pro \(\nu \to \infty\) se blíží No(0, 1).</p>
+<p class="jinak">„normované rozdělení s nejistotou navíc“: když σ neznáme a nahradíme ho odhadem s, je výsledek rozptýlenější než No(0, 1) – má těžší konce. Čím víc dat, tím lepší odhad s a tím blíž k normálnímu.</p><p class="slovnik-odkaz"><a href="09_odhady.html#def-t-rozdeleni">výklad v kapitole 9 →</a></p></div>
+<div class="box definice" id="s-chi2"><div class="box-t">rozdělení χ² <span class="en">chi-squared distribution</span></div>
+<p><b>Rozdělení χ²</b> s ν stupni volnosti je rozdělení součtu čtverců ν nezávislých veličin s rozdělením No(0, 1): \(\chi^2 = U_1^2 + \dots + U_\nu^2\). Nabývá jen kladných hodnot, \(E\chi^2 = \nu\), a není symetrické.</p>
+<p class="jinak">rozdělení „součtu čtverců odchylek“, a proto i výběrového rozptylu. Kvůli nesymetrii má interval pro σ² dva různé kvantily.</p><p class="slovnik-odkaz"><a href="09_odhady.html#def-chi2">výklad v kapitole 9 →</a></p></div>
+<div class="box definice" id="s-interval-spolehlivosti"><div class="box-t">interval spolehlivosti <span class="en">confidence interval</span></div>
+<p><b>Interval spolehlivosti</b> pro parametr θ se spolehlivostí \(1 - \alpha\) je interval \((T_1, T_2)\) s mezemi spočítanými z výběru takový, že</p>
+\[ p(T_1 &lt; \theta &lt; T_2) = 1 - \alpha. \]
+<p class="jinak">postup, který ze vzorku vyrobí interval; při mnoha opakováních pokryje skutečnou hodnotu parametru v \((1-\alpha) \cdot 100\) % případů. α (obvykle 0,05) je riziko, že interval parametr mine.</p><p class="slovnik-odkaz"><a href="09_odhady.html#def-interval-spolehlivosti">výklad v kapitole 9 →</a></p></div>
+<h2 id="k10" class="slovnik-kap">10 · Testování hypotéz</h2>
+<div class="box definice" id="s-hypoteza"><div class="box-t">nulová a alternativní hypotéza <span class="en">null and alternative hypothesis</span></div>
+<p><b>Statistická hypotéza</b> je tvrzení o rozdělení náhodné veličiny (např. o parametru μ). <b>Nulová hypotéza</b> \(H_0\) je tvrzení, které testujeme – obvykle „žádný rozdíl, žádný vliv“ (\(\mu = 100\), \(\mu_1 = \mu_2\)). <b>Alternativní hypotéza</b> \(H_1\) je tvrzení, které přijmeme, když \(H_0\) zamítneme.</p>
+<p class="jinak">\(H_0\) je „obžalovaný je nevinný“. Test hledá důkazy proti ní. Když jich je dost, \(H_0\) zamítneme; když ne, říkáme jen „nezamítáme“ – nevinu jsme nedokázali.</p><p class="slovnik-odkaz"><a href="10_testy.html#def-hypoteza">výklad v kapitole 10 →</a></p></div>
+<div class="box definice" id="s-hladina-vyznamnosti"><div class="box-t">hladina významnosti a chyby 1. a 2. druhu <span class="en">significance level, type I and type II error</span></div>
+<p><b>Chyba 1. druhu</b> je zamítnutí \(H_0\), která platí; <b>chyba 2. druhu</b> je nezamítnutí \(H_0\), která neplatí. <b>Hladina významnosti</b> α je předem zvolená pravděpodobnost chyby 1. druhu (obvykle 0,05). Pravděpodobnost chyby 2. druhu se značí β a \(1 - \beta\) je <b>síla testu</b>.</p>
+<p class="jinak">α = riziko „odsoudit nevinného“, které jsme ochotni nést. β = riziko „pustit viníka“. Obě chyby nejde snížit zároveň – pomůže jen víc dat.</p><p class="slovnik-odkaz"><a href="10_testy.html#def-hladina-vyznamnosti">výklad v kapitole 10 →</a></p></div>
+<div class="box definice" id="s-kriticky-obor"><div class="box-t">testové kritérium a kritický obor <span class="en">test statistic, critical region</span></div>
+<p><b>Testové kritérium</b> je veličina spočítaná z výběru, jejíž rozdělení za platnosti \(H_0\) známe. <b>Kritický obor</b> je množina hodnot kritéria, které za platnosti \(H_0\) nastanou jen s pravděpodobností α; padne-li do něj realizace kritéria, \(H_0\) zamítáme. Hranice kritického oboru je <b>kritická hodnota</b>.</p>
+<p class="jinak">kritérium měří „jak daleko jsou data od \(H_0\)“ v jednotkách, pro které máme tabulku. Kritický obor jsou „podezřele velké“ odchylky.</p><p class="slovnik-odkaz"><a href="10_testy.html#def-kriticky-obor">výklad v kapitole 10 →</a></p></div>
+<div class="box definice" id="s-jednostranny"><div class="box-t">oboustranný a jednostranný test <span class="en">two-sided (two-tailed) and one-sided test</span></div>
+<p>Test je <b>oboustranný</b>, je-li alternativa \(H_1: \mu \ne \mu_0\) – kritický obor je na obou koncích, každý s plochou α/2. Test je <b>jednostranný</b> (levostranný \(\mu &lt; \mu_0\), pravostranný \(\mu &gt; \mu_0\)), je-li kritický obor jen na jednom konci s plochou α.</p>
+<p class="jinak">oboustranně se ptám „liší se?“, jednostranně „je menší?“ / „je větší?“. Volba závisí na otázce v zadání, ne na datech.</p><p class="slovnik-odkaz"><a href="10_testy.html#def-jednostranny">výklad v kapitole 10 →</a></p></div>
+<div class="box definice" id="s-f-rozdeleni"><div class="box-t">Fisherovo F-rozdělení <span class="en">F-distribution (Fisher–Snedecor)</span></div>
+<p><b>F-rozdělení</b> se stupni volnosti \((\nu_1, \nu_2)\) je rozdělení podílu \(F = (V_1/\nu_1)/(V_2/\nu_2)\) dvou nezávislých veličin \(V_1 \sim \chi^2(\nu_1)\), \(V_2 \sim \chi^2(\nu_2)\).</p>
+<p class="jinak">rozdělení podílu dvou výběrových rozptylů ze stejně rozptýlených souborů. Mají-li soubory stejný rozptyl, má být podíl blízko 1; F říká, jak daleko od 1 ještě může náhodně vyjít.</p><p class="slovnik-odkaz"><a href="10_testy.html#def-f-rozdeleni">výklad v kapitole 10 →</a></p></div>

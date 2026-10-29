@@ -1,0 +1,174 @@
+<h1>Odhady a intervaly spolehlivosti</h1>
+<p class="lead">Teď se směr obrací: rozdělení neznáme a máme jen <b>naměřená data</b>. Ze vzorku odhadneme neznámé parametry (střední hodnotu μ, rozptyl σ²) a k odhadu přidáme <b>interval spolehlivosti</b> – rozmezí, ve kterém parametr leží s předem zvolenou spolehlivostí. Tak se řeší úlohy S7/1 a S7/2; stejné nástroje použijeme v kapitole 10 pro testy.</p>
+
+<h2 id="vyber">Základní soubor, výběr a výběrové charakteristiky</h2>
+<div class="box definice" id="def-vyber"><div class="box-t">Definice: náhodný výběr <span class="en">random sample</span></div>
+<p><b>Náhodný výběr</b> rozsahu \(n\) z rozdělení veličiny X je n nezávislých veličin \(X_1, \dots, X_n\), z nichž každá má stejné rozdělení jako X. Jeho konkrétní hodnoty \(x_1, \dots, x_n\) jsou <b>realizace</b> (naměřená data).</p>
+<p class="jinak">X popisuje celý <b>základní soubor</b> (všechna možná měření), výběr je pár kusů, které jsme opravdu změřili. Z nich chceme usuzovat na celek.</p></div>
+<div class="box definice" id="def-vyberovy-prumer"><div class="box-t">Definice: výběrový průměr a výběrový rozptyl <span class="en">sample mean, sample variance</span></div>
+<p><b>Výběrový průměr</b> a <b>výběrový rozptyl</b> jsou</p>
+\[ \bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i, \qquad s^2 = \frac{1}{n - 1}\sum_{i=1}^{n} (x_i - \bar{x})^2; \]
+<p><b>výběrová směrodatná odchylka</b> je \(s = \sqrt{s^2}\).</p>
+<p class="jinak">průměr dat a „průměrný čtverec odchylky od průměru“. Dělí se \(n - 1\), ne \(n\): odchylky se měří od \(\bar{x}\), které je spočítané ze stejných dat, a proto vycházejí systematicky trochu menší. Dělení \(n - 1\) to vyrovná.</p></div>
+<div class="box definice" id="def-nestranny-odhad"><div class="box-t">Definice: bodový odhad, nestranný a konzistentní odhad <span class="en">point estimate, unbiased and consistent estimate</span></div>
+<p><b>Bodový odhad</b> parametru θ je číslo spočítané z výběru, které θ nahrazuje. Odhad \(T_n\) je <b>nestranný</b>, je-li \(E(T_n) = \theta\), a <b>konzistentní</b>, jestliže s rostoucím n konverguje k θ (\(\lim p(|T_n - \theta| &lt; \varepsilon) = 1\)).</p>
+<p class="jinak">nestranný = „v průměru se netrefuje vedle“, konzistentní = „s více daty je přesnější“. \(\bar{x}\) je nestranný a konzistentní odhad μ, \(s^2\) (s dělením n − 1) je nestranný a konzistentní odhad σ².</p></div>
+<div class="box definice" id="def-stupne-volnosti"><div class="box-t">Definice: počet stupňů volnosti <span class="en">degrees of freedom</span></div>
+<p><b>Počet stupňů volnosti</b> ν odhadu je počet nezávislých údajů, ze kterých se odhad počítá; u výběrového rozptylu je \(\nu = n - 1\).</p>
+<p class="jinak">když je průměr pevný, stačí znát \(n - 1\) odchylek – poslední je dopočítaná (součet odchylek od průměru je 0). Jeden „stupeň volnosti“ jsme spotřebovali na odhad μ.</p></div>
+
+<div class="box vzorec"><div class="box-t">Jak se chovají výběrové charakteristiky (X ~ No(μ, σ))</div>
+\[ \bar{X} \sim \text{No}\!\left(\mu,\ \frac{\sigma}{\sqrt{n}}\right) \]
+\[ \frac{(n - 1)\,s^2}{\sigma^2} \sim \chi^2(n - 1) \]
+\[ T = \frac{\bar{X} - \mu}{s}\sqrt{n} \sim t(n - 1) \]
+<table class="vars">
+<tr><td>\(\sigma/\sqrt{n}\)</td><td>směrodatná chyba průměru – průměr kolísá \(\sqrt{n}\)-krát méně než jedno měření</td></tr>
+<tr><td>\(\chi^2(\nu)\)</td><td>rozdělení chí-kvadrát s ν stupni volnosti (pro rozptyl)</td></tr>
+<tr><td>\(t(\nu)\)</td><td>Studentovo t-rozdělení s ν stupni volnosti (pro průměr, když σ neznáme)</td></tr>
+</table></div>
+
+<div class="box definice" id="def-t-rozdeleni"><div class="box-t">Definice: Studentovo t-rozdělení <span class="en">Student t-distribution</span></div>
+<p><b>Studentovo t-rozdělení</b> s ν stupni volnosti je rozdělení veličiny \(T = U/\sqrt{V/\nu}\), kde U ~ No(0, 1) a V ~ χ²(ν) jsou nezávislé. Je symetrické kolem 0 a pro \(\nu \to \infty\) se blíží No(0, 1).</p>
+<p class="jinak">„normované rozdělení s nejistotou navíc“: když σ neznáme a nahradíme ho odhadem s, je výsledek rozptýlenější než No(0, 1) – má těžší konce. Čím víc dat, tím lepší odhad s a tím blíž k normálnímu.</p></div>
+<figure><div class="paper"><img src="figures/fig09_t.png" alt="Hustoty t-rozdělení pro 2 a 9 stupňů volnosti a normované normální hustota" loading="lazy"></div>
+<figcaption><b>Obr. 9.1</b> t-rozdělení pro ν = 2 a ν = 9 proti No(0, 1) (čárkovaně).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Těžší konce znamenají větší kvantily: místo 1,96 je pro 95 % a ν = 9 kvantil 2,262. Interval spolehlivosti je proto při malém vzorku širší – platíme za to, že σ neznáme.</p></div>
+
+<div class="box definice" id="def-chi2"><div class="box-t">Definice: rozdělení χ² <span class="en">chi-squared distribution</span></div>
+<p><b>Rozdělení χ²</b> s ν stupni volnosti je rozdělení součtu čtverců ν nezávislých veličin s rozdělením No(0, 1): \(\chi^2 = U_1^2 + \dots + U_\nu^2\). Nabývá jen kladných hodnot, \(E\chi^2 = \nu\), a není symetrické.</p>
+<p class="jinak">rozdělení „součtu čtverců odchylek“, a proto i výběrového rozptylu. Kvůli nesymetrii má interval pro σ² dva různé kvantily.</p></div>
+
+<h2 id="interval">Interval spolehlivosti</h2>
+<div class="box definice" id="def-interval-spolehlivosti"><div class="box-t">Definice: interval spolehlivosti <span class="en">confidence interval</span></div>
+<p><b>Interval spolehlivosti</b> pro parametr θ se spolehlivostí \(1 - \alpha\) je interval \((T_1, T_2)\) s mezemi spočítanými z výběru takový, že</p>
+\[ p(T_1 &lt; \theta &lt; T_2) = 1 - \alpha. \]
+<p class="jinak">postup, který ze vzorku vyrobí interval; při mnoha opakováních pokryje skutečnou hodnotu parametru v \((1-\alpha) \cdot 100\) % případů. α (obvykle 0,05) je riziko, že interval parametr mine.</p></div>
+<figure><div class="paper"><img src="figures/fig09_intervaly.png" alt="Dvacet pět vodorovných intervalů spolehlivosti z různých výběrů kolem skutečné hodnoty 10; většina ji pokrývá, několik ji mine" loading="lazy"></div>
+<figcaption><b>Obr. 9.2</b> 95% intervaly z 25 simulovaných výběrů (n = 10) z No(10, 4). Svislá čára je skutečné μ.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Náhodný je <b>interval</b>, ne μ. Každý výběr dá jiný interval; zhruba 95 % z nich μ pokryje a asi 5 % ho mine. „Spolehlivost 95 %“ je vlastnost postupu, ne jednoho konkrétního intervalu.</p></div>
+
+<div class="box vzorec"><div class="box-t">Interval spolehlivosti pro μ (σ neznámé)</div>
+\[ \begin{aligned} \mu &amp;\in \left(\bar{x} - \Delta,\ \bar{x} + \Delta\right) \\ \Delta &amp;= t_{1-\alpha/2}(n-1)\,\frac{s}{\sqrt{n}} \end{aligned} \]
+<table class="vars">
+<tr><td>\(\bar{x}\), \(s\)</td><td>výběrový průměr a výběrová směrodatná odchylka (s dělením n − 1)</td></tr>
+<tr><td>\(t_{1-\alpha/2}(n-1)\)</td><td>kvantil t-rozdělení s \(n - 1\) stupni volnosti; pro 95 % je to \(t_{0{,}975}\) (v tabulkách skript sloupec „α = 0,05 oboustranně“)</td></tr>
+<tr><td>\(s/\sqrt{n}\)</td><td>odhad směrodatné chyby průměru</td></tr>
+<tr><td>\(\Delta\)</td><td>polovina šířky intervalu</td></tr>
+</table>
+<p>Je-li σ <b>známé</b>, použije se místo t kvantil normálního rozdělení: \(\bar{x} \pm u_{1-\alpha/2}\,\sigma/\sqrt{n}\).</p></div>
+
+<div class="box vzorec"><div class="box-t">Interval spolehlivosti pro σ²</div>
+\[ \sigma^2 \in \left(\frac{(n - 1)\,s^2}{\chi^2_{1-\alpha/2}(n-1)},\ \ \frac{(n - 1)\,s^2}{\chi^2_{\alpha/2}(n-1)}\right) \]
+<table class="vars">
+<tr><td>\((n-1)s^2\)</td><td>součet čtverců odchylek \(\sum (x_i - \bar{x})^2\)</td></tr>
+<tr><td>\(\chi^2_{1-\alpha/2}\)</td><td>větší kvantil – patří do <b>dolní</b> meze (dělením větším číslem vyjde menší)</td></tr>
+<tr><td>\(\chi^2_{\alpha/2}\)</td><td>menší kvantil – patří do horní meze</td></tr>
+</table>
+<p>Interval pro σ dostaneme odmocněním obou mezí.</p></div>
+
+<div class="box postup" id="postup-interval"><div class="box-t">Jak poznat a jak postupovat: interval spolehlivosti</div>
+<p><b>Poznáš to:</b> <span class="kw">confidence interval</span>, <span class="kw">interval estimate</span>, <span class="kw">with confidence 0.95</span>, <span class="kw">two-sided 95 %</span>; data a neznámé μ, σ.</p>
+<ol>
+<li>Spočítej \(n\), \(\bar{x}\), \(s^2\) (dělit \(n - 1\)!).</li>
+<li>Urči α (spolehlivost 0,95 → α = 0,05) a stupně volnosti \(\nu = n - 1\).</li>
+<li>Pro μ: kvantil \(t_{1-\alpha/2}(\nu)\), polovina šířky \(t \cdot s/\sqrt{n}\), interval \(\bar{x} \pm\) polovina.</li>
+<li>Pro σ²: dva kvantily \(\chi^2_{\alpha/2}(\nu)\), \(\chi^2_{1-\alpha/2}(\nu)\), dosadit do vzorce (větší kvantil dole).</li>
+<li>Kontrola: \(\bar{x}\) je přesně uprostřed intervalu pro μ; \(s^2\) leží uvnitř intervalu pro σ².</li>
+</ol></div>
+
+<div class="box uloha" id="u-s7-1"><div class="box-t">Úloha S7/1 <span class="en">set 7, task 1</span></div>
+<p>X ~ No(μ, σ), μ i σ neznáme. Realizace: 25, 17, −5, −4, 10, 22, 11, 2, 5, 12. Urči 95% oboustranný interval spolehlivosti pro μ.</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">we don't know μ, σ</span> → t-rozdělení; <span class="kw">95 % two-sided</span> → \(t_{0{,}975}(9)\). <b>Výsledek:</b> μ ∈ (2,23; 16,77).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Průměr (n = 10, součet 95):</p>
+\[ \bar{x} = \frac{95}{10} = 9{,}5 \]
+<p>2. Součet čtverců odchylek a výběrový rozptyl:</p>
+\[ \sum (x_i - \bar{x})^2 = 930{,}5 \]
+\[ s^2 = \frac{930{,}5}{9} \approx 103{,}39, \qquad s \approx 10{,}168 \]
+<p>3. Kvantil pro ν = 9: \(t_{0{,}975}(9) = 2{,}262\). Polovina šířky:</p>
+\[ t \cdot \frac{s}{\sqrt{n}} = 2{,}262 \cdot \frac{10{,}168}{\sqrt{10}} \approx 7{,}27 \]
+<p>4. Interval:</p>
+\[ \mu \in (9{,}5 - 7{,}27;\ 9{,}5 + 7{,}27) = (2{,}23;\ 16{,}77) \]
+</div></details></div>
+
+<div class="box uloha" id="u-s7-2"><div class="box-t">Úloha S7/2 <span class="en">set 7, task 2</span></div>
+<p>Devět měření fyzikální konstanty: 1,04; 1,03; 1,06; 1,04; 1,01; 1,03; 1,03; 1,04; 1,05. Měření jsou nezávislá s rozdělením No(μ, σ), μ i σ neznámé. Sestroj 95% interval spolehlivosti pro μ a pro rozptyl σ².</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">interval estimate for the variance σ²</span> → χ². <b>Výsledek:</b> μ ∈ (1,026; 1,048), σ² ∈ (0,00009; 0,00073).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Trik pro pohodlné počítání: \(y_i = 100(x_i - 1)\) dá 4, 3, 6, 4, 1, 3, 3, 4, 5. Součet 33, součet čtverců 137:</p>
+\[ \begin{aligned} \bar{y} &amp;= \frac{33}{9} \approx 3{,}667 \\ \sum (y_i - \bar{y})^2 &amp;= 137 - \frac{33^2}{9} = 16 \end{aligned} \]
+<p>2. Zpět k x (posun nic nemění, faktor 100 se u čtverců projeví jako \(100^2\)):</p>
+\[ \begin{aligned} \bar{x} &amp;= 1 + \frac{3{,}667}{100} \approx 1{,}0367 \\ \sum (x_i - \bar{x})^2 &amp;= \frac{16}{10\,000} = 0{,}0016 \end{aligned} \]
+\[ s^2 = \frac{0{,}0016}{8} = 0{,}0002, \qquad s \approx 0{,}01414 \]
+<p>3. Interval pro μ, \(t_{0{,}975}(8) = 2{,}306\):</p>
+\[ 2{,}306 \cdot \frac{0{,}01414}{3} \approx 0{,}0109 \]
+\[ \begin{aligned} \mu &amp;\in (1{,}0367 - 0{,}0109;\ 1{,}0367 + 0{,}0109) \\ &amp;\approx (1{,}026;\ 1{,}048) \end{aligned} \]
+<p>4. Interval pro σ², kvantily \(\chi^2_{0{,}975}(8) = 17{,}53\), \(\chi^2_{0{,}025}(8) = 2{,}18\):</p>
+\[ \begin{aligned} \sigma^2 &amp;\in \left(\frac{0{,}0016}{17{,}53};\ \frac{0{,}0016}{2{,}18}\right) \\ &amp;\approx (0{,}000091;\ 0{,}00073) \end{aligned} \]
+<p>Odhad \(s^2 = 0{,}0002\) leží uvnitř, ale ne uprostřed – interval pro rozptyl je nesymetrický.</p>
+</div></details></div>
+
+<figure><div class="paper"><img src="figures/fig09_chi2.png" alt="Hustota chí-kvadrát s 8 stupni volnosti s oběma konci po 0,025 vybarvenými; kvantily 2,18 a 17,53" loading="lazy"></div>
+<figcaption><b>Obr. 9.3</b> χ²(8) a kvantily pro 95% interval rozptylu z úlohy S7/2.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>χ² není symetrické: dolní kvantil 2,18 je blízko nuly, horní 17,53 daleko. Proto se oba hledají zvlášť a interval pro σ² není „odhad ± něco“.</p></div>
+
+<div class="box pozor"><div class="box-t">Časté pasti</div>
+<ul>
+<li>Výběrový rozptyl dělit \(n - 1\), ne \(n\) (na kalkulačce \(s\), resp. \(\sigma_{n-1}\)).</li>
+<li>Stupně volnosti \(n - 1\), ne \(n\).</li>
+<li>Oboustranný 95% interval → kvantil 0,975 (na každý konec 2,5 %).</li>
+<li>U σ² patří větší kvantil χ² do jmenovatele dolní meze.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Z výběru odhaduji μ výběrovým průměrem a σ² výběrovým rozptylem s dělením n − 1; oba odhady jsou nestranné a konzistentní. Interval spolehlivosti je interval spočítaný z dat, který skutečnou hodnotu parametru pokryje s pravděpodobností 1 − α. Pro μ s neznámým σ využívám, že \((\bar{X} - \mu)\sqrt{n}/s\) má t-rozdělení s n − 1 stupni volnosti, interval je \(\bar{x} \pm t_{1-\alpha/2}\, s/\sqrt{n}\). Pro σ² využívám, že \((n-1)s^2/\sigma^2\) má rozdělení χ²(n − 1).“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Interval pro μ = průměr ± t-kvantil · s/√n; interval pro σ² = součet čtverců děleno dvěma kvantily χ².</p></div>
+
+<div class="box slovicka"><div class="box-t">Anglická slovíčka</div>
+<table>
+<tr><th>česky</th><th>anglicky</th></tr>
+<tr><td>základní soubor</td><td>population</td></tr>
+<tr><td>náhodný výběr, rozsah výběru</td><td>random sample, sample size</td></tr>
+<tr><td>realizace (naměřené hodnoty)</td><td>realizations, observed values</td></tr>
+<tr><td>výběrový průměr / rozptyl</td><td>sample mean / sample variance</td></tr>
+<tr><td>bodový odhad</td><td>point estimate</td></tr>
+<tr><td>nestranný / konzistentní odhad</td><td>unbiased / consistent estimate</td></tr>
+<tr><td>stupně volnosti</td><td>degrees of freedom</td></tr>
+<tr><td>interval spolehlivosti</td><td>confidence interval, interval estimate</td></tr>
+<tr><td>spolehlivost</td><td>confidence (level)</td></tr>
+<tr><td>Studentovo t-rozdělení</td><td>Student t-distribution</td></tr>
+<tr><td>rozdělení chí-kvadrát</td><td>chi-squared distribution</td></tr>
+<tr><td>směrodatná chyba</td><td>standard error</td></tr>
+</table>
+<p><b>Fráze ze zadání:</b> <span class="kw">we got realizations of X</span> = naměřili jsme hodnoty X; <span class="kw">determine a 95 % two-sided confidence interval for the parameter μ</span> = urči 95% oboustranný interval spolehlivosti pro μ; <span class="kw">construct an interval estimate for the variance with confidence 0.95</span> = sestroj intervalový odhad rozptylu se spolehlivostí 0,95.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Statistika usuzuje z výběru na základní soubor. Bodovými odhady jsou výběrový průměr (pro μ) a výběrový rozptyl s dělením n − 1 (pro σ²); oba jsou nestranné a konzistentní. Protože bodový odhad nikdy není přesný, doplňujeme ho intervalem spolehlivosti, který skutečnou hodnotu pokryje s pravděpodobností 1 − α. Pro střední hodnotu s neznámým σ se používá t-rozdělení s n − 1 stupni volnosti, které má kvůli nejistotě v odhadu s těžší konce než normální. Pro rozptyl se používá nesymetrické rozdělení χ²(n − 1) se dvěma různými kvantily.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>\(\bar{x}\) odhaduje μ, \(s^2 = \sum(x_i - \bar{x})^2/(n-1)\) odhaduje σ².</li>
+<li>Interval pro μ (σ neznámé): \(\bar{x} \pm t_{1-\alpha/2}(n-1)\,s/\sqrt{n}\).</li>
+<li>Interval pro σ²: \((n-1)s^2\) děleno \(\chi^2_{1-\alpha/2}\) (dolní mez) a \(\chi^2_{\alpha/2}\) (horní mez).</li>
+<li>95 % oboustranně → kvantily 0,975 a 0,025; stupně volnosti n − 1.</li>
+<li>Spolehlivost je vlastnost postupu: náhodný je interval, ne parametr.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Proč se ve výběrovém rozptylu dělí n − 1, a ne n?</summary><div>
+<p>Odchylky se měří od výběrového průměru, který je spočítaný ze stejných dat a leží „uprostřed“ nich, takže součet čtverců odchylek je systematicky menší než od skutečného μ. Dělení n − 1 to vyrovná a odhad je nestranný: \(E(s^2) = \sigma^2\). n − 1 je zároveň počet stupňů volnosti.</p></div></details>
+<details class="q"><summary>Co znamená, že je odhad nestranný a konzistentní?</summary><div>
+<p>Nestranný: jeho střední hodnota je rovna odhadovanému parametru, v průměru se netrefuje vedle. Konzistentní: s rostoucím rozsahem výběru se odhad k parametru blíží (pravděpodobnost libovolně malé odchylky jde k 1).</p></div></details>
+<details class="q"><summary>Co je interval spolehlivosti a jak ho interpretujete?</summary><div>
+<p>Interval s mezemi spočítanými z výběru, který skutečnou hodnotu parametru pokryje s pravděpodobností 1 − α. Interpretace: kdybych výběr opakoval mnohokrát, asi (1 − α)·100 % takto sestrojených intervalů by parametr obsahovalo. Náhodné jsou meze, parametr je pevný.</p></div></details>
+<details class="q"><summary>Proč se u intervalu pro μ s neznámým σ používá t-rozdělení?</summary><div>
+<p>Při známém σ má \((\bar{X} - \mu)\sqrt{n}/\sigma\) rozdělení No(0, 1). Neznámé σ nahradíme odhadem s, který sám kolísá, a veličina \((\bar{X} - \mu)\sqrt{n}/s\) má pak Studentovo t-rozdělení s n − 1 stupni volnosti. To má těžší konce, takže interval vyjde širší.</p></div></details>
+<details class="q"><summary>Jak se změní šířka intervalu pro μ, když zvětšíme rozsah výběru nebo spolehlivost?</summary><div>
+<p>Větší n interval zúží (dělí se \(\sqrt{n}\) a kvantil t klesá). Vyšší spolehlivost (např. 99 % místo 95 %) ho rozšíří, protože potřebuji větší kvantil. Přesnost a jistota jdou proti sobě; pomůže jen víc dat.</p></div></details>
+<details class="q"><summary>Jak sestrojíte interval spolehlivosti pro rozptyl a proč není symetrický?</summary><div>
+<p>Z toho, že \((n-1)s^2/\sigma^2\) má rozdělení χ²(n − 1): \(\sigma^2 \in ((n-1)s^2/\chi^2_{1-\alpha/2},\ (n-1)s^2/\chi^2_{\alpha/2})\). Rozdělení χ² je nesymetrické (jen kladné hodnoty, dlouhý pravý konec), proto jsou oba kvantily různě daleko a s² neleží uprostřed intervalu.</p></div></details>

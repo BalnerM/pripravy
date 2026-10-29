@@ -1,0 +1,264 @@
+<h1>Podmíněná pravděpodobnost a Bayes</h1>
+<p class="lead">Jak se změní pravděpodobnost, když už něco víme? Na tom stojí tři nástroje, které pokrývají většinu „slovních“ úloh: <b>podmíněná pravděpodobnost</b>, <b>věta o úplné pravděpodobnosti</b> (výsledek vzniká několika cestami) a <b>Bayesova věta</b> (výsledek známe a ptáme se, kterou cestou vznikl). Kdo je pozná v zadání, vyřeší úlohy 4–8 a 10 ze sady 1 i HW2.</p>
+
+<h2 id="podminena">Podmíněná pravděpodobnost</h2>
+<div class="box definice" id="def-podminena"><div class="box-t">Definice: podmíněná pravděpodobnost <span class="en">conditional probability</span></div>
+<p><b>Podmíněná pravděpodobnost</b> jevu \(A\) za podmínky \(B\), kde \(p(B) &gt; 0\), je</p>
+\[ p(A \mid B) = \frac{p(A \cap B)}{p(B)}. \]
+<p class="jinak">víme, že nastalo \(B\), takže svět se „zmenší“ jen na \(B\). Ptáme se, jakou část z \(B\) zabírá i \(A\).</p></div>
+<div class="box intuice"><div class="box-t">Intuice</div>
+<p>Ze 100 studentů je 40 žen a 10 z nich nosí brýle. Vybereme náhodně ženu – jaká je šance, že nosí brýle? Už neuvažujeme všech 100 lidí, jen 40 žen: \(10/40 = 0{,}25\). Přesně to dělá vzorec: \(p(\text{brýle} \cap \text{žena}) / p(\text{žena}) = 0{,}1/0{,}4\).</p></div>
+<div class="box vzorec"><div class="box-t">Věta o násobení</div>
+\[ p(A \cap B) = p(B)\, p(A \mid B) = p(A)\, p(B \mid A) \]
+<table class="vars">
+<tr><td>\(p(A \cap B)\)</td><td>pravděpodobnost, že nastanou oba jevy</td></tr>
+<tr><td>\(p(A \mid B)\)</td><td>pravděpodobnost A, když už víme, že nastalo B</td></tr>
+</table>
+<p>Takhle se počítá postupné tahání: \(p(\text{1. král} \cap \text{2. král}) = \tfrac{4}{32} \cdot \tfrac{3}{31}\) (úloha <a href="01_pravdepodobnost.html#u-s1-3">S1/3</a>).</p></div>
+
+<h2 id="nezavislost">Nezávislé jevy</h2>
+<div class="box definice" id="def-nezavisle"><div class="box-t">Definice: nezávislé jevy <span class="en">independent events</span></div>
+<p>Jevy \(A\), \(B\) jsou <b>nezávislé</b>, jestliže</p>
+\[ p(A \cap B) = p(A)\, p(B). \]
+<p class="jinak">informace, že nastal jeden jev, nemění pravděpodobnost druhého: \(p(A \mid B) = p(A)\). Typicky opakované hody kostkou nebo pokusy „se stejnou pravděpodobností každý den“.</p></div>
+<div class="box pozor"><div class="box-t">Častá past: nezávislé ≠ neslučitelné</div>
+<p>Neslučitelné jevy (nemohou nastat současně) jsou naopak <b>silně závislé</b>: když nastal jeden, víme jistě, že druhý nenastal. U neslučitelných se pravděpodobnosti <b>sčítají</b> (\(p(A \cup B)\)), u nezávislých se <b>násobí</b> (\(p(A \cap B)\)).</p></div>
+
+<h2 id="uplna">Věta o úplné pravděpodobnosti</h2>
+<div class="box definice" id="def-uplny-system"><div class="box-t">Definice: úplný systém jevů (hypotézy) <span class="en">complete system of events, partition</span></div>
+<p>Jevy \(H_1, \dots, H_n\) tvoří <b>úplný systém jevů</b>, jestliže jsou navzájem neslučitelné a jejich sjednocení je jistý jev: vždy nastane právě jeden z nich. Říkáme jim <b>hypotézy</b>.</p>
+<p class="jinak">rozdělení všech možností na „cesty“ nebo „skupiny“, které se nepřekrývají a nic nevynechávají: skupina studentů, krabice, ze které tahám, typ rodičů.</p></div>
+<div class="box vzorec"><div class="box-t">Věta o úplné pravděpodobnosti</div>
+\[ p(A) = \sum_{i=1}^{n} p(H_i)\, p(A \mid H_i) \]
+<table class="vars">
+<tr><td>\(H_i\)</td><td>hypotézy (cesty), úplný systém jevů</td></tr>
+<tr><td>\(p(H_i)\)</td><td>pravděpodobnost, že jdeme cestou \(i\) (součet přes všechna \(i\) musí být 1)</td></tr>
+<tr><td>\(p(A \mid H_i)\)</td><td>pravděpodobnost výsledku A na cestě \(i\)</td></tr>
+<tr><td>\(p(A)\)</td><td>celková pravděpodobnost A = vážený průměr podmíněných pravděpodobností</td></tr>
+</table></div>
+
+<h2 id="bayes">Bayesova věta</h2>
+<div class="box definice" id="def-bayes"><div class="box-t">Definice: Bayesova věta <span class="en">Bayes' theorem</span></div>
+<p>Tvoří-li \(H_1, \dots, H_n\) úplný systém jevů a \(p(A) &gt; 0\), pak pro každé \(k\)</p>
+\[ p(H_k \mid A) = \frac{p(H_k)\, p(A \mid H_k)}{\sum_{i=1}^{n} p(H_i)\, p(A \mid H_i)}. \]
+<p class="jinak">výsledek A už známe a ptáme se „pozpátku“: kterou cestou nejspíš vznikl? Je to podíl jedné větve stromu na celkové pravděpodobnosti A.</p></div>
+<div class="box definice" id="def-apriorni"><div class="box-t">Definice: apriorní a aposteriorní pravděpodobnost <span class="en">prior and posterior probability</span></div>
+<p><b>Apriorní pravděpodobnost</b> \(p(H_k)\) je pravděpodobnost hypotézy před provedením pokusu; <b>aposteriorní pravděpodobnost</b> \(p(H_k \mid A)\) je pravděpodobnost téže hypotézy poté, co víme, že nastal jev \(A\).</p>
+<p class="jinak">„co jsem si myslel předtím“ a „co si myslím teď, když vím výsledek“. Bayesova věta je recept, jak názor aktualizovat.</p></div>
+
+<div class="box postup" id="postup-bayes"><div class="box-t">Jak poznat a jak postupovat: úplná pravděpodobnost a Bayes</div>
+<p><b>Poznáš to:</b> výsledek může vzniknout <b>několika cestami</b> s různou úspěšností (skupiny studentů, krabice, typy rodičů, stroje). Ptá-li se „jaká je pravděpodobnost výsledku“ → <b>úplná pravděpodobnost</b>. Ptá-li se „víme, že výsledek nastal (<span class="kw">if a child is allergic</span>, <span class="kw">given that</span>, <span class="kw">we find that it is white</span>), jaká je pravděpodobnost, že to byla cesta k“ → <b>Bayes</b>.</p>
+<ol>
+<li><b>Hypotézy:</b> pojmenuj cesty \(H_1, \dots, H_n\) a jejich pravděpodobnosti \(p(H_i)\); zkontroluj, že dávají součet 1.</li>
+<li><b>Podmíněné pravděpodobnosti</b> \(p(A \mid H_i)\) – „úspěšnost“ každé cesty.</li>
+<li><b>Nakresli strom</b>: větve \(p(H_i)\), za nimi \(p(A \mid H_i)\); na konci každé větve součin.</li>
+<li><b>Úplná pravděpodobnost:</b> \(p(A)\) = součet koncových součinů.</li>
+<li><b>Bayes:</b> \(p(H_k \mid A)\) = součin větve \(k\) / \(p(A)\).</li>
+</ol></div>
+
+<div class="schema narrow">
+<svg viewBox="0 0 600 250" role="img" aria-label="Pravděpodobnostní strom pro alergie: tři typy rodičů s pravděpodobnostmi 0,75, 0,20 a 0,05, pak alergie dítěte s 0,1, 0,3 a 0,7; součiny 0,075, 0,060 a 0,035">
+  <defs><marker id="ar21" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <circle cx="40" cy="125" r="8" class="node"/>
+  <path d="M48 120 L200 50" class="ln" marker-end="url(#ar21)"/>
+  <path d="M48 125 L200 125" class="ln" marker-end="url(#ar21)"/>
+  <path d="M48 130 L200 200" class="ln" marker-end="url(#ar21)"/>
+  <text x="110" y="72" class="t2">0,75</text><text x="110" y="118" class="t2">0,20</text><text x="110" y="182" class="t2">0,05</text>
+  <rect x="205" y="32" width="120" height="34" rx="6" class="fl1"/><text x="265" y="54" text-anchor="middle">H₁: nikdo</text>
+  <rect x="205" y="108" width="120" height="34" rx="6" class="fl1"/><text x="265" y="130" text-anchor="middle">H₂: jeden</text>
+  <rect x="205" y="184" width="120" height="34" rx="6" class="fl1"/><text x="265" y="206" text-anchor="middle">H₃: oba</text>
+  <path d="M325 49 L405 49" class="ln" marker-end="url(#ar21)"/>
+  <path d="M325 125 L405 125" class="ln" marker-end="url(#ar21)"/>
+  <path d="M325 201 L405 201" class="ln" marker-end="url(#ar21)"/>
+  <text x="343" y="42" class="t2">0,1</text><text x="343" y="118" class="t2">0,3</text><text x="343" y="194" class="t2">0,7</text>
+  <rect x="410" y="32" width="70" height="34" rx="6" class="fl2"/><text x="445" y="54" text-anchor="middle">A</text>
+  <rect x="410" y="108" width="70" height="34" rx="6" class="fl2"/><text x="445" y="130" text-anchor="middle">A</text>
+  <rect x="410" y="184" width="70" height="34" rx="6" class="fl2"/><text x="445" y="206" text-anchor="middle">A</text>
+  <text x="492" y="54">= 0,075</text><text x="492" y="130">= 0,060</text><text x="492" y="206">= 0,035</text>
+  <text x="300" y="244" text-anchor="middle" class="t2">p(A) = součet konců = 0,17; p(H₁ | A) = 0,075 / 0,17</text>
+</svg></div>
+<p>Obrázek: strom k úloze S1/6. Každá cesta zleva doprava je jedna hypotéza; součin pravděpodobností na cestě je \(p(H_i \cap A)\).</p>
+
+<div class="box uloha" id="u-s1-6"><div class="box-t">Úloha S1/6 <span class="en">set 1, task 6</span></div>
+<p>Dítě je alergické s pravděpodobností 0,7, jsou-li alergičtí oba rodiče; 0,3, je-li alergický jeden; 0,1, není-li alergický žádný. Mezi rodiči je 75 % párů bez alergie, 20 % s jedním alergikem a 5 % s oběma. (a) Jaká je pravděpodobnost, že náhodně vybrané dítě je alergické? (b) Je-li dítě alergické, jaká je pravděpodobnost, že žádný z rodičů alergický není?</p>
+<p class="meta"><b>V zadání:</b> tři typy rodičů = hypotézy; (a) <span class="kw">randomly selected child</span> → úplná pravděpodobnost; (b) <span class="kw">if a child is allergic</span> → Bayes. <b>Výsledek:</b> (a) 0,17; (b) 0,441.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Hypotézy: \(H_1\) = žádný rodič alergik, \(H_2\) = jeden, \(H_3\) = oba.</p>
+\[ \begin{aligned} p(H_1) &amp;= 0{,}75 \\ p(H_2) &amp;= 0{,}20 \\ p(H_3) &amp;= 0{,}05 \end{aligned} \]
+<p>2. Podmíněné pravděpodobnosti alergie A:</p>
+\[ \begin{aligned} p(A \mid H_1) &amp;= 0{,}1 \\ p(A \mid H_2) &amp;= 0{,}3 \\ p(A \mid H_3) &amp;= 0{,}7 \end{aligned} \]
+<p>3. (a) Úplná pravděpodobnost:</p>
+\[ \begin{aligned} p(A) &amp;= 0{,}75 \cdot 0{,}1 + 0{,}2 \cdot 0{,}3 + 0{,}05 \cdot 0{,}7 \\ &amp;= 0{,}075 + 0{,}06 + 0{,}035 = 0{,}17 \end{aligned} \]
+<p>4. (b) Bayes – podíl první větve:</p>
+\[ p(H_1 \mid A) = \frac{0{,}075}{0{,}17} \approx 0{,}441 \]
+<p>Zajímavost: přestože u párů bez alergie je riziko jen 10 %, tvoří skoro polovinu alergických dětí – protože takových párů je naprostá většina.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-s1-7"><div class="box-t">Úloha S1/7 <span class="en">set 1, task 7</span></div>
+<p>Studenti jsou rozděleni do tří stejně početných skupin. Testu se zúčastnilo 40 % studentů 1. skupiny, 30 % 2. skupiny a 30 % 3. skupiny. Úspěšnost skupin bývá 60 %, 35 % a 70 %. Učitel náhodně vezme jeden test. (a) Jaká je pravděpodobnost, že je úspěšný? (b) Je úspěšný – jaká je pravděpodobnost, že ho psal student 1. skupiny?</p>
+<p class="meta"><b>V zadání:</b> skupiny = hypotézy, <span class="kw">success rate</span> = \(p(U \mid H_i)\); (b) <span class="kw">he corrects a successful test, what is the probability that…</span> → Bayes. <b>Výsledek:</b> (a) 0,555; (b) 0,432.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Hypotézy = z které skupiny je vybraný test. Má-li každá skupina N studentů, je testů \(0{,}4N + 0{,}3N + 0{,}3N = N\), takže:</p>
+\[ \begin{aligned} p(H_1) &amp;= 0{,}4 \\ p(H_2) &amp;= 0{,}3 \\ p(H_3) &amp;= 0{,}3 \end{aligned} \]
+<p>2. (a) Úplná pravděpodobnost úspěšného testu U:</p>
+\[ \begin{aligned} p(U) &amp;= 0{,}4 \cdot 0{,}6 + 0{,}3 \cdot 0{,}35 + 0{,}3 \cdot 0{,}7 \\ &amp;= 0{,}24 + 0{,}105 + 0{,}21 = 0{,}555 \end{aligned} \]
+<p>3. (b) Bayes:</p>
+\[ p(H_1 \mid U) = \frac{0{,}24}{0{,}555} \approx 0{,}432 \]
+</div></details></div>
+
+<div class="box uloha" id="u-s1-8"><div class="box-t">Úloha S1/8 <span class="en">set 1, task 8</span></div>
+<p>Stejné jako S1/7, jen se testu zúčastnilo 60 % studentů 1. skupiny, 50 % 2. skupiny a 70 % 3. skupiny (úspěšnosti 60 %, 35 %, 70 %).</p>
+<p class="meta"><b>Pozor:</b> účasti dávají součet 180 %, nejsou to tedy \(p(H_i)\) – je třeba je přepočítat. <b>Výsledek:</b> (a) 0,569; (b) 0,351.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Počet testů ze skupin: \(0{,}6N\), \(0{,}5N\), \(0{,}7N\), celkem \(1{,}8N\). Pravděpodobnost, že vybraný test je ze skupiny \(i\), je podíl jejích testů:</p>
+\[ \begin{aligned} p(H_1) &amp;= \frac{0{,}6}{1{,}8} = \frac{1}{3} \\ p(H_2) &amp;= \frac{0{,}5}{1{,}8} \approx 0{,}278 \\ p(H_3) &amp;= \frac{0{,}7}{1{,}8} \approx 0{,}389 \end{aligned} \]
+<p>2. (a) Úplná pravděpodobnost:</p>
+\[ \begin{aligned} p(U) &amp;= \frac{0{,}6 \cdot 0{,}6 + 0{,}5 \cdot 0{,}35 + 0{,}7 \cdot 0{,}7}{1{,}8} \\ &amp;= \frac{1{,}025}{1{,}8} \approx 0{,}569 \end{aligned} \]
+<p>3. (b) Bayes (jmenovatel 1,8 se zkrátí):</p>
+\[ p(H_1 \mid U) = \frac{0{,}36}{1{,}025} \approx 0{,}351 \]
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Častá past: procenta nejsou vždy p(H<sub>i</sub>)</div>
+<p>Pravděpodobnosti hypotéz musí dát součet 1. Když zadání dává „podíly v rámci skupin“ (účast 60 %, 50 %, 70 %), je třeba je převést na podíl v celku – vydělit součtem. Kontrola \(\sum p(H_i) = 1\) odhalí chybu hned na začátku.</p></div>
+
+<div class="box uloha" id="u-s1-10"><div class="box-t">Úloha S1/10 – Monty Hall <span class="en">set 1, task 10</span></div>
+<p>Za jedněmi ze tří dveří je auto, za ostatními koza. Soutěžící zvolí dveře 1. Moderátor, který ví, kde je auto, otevře dveře 2 s kozou. Soutěžící může zůstat u dveří 1, nebo přejít na dveře 3. (a) Jaká je pravděpodobnost výhry, když zůstane? (b) Když změní volbu?</p>
+<p class="meta"><b>V zadání:</b> nová informace (moderátor otevřel dveře 2) → Bayes, hypotézy = kde je auto. <b>Výsledek:</b> (a) 1/3; (b) 2/3.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Hypotézy \(H_i\) = auto je za dveřmi \(i\), apriorně \(p(H_i) = 1/3\). Jev \(O_2\) = moderátor otevřel dveře 2.</p>
+<p>2. Jak se moderátor chová (nesmí otevřít dveře soutěžícího ani dveře s autem):</p>
+<ul>
+<li>auto za 1: může otevřít 2 nebo 3, \(p(O_2 \mid H_1) = 1/2\);</li>
+<li>auto za 2: dveře 2 neotevře, \(p(O_2 \mid H_2) = 0\);</li>
+<li>auto za 3: musí otevřít 2, \(p(O_2 \mid H_3) = 1\).</li>
+</ul>
+<p>3. Úplná pravděpodobnost:</p>
+\[ p(O_2) = \frac{1}{3}\left(\frac{1}{2} + 0 + 1\right) = \frac{1}{2} \]
+<p>4. Bayes:</p>
+\[ p(H_1 \mid O_2) = \frac{\frac{1}{3} \cdot \frac{1}{2}}{\frac{1}{2}} = \frac{1}{3} \]
+\[ p(H_3 \mid O_2) = \frac{\frac{1}{3} \cdot 1}{\frac{1}{2}} = \frac{2}{3} \]
+<p>Změna se vyplatí. Intuice: původní volba trefí auto s pravděpodobností 1/3 a otevření dveří na tom nic nezmění (moderátor otevře kozu vždy). Zbylé 2/3 „se přelijí“ na jediné zbývající dveře.</p>
+</div></details></div>
+
+<h2 id="opakovani">Opakování „dokud nenastane“ a hra na střídačku</h2>
+<p>Některé úlohy se ptají, co nastane <b>dřív</b>, nebo kdo vyhraje hru, kde se hází, dokud někdo neuspěje. Pokusy jsou nezávislé, takže pravděpodobnosti po sobě jdoucích kol se násobí a sčítají se přes všechna kola. Výsledkem je <b>geometrická řada</b>.</p>
+<div class="box vzorec"><div class="box-t">Geometrická řada</div>
+\[ \sum_{k=0}^{\infty} q^k = \frac{1}{1 - q}, \qquad |q| &lt; 1 \]
+<table class="vars">
+<tr><td>\(q\)</td><td>pravděpodobnost, že jedno kolo „nic nerozhodne“ a hra pokračuje</td></tr>
+</table></div>
+
+<div class="box uloha" id="u-s1-4"><div class="box-t">Úloha S1/4 <span class="en">set 1, task 4</span></div>
+<p>Opakovaně házíme dvěma kostkami. Jaká je pravděpodobnost, že součet 5 padne dřív než součet 7?</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">before</span> → opakujeme, dokud nepadne 5 nebo 7. <b>Výsledek:</b> 2/5.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. V jednom hodu (obr. 1.1): \(p_5 = 4/36\), \(p_7 = 6/36\); nic se nerozhodne s pravděpodobností \(q = 1 - 10/36 = 26/36\).</p>
+<p>2. Pětka padne poprvé v \((k+1)\)-ním hodu, když předchozích \(k\) hodů nic nerozhodlo:</p>
+\[ p(A) = \sum_{k=0}^{\infty} q^k\, p_5 = \frac{p_5}{1 - q} \]
+<p>3. Dosadíme:</p>
+\[ p(A) = \frac{4/36}{10/36} = \frac{4}{10} = \frac{2}{5} \]
+<p>Rychlá úvaha: rozhoduje jen ten hod, kdy padne 5 nebo 7. Za této podmínky je šance na pětku \(p_5 / (p_5 + p_7)\) – podmíněná pravděpodobnost.</p>
+</div></details></div>
+
+<div class="box priklad" id="pr-stridacka"><div class="box-t">Podobná úloha jako HW2/1: hra na střídačku</div>
+<p>Hráči A a B střídavě hází kostkou, začíná A. A vyhraje, když hodí 5 nebo 6; B vyhraje, když hodí 1. S jakou pravděpodobností vyhraje každý z nich?</p>
+<p>1. Pravděpodobnosti v jednom hodu: A uspěje s \(a = 2/6 = 1/3\), B s \(b = 1/6\).</p>
+<p>2. Jedno celé kolo (A hází, pak B) nic nerozhodne s pravděpodobností</p>
+\[ q = (1 - a)(1 - b) = \frac{2}{3} \cdot \frac{5}{6} = \frac{5}{9} \]
+<p>3. A vyhraje v prvním kole, nebo v druhém, … – vždy na začátku kola:</p>
+\[ p(A) = \sum_{k=0}^{\infty} q^k\, a = \frac{a}{1 - q} = \frac{1/3}{4/9} = \frac{3}{4} \]
+<p>4. B vyhraje, když A v kole neuspěje a B ano:</p>
+\[ p(B) = \frac{(1 - a)\, b}{1 - q} = \frac{1/9}{4/9} = \frac{1}{4} \]
+<p>Kontrola: \(p(A) + p(B) = 1\) – hra skončí s pravděpodobností 1.</p></div>
+
+<div class="box uloha" id="u-s1-5"><div class="box-t">Úloha S1/5 <span class="en">set 1, task 5</span></div>
+<p>V krabici je 15 tenisových míčků: 9 nových, 6 starých. Náhodně vybereme 3, zahrajeme si (tím zestárnou) a vrátíme je. Pak znovu vybereme 3. Jaká je pravděpodobnost, že ve druhé hře máme \(k = 0, 1, 2, 3\) nových míčků?</p>
+<p class="meta"><b>V zadání:</b> výsledek druhé hry závisí na tom, kolik nových padlo v první → hypotézy = počet nových v 1. hře; úplná pravděpodobnost. <b>Výsledek:</b> 0,117; 0,415; 0,379; 0,089.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Hypotézy \(H_j\): v první hře bylo \(j\) nových míčků (\(j = 0, 1, 2, 3\)). Výběr 3 z 15 bez vracení (hypergeometrické rozdělení, kapitola 4):</p>
+\[ p(H_j) = \frac{\binom{9}{j}\binom{6}{3-j}}{\binom{15}{3}} \]
+<p>Číselně (\(\binom{15}{3} = 455\)): \(p(H_0) = 20/455\), \(p(H_1) = 135/455\), \(p(H_2) = 216/455\), \(p(H_3) = 84/455\).</p>
+<p>2. Po první hře je nových \(9 - j\) a starých \(6 + j\). Za podmínky \(H_j\):</p>
+\[ p(N_2 = k \mid H_j) = \frac{\binom{9-j}{k}\binom{6+j}{3-k}}{\binom{15}{3}} \]
+<p>3. Úplná pravděpodobnost:</p>
+\[ p(N_2 = k) = \sum_{j=0}^{3} p(H_j)\, p(N_2 = k \mid H_j) \]
+<p>4. Například pro \(k = 3\) (čitatelé \(\binom{9-j}{3}\) = 84, 56, 35, 20):</p>
+<p>Čitatel: \(20 \cdot 84 + 135 \cdot 56 + 216 \cdot 35 + 84 \cdot 20 = 18\,480\), jmenovatel \(455^2\):</p>
+\[ p(N_2 = 3) = \frac{18\,480}{207\,025} \approx 0{,}089 \]
+<p>5. Stejně pro ostatní \(k\):</p>
+\[ \begin{aligned} p(N_2 = 0) &amp;\approx 0{,}117 \\ p(N_2 = 1) &amp;\approx 0{,}415 \\ p(N_2 = 2) &amp;\approx 0{,}379 \end{aligned} \]
+<p>Kontrola: součet všech čtyř je 1.</p>
+</div></details></div>
+
+<div class="box priklad" id="pr-krabice"><div class="box-t">Podobná úloha jako HW1/2: krabice s různým obsahem</div>
+<p>Máme 5 krabic po 5 kuličkách; v \(i\)-té krabici je \(i\) červených a \(5 - i\) bílých. Náhodně vybereme krabici a z ní kuličku. Jaká je pravděpodobnost, že je červená?</p>
+<p>Hypotézy \(H_i\) = vybrali jsme krabici \(i\): \(p(H_i) = 1/5\), \(p(C \mid H_i) = i/5\).</p>
+\[ \begin{aligned} p(C) &amp;= \sum_{i=1}^{5} \frac{1}{5} \cdot \frac{i}{5} \\ &amp;= \frac{1 + 2 + 3 + 4 + 5}{25} = \frac{15}{25} = 0{,}6 \end{aligned} \]
+<p>Součet \(1 + 2 + \dots + n = n(n+1)/2\) se v těchto úlohách hodí.</p></div>
+
+<div class="box priklad" id="pr-bayes-rada"><div class="box-t">Podobná úloha jako HW2/2: Bayes s nekonečně mnoha hypotézami</div>
+<p>V krabici je \(N\) černých a jedna bílá kulička. O počtu černých víme \(p(N = k) = (1/2)^{k+1}\), \(k = 0, 1, 2, \dots\) Vytáhneme kuličku a je bílá (jev B). Jaké je rozdělení \(N\) za této informace?</p>
+<p>1. Je-li černých \(k\), je kuliček \(k + 1\) a bílá je jedna:</p>
+\[ p(B \mid N = k) = \frac{1}{k + 1} \]
+<p>2. Úplná pravděpodobnost (substituce \(j = k + 1\)):</p>
+\[ p(B) = \sum_{k=0}^{\infty} \frac{(1/2)^{k+1}}{k + 1} = \sum_{j=1}^{\infty} \frac{(1/2)^{j}}{j} = \ln 2 \]
+<p>Použili jsme řadu \(\sum_{j \ge 1} x^j / j = -\ln(1 - x)\) pro \(x = 1/2\). (V HW2/2 se místo ní hodí řada pro \(e^x\), jak radí zadání.)</p>
+<p>3. Bayes:</p>
+\[ p(N = k \mid B) = \frac{(1/2)^{k+1}}{(k+1)\ln 2} \]
+<p>pro \(k = 0, 1, 2, \dots\)</p>
+<p>Kontrola: \(p(N = 0 \mid B) \approx 0{,}721\), původně jen 0,5. Bílá kulička je „důkaz“, že černých je spíš málo – Bayes posunul pravděpodobnost k malým \(k\).</p></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Podmíněná pravděpodobnost \(p(A \mid B)\) je pravděpodobnost A v situaci, kdy víme, že nastalo B – počítá se jako \(p(A \cap B)/p(B)\). Když výsledek vzniká několika neslučitelnými cestami, spočítám ho větou o úplné pravděpodobnosti jako vážený součet úspěšností cest. Bayesova věta řeší obrácenou otázku: výsledek znám a ptám se, s jakou pravděpodobností vznikl danou cestou; je to podíl jedné větve na celkové pravděpodobnosti.“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Strom s hypotézami: součet konců = úplná pravděpodobnost, jeden konec / součet = Bayes.</p></div>
+
+<div class="box slovicka"><div class="box-t">Anglická slovíčka</div>
+<table>
+<tr><th>česky</th><th>anglicky</th></tr>
+<tr><td>podmíněná pravděpodobnost</td><td>conditional probability</td></tr>
+<tr><td>nezávislé jevy</td><td>independent events</td></tr>
+<tr><td>věta o úplné pravděpodobnosti</td><td>law of total probability („complete probability“)</td></tr>
+<tr><td>úplný systém jevů, hypotézy</td><td>complete system of events, partition, hypotheses</td></tr>
+<tr><td>Bayesova věta</td><td>Bayes' theorem</td></tr>
+<tr><td>apriorní / aposteriorní</td><td>prior / posterior</td></tr>
+<tr><td>pravděpodobnostní strom</td><td>probability tree</td></tr>
+<tr><td>úspěšnost</td><td>success rate</td></tr>
+<tr><td>geometrická řada</td><td>geometric series</td></tr>
+<tr><td>střídavě (hrát na střídačku)</td><td>take turns</td></tr>
+<tr><td>rodiče, dítě, alergie</td><td>parents, child, allergy (allergic)</td></tr>
+</table>
+<p><b>Fráze ze zadání:</b> <span class="kw">given that</span> / <span class="kw">if … , what is the probability that</span> = za podmínky (→ Bayes); <span class="kw">randomly selected</span> = náhodně vybraný; <span class="kw">before</span> = dřív než; <span class="kw">keep the choice / change the choice</span> = zůstat / změnit volbu; <span class="kw">we return them</span> = vrátíme je.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Podmíněná pravděpodobnost zmenší svět na jev, o kterém víme, že nastal: \(p(A \mid B) = p(A \cap B)/p(B)\). Z ní plyne věta o násobení a definice nezávislosti (\(p(A \cap B) = p(A)p(B)\)). Když se výsledek dá rozdělit na cesty (hypotézy), které se nepřekrývají a pokrývají všechno, je jeho pravděpodobnost váženým součtem úspěšností cest – věta o úplné pravděpodobnosti. Bayesova věta obrací směr: ze známého výsledku vrací pravděpodobnost cesty. Opakování „dokud něco nenastane“ vede na geometrickou řadu.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>„Víme, že nastalo …“ v zadání = podmíněná pravděpodobnost; hledá-li se příčina, je to Bayes.</li>
+<li>Hypotézy musí být neslučitelné a dát součet 1 – vždy zkontroluj.</li>
+<li>Nakresli strom: součin na větvi, součet konců = \(p(A)\), větev / součet = Bayes.</li>
+<li>Nezávislé jevy se násobí, neslučitelné sčítají – a neslučitelné nejsou nezávislé.</li>
+<li>Opakované kolo, které nic nerozhodne, dá geometrickou řadu \(1/(1-q)\).</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Definujte podmíněnou pravděpodobnost a vysvětlete její význam.</summary><div>
+<p>Pro \(p(B) &gt; 0\) je \(p(A \mid B) = p(A \cap B)/p(B)\). Je to pravděpodobnost A v situaci, kdy už víme, že nastalo B: jako nový celek bereme jen B a ptáme se, jakou jeho část tvoří A.</p></div></details>
+<details class="q"><summary>Kdy jsou dva jevy nezávislé? Jsou neslučitelné jevy nezávislé?</summary><div>
+<p>Když \(p(A \cap B) = p(A)\,p(B)\), ekvivalentně \(p(A \mid B) = p(A)\). Neslučitelné jevy s nenulovou pravděpodobností nezávislé nejsou: \(p(A \cap B) = 0\), ale \(p(A)p(B) &gt; 0\); když nastane jeden, víme, že druhý nenastal.</p></div></details>
+<details class="q"><summary>Vyslovte větu o úplné pravděpodobnosti. Co musí splňovat hypotézy?</summary><div>
+<p>Tvoří-li \(H_1, \dots, H_n\) úplný systém jevů, platí \(p(A) = \sum p(H_i)\,p(A \mid H_i)\). Hypotézy musí být navzájem neslučitelné a jejich sjednocení musí být jistý jev, tj. \(\sum p(H_i) = 1\).</p></div></details>
+<details class="q"><summary>Vyslovte Bayesovu větu. Kdy ji použijete?</summary><div>
+<p>\[ p(H_k \mid A) = \frac{p(H_k)\,p(A \mid H_k)}{\sum_i p(H_i)\,p(A \mid H_i)} \]</p><p>Použiji ji, když znám výsledek pokusu (A nastalo) a ptám se na pravděpodobnost příčiny – hypotézy. Ve jmenovateli je úplná pravděpodobnost A.</p></div></details>
+<details class="q"><summary>Co je apriorní a aposteriorní pravděpodobnost?</summary><div>
+<p>Apriorní \(p(H_k)\) je pravděpodobnost hypotézy předtím, než známe výsledek pokusu; aposteriorní \(p(H_k \mid A)\) je pravděpodobnost téže hypotézy po zjištění, že nastalo A. Bayesova věta převádí apriorní na aposteriorní.</p></div></details>
+<details class="q"><summary>Proč se v Monty Hallově úloze vyplatí změnit volbu?</summary><div>
+<p>Původní volba trefí auto s pravděpodobností 1/3 a moderátor, který vždy otevře dveře s kozou, na tom nic nezmění. Bayes:</p>
+<ul>
+<li>\(p(O_2 \mid H_1) = 1/2\), \(p(O_2 \mid H_3) = 1\), takže \(p(O_2) = 1/2\);</li>
+<li>\(p(H_1 \mid O_2) = 1/3\), \(p(H_3 \mid O_2) = 2/3\).</li>
+</ul></div></details>
+<details class="q"><summary>Jak spočítat pravděpodobnost, že jev A nastane dřív než jev B při opakovaných nezávislých pokusech?</summary><div>
+<p>Kolo, ve kterém nenastane ani A, ani B, nic nerozhodne (pravděpodobnost \(q = 1 - p_A - p_B\)). Sečteme přes všechna kola geometrickou řadu: \(\sum q^k p_A = p_A/(1-q) = p_A/(p_A + p_B)\).</p></div></details>

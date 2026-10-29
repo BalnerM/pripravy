@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Náhodný vektor – PSO</title>
+<meta name="description" content="Sdružená a marginální hustota, pravděpodobnost oblasti.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css?v=336b6bbf">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js?v=336b6bbf"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">PSO – příprava na zkoušku<small>pravděpodobnost a statistika, principy a postupy úloh</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html#pso" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/08_nahodny_vektor.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_pravdepodobnost.html"><span class="n">1</span><span>Pravděpodobnost: klasická a geometrická</span></a></li>
+    <li><a href="02_podminena.html"><span class="n">2</span><span>Podmíněná pravděpodobnost a Bayes</span></a></li>
+    <li><a href="03_diskretni_nv.html"><span class="n">3</span><span>Diskrétní náhodná veličina</span></a></li>
+    <li><a href="04_diskretni_rozdeleni.html"><span class="n">4</span><span>Diskrétní rozdělení</span></a></li>
+    <li><a href="05_spojita_nv.html"><span class="n">5</span><span>Spojitá náhodná veličina</span></a></li>
+    <li><a href="06_normalni.html"><span class="n">6</span><span>Normální rozdělení</span></a></li>
+    <li><a href="07_limitni_vety.html"><span class="n">7</span><span>Limitní věty</span></a></li>
+    <li><a href="08_nahodny_vektor.html" class="active"><span class="n">8</span><span>Náhodný vektor</span></a></li>
+    <li><a href="09_odhady.html"><span class="n">9</span><span>Odhady a intervaly spolehlivosti</span></a></li>
+    <li><a href="10_testy.html"><span class="n">10</span><span>Testování hypotéz</span></a></li>
+    <li><a href="11_jak_poznat.html"><span class="n">★</span><span>Jak poznat typ úlohy</span></a></li>
+    <li><a href="12_ulohy.html"><span class="n">Ú</span><span>Přehled úloh ze cvičení</span></a></li>
+    <li><a href="13_tabulky.html"><span class="n">T</span><span>Statistické tabulky</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#sdruzene">Sdružené rozdělení</a></li>
+    <li><a href="#marginalni">Marginální rozdělení a nezávislost</a></li>
+    <li><a href="#oblast">Pravděpodobnost oblasti: dvojný integrál</a></li>
+    <li><a href="#kovariance">Kovariance a korelace</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky ke zkoušce</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">PSO – příprava na zkoušku · Náhodný vektor – PSO · https://balnerm.github.io/pripravy/pso/08_nahodny_vektor.html</p>
+<p class="kicker">Kapitola 8</p>
+<h1>Náhodný vektor</h1>
+<p class="lead">Často měříme dvě veličiny najednou – výšku a hmotnost, napětí a proud. Náhodný vektor (X, Y) popisuje jejich <b>společné</b> chování. Pravděpodobnost se teď počítá jako <b>objem</b> pod sdruženou hustotou nad oblastí v rovině, tedy dvojným integrálem. Klíčová dovednost je správně nastavit meze. To je úloha S6/5.</p>
+
+<h2 id="sdruzene">Sdružené rozdělení</h2>
+<div class="box definice" id="def-nahodny-vektor"><div class="box-t">Definice: náhodný vektor a sdružená distribuční funkce <span class="en">random vector, joint distribution function</span></div>
+<p><b>Náhodný vektor</b> (X, Y) je dvojice náhodných veličin definovaných na stejném pokusu. Jeho <b>sdružená distribuční funkce</b> je</p>
+\[ F(x, y) = p(X &lt; x,\; Y &lt; y). \]
+<p class="jinak">jeden pokus, dvě čísla. Čárka v \(p(X &lt; x, Y &lt; y)\) znamená „a současně“ (průnik jevů).</p></div>
+<div class="box definice" id="def-sdruzena-hustota"><div class="box-t">Definice: sdružená hustota <span class="en">joint (simultaneous) density function</span></div>
+<p>Spojitý náhodný vektor má <b>sdruženou hustotu</b> \(f(x, y) \ge 0\), jestliže pro každou oblast \(G\) v rovině</p>
+\[ \begin{aligned} p\big((X, Y) \in G\big) &amp;= \iint_G f(x, y)\, dx\, dy \\ \iint_{\mathbb{R}^2} f(x, y)\, dx\, dy &amp;= 1 \end{aligned} \]
+<p class="jinak">„krajina“ nad rovinou xy, jejíž celkový objem je 1. Pravděpodobnost, že bod (X, Y) padne do oblasti G, je objem krajiny nad G.</p></div>
+<p>U diskrétního vektoru je místo hustoty tabulka <b>sdružené pravděpodobnostní funkce</b> \(p(x_i, y_j) = p(X = x_i, Y = y_j)\), jejíž hodnoty dávají součet 1.</p>
+
+<h2 id="marginalni">Marginální rozdělení a nezávislost</h2>
+<div class="box definice" id="def-marginalni"><div class="box-t">Definice: marginální hustota <span class="en">marginal density</span></div>
+<p><b>Marginální hustoty</b> spojitého vektoru (X, Y) se sdruženou hustotou f jsou</p>
+\[ \begin{aligned} f_X(x) &amp;= \int_{-\infty}^{\infty} f(x, y)\, dy \\ f_Y(y) &amp;= \int_{-\infty}^{\infty} f(x, y)\, dx \end{aligned} \]
+<p class="jinak">rozdělení jedné veličiny, když o druhé nic nevíme: druhou proměnnou „vyintegrujeme“ (u tabulky sečteme řádek či sloupec – součty se píšou na okraj, latinsky <i>margo</i>).</p></div>
+<div class="box definice" id="def-nezavisle-nv"><div class="box-t">Definice: nezávislé náhodné veličiny <span class="en">independent random variables</span></div>
+<p>Veličiny X, Y jsou <b>nezávislé</b>, jestliže \(F(x, y) = F_X(x)\,F_Y(y)\) pro všechna x, y; u spojitého vektoru ekvivalentně</p>
+\[ f(x, y) = f_X(x)\, f_Y(y). \]
+<p class="jinak">sdružená hustota se „rozpadne“ na součin funkce jen x a funkce jen y (a oblast je obdélník). Pak hodnota jedné veličiny nic neříká o druhé.</p></div>
+
+<div class="box priklad" id="pr-tabulka"><div class="box-t">Příklad: diskrétní vektor v tabulce</div>
+<div class="tablewrap"><table class="compact">
+<tr><th></th><th>Y = 0</th><th>Y = 1</th><th>\(p_X\)</th></tr>
+<tr><th>X = 0</th><td>0,1</td><td>0,3</td><td><b>0,4</b></td></tr>
+<tr><th>X = 1</th><td>0,2</td><td>0,4</td><td><b>0,6</b></td></tr>
+<tr><th>\(p_Y\)</th><td><b>0,3</b></td><td><b>0,7</b></td><td>1</td></tr>
+</table></div>
+<p>Marginální rozdělení jsou součty řádků a sloupců. Nezávislost by vyžadovala \(p(0, 0) = p_X(0)\,p_Y(0)\), ale \(0{,}4 \cdot 0{,}3 = 0{,}12 \ne 0{,}1\) – veličiny jsou <b>závislé</b>.</p></div>
+
+<h2 id="oblast">Pravděpodobnost oblasti: dvojný integrál</h2>
+<div class="box postup" id="postup-dvojny"><div class="box-t">Jak poznat a jak postupovat: pravděpodobnost pro náhodný vektor</div>
+<p><b>Poznáš to:</b> <span class="kw">random vector (X, Y)</span>, <span class="kw">simultaneous density function f(x, y)</span>, otázka na \(p(\ldots X \ldots, \ldots Y \ldots)\) nebo \(p(Y \le X)\).</p>
+<ol>
+<li><b>Nakresli</b> oblast, kde je \(f \ne 0\), a oblast z otázky; integruje se přes jejich průnik.</li>
+<li><b>Obdélník</b> (podmínky zvlášť na X a zvlášť na Y): meze jsou čísla; vnitřní a vnější integrál jdou v libovolném pořadí.</li>
+<li><b>Oblast s podmínkou mezi X a Y</b> (např. \(Y \le X\)): vnější proměnná má číselné meze, vnitřní mez je funkce vnější („pro dané x jde y od 0 do x“).</li>
+<li>Spočítej vnitřní integrál (druhá proměnná je konstanta), pak vnější.</li>
+<li>Kontrola: výsledek mezi 0 a 1; případně spočítej v opačném pořadí integrace.</li>
+</ol></div>
+
+<div class="box uloha" id="u-s6-5"><div class="box-t">Úloha S6/5 <span class="en">set 6, task 5</span></div>
+<p>Náhodný vektor (X, Y) má sdruženou hustotu \(f(x, y) = 4x(1 - y)\) na jednotkovém čtverci \(\langle 0, 1\rangle^2\), jinde 0. Urči:</p>
+<ol type="a">
+<li>marginální hustoty,</li>
+<li>\(p(\tfrac12 &lt; X &lt; \tfrac34,\ Y &gt; \tfrac12)\),</li>
+<li>\(p(X \le \tfrac12,\ Y &gt; \tfrac12)\),</li>
+<li>\(p(Y \le X)\).</li>
+</ol>
+<p class="meta"><b>V zadání:</b> (b), (c) obdélníky → číselné meze; (d) \(Y \le X\) → trojúhelník, vnitřní mez závisí na x. <b>Výsledek:</b> (a) \(f_X = 2x\), \(f_Y = 2 - 2y\); (b) 5/64; (c) 1/16; (d) 5/6.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p><b>(a)</b> Marginální hustoty pro \(x, y \in \langle 0, 1\rangle\) (jinde 0):</p>
+\[ \begin{aligned} f_X(x) &amp;= \int_0^1 4x(1 - y)\, dy \\ &amp;= 4x\left[y - \frac{y^2}{2}\right]_0^1 = 2x \end{aligned} \]
+\[ \begin{aligned} f_Y(y) &amp;= \int_0^1 4x(1 - y)\, dx \\ &amp;= (1 - y)\left[2x^2\right]_0^1 = 2 - 2y \end{aligned} \]
+<p>Všimni si: \(f_X(x)\,f_Y(y) = 2x \cdot 2(1-y) = f(x, y)\), takže X a Y jsou <b>nezávislé</b>.</p>
+<p><b>(b)</b> Obdélník \(\tfrac12 &lt; x &lt; \tfrac34\), \(\tfrac12 &lt; y &lt; 1\):</p>
+\[ \begin{aligned} p &amp;= \int_{1/2}^{3/4}\int_{1/2}^{1} 4x(1 - y)\, dy\, dx \\ &amp;= \int_{1/2}^{3/4} 4x \cdot \frac{1}{8}\, dx \\ &amp;= \left[\frac{x^2}{4}\right]_{1/2}^{3/4} = \frac{5}{64} \end{aligned} \]
+<p>Díky nezávislosti jde i rychleji jako součin:</p>
+\[ \begin{aligned} p &amp;= \int_{1/2}^{3/4} 2x\, dx \cdot \int_{1/2}^{1} (2 - 2y)\, dy \\ &amp;= \frac{5}{16} \cdot \frac{1}{4} = \frac{5}{64} \end{aligned} \]
+<p><b>(c)</b> Obdélník \(0 \le x \le \tfrac12\), \(\tfrac12 &lt; y &lt; 1\):</p>
+\[ \begin{aligned} p &amp;= \int_{1/2}^{1}(1 - y)\left[2x^2\right]_0^{1/2} dy \\ &amp;= \frac{1}{2}\int_{1/2}^{1}(1 - y)\, dy = \frac{1}{2} \cdot \frac{1}{8} = \frac{1}{16} \end{aligned} \]
+<p><b>(d)</b> Oblast \(y \le x\) je trojúhelník pod úhlopříčkou. Pro dané x jde y od 0 do x:</p>
+\[ \begin{aligned} p(Y \le X) &amp;= \int_0^1\int_0^x 4x(1 - y)\, dy\, dx \\ &amp;= \int_0^1 4x\left(x - \frac{x^2}{2}\right) dx \\ &amp;= \int_0^1 \left(4x^2 - 2x^3\right) dx \\ &amp;= \frac{4}{3} - \frac{1}{2} = \frac{5}{6} \end{aligned} \]
+<p>Kontrola opačným pořadím (pro dané y jde x od y do 1):</p>
+\[ \begin{aligned} &amp;\int_0^1\int_y^1 4x(1 - y)\, dx\, dy \\ &amp;\quad = \int_0^1 2(1 - y)(1 - y^2)\, dy = \frac{5}{6} \end{aligned} \]
+</div></details></div>
+
+<figure class="wide"><div class="paper"><img src="figures/fig08_oblast.png" alt="Dva jednotkové čtverce se sdruženou hustotou 4x(1 minus y); vlevo obdélník pro úlohu b, vpravo šrafovaný trojúhelník y menší nebo rovno x pro úlohu d" loading="lazy"></div>
+<figcaption><b>Obr. 8.1</b> Úloha S6/5: barva = výška hustoty \(f(x, y) = 4x(1-y)\); orámovaná / šrafovaná oblast = přes co se integruje.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>U obdélníku jsou meze obou integrálů čísla. U trojúhelníku \(y \le x\) se pohybuje svislá šipka: pro každé x jde y jen od 0 do úhlopříčky, proto je vnitřní horní mez x. Hustota je největší vpravo dole, kde leží i většina trojúhelníku – proto vyšlo 5/6 &gt; 1/2.</p></div>
+
+<div class="box pozor"><div class="box-t">Častá past: meze vnitřního integrálu</div>
+<p>Vnější integrál musí mít <b>čísla</b>, vnitřní smí mít funkci vnější proměnné – nikdy naopak. Kdo napíše \(\int_0^x \int_0^1 \ldots\), dostane výsledek, ve kterém zbude x, a to u pravděpodobnosti nemůže být.</p></div>
+
+<h2 id="kovariance">Kovariance a korelace</h2>
+<div class="box definice" id="def-kovariance"><div class="box-t">Definice: kovariance <span class="en">covariance</span></div>
+<p><b>Kovariance</b> veličin X, Y je</p>
+\[ \begin{aligned} \operatorname{cov}(X, Y) &amp;= E\big[(X - EX)(Y - EY)\big] \\ &amp;= E(XY) - EX \cdot EY \end{aligned} \]
+<p class="jinak">zda veličiny rostou spolu (kladná), proti sobě (záporná), nebo spolu lineárně nesouvisí (nulová). Pro nezávislé veličiny je nulová.</p></div>
+<div class="box definice" id="def-korelacni-koeficient"><div class="box-t">Definice: korelační koeficient <span class="en">correlation coefficient</span></div>
+<p><b>Korelační koeficient</b> je</p>
+\[ \rho(X, Y) = \frac{\operatorname{cov}(X, Y)}{\sqrt{DX}\,\sqrt{DY}}, \qquad -1 \le \rho \le 1. \]
+<p class="jinak">kovariance zbavená jednotek. \(\rho = \pm 1\): body leží přesně na přímce; \(\rho = 0\): žádná <b>lineární</b> závislost (nějaká jiná být může).</p></div>
+<div class="box vzorec"><div class="box-t">Rozptyl součtu</div>
+\[ D(X + Y) = DX + DY + 2\operatorname{cov}(X, Y) \]
+<table class="vars">
+<tr><td>\(\operatorname{cov}(X, Y)\)</td><td>pro nezávislé veličiny 0, pak se rozptyly prostě sčítají – to využívá centrální limitní věta</td></tr>
+</table></div>
+<div class="box pozor"><div class="box-t">Častá past: nekorelované ≠ nezávislé</div>
+<p>Nezávislé veličiny mají vždy kovarianci 0. Obráceně to neplatí: je-li X symetrické kolem 0 a \(Y = X^2\), je \(\operatorname{cov}(X, Y) = 0\), a přitom Y je X úplně určené.</p></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Náhodný vektor (X, Y) je dvojice veličin z jednoho pokusu. Spojitý vektor má sdruženou hustotu f(x, y) s celkovým objemem 1 a pravděpodobnost oblasti je dvojný integrál hustoty přes tuto oblast. Marginální hustotu jedné veličiny dostanu vyintegrováním druhé proměnné. Veličiny jsou nezávislé, právě když se sdružená hustota rovná součinu marginálních. Lineární vztah měří kovariance a korelační koeficient.“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Dvě veličiny: pravděpodobnost = objem pod sdruženou hustotou; marginální = vyintegruj druhou proměnnou; nezávislé = hustota je součin marginálních.</p></div>
+
+<div class="box slovicka"><div class="box-t">Anglická slovíčka</div>
+<table>
+<tr><th>česky</th><th>anglicky</th></tr>
+<tr><td>náhodný vektor</td><td>random vector, two-dimensional random variable</td></tr>
+<tr><td>sdružená hustota</td><td>joint (simultaneous) density function</td></tr>
+<tr><td>sdružená distribuční funkce</td><td>joint distribution function</td></tr>
+<tr><td>marginální hustota / rozdělení</td><td>marginal density / distribution</td></tr>
+<tr><td>nezávislé veličiny</td><td>independent random variables</td></tr>
+<tr><td>dvojný integrál</td><td>double integral</td></tr>
+<tr><td>kovariance</td><td>covariance</td></tr>
+<tr><td>korelační koeficient</td><td>correlation coefficient</td></tr>
+<tr><td>jinde (mimo oblast)</td><td>otherwise</td></tr>
+</table>
+<p><b>Fráze ze zadání:</b> <span class="kw">has a continuous distribution determined by simultaneous density function</span> = má spojité rozdělení se sdruženou hustotou; <span class="kw">on ⟨0, 1⟩ × ⟨0, 1⟩</span> = na jednotkovém čtverci; <span class="kw">p(Y ≤ X)</span> = pravděpodobnost, že Y nepřevýší X.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Náhodný vektor popisuje dvě veličiny měřené současně. Spojitý vektor má sdruženou hustotu – nezápornou funkci dvou proměnných s celkovým objemem 1 – a pravděpodobnost, že bod padne do oblasti, je dvojný integrál hustoty přes ni. Při výpočtu se oblast nakreslí: u obdélníku jsou meze čísla, u oblasti s podmínkou mezi x a y závisí vnitřní mez na vnější proměnné. Marginální hustota vznikne vyintegrováním druhé proměnné; když je sdružená hustota součinem marginálních, jsou veličiny nezávislé. Lineární souvislost měří kovariance a korelační koeficient.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Pravděpodobnost oblasti = dvojný integrál sdružené hustoty přes průnik oblasti a nosiče.</li>
+<li>Vždy nakresli oblast; vnější meze čísla, vnitřní smí záviset na vnější proměnné.</li>
+<li>Marginální hustota: integrál přes druhou proměnnou (u tabulky součet řádku/sloupce).</li>
+<li>Nezávislost: \(f(x, y) = f_X(x) f_Y(y)\); pak se pravděpodobnost obdélníku rozpadne na součin.</li>
+<li>Nezávislé ⇒ cov = 0, ale cov = 0 nezávislost nezaručuje.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Co je sdružená hustota a jak z ní spočítáte pravděpodobnost?</summary><div>
+<p>Nezáporná funkce f(x, y) s celkovým integrálem 1, která popisuje rozdělení spojitého vektoru (X, Y). Pravděpodobnost, že (X, Y) padne do oblasti G, je \(\iint_G f(x, y)\,dx\,dy\) – objem pod hustotou nad G.</p></div></details>
+<details class="q"><summary>Jak získáte marginální hustotu z hustoty sdružené?</summary><div>
+<p>Integrací přes druhou proměnnou: \(f_X(x) = \int f(x, y)\,dy\), \(f_Y(y) = \int f(x, y)\,dx\). U diskrétního vektoru sečtu řádek, resp. sloupec tabulky.</p></div></details>
+<details class="q"><summary>Kdy jsou dvě náhodné veličiny nezávislé?</summary><div>
+<p>Když se sdružené rozdělení rozpadne na součin marginálních:</p>
+<ul>
+<li>obecně \(F(x, y) = F_X(x)\,F_Y(y)\) pro všechna x, y;</li>
+<li>u spojitého vektoru \(f(x, y) = f_X(x)\,f_Y(y)\);</li>
+<li>u diskrétního \(p(x_i, y_j) = p_X(x_i)\,p_Y(y_j)\) pro všechny dvojice.</li>
+</ul></div></details>
+<details class="q"><summary>Jak nastavíte meze dvojného integrálu pro p(Y ≤ X) na jednotkovém čtverci?</summary><div>
+<p>Oblast je trojúhelník pod úhlopříčkou. Vnější proměnná x jde od 0 do 1, pro dané x jde y od 0 do x: \(\int_0^1 \int_0^x f\,dy\,dx\). Ekvivalentně y od 0 do 1 a x od y do 1.</p></div></details>
+<details class="q"><summary>Co je kovariance a korelační koeficient?</summary><div>
+<p>\(\operatorname{cov}(X, Y) = E(XY) - EX\,EY\) měří, zda veličiny kolísají spolu, nebo proti sobě. Korelační koeficient \(\rho = \operatorname{cov}/(\sigma_X \sigma_Y)\) je bezrozměrný, leží v ⟨−1, 1⟩ a měří sílu lineárního vztahu.</p></div></details>
+<details class="q"><summary>Plyne z nulové kovariance nezávislost?</summary><div>
+<p>Ne. Nezávislost dává nulovou kovarianci, ale nulová kovariance znamená jen, že chybí lineární vztah. Příklad: X symetrické kolem 0, \(Y = X^2\) – kovariance je 0, ale Y je plně určeno X.</p></div></details>
+
+<nav class="pager"><a class="prev" href="07_limitni_vety.html"><small>← předchozí</small>Limitní věty</a><a class="next" href="09_odhady.html"><small>další →</small>Odhady a intervaly spolehlivosti</a></nav>
+</main>
+</div>
+</body>
+</html>

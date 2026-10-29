@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pravděpodobnost: klasická a geometrická – PSO</title>
+<meta name="description" content="Jevy, klasická definice, kombinatorika, geometrická pravděpodobnost.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css?v=336b6bbf">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js?v=336b6bbf"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">PSO – příprava na zkoušku<small>pravděpodobnost a statistika, principy a postupy úloh</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html#pso" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/01_pravdepodobnost.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_pravdepodobnost.html" class="active"><span class="n">1</span><span>Pravděpodobnost: klasická a geometrická</span></a></li>
+    <li><a href="02_podminena.html"><span class="n">2</span><span>Podmíněná pravděpodobnost a Bayes</span></a></li>
+    <li><a href="03_diskretni_nv.html"><span class="n">3</span><span>Diskrétní náhodná veličina</span></a></li>
+    <li><a href="04_diskretni_rozdeleni.html"><span class="n">4</span><span>Diskrétní rozdělení</span></a></li>
+    <li><a href="05_spojita_nv.html"><span class="n">5</span><span>Spojitá náhodná veličina</span></a></li>
+    <li><a href="06_normalni.html"><span class="n">6</span><span>Normální rozdělení</span></a></li>
+    <li><a href="07_limitni_vety.html"><span class="n">7</span><span>Limitní věty</span></a></li>
+    <li><a href="08_nahodny_vektor.html"><span class="n">8</span><span>Náhodný vektor</span></a></li>
+    <li><a href="09_odhady.html"><span class="n">9</span><span>Odhady a intervaly spolehlivosti</span></a></li>
+    <li><a href="10_testy.html"><span class="n">10</span><span>Testování hypotéz</span></a></li>
+    <li><a href="11_jak_poznat.html"><span class="n">★</span><span>Jak poznat typ úlohy</span></a></li>
+    <li><a href="12_ulohy.html"><span class="n">Ú</span><span>Přehled úloh ze cvičení</span></a></li>
+    <li><a href="13_tabulky.html"><span class="n">T</span><span>Statistické tabulky</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#jevy">Náhodný pokus a jevy</a></li>
+    <li><a href="#klasicka">Klasická pravděpodobnost</a></li>
+    <li><a href="#kombinatorika">Kombinatorika: jak počítat možnosti</a></li>
+    <li><a href="#geometricka">Geometrická pravděpodobnost</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky ke zkoušce</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">PSO – příprava na zkoušku · Pravděpodobnost: klasická a geometrická – PSO · https://balnerm.github.io/pripravy/pso/01_pravdepodobnost.html</p>
+<p class="kicker">Kapitola 1</p>
+<h1>Pravděpodobnost: klasická a geometrická</h1>
+<p class="lead">Základ všeho dalšího: co je jev, jak s jevy počítat a jak spočítat pravděpodobnost, když jsou všechny výsledky stejně možné. Ve spočetném případě se pravděpodobnost počítá <b>počítáním</b> (kombinatorika), ve spojitém případě <b>měřením plochy</b> (geometrická pravděpodobnost). Na těchto dvou myšlenkách stojí první sada úloh i HW1.</p>
+
+<h2 id="jevy">Náhodný pokus a jevy</h2>
+<div class="box definice" id="def-nahodny-pokus"><div class="box-t">Definice: náhodný pokus <span class="en">random experiment</span></div>
+<p><b>Náhodný pokus</b> je děj, který lze (aspoň myšlenkově) opakovat za stejných podmínek a jehož výsledek není předem jednoznačně určen.</p>
+<p class="jinak">hod kostkou, tah karty, výběr bodu na obrazovce. Víme, co může nastat, ale ne co nastane.</p></div>
+
+<div class="box definice" id="def-jev"><div class="box-t">Definice: jev a elementární jev <span class="en">event, elementary event</span></div>
+<p><b>Jev</b> je výsledek (nebo tvrzení o výsledku) náhodného pokusu, o kterém lze po provedení pokusu rozhodnout, zda nastal. <b>Elementární jevy</b> jsou nejjemnější možné výsledky pokusu: navzájem se vylučují a jeden z nich vždy nastane. Jejich množina je <b>prostor elementárních jevů</b> \(\Omega\).</p>
+<p class="jinak">elementární jev je „jedno políčko“ (padla trojka), jev je „skupina políček“ (padlo liché číslo = {1, 3, 5}). Jev je tedy podmnožina \(\Omega\).</p></div>
+
+<p>S jevy počítáme jako s množinami. U zkoušky i v zadáních se objevují tyto operace:</p>
+<div class="tablewrap"><table>
+<tr><th>zápis</th><th>význam</th><th>česky</th><th>v anglickém zadání</th></tr>
+<tr><td>\(A \cup B\)</td><td>nastane aspoň jeden z jevů</td><td>sjednocení</td><td><span class="kw">A or B</span>, <span class="kw">either … or</span>, <span class="kw">at least one</span></td></tr>
+<tr><td>\(A \cap B\)</td><td>nastanou oba současně</td><td>průnik</td><td><span class="kw">A and B</span>, <span class="kw">both</span></td></tr>
+<tr><td>\(\overline{A}\)</td><td>jev A nenastane</td><td>opačný jev</td><td><span class="kw">not A</span>, <span class="kw">complement</span></td></tr>
+<tr><td>\(A \cap B = \emptyset\)</td><td>nemohou nastat současně</td><td>neslučitelné (disjunktní)</td><td><span class="kw">mutually exclusive</span>, <span class="kw">disjoint</span></td></tr>
+<tr><td>\(\Omega\), \(\emptyset\)</td><td>nastane vždy / nikdy</td><td>jistý / nemožný jev</td><td><span class="kw">certain</span> / <span class="kw">impossible event</span></td></tr>
+</table></div>
+
+<div class="box definice" id="def-opacny-jev"><div class="box-t">Definice: opačný jev <span class="en">complementary event</span></div>
+<p><b>Opačný jev</b> \(\overline{A}\) k jevu \(A\) je jev, který nastane právě tehdy, když nenastane \(A\). Platí \(A \cup \overline{A} = \Omega\) a \(A \cap \overline{A} = \emptyset\).</p>
+<p class="jinak">„všechno ostatní“. Často je mnohem snazší spočítat opačný jev a odečíst ho od jedničky („aspoň jednou“ = 1 − „ani jednou“).</p></div>
+
+<div class="box definice" id="def-neslucitelne"><div class="box-t">Definice: neslučitelné jevy <span class="en">mutually exclusive (disjoint) events</span></div>
+<p>Jevy \(A\), \(B\) jsou <b>neslučitelné</b> (disjunktní), jestliže nemohou nastat současně, tj. \(A \cap B = \emptyset\).</p>
+<p class="jinak">jeden vylučuje druhý: na jedné kostce nemůže současně padnout 3 i 6. Jen pro takové jevy smíme pravděpodobnosti prostě sečíst.</p></div>
+
+<div class="box definice" id="def-pravdepodobnost"><div class="box-t">Definice: pravděpodobnost (axiomatická) <span class="en">probability</span></div>
+<p><b>Pravděpodobnost</b> je funkce \(p\), která každému jevu \(A\) přiřadí číslo \(p(A)\) tak, že \(p(A) \ge 0\), \(p(\Omega) = 1\) a pro navzájem neslučitelné jevy \(A_1, A_2, \dots\) platí \(p(A_1 \cup A_2 \cup \dots) = p(A_1) + p(A_2) + \dots\)</p>
+<p class="jinak">pravděpodobnost je „podíl jistoty“, který jevu připadne: nikdy záporný, celek má 1 a kousky, které se nepřekrývají, se sčítají.</p></div>
+
+<div class="box vzorec"><div class="box-t">Vzorce, které z axiomů plynou</div>
+\[ p(\overline{A}) = 1 - p(A) \]
+\[ p(A \cup B) = p(A) + p(B) - p(A \cap B) \]
+<table class="vars">
+<tr><td>\(p(\overline{A})\)</td><td>pravděpodobnost, že A nenastane</td></tr>
+<tr><td>\(p(A \cap B)\)</td><td>průnik se odečítá, protože ve \(p(A) + p(B)\) je započten dvakrát; u neslučitelných jevů je nulový</td></tr>
+</table></div>
+
+<h2 id="klasicka">Klasická pravděpodobnost</h2>
+<div class="box definice" id="def-klasicka"><div class="box-t">Definice: klasická pravděpodobnost <span class="en">classical probability</span></div>
+<p>Má-li pokus konečně mnoho \(n\) <b>stejně možných</b> elementárních jevů a jevu \(A\) z nich příznivých \(m\), pak</p>
+\[ p(A) = \frac{m}{n}. \]
+<p class="jinak">„počet příznivých ku počtu všech“. Funguje jen tehdy, když mají všechny výsledky stejnou šanci – to je třeba si vždycky ověřit.</p></div>
+
+<div class="box postup" id="postup-klasicka"><div class="box-t">Jak poznat a jak postupovat: klasická pravděpodobnost</div>
+<p><b>Poznáš to:</b> kostky, mince, karty, kuličky, losování; konečně mnoho výsledků a všechny „férové“ (<span class="kw">fair die</span>, <span class="kw">at random</span>, <span class="kw">randomly select</span>).</p>
+<ol>
+<li>Popiš elementární jev tak, aby byly všechny <b>stejně možné</b> (u dvou kostek uspořádaná dvojice (1. kostka, 2. kostka), ne „součet“).</li>
+<li>Spočítej všechny možnosti \(n\) (často kombinatorikou).</li>
+<li>Spočítej příznivé \(m\) – vypsáním nebo kombinatorikou. U „aspoň …“ zvaž opačný jev.</li>
+<li>\(p(A) = m/n\); zkontroluj, že vyšlo číslo mezi 0 a 1.</li>
+</ol></div>
+
+<div class="box uloha" id="u-s1-1"><div class="box-t">Úloha S1/1 <span class="en">set 1, task 1</span></div>
+<p>Jaká je pravděpodobnost, že při hodu kostkou padne trojka nebo šestka?</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">either 3 or 6</span> → sjednocení dvou neslučitelných jevů. <b>Výsledek:</b> \(1/3\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>Elementární jevy jsou čísla 1 až 6, všechna stejně možná: \(n = 6\). Příznivé jsou dvě (3 a 6): \(m = 2\).</p>
+\[ p(A) = \frac{2}{6} = \frac{1}{3} \]
+<p>Totéž přes sčítání neslučitelných jevů: \(p(\{3\}) + p(\{6\}) = 1/6 + 1/6\).</p>
+</div></details></div>
+
+<figure><div class="paper"><img src="figures/fig01_kostky.png" alt="Tabulka 6 krát 6 součtů dvou kostek, součet 4 je třikrát a součet 5 čtyřikrát" loading="lazy"></div>
+<figcaption><b>Obr. 1.1</b> Hod dvěma kostkami: 36 uspořádaných dvojic, každá s pravděpodobností 1/36. V políčku je součet.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Součty <b>nejsou</b> stejně pravděpodobné (součet 2 má jedno políčko, součet 7 šest). Stejně pravděpodobné jsou až dvojice – proto počítáme políčka, ne součty.</p></div>
+
+<div class="box uloha" id="u-s1-2"><div class="box-t">Úloha S1/2 <span class="en">set 1, task 2</span></div>
+<p>Házíme dvěma stejnými kostkami. Jaká je pravděpodobnost, že součet bude 4 nebo 5?</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">two same dice</span>, <span class="kw">sum 4 or 5</span>. <b>Výsledek:</b> \(7/36\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>I „stejné“ kostky jsou dvě různé fyzické kostky, takže elementární jev je uspořádaná dvojice: \(n = 6 \cdot 6 = 36\).</p>
+<ul>
+<li>součet 4: (1,3), (2,2), (3,1) → 3 dvojice,</li>
+<li>součet 5: (1,4), (2,3), (3,2), (4,1) → 4 dvojice.</li>
+</ul>
+<p>Součty 4 a 5 se vylučují, takže se sčítají:</p>
+\[ p(A) = \frac{3 + 4}{36} = \frac{7}{36} \approx 0{,}194 \]
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Častá past: „stejné“ kostky</div>
+<p>Kdybychom brali výsledky jako neuspořádané {1, 3}, {2, 2}, …, máme jen 21 možností, ale <b>nejsou stejně pravděpodobné</b> ({2, 2} má šanci 1/36, {1, 3} má 2/36). Klasická definice by pak dala špatný výsledek. Vždy počítej, jako by kostky měly různé barvy.</p></div>
+
+<h2 id="kombinatorika">Kombinatorika: jak počítat možnosti</h2>
+<p>Když možnosti nejdou vypsat, spočítáme je vzorcem. Rozhodují dvě otázky: <b>záleží na pořadí?</b> a <b>vracíme (může se prvek opakovat)?</b></p>
+<div class="box definice" id="def-kombinace"><div class="box-t">Definice: kombinace <span class="en">combination</span></div>
+<p><b>Kombinace</b> \(k\)-té třídy z \(n\) prvků je neuspořádaný výběr \(k\) různých prvků z \(n\). Jejich počet je kombinační číslo</p>
+\[ \binom{n}{k} = \frac{n!}{k!\,(n-k)!}. \]
+<p class="jinak">kolika způsoby lze vytáhnout „hrst“ \(k\) věcí najednou, když nezáleží na pořadí (karty v ruce, vybrané výrobky).</p></div>
+<div class="box definice" id="def-variace"><div class="box-t">Definice: variace <span class="en">variation (ordered selection)</span></div>
+<p><b>Variace</b> \(k\)-té třídy z \(n\) prvků je uspořádaná \(k\)-tice různých prvků z \(n\). Jejich počet je</p>
+\[ \begin{aligned} V(n,k) &amp;= \frac{n!}{(n-k)!} \\ &amp;= n(n-1)\cdots(n-k+1) \end{aligned} \]
+<p class="jinak">postupné tahání bez vracení, kdy záleží na tom, co bylo první, co druhé… Pro \(k = n\) jde o <b>permutace</b>, jejich počet je \(n!\).</p></div>
+<div class="tablewrap"><table>
+<tr><th></th><th>bez opakování (<span class="kw">without replacement</span>)</th><th>s opakováním (<span class="kw">with replacement</span>)</th></tr>
+<tr><td>záleží na pořadí</td><td>variace \(n!/(n-k)!\)</td><td>\(n^k\) (např. hody kostkou)</td></tr>
+<tr><td>nezáleží na pořadí</td><td>kombinace \(\binom{n}{k}\)</td><td>\(\binom{n+k-1}{k}\) (vzácné)</td></tr>
+</table></div>
+
+<div class="box uloha" id="u-s1-3"><div class="box-t">Úloha S1/3 <span class="en">set 1, task 3</span></div>
+<p>Z balíčku 32 karet (4 krále) táhneme postupně 2 karty. Jaká je pravděpodobnost, že to budou dva králové?</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">draw 2 cards sequentially</span> → bez vracení. <b>Výsledek:</b> \(3/248\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p><b>Způsob 1 – kombinace</b> (na pořadí nezáleží): všech dvojic karet je \(\binom{32}{2}\), dvojic králů \(\binom{4}{2}\).</p>
+\[ p(A) = \frac{\binom{4}{2}}{\binom{32}{2}} = \frac{6}{496} = \frac{3}{248} \]
+<p><b>Způsob 2 – postupně</b> (násobíme pravděpodobnosti jednotlivých tahů):</p>
+\[ p(A) = \frac{4}{32} \cdot \frac{3}{31} = \frac{12}{992} = \frac{3}{248} \approx 0{,}0121 \]
+<p>Ve druhém tahu je už jen 31 karet a 3 králové – to je podmíněná pravděpodobnost (kapitola 2). Oba způsoby musí dát totéž.</p>
+</div></details></div>
+
+<div class="box priklad" id="pr-tri-kostky"><div class="box-t">Podobná úloha jako HW1/3: který součet tří kostek je pravděpodobnější, 7, nebo 8?</div>
+<p>Elementárních jevů (uspořádaných trojic) je \(6^3 = 216\). Rozložíme součet na trojice hodnot a u každé spočítáme, kolika pořadími jde zapsat:</p>
+<ul>
+<li>tři různé hodnoty → \(3! = 6\) pořadí, dvě stejné → 3 pořadí, tři stejné → 1.</li>
+<li>Součet 7: (1,1,5) 3 + (1,2,4) 6 + (1,3,3) 3 + (2,2,3) 3 = <b>15</b>.</li>
+<li>Součet 8: (1,1,6) 3 + (1,2,5) 6 + (1,3,4) 6 + (2,2,4) 3 + (2,3,3) 3 = <b>21</b>.</li>
+</ul>
+\[ \begin{aligned} p(7) &amp;= \frac{15}{216} \approx 0{,}069 \\ p(8) &amp;= \frac{21}{216} \approx 0{,}097 \end{aligned} \]
+<p>Pravděpodobnější je 8. Pozor: kdo počítá jen rozklady (4 pro součet 7, 5 pro součet 8), dostane správnou odpověď náhodou – u některých dvojic součtů mají oba stejný počet rozkladů, a přesto se pravděpodobnosti liší. Rozhoduje počet <b>pořadí</b>.</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Klasická pravděpodobnost = příznivé / všechny, ale jen pro stejně možné výsledky; počty dodá kombinatorika podle otázek „záleží na pořadí?“ a „vracím?“.</p></div>
+
+<h2 id="geometricka">Geometrická pravděpodobnost</h2>
+<div class="box definice" id="def-geometricka"><div class="box-t">Definice: geometrická pravděpodobnost <span class="en">geometric probability</span></div>
+<p>Je-li výsledkem pokusu bod zvolený náhodně (rovnoměrně) v oblasti \(\Omega\) s konečnou mírou (délkou, plochou, objemem) a jev \(A\) odpovídá podoblasti \(A \subset \Omega\), pak</p>
+\[ p(A) = \frac{\operatorname{míra}(A)}{\operatorname{míra}(\Omega)}. \]
+<p class="jinak">klasická pravděpodobnost pro nekonečně mnoho bodů: místo „počtu“ výsledků porovnáváme jejich „velikost“. Šance trefit kus terče = jeho plocha ku ploše celého terče.</p></div>
+
+<div class="box postup" id="postup-geometricka"><div class="box-t">Jak poznat a jak postupovat: geometrická pravděpodobnost</div>
+<p><b>Poznáš to:</b> náhodný bod v útvaru, náhodně zvolená čísla z intervalu (<span class="kw">randomly choose from the interval</span>), náhodné koeficienty v mezích, „rovnoměrně“ (<span class="kw">equally likely</span>, <span class="kw">uniformly</span>).</p>
+<ol>
+<li><b>Prostor Ω:</b> co je náhodné? Jedno číslo → úsečka, dvě čísla → čtverec / obdélník v rovině (každé číslo je jedna osa), bod v útvaru → útvar sám.</li>
+<li><b>Podmínku přepiš na nerovnici</b> (\(x + y &lt; 1\), \(xy &lt; 0{,}09\), \(p^2 - 4q \ge 0\), vzdálenost od středu &lt; r…).</li>
+<li><b>Nakresli</b> hranici (rovnici místo nerovnice) a vyšrafuj, která strana splňuje podmínku.</li>
+<li><b>Spočítej plochy</b> – geometricky (trojúhelník, kruh) nebo integrálem plochy mezi křivkami.</li>
+<li>\(p = \) plocha A / plocha Ω.</li>
+</ol></div>
+
+<div class="box uloha" id="u-s1-9"><div class="box-t">Úloha S1/9 <span class="en">set 1, task 9</span></div>
+<p>Náhodně zvolíme dvě čísla z intervalu \(\langle 0, 1 \rangle\). Jaká je pravděpodobnost, že jejich součet je menší než 1 a současně součin menší než 0,09?</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">randomly choose 2 numbers from the interval</span> → bod (x, y) ve čtverci; <span class="kw">and</span> → průnik obou oblastí. <b>Výsledek:</b> 0,298.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Prostor: jednotkový čtverec, plocha 1. Podmínky jsou \(y &lt; 1 - x\) (pod přímkou) a \(y &lt; 0{,}09/x\) (pod hyperbolou).</p>
+<p>2. Průsečíky přímky a hyperboly:</p>
+\[ \begin{aligned} x(1 - x) &amp;= 0{,}09 \\ x^2 - x + 0{,}09 &amp;= 0 \\ x_1 = 0{,}1,\quad x_2 &amp;= 0{,}9 \end{aligned} \]
+<p>3. Pod přímkou je trojúhelník s plochou 1/2. Z něj odečteme kus, který je pod přímkou, ale <b>nad</b> hyperbolou (mezi \(x = 0{,}1\) a \(0{,}9\)):</p>
+\[ \begin{aligned} &amp;\int_{0{,}1}^{0{,}9} \left(1 - x - \frac{0{,}09}{x}\right) dx \\ &amp;\quad = \left[x - \frac{x^2}{2} - 0{,}09 \ln x\right]_{0{,}1}^{0{,}9} \end{aligned} \]
+<p>4. Dosadíme meze:</p>
+\[ = 0{,}8 - 0{,}4 - 0{,}09 \ln 9 \approx 0{,}2022 \]
+<p>5. Výsledek:</p>
+\[ p(A) = 0{,}5 - 0{,}2022 \approx 0{,}298 \]
+</div></details></div>
+
+<figure><div class="paper"><img src="figures/fig01_geom.png" alt="Jednotkový čtverec s přímkou x plus y rovno 1 a hyperbolou xy rovno 0,09; modře hledaná oblast, oranžově odečtený kus" loading="lazy"></div>
+<figcaption><b>Obr. 1.2</b> Úloha S1/9: hledaná oblast (modře) = trojúhelník pod přímkou bez kusu nad hyperbolou (oranžově).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>„A současně“ = průnik oblastí, tedy body pod oběma křivkami. Plochu skoro vždy dostaneš jako „jednoduchý útvar minus/plus kus mezi křivkami“ – a kus mezi křivkami je integrál z (horní − dolní) mezi průsečíky.</p></div>
+
+<div class="box priklad" id="pr-terc"><div class="box-t">Podobná úloha jako HW1/1: bod na kruhovém terči</div>
+<p>Na kruhový terč o <b>průměru</b> \(d\) dopadne náhodně bod. Jaká je pravděpodobnost, že je <b>dál</b> než \(d/3\) od středu?</p>
+<p>Poloměr terče je \(d/2\). Body blíž než \(d/3\) tvoří menší kruh o poloměru \(d/3\). Poměr ploch kruhů je poměr druhých mocnin poloměrů:</p>
+\[ p(\text{blíž}) = \frac{\pi (d/3)^2}{\pi (d/2)^2} = \left(\frac{2}{3}\right)^2 = \frac{4}{9} \]
+\[ p(\text{dál}) = 1 - \frac{4}{9} = \frac{5}{9} \approx 0{,}556 \]
+<p>Past: zaměnit průměr a poloměr – zadání dává průměr, plocha kruhu potřebuje poloměr.</p></div>
+
+<div class="box priklad" id="pr-ctverec-v-kruhu"><div class="box-t">Podobná úloha jako HW1/5: čtverec vepsaný do kruhu</div>
+<p>Do kruhu o poloměru \(r\) je vepsaný čtverec. Náhodně zvolíme bod v kruhu. Jaká je pravděpodobnost, že neleží ve čtverci?</p>
+<p>Úhlopříčka čtverce je průměr \(2r\), strana je proto \(a = 2r/\sqrt{2} = \sqrt{2}\,r\) a plocha čtverce \(2r^2\).</p>
+\[ p(\text{ve čtverci}) = \frac{2r^2}{\pi r^2} = \frac{2}{\pi} \]
+\[ p(\text{mimo}) = 1 - \frac{2}{\pi} \approx 0{,}363 \]
+<p>Výsledek nezávisí na \(r\) – geometrická pravděpodobnost závisí jen na poměru ploch.</p></div>
+
+<div class="box priklad" id="pr-kvadraticka"><div class="box-t">Podobná úloha jako HW1/4: kdy má kvadratická rovnice reálné kořeny</div>
+<p>Koeficienty rovnice \(x^2 + 2px + q = 0\) volíme náhodně a rovnoměrně z \(|p| \le 1\), \(|q| \le 1\). Jaká je pravděpodobnost, že kořeny jsou reálné?</p>
+<p>1. Prostor: čtverec \(\langle -1, 1\rangle^2\) v rovině (p, q), plocha 4.</p>
+<p>2. Podmínka: diskriminant nezáporný.</p>
+\[ D = (2p)^2 - 4q \ge 0 \;\Leftrightarrow\; q \le p^2 \]
+<p>3. Plocha pod parabolou uvnitř čtverce (q jde od −1 do \(p^2\)):</p>
+\[ \int_{-1}^{1} \left(p^2 + 1\right) dp = \frac{2}{3} + 2 = \frac{8}{3} \]
+<p>4. Výsledek:</p>
+\[ p(A) = \frac{8/3}{4} = \frac{2}{3} \]
+<p>V HW1/4 má rovnice tvar \(x^2 + px + q = 0\) – diskriminant je jiný, a tedy i hranice oblasti. Postup je ale stejný.</p></div>
+
+<figure><div class="paper"><img src="figures/fig01_kvadraticka.png" alt="Čtverec p, q od minus 1 do 1 s parabolou q rovno p na druhou; pod parabolou modře reálné kořeny" loading="lazy"></div>
+<figcaption><b>Obr. 1.3</b> Analogie k HW1/4: body (p, q) pod parabolou \(q = p^2\) dávají reálné kořeny.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Podmínka na koeficienty (diskriminant ≥ 0) je v rovině koeficientů oblast pod křivkou. Pravděpodobnost je pak jen podíl ploch – zbytek je integrál.</p></div>
+
+<div class="box pozor"><div class="box-t">Častá past: kterou stranu křivky vzít</div>
+<p>Po nakreslení hranice dosaď jeden testovací bod (např. (0, 0)) do nerovnice. Když ji splňuje, je jeho strana ta správná. Tím se vyhneš odečítání špatného kusu.</p></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Klasická pravděpodobnost předpokládá konečně mnoho stejně možných výsledků a počítá podíl příznivých ku všem. Geometrická je její obdoba pro spojitý případ: bod je volen rovnoměrně v oblasti a pravděpodobnost je podíl míry příznivé části ku míře celé oblasti – délky, plochy nebo objemu.“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Geometrická pravděpodobnost = převeď náhodu na bod v útvaru, podmínku na oblast a pravděpodobnost na poměr ploch.</p></div>
+
+<div class="box slovicka"><div class="box-t">Anglická slovíčka</div>
+<table>
+<tr><th>česky</th><th>anglicky</th></tr>
+<tr><td>náhodný pokus</td><td>random experiment</td></tr>
+<tr><td>jev, elementární jev</td><td>event, elementary event (outcome)</td></tr>
+<tr><td>prostor elementárních jevů</td><td>sample space</td></tr>
+<tr><td>opačný jev</td><td>complementary event</td></tr>
+<tr><td>neslučitelné jevy</td><td>mutually exclusive events</td></tr>
+<tr><td>sjednocení / průnik</td><td>union / intersection</td></tr>
+<tr><td>kombinace / variace / permutace</td><td>combination / variation / permutation</td></tr>
+<tr><td>kombinační číslo</td><td>binomial coefficient („n choose k“)</td></tr>
+<tr><td>s vracením / bez vracení</td><td>with / without replacement</td></tr>
+<tr><td>kostka, hrací kostky</td><td>die, dice</td></tr>
+<tr><td>balíček karet, král</td><td>deck of cards, king</td></tr>
+<tr><td>kulička, krabice</td><td>ball (marble), box</td></tr>
+<tr><td>součet / součin</td><td>sum / product</td></tr>
+<tr><td>průměr / poloměr</td><td>diameter / radius</td></tr>
+<tr><td>vepsaný kruh</td><td>inscribed circle</td></tr>
+</table>
+<p><b>Fráze ze zadání:</b> <span class="kw">at random</span> = náhodně; <span class="kw">either … or</span> = buď, nebo; <span class="kw">at least</span> = aspoň; <span class="kw">at most</span> = nejvýše; <span class="kw">exactly</span> = právě; <span class="kw">less than d away from the center</span> = blíž než d od středu.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Jevy jsou podmnožiny prostoru elementárních jevů a počítá se s nimi jako s množinami: sjednocení („nebo“), průnik („a“), opačný jev („ne“). Pravděpodobnost je nezáporná, celek má 1 a neslučitelné jevy se sčítají; z toho plyne \(p(\overline{A}) = 1 - p(A)\) a vzorec pro sjednocení. Když je výsledků konečně mnoho a jsou stejně možné, počítáme klasicky: příznivé ku všem, s pomocí kombinatoriky. Když je výsledkem bod v oblasti (nebo náhodná čísla z intervalu), počítáme geometricky: podmínku přepíšeme na oblast a pravděpodobnost je poměr ploch.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Klasická definice platí jen pro stejně možné výsledky – u kostek počítej uspořádané dvojice či trojice.</li>
+<li>„Aspoň jeden“ se nejsnáz počítá přes opačný jev: \(1 - p(\text{ani jeden})\).</li>
+<li>Kombinatoriku vyber podle dvou otázek: záleží na pořadí? vracím?</li>
+<li>Geometrická pravděpodobnost: dvě náhodná čísla = bod ve čtverci; podmínka = oblast; výsledek = poměr ploch.</li>
+<li>Vždy si nakresli obrázek a otestuj, kterou stranu křivky bereš.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Jaký je rozdíl mezi jevem a elementárním jevem?</summary><div>
+<p>Elementární jev je jeden nejjemnější výsledek pokusu (padla trojka); elementární jevy se vylučují a jeden vždy nastane. Jev je libovolná skupina elementárních jevů, tedy podmnožina prostoru Ω (padlo liché číslo).</p></div></details>
+<details class="q"><summary>Kdy smíme pravděpodobnosti dvou jevů prostě sečíst?</summary><div>
+<p>Jen když jsou neslučitelné (nemohou nastat současně). Obecně platí \(p(A \cup B) = p(A) + p(B) - p(A \cap B)\); průnik odečítáme, protože by byl započítán dvakrát.</p></div></details>
+<details class="q"><summary>Jaký předpoklad má klasická definice pravděpodobnosti a co se stane, když neplatí?</summary><div>
+<p>Konečně mnoho stejně možných elementárních jevů. Když výsledky stejně možné nejsou (např. součty dvou kostek), dá podíl „příznivé ku všem“ špatné číslo – musíme jev rozepsat na stejně možné výsledky (uspořádané dvojice).</p></div></details>
+<details class="q"><summary>Jak poznáš, zda použít kombinace, nebo variace?</summary><div>
+<p>Podle toho, zda záleží na pořadí. Výběr „hrsti“ najednou (karty v ruce, výrobky do kontroly) je kombinace \(\binom{n}{k}\); postupné tahání, kdy rozlišuji první a druhý tah, je variace \(n!/(n-k)!\). Pro pravděpodobnost dávají obě cesty stejný výsledek, pokud stejně počítáme čitatel i jmenovatel.</p></div></details>
+<details class="q"><summary>Co je geometrická pravděpodobnost a jak se počítá?</summary><div>
+<p>Pravděpodobnost pro bod zvolený rovnoměrně v oblasti: podíl míry (délky, plochy, objemu) příznivé části ku míře celé oblasti. Postup: náhodu převedu na bod (dvě čísla = bod ve čtverci), podmínku na nerovnici, nakreslím oblast a spočítám plochy, případně integrálem.</p></div></details>
+<details class="q"><summary>Proč je při volbě dvou čísel z ⟨0, 1⟩ prostorem jednotkový čtverec?</summary><div>
+<p>Každé číslo je jedna souřadnice: první na ose x, druhé na ose y. Dvojice čísel je tedy bod (x, y) a všechny možné dvojice vyplní čtverec \(\langle 0,1\rangle^2\) o ploše 1. Rovnoměrná volba obou čísel znamená, že každá stejně velká část čtverce má stejnou šanci.</p></div></details>
+
+<nav class="pager"><a class="prev" href="index.html"><small>← předchozí</small>Mapa kurzu</a><a class="next" href="02_podminena.html"><small>další →</small>Podmíněná pravděpodobnost a Bayes</a></nav>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<h1>Testování hypotéz</h1>
+<p class="lead">Má jídelna opravdu 100 g masa v porci? Mají dva výběry stejný průměr? Statistický test rozhodne, zda data <b>dost silně odporují</b> nějakému tvrzení, aby ho bylo rozumné zamítnout. Všechny testy mají stejnou kostru o pěti krocích K1–K5 (jako ve skriptech předmětu); liší se jen testovým kritériem a jeho rozdělením. Úlohy S7/3–S7/5.</p>
+
+<h2 id="logika">Logika testu</h2>
+<div class="box definice" id="def-hypoteza"><div class="box-t">Definice: nulová a alternativní hypotéza <span class="en">null and alternative hypothesis</span></div>
+<p><b>Statistická hypotéza</b> je tvrzení o rozdělení náhodné veličiny (např. o parametru μ). <b>Nulová hypotéza</b> \(H_0\) je tvrzení, které testujeme – obvykle „žádný rozdíl, žádný vliv“ (\(\mu = 100\), \(\mu_1 = \mu_2\)). <b>Alternativní hypotéza</b> \(H_1\) je tvrzení, které přijmeme, když \(H_0\) zamítneme.</p>
+<p class="jinak">\(H_0\) je „obžalovaný je nevinný“. Test hledá důkazy proti ní. Když jich je dost, \(H_0\) zamítneme; když ne, říkáme jen „nezamítáme“ – nevinu jsme nedokázali.</p></div>
+<div class="box definice" id="def-hladina-vyznamnosti"><div class="box-t">Definice: hladina významnosti a chyby 1. a 2. druhu <span class="en">significance level, type I and type II error</span></div>
+<p><b>Chyba 1. druhu</b> je zamítnutí \(H_0\), která platí; <b>chyba 2. druhu</b> je nezamítnutí \(H_0\), která neplatí. <b>Hladina významnosti</b> α je předem zvolená pravděpodobnost chyby 1. druhu (obvykle 0,05). Pravděpodobnost chyby 2. druhu se značí β a \(1 - \beta\) je <b>síla testu</b>.</p>
+<p class="jinak">α = riziko „odsoudit nevinného“, které jsme ochotni nést. β = riziko „pustit viníka“. Obě chyby nejde snížit zároveň – pomůže jen víc dat.</p></div>
+<div class="box definice" id="def-kriticky-obor"><div class="box-t">Definice: testové kritérium a kritický obor <span class="en">test statistic, critical region</span></div>
+<p><b>Testové kritérium</b> je veličina spočítaná z výběru, jejíž rozdělení za platnosti \(H_0\) známe. <b>Kritický obor</b> je množina hodnot kritéria, které za platnosti \(H_0\) nastanou jen s pravděpodobností α; padne-li do něj realizace kritéria, \(H_0\) zamítáme. Hranice kritického oboru je <b>kritická hodnota</b>.</p>
+<p class="jinak">kritérium měří „jak daleko jsou data od \(H_0\)“ v jednotkách, pro které máme tabulku. Kritický obor jsou „podezřele velké“ odchylky.</p></div>
+<figure><div class="paper"><img src="figures/fig10_chyby.png" alt="Dvě hustoty testového kritéria, za platnosti H0 a H1, se svislou kritickou hodnotou; plocha alfa vpravo pod křivkou H0 a plocha beta vlevo pod křivkou H1" loading="lazy"></div>
+<figcaption><b>Obr. 10.1</b> Chyba 1. druhu α a chyba 2. druhu β u pravostranného testu.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Posunutím kritické hodnoty doprava zmenším α, ale zvětším β – a naopak. α volíme předem, β závisí na tom, jak moc se skutečnost od \(H_0\) liší a kolik máme dat.</p></div>
+
+<div class="box definice" id="def-jednostranny"><div class="box-t">Definice: oboustranný a jednostranný test <span class="en">two-sided (two-tailed) and one-sided test</span></div>
+<p>Test je <b>oboustranný</b>, je-li alternativa \(H_1: \mu \ne \mu_0\) – kritický obor je na obou koncích, každý s plochou α/2. Test je <b>jednostranný</b> (levostranný \(\mu &lt; \mu_0\), pravostranný \(\mu &gt; \mu_0\)), je-li kritický obor jen na jednom konci s plochou α.</p>
+<p class="jinak">oboustranně se ptám „liší se?“, jednostranně „je menší?“ / „je větší?“. Volba závisí na otázce v zadání, ne na datech.</p></div>
+
+<div class="box postup" id="postup-k1-k5"><div class="box-t">Postup testu K1–K5 (jako ve skriptech předmětu)</div>
+<ol>
+<li><b>K1 – hypotézy:</b> \(H_0\) (s rovností) a \(H_1\) (≠, &lt; nebo &gt; podle otázky).</li>
+<li><b>K2 – testové kritérium:</b> co z dat počítám (průměr, rozdíl průměrů, podíl rozptylů) a jeho normovaný tvar.</li>
+<li><b>K3 – rozdělení kritéria za platnosti H<sub>0</sub>:</b> t, F, No(0, 1)… a stupně volnosti.</li>
+<li><b>K4 – kritická hodnota</b> z tabulky pro dané α (oboustranně \(1 - \alpha/2\), jednostranně \(1 - \alpha\)).</li>
+<li><b>K5 – rozhodnutí:</b> spočítám realizaci kritéria; leží v kritickém oboru → \(H_0\) zamítám, jinak nezamítám. Závěr řeknu slovy zadání.</li>
+</ol></div>
+
+<div class="box pozor"><div class="box-t">Častá past: „nezamítáme“ ≠ „H<sub>0</sub> platí“</div>
+<p>Když kritérium do kritického oboru nepadne, data jen <b>neposkytla dost důkazů</b> proti \(H_0\). Rozdíl může existovat, ale je malý nebo máme málo dat (malá síla testu). Proto se říká „nezamítáme“, ne „přijímáme“.</p></div>
+
+<h2 id="t-test">Jednovýběrový t-test</h2>
+<div class="box vzorec"><div class="box-t">t-test typu μ = μ<sub>0</sub> (σ neznámé)</div>
+\[ T = \frac{\bar{x} - \mu_0}{s}\sqrt{n} \;\sim\; t(n - 1) \quad \text{za platnosti } H_0 \]
+<table class="vars">
+<tr><td>\(\mu_0\)</td><td>hodnota z nulové hypotézy (tvrzení, které ověřujeme)</td></tr>
+<tr><td>\(\bar{x}\), \(s\), \(n\)</td><td>výběrový průměr, výběrová směrodatná odchylka, rozsah výběru</td></tr>
+<tr><td>\(s/\sqrt{n}\)</td><td>směrodatná chyba průměru – „měřítko“, kterým se odchylka dělí</td></tr>
+</table>
+<p>\(H_0\) zamítáme, když:</p>
+<ul>
+<li>oboustranně (\(H_1: \mu \ne \mu_0\)): \(|T| \ge t_{1-\alpha/2}(n-1)\);</li>
+<li>levostranně (\(H_1: \mu &lt; \mu_0\)): \(T \le -t_{1-\alpha}(n-1)\);</li>
+<li>pravostranně (\(H_1: \mu &gt; \mu_0\)): \(T \ge t_{1-\alpha}(n-1)\).</li>
+</ul></div>
+
+<div class="box uloha" id="u-s7-5"><div class="box-t">Úloha S7/5 <span class="en">set 7, task 5</span></div>
+<p>Inspekce vážila maso v jídelně; jídelna uvádí 100 g. Na hladině α = 0,05 otestuj hypotézu, že jídelna nešidí. Deset vzorků: 97,1; 94,8; 93,0; 96,1; 96,8; 98,5; 93,4; 91,7; 94,4; 99,5.</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">test the hypothesis that the canteen does not cheat</span> → \(H_0: \mu = 100\); šizení = méně masa → \(H_1: \mu &lt; 100\); σ neznámé → t-test. <b>Výsledek:</b> \(H_0\) zamítáme.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p><b>K1:</b> \(H_0: \mu = 100\) (nešidí), \(H_1: \mu &lt; 100\) (šidí).</p>
+<p><b>K2:</b> kritérium je výběrový průměr, normovaně \(T = (\bar{x} - 100)\sqrt{n}/s\). Z dat:</p>
+\[ \begin{aligned} \bar{x} &amp;= \frac{955{,}3}{10} = 95{,}53 \\ s^2 &amp;= \frac{56{,}401}{9} \approx 6{,}267 \\ s &amp;\approx 2{,}503 \end{aligned} \]
+<p><b>K3:</b> za platnosti \(H_0\) má T rozdělení t(9).</p>
+<p><b>K4:</b> levostranný test, \(t_{0{,}95}(9) = 1{,}833\); kritický obor \(T \le -1{,}833\).</p>
+<p><b>K5:</b> realizace kritéria:</p>
+\[ T = \frac{95{,}53 - 100}{2{,}503}\sqrt{10} \approx -5{,}65 \le -1{,}833 \]
+<p>\(H_0\) zamítáme: na hladině 0,05 data prokazují, že porce mají méně než 100 g – jídelna šidí. Oboustranný test (\(t_{0{,}975}(9) = 2{,}262\)) dá stejný závěr, protože \(|T| = 5{,}65\) je daleko za oběma hranicemi.</p>
+</div></details></div>
+
+<figure><div class="paper"><img src="figures/fig10_obor.png" alt="Hustota t s 9 stupni volnosti, kritický obor vlevo od minus 1,833 a naměřená hodnota minus 5,65 hluboko v něm" loading="lazy"></div>
+<figcaption><b>Obr. 10.2</b> Úloha S7/5: naměřené \(T = -5{,}65\) leží hluboko v kritickém oboru.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Kdyby jídelna nešidila, hodnota −5,65 by byla extrémně nepravděpodobná (plocha vlevo od ní je menší než 0,001). Proto \(H_0\) zamítáme. Rozhoduje poloha naměřeného kritéria vůči kritické hodnotě.</p></div>
+
+<h2 id="dvouvyberovy">Dvouvýběrový t-test</h2>
+<div class="box vzorec"><div class="box-t">t-test typu μ<sub>1</sub> = μ<sub>2</sub> (shodné neznámé rozptyly)</div>
+<p>Společný (vážený) odhad rozptylu:</p>
+\[ s_p^2 = \frac{(n_1 - 1)\,s_1^2 + (n_2 - 1)\,s_2^2}{n_1 + n_2 - 2} \]
+<p>Testové kritérium:</p>
+\[ T = \frac{\bar{x} - \bar{y}}{s_p\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}} \;\sim\; t(n_1 + n_2 - 2) \]
+<table class="vars">
+<tr><td>\(s_1^2\), \(s_2^2\)</td><td>výběrové rozptyly obou výběrů</td></tr>
+<tr><td>\(s_p^2\)</td><td>spojený odhad společného rozptylu (průměr vážený stupni volnosti)</td></tr>
+<tr><td>\(n_1 + n_2 - 2\)</td><td>stupně volnosti: dva parametry (dva průměry) jsme odhadli</td></tr>
+</table>
+<p>Předpoklad: obě veličiny normální a se stejným rozptylem – ověřuje se F-testem (níže).</p></div>
+
+<div class="box uloha" id="u-s7-3"><div class="box-t">Úloha S7/3 <span class="en">set 7, task 3</span></div>
+<p>Dva výběry: \(\bar{x} = 62\), \(s_x^2 = 16\), \(n_x = 10\); \(\bar{y} = 60\), \(s_y^2 = 15\), \(n_y = 14\). Otestuj hypotézu, že oba výběry mají stejnou střední hodnotu (α = 0,05).</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">the same mean</span> → \(H_0: \mu_x = \mu_y\), oboustranně; dva nezávislé výběry → dvouvýběrový t-test. <b>Výsledek:</b> \(H_0\) nezamítáme.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p><b>K1:</b> \(H_0: \mu_x = \mu_y\), \(H_1: \mu_x \ne \mu_y\).</p>
+<p><b>K2:</b> kritérium je rozdíl průměrů \(\bar{x} - \bar{y} = 2\). Spojený rozptyl:</p>
+\[ s_p^2 = \frac{9 \cdot 16 + 13 \cdot 15}{22} = \frac{339}{22} \approx 15{,}41 \]
+<p>Směrodatná chyba rozdílu:</p>
+\[ s_p\sqrt{\frac{1}{10} + \frac{1}{14}} = \sqrt{15{,}41 \cdot 0{,}1714} \approx 1{,}625 \]
+<p><b>K3:</b> za \(H_0\) má T rozdělení t(22).</p>
+<p><b>K4:</b> oboustranně \(t_{0{,}975}(22) = 2{,}074\).</p>
+<p><b>K5:</b></p>
+\[ T = \frac{2}{1{,}625} \approx 1{,}23 &lt; 2{,}074 \]
+<p>\(H_0\) nezamítáme: rozdíl průměrů 2 je vzhledem k rozptylu dat a velikosti výběrů malý, může být náhodný.</p>
+</div></details></div>
+
+<h2 id="f-test">F-test shody rozptylů</h2>
+<div class="box definice" id="def-f-rozdeleni"><div class="box-t">Definice: Fisherovo F-rozdělení <span class="en">F-distribution (Fisher–Snedecor)</span></div>
+<p><b>F-rozdělení</b> se stupni volnosti \((\nu_1, \nu_2)\) je rozdělení podílu \(F = (V_1/\nu_1)/(V_2/\nu_2)\) dvou nezávislých veličin \(V_1 \sim \chi^2(\nu_1)\), \(V_2 \sim \chi^2(\nu_2)\).</p>
+<p class="jinak">rozdělení podílu dvou výběrových rozptylů ze stejně rozptýlených souborů. Mají-li soubory stejný rozptyl, má být podíl blízko 1; F říká, jak daleko od 1 ještě může náhodně vyjít.</p></div>
+<div class="box vzorec"><div class="box-t">F-test typu σ<sub>1</sub>² = σ<sub>2</sub>²</div>
+\[ F = \frac{s_1^2}{s_2^2} \;\sim\; F(n_1 - 1,\ n_2 - 1) \]
+<p>(rozdělení za platnosti \(H_0\))</p>
+<table class="vars">
+<tr><td>\(s_1^2\)</td><td>do čitatele dej <b>větší</b> výběrový rozptyl – pak F ≥ 1 a stačí horní kvantil</td></tr>
+<tr><td>\(\nu_1 = n_1 - 1\)</td><td>stupně volnosti čitatele (výběr s větším rozptylem)</td></tr>
+<tr><td>\(\nu_2 = n_2 - 1\)</td><td>stupně volnosti jmenovatele</td></tr>
+</table>
+<p>Zamítáme, je-li \(F \ge F_{1-\alpha/2}(\nu_1, \nu_2)\) (oboustranně). Pořadí stupňů volnosti je důležité: \(F(9, 13) \ne F(13, 9)\).</p></div>
+
+<div class="box uloha" id="u-s7-4"><div class="box-t">Úloha S7/4 <span class="en">set 7, task 4</span></div>
+<p>Proveď F-test shody rozptylů pro data z S7/3.</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">F test for equality of variances</span> → \(H_0: \sigma_1^2 = \sigma_2^2\). <b>Výsledek:</b> \(H_0\) nezamítáme.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p><b>K1:</b> \(H_0: \sigma_x^2 = \sigma_y^2\), \(H_1: \sigma_x^2 \ne \sigma_y^2\).</p>
+<p><b>K2:</b> podíl výběrových rozptylů, větší v čitateli:</p>
+\[ F = \frac{s_x^2}{s_y^2} = \frac{16}{15} \approx 1{,}067 \]
+<p><b>K3:</b> za \(H_0\) má F rozdělení F(9, 13).</p>
+<p><b>K4:</b> \(F_{0{,}975}(9, 13) \approx 3{,}31\) (jednostranná tabulka pro α = 0,05 dá \(F_{0{,}95}(9, 13) \approx 2{,}71\)).</p>
+<p><b>K5:</b> \(1{,}067 &lt; 3{,}31\) (i \(&lt; 2{,}71\)) → \(H_0\) nezamítáme. Předpoklad shodných rozptylů pro t-test v S7/3 je tedy oprávněný.</p>
+</div></details></div>
+
+<div class="box intuice"><div class="box-t">Interval spolehlivosti a test jsou dvě strany jedné mince</div>
+<p>Oboustranný test \(H_0: \mu = \mu_0\) na hladině α zamítne právě tehdy, když \(\mu_0\) <b>neleží</b> v \((1-\alpha)\) intervalu spolehlivosti pro μ. V S7/5: 95% interval je \(95{,}53 \pm 2{,}262 \cdot 2{,}503/\sqrt{10}\) = (93,74; 97,32) – 100 g v něm není, proto zamítáme.</p></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Test hypotézy postupuje v krocích: formuluji nulovou a alternativní hypotézu, zvolím testové kritérium, určím jeho rozdělení za platnosti \(H_0\), z tabulky najdu kritickou hodnotu pro hladinu významnosti α a porovnám s ní realizaci kritéria. Padne-li do kritického oboru, \(H_0\) zamítám, jinak ji nezamítám. α je pravděpodobnost chyby 1. druhu – zamítnutí platné \(H_0\). Pro střední hodnotu s neznámým rozptylem je kritérium \(T = (\bar{x} - \mu_0)\sqrt{n}/s\) s t-rozdělením o n − 1 stupních volnosti, pro shodu rozptylů podíl \(s_1^2/s_2^2\) s F-rozdělením.“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Test = K1 hypotézy, K2 kritérium, K3 jeho rozdělení za H<sub>0</sub>, K4 kritická hodnota, K5 porovnání a slovní závěr.</p></div>
+
+<div class="box slovicka"><div class="box-t">Anglická slovíčka</div>
+<table>
+<tr><th>česky</th><th>anglicky</th></tr>
+<tr><td>testování hypotéz</td><td>hypothesis testing</td></tr>
+<tr><td>nulová / alternativní hypotéza</td><td>null / alternative hypothesis</td></tr>
+<tr><td>hladina významnosti</td><td>significance level</td></tr>
+<tr><td>testové kritérium (statistika)</td><td>test criterion, test statistic</td></tr>
+<tr><td>kritický obor / kritická hodnota</td><td>critical region / critical value</td></tr>
+<tr><td>zamítáme / nezamítáme H<sub>0</sub></td><td>we reject / we do not reject H<sub>0</sub></td></tr>
+<tr><td>chyba 1. / 2. druhu</td><td>type I / type II error</td></tr>
+<tr><td>síla testu</td><td>power of the test</td></tr>
+<tr><td>oboustranný / jednostranný test</td><td>two-sided (two-tailed) / one-sided test</td></tr>
+<tr><td>shoda rozptylů</td><td>equality of variances</td></tr>
+<tr><td>spojený rozptyl</td><td>pooled variance</td></tr>
+<tr><td>šidit</td><td>cheat</td></tr>
+</table>
+<p><b>Fráze ze zadání:</b> <span class="kw">test the hypothesis that both samples have the same mean</span> = otestuj shodu středních hodnot; <span class="kw">work at the 5 % significance level</span> = na hladině α = 0,05; <span class="kw">perform the F test</span> = proveď F-test; <span class="kw">selections with characteristics</span> = výběry s charakteristikami.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Statistický test rozhoduje, zda data dost silně odporují nulové hypotéze. Volíme hladinu významnosti α – riziko zamítnutí platné hypotézy – a testové kritérium se známým rozdělením za platnosti \(H_0\). Kritický obor tvoří hodnoty, které by za \(H_0\) nastaly jen s pravděpodobností α; padne-li do něj realizace kritéria, \(H_0\) zamítáme, jinak ji nezamítáme (což neznamená, že platí). Jednovýběrový t-test porovná průměr s danou hodnotou, dvouvýběrový t-test dva průměry (se spojeným rozptylem), F-test dva rozptyly. Oboustranný test odpovídá intervalu spolehlivosti.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Kostra K1–K5 je pro všechny testy stejná; mění se jen kritérium a tabulka.</li>
+<li>\(H_0\) obsahuje rovnost; směr \(H_1\) (≠, &lt;, &gt;) určuje otázka v zadání.</li>
+<li>Oboustranně kvantil \(1 - \alpha/2\), jednostranně \(1 - \alpha\).</li>
+<li>Jednovýběrový: \(T = (\bar{x} - \mu_0)\sqrt{n}/s\), t(n − 1); dvouvýběrový: spojený rozptyl, t(n₁ + n₂ − 2); F-test: větší rozptyl nahoru, F(n₁ − 1, n₂ − 1).</li>
+<li>„Nezamítáme“ ≠ „platí“: jen nemáme dost důkazů.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Popište obecný postup statistického testu.</summary><div>
+<p>K1: formuluji \(H_0\) a \(H_1\). K2: zvolím testové kritérium. K3: určím jeho rozdělení za platnosti \(H_0\) (včetně stupňů volnosti). K4: pro hladinu α najdu kritickou hodnotu (kritický obor). K5: spočítám realizaci kritéria z dat a rozhodnu – v kritickém oboru \(H_0\) zamítám, jinak nezamítám; závěr formuluji slovy úlohy.</p></div></details>
+<details class="q"><summary>Co je chyba 1. a 2. druhu a hladina významnosti?</summary><div>
+<p>Chyba 1. druhu: zamítnu \(H_0\), která platí; její pravděpodobnost je hladina významnosti α, kterou volím předem. Chyba 2. druhu: nezamítnu \(H_0\), která neplatí; pravděpodobnost β. \(1 - \beta\) je síla testu. Zmenšení α zvětší β; obě zmenší jen větší rozsah výběru.</p></div></details>
+<details class="q"><summary>Proč se říká „H₀ nezamítáme“, a ne „H₀ přijímáme“?</summary><div>
+<p>Test hledá důkazy proti \(H_0\). Když je nenajde, může to být proto, že \(H_0\) platí, ale i proto, že rozdíl je malý nebo dat je málo (malá síla testu). Nezamítnutí tedy platnost \(H_0\) nedokazuje.</p></div></details>
+<details class="q"><summary>Jaký je rozdíl mezi jednostranným a oboustranným testem?</summary><div>
+<p>Oboustranný test (\(H_1: \mu \ne \mu_0\)) má kritický obor na obou koncích, každý s plochou α/2, a používá kvantil \(1 - \alpha/2\). Jednostranný (\(H_1: \mu &lt; \mu_0\) nebo \(&gt;\)) má celý kritický obor s plochou α na jedné straně a kvantil \(1 - \alpha\). Směr se volí podle otázky, ne podle dat.</p></div></details>
+<details class="q"><summary>Jak vypadá jednovýběrový t-test a kdy se použije?</summary><div>
+<p>Testuje \(H_0: \mu = \mu_0\) pro normální data s neznámým rozptylem. Kritérium \(T = (\bar{x} - \mu_0)\sqrt{n}/s\) má za \(H_0\) rozdělení t(n − 1); \(H_0\) zamítám, když |T| (resp. T se správným znaménkem) překročí kritickou hodnotu.</p></div></details>
+<details class="q"><summary>Jaké předpoklady má dvouvýběrový t-test a jak se ověřují?</summary><div>
+<p>Dva nezávislé výběry z normálních rozdělení se stejným (neznámým) rozptylem. Shodu rozptylů ověřím F-testem: \(F = s_1^2/s_2^2\) (větší nahoře) má za \(H_0\) rozdělení F(n₁ − 1, n₂ − 1). Při shodě se oba rozptyly spojí do \(s_p^2\) a kritérium má t(n₁ + n₂ − 2).</p></div></details>
+<details class="q"><summary>Jaký je vztah mezi testem a intervalem spolehlivosti?</summary><div>
+<p>Oboustranný test \(H_0: \mu = \mu_0\) na hladině α zamítne \(H_0\) právě tehdy, když \(\mu_0\) neleží v \((1 - \alpha)\) intervalu spolehlivosti pro μ. Interval navíc ukazuje, jak velký rozdíl je s daty slučitelný.</p></div></details>

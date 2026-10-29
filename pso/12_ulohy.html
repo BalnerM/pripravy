@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Přehled úloh ze cvičení – PSO</title>
+<meta name="description" content="Každá úloha ze sad: typ a odkaz na řešení.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css?v=336b6bbf">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js?v=336b6bbf"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">PSO – příprava na zkoušku<small>pravděpodobnost a statistika, principy a postupy úloh</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html#pso" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/12_ulohy.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_pravdepodobnost.html"><span class="n">1</span><span>Pravděpodobnost: klasická a geometrická</span></a></li>
+    <li><a href="02_podminena.html"><span class="n">2</span><span>Podmíněná pravděpodobnost a Bayes</span></a></li>
+    <li><a href="03_diskretni_nv.html"><span class="n">3</span><span>Diskrétní náhodná veličina</span></a></li>
+    <li><a href="04_diskretni_rozdeleni.html"><span class="n">4</span><span>Diskrétní rozdělení</span></a></li>
+    <li><a href="05_spojita_nv.html"><span class="n">5</span><span>Spojitá náhodná veličina</span></a></li>
+    <li><a href="06_normalni.html"><span class="n">6</span><span>Normální rozdělení</span></a></li>
+    <li><a href="07_limitni_vety.html"><span class="n">7</span><span>Limitní věty</span></a></li>
+    <li><a href="08_nahodny_vektor.html"><span class="n">8</span><span>Náhodný vektor</span></a></li>
+    <li><a href="09_odhady.html"><span class="n">9</span><span>Odhady a intervaly spolehlivosti</span></a></li>
+    <li><a href="10_testy.html"><span class="n">10</span><span>Testování hypotéz</span></a></li>
+    <li><a href="11_jak_poznat.html"><span class="n">★</span><span>Jak poznat typ úlohy</span></a></li>
+    <li><a href="12_ulohy.html" class="active"><span class="n">Ú</span><span>Přehled úloh ze cvičení</span></a></li>
+    <li><a href="13_tabulky.html"><span class="n">T</span><span>Statistické tabulky</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#sada-1">Sada 1 – pravděpodobnost jevů</a></li>
+    <li><a href="#sada-2">Sada 2 – diskrétní náhodná veličina</a></li>
+    <li><a href="#sada-3">Sada 3 – diskrétní rozdělení</a></li>
+    <li><a href="#sada-4">Sada 4 – Poisson a spojitá veličina</a></li>
+    <li><a href="#sada-5">Sada 5 – Laplaceovo a normální rozdělení</a></li>
+    <li><a href="#sada-6">Sada 6 – limitní věty a náhodný vektor</a></li>
+    <li><a href="#sada-7">Sada 7 – odhady a testy</a></li>
+    <li><a href="#hw">Domácí úkoly → podobné úlohy</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">PSO – příprava na zkoušku · Přehled úloh ze cvičení – PSO · https://balnerm.github.io/pripravy/pso/12_ulohy.html</p>
+
+<h1>Přehled úloh ze cvičení</h1>
+<p class="lead">Všechny úlohy ze sad s odkazem na řešení krok po kroku. Sloupec „typ“ říká, jak úlohu poznat – zkus si ho nejdřív zakrýt a určit sám. Domácí úkoly vyřešené nejsou; odkaz vede na podobnou úlohu se stejným postupem.</p>
+
+<h2 id="sada-1">Sada 1 – pravděpodobnost jevů</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>úloha</th><th>o čem</th><th>typ</th><th>řešení</th></tr>
+<tr><td>S1/1</td><td>kostka: 3 nebo 6</td><td>klasická pravděpodobnost</td><td><a href="01_pravdepodobnost.html#u-s1-1">kap. 1</a></td></tr>
+<tr><td>S1/2</td><td>dvě kostky: součet 4 nebo 5</td><td>klasická, uspořádané dvojice</td><td><a href="01_pravdepodobnost.html#u-s1-2">kap. 1</a></td></tr>
+<tr><td>S1/3</td><td>dva králové z 32 karet</td><td>kombinace / postupné tahy</td><td><a href="01_pravdepodobnost.html#u-s1-3">kap. 1</a></td></tr>
+<tr><td>S1/4</td><td>součet 5 dřív než 7</td><td>opakování, geometrická řada</td><td><a href="02_podminena.html#u-s1-4">kap. 2</a></td></tr>
+<tr><td>S1/5</td><td>tenisové míčky, druhá hra</td><td>úplná pravděpodobnost + hypergeometrické</td><td><a href="02_podminena.html#u-s1-5">kap. 2</a></td></tr>
+<tr><td>S1/6</td><td>alergie dětí a rodičů</td><td>úplná pravděpodobnost, Bayes</td><td><a href="02_podminena.html#u-s1-6">kap. 2</a></td></tr>
+<tr><td>S1/7</td><td>skupiny studentů a úspěšnost testů</td><td>úplná pravděpodobnost, Bayes</td><td><a href="02_podminena.html#u-s1-7">kap. 2</a></td></tr>
+<tr><td>S1/8</td><td>totéž s jinými účastmi</td><td>Bayes, přepočet vah</td><td><a href="02_podminena.html#u-s1-8">kap. 2</a></td></tr>
+<tr><td>S1/9</td><td>dvě čísla: součet &lt; 1, součin &lt; 0,09</td><td>geometrická pravděpodobnost</td><td><a href="01_pravdepodobnost.html#u-s1-9">kap. 1</a></td></tr>
+<tr><td>S1/10</td><td>Monty Hall</td><td>Bayes</td><td><a href="02_podminena.html#u-s1-10">kap. 2</a></td></tr>
+</table></div>
+
+<h2 id="sada-2">Sada 2 – diskrétní náhodná veličina</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>úloha</th><th>o čem</th><th>typ</th><th>řešení</th></tr>
+<tr><td>S2/1</td><td>tahání do první červené</td><td>rozdělení a distribuční funkce</td><td><a href="03_diskretni_nv.html#u-s2-1">kap. 3</a></td></tr>
+<tr><td>S2/2</td><td>dny do prvního pozdního příchodu</td><td>geometrické (od 0)</td><td><a href="04_diskretni_rozdeleni.html#u-s2-2">kap. 4</a></td></tr>
+<tr><td>S2/3</td><td>opravené písemky, F(x) zadaná</td><td>čtení distribuční funkce</td><td><a href="03_diskretni_nv.html#u-s2-3">kap. 3</a></td></tr>
+<tr><td>S2/4</td><td>nevyhovující ze 3 výrobků</td><td>binomické</td><td><a href="04_diskretni_rozdeleni.html#u-s2-4">kap. 4</a></td></tr>
+<tr><td>S2/5</td><td>dny přípravy: EX, DX</td><td>EX a DX z tabulky</td><td><a href="03_diskretni_nv.html#u-s2-5">kap. 3</a></td></tr>
+<tr><td>S2/6</td><td>dvě chybějící pravděpodobnosti</td><td>normování + EX</td><td><a href="03_diskretni_nv.html#u-s2-6">kap. 3</a></td></tr>
+<tr><td>S2/7</td><td>šestka přesně ve 2. a 4. hodu</td><td>nezávislé pokusy, konkrétní pořadí</td><td><a href="04_diskretni_rozdeleni.html#u-s2-7">kap. 4</a></td></tr>
+<tr><td>S2/8</td><td>šestka právě dvakrát z pěti</td><td>binomické</td><td><a href="04_diskretni_rozdeleni.html#u-s2-8">kap. 4</a></td></tr>
+<tr><td>S2/9</td><td>počet kvalitních z 5</td><td>binomické</td><td><a href="04_diskretni_rozdeleni.html#u-s2-9">kap. 4</a></td></tr>
+</table></div>
+
+<h2 id="sada-3">Sada 3 – diskrétní rozdělení</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>úloha</th><th>o čem</th><th>typ</th><th>řešení</th></tr>
+<tr><td>S3/1</td><td>úspěšné testy z 6</td><td>binomické: právě, aspoň, nejvýše</td><td><a href="04_diskretni_rozdeleni.html#u-s3-1">kap. 4</a></td></tr>
+<tr><td>S3/2</td><td>EX a DX z S3/1</td><td>vzorce binomického</td><td><a href="04_diskretni_rozdeleni.html#u-s3-2">kap. 4</a></td></tr>
+<tr><td>S3/3</td><td>testy do prvního neúspěchu, max. 6</td><td>useknuté geometrické</td><td><a href="04_diskretni_rozdeleni.html#u-s3-3">kap. 4</a></td></tr>
+<tr><td>S3/4</td><td>otázky do první chyby</td><td>geometrické (od 0)</td><td><a href="04_diskretni_rozdeleni.html#u-s3-4">kap. 4</a></td></tr>
+<tr><td>S3/5</td><td>hody do první šestky</td><td>geometrické (od 1), EX</td><td><a href="04_diskretni_rozdeleni.html#u-s3-5">kap. 4</a></td></tr>
+<tr><td>S3/6</td><td>zmetky ve výběru 10 ze 100</td><td>hypergeometrické</td><td><a href="04_diskretni_rozdeleni.html#u-s3-6">kap. 4</a></td></tr>
+<tr><td>S3/7</td><td>červivá jablka</td><td>hypergeometrické, EX, DX</td><td><a href="04_diskretni_rozdeleni.html#u-s3-7">kap. 4</a></td></tr>
+</table></div>
+
+<h2 id="sada-4">Sada 4 – Poisson a spojitá veličina</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>úloha</th><th>o čem</th><th>typ</th><th>řešení</th></tr>
+<tr><td>S4/1</td><td>lidé v restauraci za čas</td><td>Poissonovo, přepočet λ</td><td><a href="04_diskretni_rozdeleni.html#u-s4-1">kap. 4</a></td></tr>
+<tr><td>S4/2</td><td>800 počítačů, p = 0,01</td><td>binomické vs. Poissonova aproximace</td><td><a href="04_diskretni_rozdeleni.html#u-s4-2">kap. 4</a></td></tr>
+<tr><td>S4/3</td><td>žádný požadavek během restartu</td><td>Poissonovo, \(e^{-\lambda}\)</td><td><a href="04_diskretni_rozdeleni.html#u-s4-3">kap. 4</a></td></tr>
+<tr><td>S4/4</td><td>hustota \(a(3x - x^2)\)</td><td>parametr, pravděpodobnost, EX, F</td><td><a href="05_spojita_nv.html#u-s4-4">kap. 5</a></td></tr>
+<tr><td>S4/5</td><td>hustota \(\tfrac12 \sin x\)</td><td>ověření hustoty, EX, DX</td><td><a href="05_spojita_nv.html#u-s4-5">kap. 5</a></td></tr>
+</table></div>
+
+<h2 id="sada-5">Sada 5 – Laplaceovo a normální rozdělení</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>úloha</th><th>o čem</th><th>typ</th><th>řešení</th></tr>
+<tr><td>S5/1</td><td>Laplaceovo rozdělení</td><td>normování, F po částech, EX, DX</td><td><a href="05_spojita_nv.html#u-s5-1">kap. 5</a></td></tr>
+<tr><td>S5/2</td><td>pravděpodobnosti pro No(0, 1)</td><td>Φ a symetrie</td><td><a href="06_normalni.html#u-s5-2">kap. 6</a></td></tr>
+<tr><td>S5/3</td><td>hledání u</td><td>kvantily</td><td><a href="06_normalni.html#u-s5-3">kap. 6</a></td></tr>
+<tr><td>S5/4</td><td>měření proudu</td><td>standardizace</td><td><a href="06_normalni.html#u-s5-4">kap. 6</a></td></tr>
+<tr><td>S5/5</td><td>chyba měřicího přístroje</td><td>kvantily, zpětný převod</td><td><a href="06_normalni.html#u-s5-5">kap. 6</a></td></tr>
+</table></div>
+
+<h2 id="sada-6">Sada 6 – limitní věty a náhodný vektor</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>úloha</th><th>o čem</th><th>typ</th><th>řešení</th></tr>
+<tr><td>S6/1</td><td>chlapci a dívky mezi novorozenci</td><td>binomické vs. Moivre–Laplace</td><td><a href="07_limitni_vety.html#u-s6-1">kap. 7</a></td></tr>
+<tr><td>S6/2</td><td>jedničky z generátoru</td><td>Moivre–Laplace</td><td><a href="07_limitni_vety.html#u-s6-2">kap. 7</a></td></tr>
+<tr><td>S6/3</td><td>kolik pokusů pro aspoň 90 výskytů</td><td>Moivre–Laplace, hledání n</td><td><a href="07_limitni_vety.html#u-s6-3">kap. 7</a></td></tr>
+<tr><td>S6/4</td><td>lidé na vyhlídkové lodi</td><td>centrální limitní věta, hledání n</td><td><a href="07_limitni_vety.html#u-s6-4">kap. 7</a></td></tr>
+<tr><td>S6/5</td><td>sdružená hustota \(4x(1-y)\)</td><td>marginální hustoty, dvojný integrál</td><td><a href="08_nahodny_vektor.html#u-s6-5">kap. 8</a></td></tr>
+</table></div>
+
+<h2 id="sada-7">Sada 7 – odhady a testy</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>úloha</th><th>o čem</th><th>typ</th><th>řešení</th></tr>
+<tr><td>S7/1</td><td>interval pro μ z 10 hodnot</td><td>interval spolehlivosti (t)</td><td><a href="09_odhady.html#u-s7-1">kap. 9</a></td></tr>
+<tr><td>S7/2</td><td>fyzikální konstanta</td><td>interval pro μ (t) a σ² (χ²)</td><td><a href="09_odhady.html#u-s7-2">kap. 9</a></td></tr>
+<tr><td>S7/3</td><td>shoda dvou průměrů</td><td>dvouvýběrový t-test</td><td><a href="10_testy.html#u-s7-3">kap. 10</a></td></tr>
+<tr><td>S7/4</td><td>shoda dvou rozptylů</td><td>F-test</td><td><a href="10_testy.html#u-s7-4">kap. 10</a></td></tr>
+<tr><td>S7/5</td><td>maso v jídelně</td><td>jednovýběrový t-test</td><td><a href="10_testy.html#u-s7-5">kap. 10</a></td></tr>
+</table></div>
+
+<h2 id="hw">Domácí úkoly → podobné úlohy</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>úkol</th><th>typ</th><th>podobná úloha s postupem</th></tr>
+<tr><td>HW1/1</td><td>geometrická pravděpodobnost v kruhu</td><td><a href="01_pravdepodobnost.html#pr-terc">bod na terči</a></td></tr>
+<tr><td>HW1/2</td><td>úplná pravděpodobnost</td><td><a href="02_podminena.html#pr-krabice">krabice s různým obsahem</a></td></tr>
+<tr><td>HW1/3</td><td>klasická, součty tří kostek</td><td><a href="01_pravdepodobnost.html#pr-tri-kostky">součet 7, nebo 8?</a></td></tr>
+<tr><td>HW1/4</td><td>geometrická, diskriminant</td><td><a href="01_pravdepodobnost.html#pr-kvadraticka">reálné kořeny</a></td></tr>
+<tr><td>HW1/5</td><td>geometrická, kruh a čtverec</td><td><a href="01_pravdepodobnost.html#pr-ctverec-v-kruhu">čtverec vepsaný do kruhu</a></td></tr>
+<tr><td>HW2/1</td><td>hra na střídačku</td><td><a href="02_podminena.html#pr-stridacka">hra na střídačku</a></td></tr>
+<tr><td>HW2/2</td><td>Bayes s nekonečně mnoha hypotézami</td><td><a href="02_podminena.html#pr-bayes-rada">Bayes a řada</a></td></tr>
+<tr><td>HW2/3</td><td>hustota po částech: F, EX, DX</td><td><a href="05_spojita_nv.html#pr-trojuhelnik">hustota ze dvou částí</a></td></tr>
+</table></div>
+
+<nav class="pager"><a class="prev" href="11_jak_poznat.html"><small>← předchozí</small>Jak poznat typ úlohy</a><a class="next" href="13_tabulky.html"><small>další →</small>Statistické tabulky</a></nav>
+</main>
+</div>
+</body>
+</html>

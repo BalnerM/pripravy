@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Limitní věty – PSO</title>
+<meta name="description" content="Centrální limitní věta a Moivreova–Laplaceova věta.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css?v=336b6bbf">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js?v=336b6bbf"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">PSO – příprava na zkoušku<small>pravděpodobnost a statistika, principy a postupy úloh</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html#pso" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/07_limitni_vety.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_pravdepodobnost.html"><span class="n">1</span><span>Pravděpodobnost: klasická a geometrická</span></a></li>
+    <li><a href="02_podminena.html"><span class="n">2</span><span>Podmíněná pravděpodobnost a Bayes</span></a></li>
+    <li><a href="03_diskretni_nv.html"><span class="n">3</span><span>Diskrétní náhodná veličina</span></a></li>
+    <li><a href="04_diskretni_rozdeleni.html"><span class="n">4</span><span>Diskrétní rozdělení</span></a></li>
+    <li><a href="05_spojita_nv.html"><span class="n">5</span><span>Spojitá náhodná veličina</span></a></li>
+    <li><a href="06_normalni.html"><span class="n">6</span><span>Normální rozdělení</span></a></li>
+    <li><a href="07_limitni_vety.html" class="active"><span class="n">7</span><span>Limitní věty</span></a></li>
+    <li><a href="08_nahodny_vektor.html"><span class="n">8</span><span>Náhodný vektor</span></a></li>
+    <li><a href="09_odhady.html"><span class="n">9</span><span>Odhady a intervaly spolehlivosti</span></a></li>
+    <li><a href="10_testy.html"><span class="n">10</span><span>Testování hypotéz</span></a></li>
+    <li><a href="11_jak_poznat.html"><span class="n">★</span><span>Jak poznat typ úlohy</span></a></li>
+    <li><a href="12_ulohy.html"><span class="n">Ú</span><span>Přehled úloh ze cvičení</span></a></li>
+    <li><a href="13_tabulky.html"><span class="n">T</span><span>Statistické tabulky</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#cebysev">Čebyševova nerovnost a zákon velkých čísel</a></li>
+    <li><a href="#clv">Centrální limitní věta</a></li>
+    <li><a href="#moivre">Moivreova–Laplaceova věta: binomické → normální</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky ke zkoušce</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">PSO – příprava na zkoušku · Limitní věty – PSO · https://balnerm.github.io/pripravy/pso/07_limitni_vety.html</p>
+<p class="kicker">Kapitola 7</p>
+<h1>Limitní věty</h1>
+<p class="lead">Proč je normální rozdělení všude? Protože <b>součet mnoha nezávislých veličin</b> má přibližně normální rozdělení, ať už jednotlivé sčítance vypadají jakkoli. To je centrální limitní věta. Díky ní lze počítat s binomickým rozdělením pro tisíce pokusů (Moivreova–Laplaceova věta) nebo s celkovou hmotností desítek lidí – úlohy sady 6.</p>
+
+<h2 id="cebysev">Čebyševova nerovnost a zákon velkých čísel</h2>
+<div class="box definice" id="def-cebysev"><div class="box-t">Definice: Čebyševova nerovnost <span class="en">Chebyshev's inequality</span></div>
+<p>Pro každou náhodnou veličinu X s konečným rozptylem a pro každé \(\varepsilon &gt; 0\) platí</p>
+\[ p\big(|X - EX| \ge \varepsilon\big) \le \frac{DX}{\varepsilon^2}. \]
+<p class="jinak">velká odchylka od průměru je vzácná, a to <b>pro jakékoli rozdělení</b>. Odhad je hrubý (u normálního rozdělení vychází skutečnost mnohem lépe), ale nepotřebuje znát tvar rozdělení.</p></div>
+<div class="box definice" id="def-zakon-velkych-cisel"><div class="box-t">Definice: zákon velkých čísel (Bernoulliova věta) <span class="en">law of large numbers</span></div>
+<p>Je-li \(X\) počet výskytů jevu s pravděpodobností \(p\) v \(n\) nezávislých pokusech, pak pro každé \(\varepsilon &gt; 0\)</p>
+\[ \lim_{n \to \infty} p\!\left(\left|\frac{X}{n} - p\right| &lt; \varepsilon\right) = 1. \]
+<p class="jinak">relativní četnost se s rostoucím počtem pokusů ustálí na pravděpodobnosti. Proto má smysl pravděpodobnost odhadovat z dat – a proto se průměr měření blíží skutečné hodnotě.</p></div>
+
+<h2 id="clv">Centrální limitní věta</h2>
+<div class="box definice" id="def-clv"><div class="box-t">Definice: centrální limitní věta <span class="en">central limit theorem (Lindeberg–Lévy)</span></div>
+<p>Jsou-li \(X_1, \dots, X_n\) nezávislé veličiny se stejnou střední hodnotou μ a stejným rozptylem σ², pak pro dostatečně velké \(n\) má součet \(Y = X_1 + \dots + X_n\) přibližně normální rozdělení:</p>
+\[ Y \approx \text{No}\big(n\mu,\; \sigma\sqrt{n}\big), \qquad \frac{Y - n\mu}{\sigma\sqrt{n}} \approx \text{No}(0, 1). \]
+<p class="jinak">sečti hodně nezávislých náhodných vlivů a výsledek bude zvon. Střední hodnoty se sčítají (\(n\mu\)), rozptyly také (\(n\sigma^2\)), takže směrodatná odchylka roste jen jako \(\sqrt{n}\).</p></div>
+
+<figure class="wide"><div class="paper"><img src="figures/fig07_clt.png" alt="Rozdělení součtu jedné, dvou a pěti kostek; s počtem kostek se blíží normální křivce" loading="lazy"></div>
+<figcaption><b>Obr. 7.1</b> Součet 1, 2 a 5 hodů kostkou. Jedna kostka je rovnoměrná, ale už součet pěti je skoro normální (oranžová křivka).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Tvar jednotlivých sčítanců nehraje roli – i z „ploché“ kostky vznikne sčítáním zvon. Proto smíme na součty (a průměry) použít normální rozdělení a tabulku Φ.</p></div>
+
+<div class="box vzorec"><div class="box-t">Pravděpodobnost pro součet n veličin</div>
+\[ \begin{aligned} p(x_1 \le Y \le x_2) &amp;\approx \Phi\!\left(\frac{x_2 - n\mu}{\sigma\sqrt{n}}\right) \\ &amp;\quad - \Phi\!\left(\frac{x_1 - n\mu}{\sigma\sqrt{n}}\right) \end{aligned} \]
+<table class="vars">
+<tr><td>\(n\)</td><td>počet sčítanců (lidí, měření, výrobků)</td></tr>
+<tr><td>\(\mu\), \(\sigma\)</td><td>střední hodnota a směrodatná odchylka <b>jednoho</b> sčítance</td></tr>
+<tr><td>\(n\mu\), \(\sigma\sqrt{n}\)</td><td>střední hodnota a směrodatná odchylka <b>součtu</b></td></tr>
+</table></div>
+
+<div class="box pozor"><div class="box-t">Častá past: σ√n, ne nσ</div>
+<p>Sčítají se rozptyly, ne směrodatné odchylky: \(D(Y) = n\sigma^2\), proto \(\sigma_Y = \sigma\sqrt{n}\). Odchylky jednotlivých lidí se zčásti vyruší (jeden je těžší, druhý lehčí), takže součet kolísá relativně méně.</p></div>
+
+<div class="box uloha" id="u-s6-4"><div class="box-t">Úloha S6/4 <span class="en">set 6, task 4</span></div>
+<p>Provozujeme vyhlídkovou loď. Kolik nejvýše lidí smíme vzít na palubu, má-li být celková hmotnost menší než 4500 kg s pravděpodobností aspoň 0,99? Hmotnost člověka má střední hodnotu 75 kg a směrodatnou odchylku 15 kg.</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">total mass of people</span> → součet n veličin → CLV; hledá se n. <b>Výsledek:</b> 56 lidí.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Celková hmotnost \(Y\) ~ No\((75n,\ 15\sqrt{n})\) přibližně. Podmínka:</p>
+\[ p(Y &lt; 4500) = \Phi\!\left(\frac{4500 - 75n}{15\sqrt{n}}\right) \ge 0{,}99 \]
+<p>2. Φ je rostoucí, takže argument musí být aspoň \(u_{0{,}99} \approx 2{,}326\):</p>
+\[ \frac{4500 - 75n}{15\sqrt{n}} \ge 2{,}326 \]
+<p>Po vynásobení \(15\sqrt{n}\) a převedení na jednu stranu:</p>
+\[ 75n + 34{,}9\sqrt{n} - 4500 \le 0 \]
+<p>3. Kvadratická rovnice pro \(s = \sqrt{n}\):</p>
+\[ s = \frac{-34{,}9 + \sqrt{34{,}9^2 + 4 \cdot 75 \cdot 4500}}{2 \cdot 75} \approx 7{,}517 \]
+<p>Tedy \(n = s^2 \le 56{,}5\).</p>
+<p>4. n musí být celé a nejvýše 56,5, tedy <b>56</b>. Kontrola: pro \(n = 56\) je argument 2,67 (pravděpodobnost 0,996), pro \(n = 57\) jen 1,99 (0,977 &lt; 0,99).</p>
+</div></details></div>
+
+<h2 id="moivre">Moivreova–Laplaceova věta: binomické → normální</h2>
+<div class="box definice" id="def-moivre"><div class="box-t">Definice: Moivreova–Laplaceova věta <span class="en">de Moivre–Laplace theorem</span></div>
+<p>Má-li X binomické rozdělení Bi(n, p) a je-li n velké a p ne blízko 0 ani 1, lze X aproximovat normálním rozdělením</p>
+\[ X \approx \text{No}\big(np,\; \sqrt{np(1-p)}\big). \]
+<p>Aproximace je vhodná přibližně pro \(np(1-p) &gt; 9\).</p>
+<p class="jinak">binomická veličina je součet n nezávislých nul a jedniček (alternativních veličin), takže na ni platí CLV. Místo sčítání tisíců binomických členů stačí jedna hodnota Φ.</p></div>
+
+<div class="box postup" id="postup-moivre"><div class="box-t">Jak poznat a jak postupovat: aproximace binomického normálním</div>
+<p><b>Poznáš to:</b> binomická situace s velkým n (stovky, tisíce: <span class="kw">among 10 000 newborns</span>, <span class="kw">a sequence of 10 000 digits</span>), otázka na interval počtu nebo relativní četnosti; nebo „kolik pokusů je potřeba“.</p>
+<ol>
+<li>Urči \(\mu = np\) a \(\sigma = \sqrt{np(1-p)}\); ověř \(np(1-p) &gt; 9\).</li>
+<li>Relativní četnost převeď na počet: \(a &lt; X/n &lt; b\) ⇔ \(na &lt; X &lt; nb\).</li>
+<li>Pravděpodobnost: \(\Phi((x_2 - \mu)/\sigma) - \Phi((x_1 - \mu)/\sigma)\).</li>
+<li>Hledá-li se n: podmínku přepiš přes kvantil a vyřeš kvadratickou rovnici pro \(\sqrt{n}\); výsledek zaokrouhli tak, aby podmínka platila.</li>
+</ol></div>
+
+<div class="box uloha" id="u-s6-1"><div class="box-t">Úloha S6/1 <span class="en">set 6, task 1</span></div>
+<p>Pravděpodobnost narození chlapce je 0,515. Jaká je pravděpodobnost, že (a) mezi 10 novorozenci bude víc dívek než chlapců, (b) mezi 10 000 novorozenci bude víc dívek než chlapců, (c) mezi 100 000 novorozenci bude relativní četnost chlapců mezi 0,513 a 0,515?</p>
+<p class="meta"><b>V zadání:</b> výsledky se mají spočítat binomicky (Bi) i normální aproximací (No) a porovnat. <b>Výsledek:</b> (a) Bi 0,341, No ≈ 0,23; (b) Bi 0,00130, No 0,00135; (c) Bi 0,398, No 0,397.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>X = počet chlapců ~ Bi(n; 0,515). „Víc dívek než chlapců“ = chlapců méně než polovina.</p>
+<p><b>(a) n = 10:</b> víc dívek ⇔ \(X \le 4\). Přesně:</p>
+\[ \begin{aligned} p(X \le 4) &amp;= \sum_{k=0}^{4} \binom{10}{k} 0{,}515^k\, 0{,}485^{10-k} \\ &amp;\approx 0{,}341 \end{aligned} \]
+<p>Aproximace: \(\mu = 5{,}15\), \(\sigma = \sqrt{10 \cdot 0{,}515 \cdot 0{,}485} \approx 1{,}58\):</p>
+\[ \begin{aligned} p(X \le 4) &amp;\approx \Phi\!\left(\frac{4 - 5{,}15}{1{,}58}\right) \\ &amp;= \Phi(-0{,}73) \approx 0{,}23 \end{aligned} \]
+<p>Výsledky se hodně liší: \(np(1-p) = 2{,}5 &lt; 9\), pro n = 10 aproximace nefunguje.</p>
+<p><b>(b) n = 10 000:</b> \(\mu = 5150\), \(\sigma \approx 49{,}98\); víc dívek ⇔ \(X &lt; 5000\):</p>
+\[ \begin{aligned} p(X &lt; 5000) &amp;\approx \Phi\!\left(\frac{5000 - 5150}{49{,}98}\right) \\ &amp;= \Phi(-3{,}00) \approx 0{,}00135 \end{aligned} \]
+<p>Binomicky přesně 0,00130 – teď už aproximace sedí.</p>
+<p><b>(c) n = 100 000:</b> \(0{,}513 &lt; X/n &lt; 0{,}515\) ⇔ \(51\,300 &lt; X &lt; 51\,500\); \(\mu = 51\,500\), \(\sigma \approx 158{,}0\):</p>
+\[ \begin{aligned} p &amp;\approx \Phi(0) - \Phi\!\left(\frac{51\,300 - 51\,500}{158{,}0}\right) \\ &amp;= 0{,}5 - \Phi(-1{,}27) \approx 0{,}397 \end{aligned} \]
+<p>Binomicky 0,398.</p>
+</div></details></div>
+
+<figure class="wide"><div class="paper"><img src="figures/fig07_moivre.png" alt="Binomické rozdělení počtu chlapců s normální křivkou: pro n rovno 10 křivka sedí špatně, pro n rovno 400 výborně" loading="lazy"></div>
+<figcaption><b>Obr. 7.2</b> Binomické rozdělení počtu chlapců (sloupce) a normální aproximace (křivka) pro n = 10 a n = 400.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Při malém n je binomické rozdělení „kostrbaté“ a hladká křivka ho popisuje jen hrubě. S rostoucím n (podmínka \(np(1-p) &gt; 9\)) sloupce s křivkou splynou.</p></div>
+
+<div class="box intuice"><div class="box-t">Proč (a) vychází tak špatně: oprava na spojitost</div>
+<p>Binomická veličina má jen celé hodnoty; sloupec pro hodnotu 4 zabírá na ose úsek od 3,5 do 4,5. Normální křivka „do 4“ tedy useká polovinu posledního sloupce. Kdo dosadí 4,5 místo 4 (<b>oprava na spojitost</b>), dostane \(\Phi(-0{,}41) \approx 0{,}340\) – skoro přesně 0,341. Ve skriptech předmětu se oprava nepoužívá; pro velká n je stejně zanedbatelná.</p></div>
+
+<div class="box uloha" id="u-s6-2"><div class="box-t">Úloha S6/2 <span class="en">set 6, task 2</span></div>
+<p>Generátor vytváří nezávisle číslice 0 a 1, každou s pravděpodobností 0,5. Vytvoříme posloupnost 10 000 číslic. Jaká je pravděpodobnost, že počet jedniček bude mezi 4900 a 5100?</p>
+<p class="meta"><b>Výsledek:</b> ≈ 0,9545.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. X ~ Bi(10 000; 0,5): \(\mu = 5000\), \(\sigma = \sqrt{10\,000 \cdot 0{,}25} = 50\).</p>
+<p>2. Hranice jsou přesně ±2σ od průměru:</p>
+\[ \begin{aligned} p(4900 \le X \le 5100) &amp;\approx \Phi(2) - \Phi(-2) \\ &amp;= 2\Phi(2) - 1 \approx 0{,}9545 \end{aligned} \]
+<p>To je pravidlo „95 % do dvou sigma“ z <a href="06_normalni.html#pravidlo-3-sigma">kapitoly 6</a>.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-s6-3"><div class="box-t">Úloha S6/3 <span class="en">set 6, task 3</span></div>
+<p>Jev A má pravděpodobnost 0,8. Kolik pokusů musíme provést, aby jev s pravděpodobností 0,9 nastal aspoň 90krát?</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">how many trials do we have to do</span> → neznámé n v Moivreově–Laplaceově aproximaci. <b>Výsledek:</b> 120 pokusů.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. X ~ Bi(n; 0,8) ≈ No\((0{,}8n,\ 0{,}4\sqrt{n})\) (\(\sqrt{0{,}8 \cdot 0{,}2} = 0{,}4\)). Podmínka:</p>
+\[ p(X \ge 90) = 1 - \Phi\!\left(\frac{90 - 0{,}8n}{0{,}4\sqrt{n}}\right) \ge 0{,}9 \]
+<p>2. Tedy \(\Phi(\cdot) \le 0{,}1\), argument musí být nejvýše \(u_{0{,}1} = -1{,}2816\):</p>
+\[ \frac{90 - 0{,}8n}{0{,}4\sqrt{n}} \le -1{,}2816 \]
+<p>Po vynásobení \(0{,}4\sqrt{n}\) a převedení na jednu stranu:</p>
+\[ 0{,}8n - 0{,}5126\sqrt{n} - 90 \ge 0 \]
+<p>3. Kvadratická rovnice pro \(s = \sqrt{n}\) (bereme kladný kořen):</p>
+\[ \begin{aligned} s &amp;= \frac{0{,}5126 + \sqrt{0{,}5126^2 + 4 \cdot 0{,}8 \cdot 90}}{2 \cdot 0{,}8} \\ &amp;\approx 10{,}932 \end{aligned} \]
+<p>Tedy \(n = s^2 \ge 119{,}5\).</p>
+<p>4. Nejmenší celé n je <b>120</b>. Kontrola: pro n = 120 je \(p(X \ge 90) \approx 0{,}915\), pro n = 119 jen 0,883.</p>
+</div></details></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Centrální limitní věta říká, že součet n nezávislých stejně rozdělených veličin se střední hodnotou μ a rozptylem σ² má pro velké n přibližně normální rozdělení No(nμ, σ√n), bez ohledu na rozdělení jednotlivých sčítanců. Jejím speciálním případem je Moivreova–Laplaceova věta: binomické rozdělení Bi(n, p) lze pro velké n aproximovat normálním No(np, √(np(1−p))), prakticky pro np(1−p) &gt; 9.“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Součet mnoha nezávislých veličin ≈ normální se střední hodnotou nμ a směrodatnou odchylkou σ√n; binomické je takový součet.</p></div>
+
+<div class="box slovicka"><div class="box-t">Anglická slovíčka</div>
+<table>
+<tr><th>česky</th><th>anglicky</th></tr>
+<tr><td>limitní věty</td><td>limit theorems</td></tr>
+<tr><td>centrální limitní věta</td><td>central limit theorem (CLT)</td></tr>
+<tr><td>zákon velkých čísel</td><td>law of large numbers</td></tr>
+<tr><td>Čebyševova nerovnost</td><td>Chebyshev's inequality</td></tr>
+<tr><td>relativní četnost</td><td>relative frequency</td></tr>
+<tr><td>aproximace normálním rozdělením</td><td>normal approximation</td></tr>
+<tr><td>oprava na spojitost</td><td>continuity correction</td></tr>
+<tr><td>novorozenec, chlapec, dívka</td><td>newborn, boy, girl</td></tr>
+<tr><td>celková hmotnost</td><td>total mass (weight)</td></tr>
+<tr><td>pokus</td><td>trial</td></tr>
+</table>
+<p><b>Fráze ze zadání:</b> <span class="kw">more girls than boys</span> = víc dívek než chlapců; <span class="kw">the relative frequency of boys will be between</span> = relativní četnost chlapců bude mezi; <span class="kw">how many people can we take on board at most</span> = kolik nejvýše lidí vzít na palubu; <span class="kw">greater than or equal to 0.99</span> = aspoň 0,99.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Zákon velkých čísel zaručuje, že se relativní četnost ustálí na pravděpodobnosti, a Čebyševova nerovnost dává hrubou horní mez pro velké odchylky u libovolného rozdělení. Centrální limitní věta jde dál: součet n nezávislých stejně rozdělených veličin má přibližně normální rozdělení se střední hodnotou nμ a směrodatnou odchylkou σ√n. Moivreova–Laplaceova věta je její použití na binomické rozdělení: Bi(n, p) ≈ No(np, √(np(1−p))) pro np(1−p) &gt; 9. Úlohy pak vedou buď na hodnotu Φ, nebo – když se hledá počet n – na kvantil a kvadratickou rovnici pro √n.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Součet n nezávislých veličin: střední hodnota nμ, směrodatná odchylka σ√n, rozdělení přibližně normální.</li>
+<li>Binomické pro velké n: μ = np, σ = √(np(1−p)); aproximace jen pro np(1−p) &gt; 9.</li>
+<li>Relativní četnost převeď na počet vynásobením n.</li>
+<li>Hledá-li se n: kvantil → nerovnice → kvadratická rovnice pro √n → zaokrouhli správným směrem a ověř.</li>
+<li>Pro malé n dává aproximace špatná čísla – raději počítej binomicky.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Vyslovte centrální limitní větu a vysvětlete, proč je tak důležitá.</summary><div>
+<p>Jsou-li \(X_1, \dots, X_n\) nezávislé se stejnou střední hodnotou μ a rozptylem σ², má pro velké n součet přibližně rozdělení No(nμ, σ√n), tj. \((Y - n\mu)/(\sigma\sqrt{n})\) ≈ No(0, 1). Je důležitá, protože platí bez ohledu na rozdělení sčítanců – vysvětluje, proč je normální rozdělení v přírodě i měření tak časté, a umožňuje počítat se součty a průměry.</p></div></details>
+<details class="q"><summary>Co říká Moivreova–Laplaceova věta a kdy ji lze použít?</summary><div>
+<p>Binomické rozdělení Bi(n, p) lze pro velké n aproximovat normálním se stejnou střední hodnotou np a rozptylem np(1−p). Používá se, když n je velké a p není blízko 0 ani 1, prakticky np(1−p) &gt; 9. Je to CLV pro součet n alternativních veličin.</p></div></details>
+<details class="q"><summary>Jak roste směrodatná odchylka součtu n nezávislých veličin a proč?</summary><div>
+<p>Jako σ√n. Sčítají se rozptyly (pro nezávislé veličiny \(D(\sum X_i) = \sum DX_i = n\sigma^2\)), takže směrodatná odchylka je odmocnina z nσ². Odchylky jednotlivých sčítanců se zčásti vyruší.</p></div></details>
+<details class="q"><summary>Co říká zákon velkých čísel?</summary><div>
+<p>Relativní četnost jevu v n nezávislých pokusech konverguje (v pravděpodobnosti) k jeho pravděpodobnosti p: pro každé ε &gt; 0 jde \(p(|X/n - p| &lt; \varepsilon)\) k 1. Ospravedlňuje odhad pravděpodobnosti z četností.</p></div></details>
+<details class="q"><summary>Co říká Čebyševova nerovnost a k čemu je?</summary><div>
+<p>\(p(|X - EX| \ge \varepsilon) \le DX/\varepsilon^2\) pro libovolnou veličinu s konečným rozptylem. Odhadne shora pravděpodobnost velké odchylky, aniž bychom znali rozdělení. Je obecná, ale hrubá; je z ní odvozen zákon velkých čísel.</p></div></details>
+<details class="q"><summary>Jak postupujete, když se ptají, kolik pokusů je potřeba, aby něco platilo s danou pravděpodobností?</summary><div>
+<p>Počet úspěchů aproximuji No(np, √(np(1−p))) s neznámým n, podmínku přepíšu přes Φ a kvantil na nerovnici v n, ta vede na kvadratickou rovnici v √n. Výsledek zaokrouhlím na celé číslo tak, aby podmínka platila, a dosazením ověřím.</p></div></details>
+
+<nav class="pager"><a class="prev" href="06_normalni.html"><small>← předchozí</small>Normální rozdělení</a><a class="next" href="08_nahodny_vektor.html"><small>další →</small>Náhodný vektor</a></nav>
+</main>
+</div>
+</body>
+</html>

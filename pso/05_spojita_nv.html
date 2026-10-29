@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spojitá náhodná veličina – PSO</title>
+<meta name="description" content="Hustota, distribuční funkce, střední hodnota a rozptyl integrálem.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css?v=336b6bbf">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js?v=336b6bbf"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">PSO – příprava na zkoušku<small>pravděpodobnost a statistika, principy a postupy úloh</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html#pso" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/05_spojita_nv.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_pravdepodobnost.html"><span class="n">1</span><span>Pravděpodobnost: klasická a geometrická</span></a></li>
+    <li><a href="02_podminena.html"><span class="n">2</span><span>Podmíněná pravděpodobnost a Bayes</span></a></li>
+    <li><a href="03_diskretni_nv.html"><span class="n">3</span><span>Diskrétní náhodná veličina</span></a></li>
+    <li><a href="04_diskretni_rozdeleni.html"><span class="n">4</span><span>Diskrétní rozdělení</span></a></li>
+    <li><a href="05_spojita_nv.html" class="active"><span class="n">5</span><span>Spojitá náhodná veličina</span></a></li>
+    <li><a href="06_normalni.html"><span class="n">6</span><span>Normální rozdělení</span></a></li>
+    <li><a href="07_limitni_vety.html"><span class="n">7</span><span>Limitní věty</span></a></li>
+    <li><a href="08_nahodny_vektor.html"><span class="n">8</span><span>Náhodný vektor</span></a></li>
+    <li><a href="09_odhady.html"><span class="n">9</span><span>Odhady a intervaly spolehlivosti</span></a></li>
+    <li><a href="10_testy.html"><span class="n">10</span><span>Testování hypotéz</span></a></li>
+    <li><a href="11_jak_poznat.html"><span class="n">★</span><span>Jak poznat typ úlohy</span></a></li>
+    <li><a href="12_ulohy.html"><span class="n">Ú</span><span>Přehled úloh ze cvičení</span></a></li>
+    <li><a href="13_tabulky.html"><span class="n">T</span><span>Statistické tabulky</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#hustota">Hustota a distribuční funkce</a></li>
+    <li><a href="#charakteristiky">Střední hodnota, rozptyl, kvantily</a></li>
+    <li><a href="#typy">Důležitá spojitá rozdělení</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky ke zkoušce</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">PSO – příprava na zkoušku · Spojitá náhodná veličina – PSO · https://balnerm.github.io/pripravy/pso/05_spojita_nv.html</p>
+<p class="kicker">Kapitola 5</p>
+<h1>Spojitá náhodná veličina</h1>
+<p class="lead">Délka, čas, napětí, chyba měření – veličiny, které mohou vyjít jakékoli číslo z intervalu. Jednotlivá hodnota má u nich pravděpodobnost nula, proto místo tabulky pravděpodobností máme <b>hustotu</b> a pravděpodobnost je <b>plocha pod ní</b>. Všechno z kapitoly 3 platí dál, jen se součty mění na integrály. Tak se řeší úlohy S4/4, S4/5, S5/1 i HW2/3.</p>
+
+<h2 id="hustota">Hustota a distribuční funkce</h2>
+<div class="box definice" id="def-spojita-nv"><div class="box-t">Definice: spojitá náhodná veličina a hustota <span class="en">continuous random variable, density function</span></div>
+<p>Náhodná veličina \(X\) je <b>spojitá</b>, jestliže existuje nezáporná funkce \(f(x)\) – <b>hustota pravděpodobnosti</b> – taková, že pro distribuční funkci platí</p>
+\[ F(x) = \int_{-\infty}^{x} f(t)\, dt \quad \text{pro každé } x. \]
+<p class="jinak">hustota říká, „kde je pravděpodobnost nahuštěná“. Sama není pravděpodobnost (může být i větší než 1), pravděpodobností je teprve plocha pod ní.</p></div>
+
+<div class="box vzorec"><div class="box-t">Co platí pro hustotu a jak počítat pravděpodobnost</div>
+\[ f(x) \ge 0, \qquad \int_{-\infty}^{\infty} f(x)\, dx = 1 \]
+\[ p(a &lt; X &lt; b) = \int_{a}^{b} f(x)\, dx = F(b) - F(a) \]
+\[ F'(x) = f(x) \quad \text{(kde existuje derivace)} \]
+<table class="vars">
+<tr><td>\(f(x)\)</td><td>hustota – výška křivky; plocha pod celou křivkou je 1</td></tr>
+<tr><td>\(F(x)\)</td><td>distribuční funkce – plocha pod hustotou vlevo od x; spojitá, neklesající, od 0 do 1</td></tr>
+<tr><td>\(p(X = a) = 0\)</td><td>úsečka má nulovou plochu, proto u spojité veličiny nezáleží na tom, zda píšu &lt; nebo ≤</td></tr>
+</table></div>
+
+<div class="box postup" id="postup-hustota"><div class="box-t">Jak poznat a jak postupovat: úloha s hustotou</div>
+<p><b>Poznáš to:</b> <span class="kw">density function f(x)</span>, předpis po částech, neznámý <span class="kw">parameter a</span>, <span class="kw">prove that f can be a density</span>.</p>
+<ol>
+<li><b>Parametr a / „je to hustota?“:</b> ověř \(f \ge 0\) a vyřeš \(\int f = 1\).</li>
+<li><b>Pravděpodobnost intervalu:</b> integrál hustoty přes interval (jen tam, kde je f nenulová).</li>
+<li><b>Distribuční funkce po částech:</b> pro x vlevo od nosiče 0; uvnitř \(\int_{\text{začátek}}^{x} f(t)\,dt\) (u více částí přičti plochu předchozích částí); vpravo 1.</li>
+<li><b>Kontrola F:</b> spojitá (navazuje na hranicích), začíná 0, končí 1.</li>
+<li><b>EX, DX:</b> vzorce níže; u symetrické hustoty je EX střed symetrie.</li>
+</ol></div>
+
+<h2 id="charakteristiky">Střední hodnota, rozptyl, kvantily</h2>
+<div class="box vzorec"><div class="box-t">Střední hodnota a rozptyl spojité veličiny</div>
+\[ \begin{aligned} EX &amp;= \int_{-\infty}^{\infty} x\, f(x)\, dx \\ EX^2 &amp;= \int_{-\infty}^{\infty} x^2 f(x)\, dx \end{aligned} \]
+\[ DX = EX^2 - (EX)^2 \]
+<table class="vars">
+<tr><td>\(x\,f(x)\)</td><td>hodnota váhovaná hustotou – obdoba \(x_i\,p_i\) ze součtu</td></tr>
+<tr><td>meze</td><td>prakticky jen přes nosič (kde \(f \ne 0\)); u hustoty po částech se integrál rozdělí</td></tr>
+</table></div>
+<div class="box definice" id="def-kvantil"><div class="box-t">Definice: kvantil a medián <span class="en">quantile, median</span></div>
+<p><b>p-kvantil</b> \(x_p\) spojité veličiny (\(0 &lt; p &lt; 1\)) je číslo, pro které \(F(x_p) = p\). <b>Medián</b> je 0,5-kvantil.</p>
+<p class="jinak">bod, vlevo od kterého leží podíl p pravděpodobnosti. Medián dělí plochu pod hustotou na dvě poloviny. Kvantily normálního rozdělení budeme hledat v kapitole 6.</p></div>
+<div class="box definice" id="def-modus"><div class="box-t">Definice: modus <span class="en">mode</span></div>
+<p><b>Modus</b> spojité veličiny je bod, ve kterém má hustota maximum.</p>
+<p class="jinak">nejpravděpodobnější „místo“. U symetrické hustoty s jedním vrcholem splývá modus, medián i střední hodnota.</p></div>
+
+<div class="box uloha" id="u-s4-4"><div class="box-t">Úloha S4/4 <span class="en">set 4, task 4</span></div>
+<p>Hustota je \(f(x) = a(3x - x^2)\) pro \(0 \le x \le 3\), jinde 0. Spočítej (a) parametr a, (b) pravděpodobnost, že X leží v \((1, 2)\), (c) střední hodnotu, (d) distribuční funkci.</p>
+<p class="meta"><b>Výsledek:</b> (a) \(a = 2/9\); (b) \(13/27\); (c) \(EX = 3/2\); (d) \(F(x) = x^2/3 - 2x^3/27\) na \(\langle 0, 3\rangle\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. (a) Normování:</p>
+\[ \begin{aligned} \int_0^3 a(3x - x^2)\, dx &amp;= a\left[\frac{3x^2}{2} - \frac{x^3}{3}\right]_0^3 \\ &amp;= a\left(\frac{27}{2} - 9\right) = \frac{9a}{2} = 1 \end{aligned} \]
+\[ a = \frac{2}{9} \]
+<p>Pro \(0 \le x \le 3\) je \(3x - x^2 = x(3 - x) \ge 0\), takže f je opravdu nezáporná.</p>
+<p>2. (b) Plocha mezi 1 a 2:</p>
+\[ \begin{aligned} p(1 &lt; X &lt; 2) &amp;= \frac{2}{9}\left[\frac{3x^2}{2} - \frac{x^3}{3}\right]_1^2 \\ &amp;= \frac{2}{9}\left(\frac{10}{3} - \frac{7}{6}\right) = \frac{13}{27} \approx 0{,}481 \end{aligned} \]
+<p>3. (c) Hustota je parabola symetrická kolem \(x = 1{,}5\), proto \(EX = 3/2\). Výpočtem:</p>
+\[ \begin{aligned} EX &amp;= \frac{2}{9}\int_0^3 (3x^2 - x^3)\, dx \\ &amp;= \frac{2}{9}\left(27 - \frac{81}{4}\right) = \frac{3}{2} \end{aligned} \]
+<p>4. (d) Distribuční funkce; pro \(0 \le x \le 3\):</p>
+\[ F(x) = \int_0^x \frac{2}{9}(3t - t^2)\, dt = \frac{x^2}{3} - \frac{2x^3}{27} \]
+\[ F(x) = \begin{cases} 0, &amp; x &lt; 0 \\ \dfrac{x^2}{3} - \dfrac{2x^3}{27}, &amp; 0 \le x \le 3 \\ 1, &amp; x &gt; 3 \end{cases} \]
+<p>Kontrola: \(F(3) = 3 - 2 = 1\) a \(F(2) - F(1) = 20/27 - 7/27 = 13/27\) jako v (b).</p>
+</div></details></div>
+
+<figure class="wide"><div class="paper"><img src="figures/fig05_hustota.png" alt="Vlevo parabolická hustota na intervalu 0 až 3 s vybarvenou plochou mezi 1 a 2; vpravo esovitá distribuční funkce" loading="lazy"></div>
+<figcaption><b>Obr. 5.1</b> Úloha S4/4: pravděpodobnost intervalu je plocha pod hustotou (vlevo) = přírůstek distribuční funkce (vpravo).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Stejné číslo 13/27 lze vidět dvakrát: jako plochu pod hustotou mezi 1 a 2, nebo jako rozdíl výšek distribuční funkce \(F(2) - F(1)\). Kde je hustota nejvyšší, tam F nejstrměji roste.</p></div>
+
+<div class="box uloha" id="u-s4-5"><div class="box-t">Úloha S4/5 <span class="en">set 4, task 5</span></div>
+<p>Funkce je \(f(x) = \tfrac{1}{2}\sin x\) pro \(0 \le x \le \pi\), jinde 0. Dokaž, že může být hustotou nějaké veličiny X, a urči její střední hodnotu a rozptyl.</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">prove that the function can be a density</span> → ověřit \(f \ge 0\) a \(\int f = 1\). <b>Výsledek:</b> \(EX = \pi/2\), \(DX = \pi^2/4 - 2 \approx 0{,}467\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Nezápornost: na \(\langle 0, \pi\rangle\) je \(\sin x \ge 0\).</p>
+<p>2. Normování:</p>
+\[ \int_0^{\pi} \frac{1}{2}\sin x\, dx = \frac{1}{2}\left[-\cos x\right]_0^{\pi} = \frac{1}{2}(1 + 1) = 1 \]
+<p>3. Střední hodnota: hustota je symetrická kolem \(\pi/2\), proto \(EX = \pi/2\).</p>
+<p>4. Druhý moment (dvakrát per partes, \(\int x^2 \sin x\,dx = -x^2\cos x + 2x\sin x + 2\cos x\)):</p>
+\[ EX^2 = \frac{1}{2}\int_0^{\pi} x^2 \sin x\, dx = \frac{1}{2}\left(\pi^2 - 4\right) \]
+<p>5. Rozptyl:</p>
+\[ DX = \frac{\pi^2 - 4}{2} - \frac{\pi^2}{4} = \frac{\pi^2}{4} - 2 \approx 0{,}467 \]
+</div></details></div>
+
+<div class="box priklad" id="pr-trojuhelnik"><div class="box-t">Podobná úloha jako HW2/3: hustota složená ze dvou částí</div>
+<p>Hustota je \(f(x) = x/3\) pro \(0 \le x \le 2\), \(f(x) = \tfrac{2}{3}(3 - x)\) pro \(2 &lt; x \le 3\), jinde 0. Urči F(x), EX, DX, \(p(X &lt; EX)\), \(p(X &gt; EX + 1)\) a \(p(X &gt; 2EX)\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Kontrola: plochy obou částí jsou \(\int_0^2 x/3\,dx = 2/3\) a \(\int_2^3 \tfrac{2}{3}(3-x)\,dx = 1/3\), dohromady 1.</p>
+<p>2. Distribuční funkce po částech. Na první části:</p>
+\[ F(x) = \int_0^x \frac{t}{3}\, dt = \frac{x^2}{6}, \qquad 0 \le x \le 2 \]
+<p>Na druhé části přičteme plochu první části \(F(2) = 2/3\):</p>
+\[ \begin{aligned} F(x) &amp;= \frac{2}{3} + \int_2^x \frac{2}{3}(3 - t)\, dt \\ &amp;= 2x - \frac{x^2}{3} - 2, \qquad 2 &lt; x \le 3 \end{aligned} \]
+\[ F(x) = \begin{cases} 0, &amp; x &lt; 0 \\ x^2/6, &amp; 0 \le x \le 2 \\ 2x - x^2/3 - 2, &amp; 2 &lt; x \le 3 \\ 1, &amp; x &gt; 3 \end{cases} \]
+<p>Kontrola: \(F(2) = 2/3\) z obou předpisů (navazuje) a \(F(3) = 1\).</p>
+<p>3. Střední hodnota (integrál se rozdělí na dvě části):</p>
+\[ \begin{aligned} EX &amp;= \int_0^2 \frac{x^2}{3}\, dx + \int_2^3 \frac{2}{3}x(3 - x)\, dx \\ &amp;= \frac{8}{9} + \frac{7}{9} = \frac{5}{3} \end{aligned} \]
+<p>4. Rozptyl:</p>
+\[ \begin{aligned} EX^2 &amp;= \int_0^2 \frac{x^3}{3}\, dx + \int_2^3 \frac{2}{3}x^2(3 - x)\, dx \\ &amp;= \frac{4}{3} + \frac{11}{6} = \frac{19}{6} \end{aligned} \]
+\[ DX = \frac{19}{6} - \frac{25}{9} = \frac{7}{18} \approx 0{,}389 \]
+<p>5. Pravděpodobnosti – vždy nejdřív zjisti, do které části bod padne (\(5/3 &lt; 2\), \(8/3 &gt; 2\)):</p>
+\[ p(X &lt; EX) = F\!\left(\tfrac{5}{3}\right) = \frac{25/9}{6} = \frac{25}{54} \approx 0{,}463 \]
+\[ \begin{aligned} p(X &gt; EX + 1) &amp;= 1 - F\!\left(\tfrac{8}{3}\right) \\ &amp;= 1 - \frac{26}{27} = \frac{1}{27} \approx 0{,}037 \end{aligned} \]
+<p>6. \(2EX = 10/3 &gt; 3\) leží za koncem nosiče, takže \(p(X &gt; 2EX) = 0\).</p>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Častá past: distribuční funkce po částech</div>
+<p>Na druhé části se <b>nezačíná od nuly</b>: \(F(x) = F(\text{konec 1. části}) + \int_{\text{začátek 2. části}}^{x} f\). A nezapomeň na hodnoty 0 vlevo a 1 vpravo od nosiče – zadání na ně výslovně upozorňuje.</p></div>
+
+<h2 id="typy">Důležitá spojitá rozdělení</h2>
+<div class="box definice" id="def-rovnomerne"><div class="box-t">Definice: rovnoměrné rozdělení <span class="en">uniform distribution</span></div>
+<p>Veličina má <b>rovnoměrné rozdělení</b> na \(\langle a, b\rangle\), je-li její hustota \(f(x) = 1/(b - a)\) na \(\langle a, b\rangle\) a 0 jinde. Pak \(EX = (a+b)/2\) a \(DX = (b-a)^2/12\).</p>
+<p class="jinak">„každé místo intervalu je stejně možné“ – to je přesně předpoklad geometrické pravděpodobnosti z kapitoly 1.</p></div>
+<div class="box definice" id="def-exponencialni"><div class="box-t">Definice: exponenciální rozdělení <span class="en">exponential distribution</span></div>
+<p>Veličina má <b>exponenciální rozdělení</b> s parametrem \(\lambda &gt; 0\), je-li její hustota \(f(x) = \lambda e^{-\lambda x}\) pro \(x \ge 0\) a 0 jinde. Pak \(F(x) = 1 - e^{-\lambda x}\), \(EX = 1/\lambda\), \(DX = 1/\lambda^2\).</p>
+<p class="jinak">doba čekání na první událost Poissonova procesu (λ událostí za jednotku času): doba do příchodu dalšího zákazníka, doba života součástky bez stárnutí. Je spojitou obdobou geometrického rozdělení.</p></div>
+<div class="box definice" id="def-laplace"><div class="box-t">Definice: Laplaceovo rozdělení <span class="en">Laplace distribution</span></div>
+<p>Veličina má <b>Laplaceovo rozdělení</b> s parametrem \(\lambda &gt; 0\), je-li její hustota</p>
+\[ f(x) = \frac{\lambda}{2}\, e^{-\lambda |x|}, \qquad x \in \mathbb{R}. \]
+<p class="jinak">„dvě exponenciály zrcadlově slepené v nule“. Symetrické kolem nuly s ostrým vrcholem; používá se pro chyby, které jsou většinou malé, ale občas velké.</p></div>
+
+<div class="box uloha" id="u-s5-1"><div class="box-t">Úloha S5/1 <span class="en">set 5, task 1</span></div>
+<p>X má Laplaceovo rozdělení s hustotou \(f(x) = a e^{-\lambda |x|}\), \(\lambda &gt; 0\). Spočítej (a) parametr a, (b) distribuční funkci, (c) EX, (d) DX.</p>
+<p class="meta"><b>V zadání:</b> absolutní hodnota \(|x|\) → rozdělit na \(x \le 0\) a \(x &gt; 0\); symetrie. <b>Výsledek:</b> \(a = \lambda/2\); \(EX = 0\); \(DX = 2/\lambda^2\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. (a) Hustota je sudá, stačí dvojnásobek pravé poloviny:</p>
+\[ \int_{-\infty}^{\infty} a e^{-\lambda|x|}\, dx = 2a\int_0^{\infty} e^{-\lambda x}\, dx = \frac{2a}{\lambda} \]
+\[ \frac{2a}{\lambda} = 1 \;\Rightarrow\; a = \frac{\lambda}{2} \]
+<p>2. (b) Distribuční funkce. Pro \(x \le 0\) je \(|t| = -t\):</p>
+\[ F(x) = \int_{-\infty}^{x} \frac{\lambda}{2} e^{\lambda t}\, dt = \frac{1}{2} e^{\lambda x}, \qquad x \le 0 \]
+<p>Pro \(x &gt; 0\) přičteme levou polovinu (plocha 1/2):</p>
+\[ \begin{aligned} F(x) &amp;= \frac{1}{2} + \int_0^x \frac{\lambda}{2} e^{-\lambda t}\, dt \\ &amp;= 1 - \frac{1}{2} e^{-\lambda x}, \qquad x &gt; 0 \end{aligned} \]
+<p>3. (c) Funkce \(x f(x)\) je lichá, integrál přes celou osu je 0: \(EX = 0\).</p>
+<p>4. (d) Protože \(EX = 0\), je \(DX = EX^2\). Použijeme \(\int_0^\infty x^2 e^{-\lambda x}\,dx = 2/\lambda^3\):</p>
+\[ DX = 2 \cdot \frac{\lambda}{2}\int_0^{\infty} x^2 e^{-\lambda x}\, dx = \lambda \cdot \frac{2}{\lambda^3} = \frac{2}{\lambda^2} \]
+</div></details></div>
+
+<figure class="wide"><div class="paper"><img src="figures/fig05_laplace.png" alt="Hustota a distribuční funkce Laplaceova rozdělení pro lambda 1 a 2" loading="lazy"></div>
+<figcaption><b>Obr. 5.2</b> Laplaceovo rozdělení pro λ = 1 a λ = 2: hustota (vlevo) a distribuční funkce (vpravo).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Větší λ = užší a vyšší špička, tedy menší rozptyl \(2/\lambda^2\). Distribuční funkce prochází bodem (0; 0,5) – nula je medián i střední hodnota.</p></div>
+
+<div class="box intuice"><div class="box-t">Užitečné triky při integrování</div>
+<ul>
+<li><b>Symetrie:</b> je-li hustota symetrická kolem c, je \(EX = c\) bez počítání.</li>
+<li><b>Lichá funkce</b> přes symetrický interval dá integrál 0.</li>
+<li>\(\int_0^\infty x^n e^{-\lambda x}\, dx = n!/\lambda^{n+1}\) (pro n = 1, 2 si to zapamatuj: \(1/\lambda^2\), \(2/\lambda^3\)).</li>
+<li><b>Per partes</b> pro \(x\sin x\), \(x^2 \sin x\), \(x e^{x}\): derivuj polynom, integruj zbytek.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Spojitá náhodná veličina má hustotu f – nezápornou funkci s plochou 1 – a její distribuční funkce je integrál hustoty od minus nekonečna do x. Pravděpodobnost intervalu je plocha pod hustotou, pravděpodobnost jednoho bodu je nulová. Střední hodnota je \(\int x f(x)\,dx\), rozptyl \(\int x^2 f(x)\,dx - (EX)^2\). Kvantil \(x_p\) je bod, kde \(F(x_p) = p\).“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Spojitá veličina: hustota místo tabulky, integrál místo součtu, plocha = pravděpodobnost.</p></div>
+
+<div class="box slovicka"><div class="box-t">Anglická slovíčka</div>
+<table>
+<tr><th>česky</th><th>anglicky</th></tr>
+<tr><td>hustota (pravděpodobnosti)</td><td>(probability) density function</td></tr>
+<tr><td>spojitá náhodná veličina</td><td>continuous random variable</td></tr>
+<tr><td>nosič (kde f ≠ 0)</td><td>support</td></tr>
+<tr><td>po částech</td><td>piecewise</td></tr>
+<tr><td>kvantil, medián, modus</td><td>quantile, median, mode</td></tr>
+<tr><td>rovnoměrné rozdělení</td><td>uniform distribution</td></tr>
+<tr><td>exponenciální rozdělení</td><td>exponential distribution</td></tr>
+<tr><td>Laplaceovo rozdělení</td><td>Laplace distribution</td></tr>
+<tr><td>integrace per partes</td><td>integration by parts</td></tr>
+<tr><td>sudá / lichá funkce</td><td>even / odd function</td></tr>
+</table>
+<p><b>Fráze ze zadání:</b> <span class="kw">compute parameter a</span> = urči konstantu z normování; <span class="kw">prove that f(x) can be a density function</span> = ověř nezápornost a plochu 1; <span class="kw">the probability that the random variable lies in (1, 2)</span> = \(p(1 &lt; X &lt; 2)\); <span class="kw">otherwise</span> = jinde.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Spojitou veličinu popisuje hustota f: je nezáporná a plocha pod ní je 1. Distribuční funkce je integrál hustoty, je spojitá a pravděpodobnost intervalu je \(F(b) - F(a)\), tedy plocha pod hustotou. Neznámou konstantu v hustotě určíme z podmínky, že plocha je 1. Střední hodnota a rozptyl se počítají jako u diskrétní veličiny, jen místo součtů integrujeme; symetrie často ušetří výpočet. U hustoty po částech se integrál i distribuční funkce dělí na části a na každé další části se přičítá plocha předchozích.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Hustota není pravděpodobnost; pravděpodobnost je plocha pod hustotou.</li>
+<li>Neznámá konstanta: \(\int f = 1\). „Je to hustota?“: \(f \ge 0\) a \(\int f = 1\).</li>
+<li>\(F(x) = \int_{-\infty}^x f\); po částech přičítej plochu předchozích částí; vlevo 0, vpravo 1.</li>
+<li>\(EX = \int x f\), \(DX = \int x^2 f - (EX)^2\); symetrická hustota → EX je střed.</li>
+<li>U spojité veličiny \(p(X = a) = 0\), takže &lt; a ≤ dávají totéž.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Co je hustota pravděpodobnosti a jaké vlastnosti musí mít?</summary><div>
+<p>Nezáporná funkce f, jejíž integrál od minus nekonečna do x je distribuční funkce. Musí platit \(f \ge 0\) a \(\int_{-\infty}^{\infty} f = 1\). Pravděpodobnost intervalu je plocha pod f nad tímto intervalem.</p></div></details>
+<details class="q"><summary>Proč má u spojité veličiny každá jednotlivá hodnota pravděpodobnost nula?</summary><div>
+<p>Pravděpodobnost je plocha pod hustotou a nad jedním bodem je plocha „úsečky“ nulová: \(\int_a^a f = 0\). Proto u spojitých veličin nezáleží na tom, zda je nerovnost ostrá, nebo neostrá.</p></div></details>
+<details class="q"><summary>Jaký je vztah mezi hustotou a distribuční funkcí?</summary><div>
+<p>\(F(x) = \int_{-\infty}^x f(t)\,dt\) a naopak \(f(x) = F'(x)\) tam, kde derivace existuje. Kde je hustota vysoká, distribuční funkce rychle roste.</p></div></details>
+<details class="q"><summary>Jak určíte neznámý parametr v předpisu hustoty?</summary><div>
+<p>Z normovací podmínky: celá plocha pod hustotou musí být 1. Spočítám \(\int f\) s parametrem, položím rovno 1 a vyřeším. Ověřím také, že s tímto parametrem je \(f \ge 0\).</p></div></details>
+<details class="q"><summary>Jak se počítá střední hodnota a rozptyl spojité veličiny?</summary><div>
+<p>\(EX = \int x f(x)\,dx\), \(EX^2 = \int x^2 f(x)\,dx\) a \(DX = EX^2 - (EX)^2\). Integruje se přes nosič; je-li hustota symetrická kolem c, je \(EX = c\).</p></div></details>
+<details class="q"><summary>Co je kvantil a medián?</summary><div>
+<p>p-kvantil je bod \(x_p\), pro který \(F(x_p) = p\) – vlevo od něj leží podíl p pravděpodobnosti. Medián je 0,5-kvantil, dělí plochu pod hustotou na dvě stejné poloviny.</p></div></details>
+
+<nav class="pager"><a class="prev" href="04_diskretni_rozdeleni.html"><small>← předchozí</small>Diskrétní rozdělení</a><a class="next" href="06_normalni.html"><small>další →</small>Normální rozdělení</a></nav>
+</main>
+</div>
+</body>
+</html>

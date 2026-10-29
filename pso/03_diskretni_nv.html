@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diskrétní náhodná veličina – PSO</title>
+<meta name="description" content="Pravděpodobnostní a distribuční funkce, střední hodnota, rozptyl.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="assets/style.css?v=336b6bbf">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="assets/app.js?v=336b6bbf"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">PSO – příprava na zkoušku<small>pravděpodobnost a statistika, principy a postupy úloh</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../index.html#pso" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/03_diskretni_nv.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="01_pravdepodobnost.html"><span class="n">1</span><span>Pravděpodobnost: klasická a geometrická</span></a></li>
+    <li><a href="02_podminena.html"><span class="n">2</span><span>Podmíněná pravděpodobnost a Bayes</span></a></li>
+    <li><a href="03_diskretni_nv.html" class="active"><span class="n">3</span><span>Diskrétní náhodná veličina</span></a></li>
+    <li><a href="04_diskretni_rozdeleni.html"><span class="n">4</span><span>Diskrétní rozdělení</span></a></li>
+    <li><a href="05_spojita_nv.html"><span class="n">5</span><span>Spojitá náhodná veličina</span></a></li>
+    <li><a href="06_normalni.html"><span class="n">6</span><span>Normální rozdělení</span></a></li>
+    <li><a href="07_limitni_vety.html"><span class="n">7</span><span>Limitní věty</span></a></li>
+    <li><a href="08_nahodny_vektor.html"><span class="n">8</span><span>Náhodný vektor</span></a></li>
+    <li><a href="09_odhady.html"><span class="n">9</span><span>Odhady a intervaly spolehlivosti</span></a></li>
+    <li><a href="10_testy.html"><span class="n">10</span><span>Testování hypotéz</span></a></li>
+    <li><a href="11_jak_poznat.html"><span class="n">★</span><span>Jak poznat typ úlohy</span></a></li>
+    <li><a href="12_ulohy.html"><span class="n">Ú</span><span>Přehled úloh ze cvičení</span></a></li>
+    <li><a href="13_tabulky.html"><span class="n">T</span><span>Statistické tabulky</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#nv">Náhodná veličina a její rozdělení</a></li>
+    <li><a href="#charakteristiky">Střední hodnota a rozptyl</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky ke zkoušce</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">PSO – příprava na zkoušku · Diskrétní náhodná veličina – PSO · https://balnerm.github.io/pripravy/pso/03_diskretni_nv.html</p>
+<p class="kicker">Kapitola 3</p>
+<h1>Diskrétní náhodná veličina</h1>
+<p class="lead">Místo jevů začneme počítat s <b>čísly</b>: počet tahů, počet opravených písemek, počet dní přípravy. Náhodná veličina přiřadí každému výsledku číslo a její „rozdělení“ říká, s jakou pravděpodobností nabude které hodnoty. Z rozdělení pak spočítáme střední hodnotu (kolik průměrně) a rozptyl (jak moc to kolísá). To je obsah sady 2.</p>
+
+<h2 id="nv">Náhodná veličina a její rozdělení</h2>
+<div class="box definice" id="def-nv"><div class="box-t">Definice: náhodná veličina <span class="en">random variable</span></div>
+<p><b>Náhodná veličina</b> \(X\) je funkce, která každému elementárnímu jevu přiřadí reálné číslo tak, že pro každé \(x\) má jev \(\{X &lt; x\}\) definovanou pravděpodobnost.</p>
+<p class="jinak">„číslo, které je výsledkem pokusu“. Místo „padla dvě orla a panna“ říkáme „X = 2 orli“. S čísly umíme počítat průměry a rozptyly.</p></div>
+<div class="box definice" id="def-diskretni-nv"><div class="box-t">Definice: diskrétní náhodná veličina <span class="en">discrete random variable</span></div>
+<p>Náhodná veličina je <b>diskrétní</b>, jestliže nabývá jen konečně nebo spočetně mnoha hodnot \(x_1, x_2, \dots\) (její distribuční funkce je schodovitá).</p>
+<p class="jinak">hodnoty se dají očíslovat a vypsat: 0, 1, 2, … Typicky <b>počty</b> (kolik, kolikrát, na kolikátý pokus). Opakem je spojitá veličina (kapitola 5) – délka, čas, napětí.</p></div>
+<div class="box definice" id="def-pravdepodobnostni-funkce"><div class="box-t">Definice: pravděpodobnostní funkce <span class="en">probability (frequency) function</span></div>
+<p><b>Pravděpodobnostní funkce</b> diskrétní veličiny \(X\) je \(p(x_i) = p(X = x_i)\) pro všechny hodnoty \(x_i\), kterých \(X\) nabývá. Platí \(p(x_i) \ge 0\) a \(\sum_i p(x_i) = 1\).</p>
+<p class="jinak">tabulka „hodnota → pravděpodobnost“. V anglických skriptech předmětu se jí říká <i>frequency function</i> \(f(x_i)\), jinde <i>probability mass function</i>. „Urči rozdělení“ (<span class="kw">determine its distribution</span>) znamená právě tuto tabulku nebo vzorec.</p></div>
+
+<div class="box definice" id="def-distribucni-funkce"><div class="box-t">Definice: distribuční funkce <span class="en">distribution function (CDF)</span></div>
+<p><b>Distribuční funkce</b> náhodné veličiny \(X\) je funkce</p>
+\[ F(x) = p(X &lt; x), \qquad x \in \mathbb{R}. \]
+<p class="jinak">„pravděpodobnost, že X vyjde menší než x“ – nasčítané pravděpodobnosti všech hodnot <b>vlevo</b> od x. U diskrétní veličiny je to schodovitá funkce, která v každé hodnotě \(x_i\) vyskočí o \(p(x_i)\).</p></div>
+
+<div class="box pozor"><div class="box-t">Pozor: v tomto předmětu je F(x) = p(X &lt; x), s ostrou nerovností</div>
+<p>Skripta předmětu (a výsledky sad) používají <b>ostrou</b> nerovnost. Distribuční funkce je proto <b>spojitá zleva</b> a hodnota v bodě skoku je ta „dolní“: intervaly se píšou jako \((x_i, x_{i+1}\rangle\). Anglické učebnice často používají \(F(x) = P(X \le x)\) se skoky „nahoru“ už v bodě – pro spojité veličiny je to jedno, pro diskrétní ne.</p></div>
+
+<div class="box vzorec"><div class="box-t">Vlastnosti a výpočty z distribuční funkce (F(x) = p(X &lt; x))</div>
+<ul>
+<li>\(0 \le F(x) \le 1\), \(F\) je neklesající, \(F(-\infty) = 0\), \(F(\infty) = 1\).</li>
+<li>Pravděpodobnost intervalu:</li>
+</ul>
+\[ p(a \le X &lt; b) = F(b) - F(a) \]
+<ul>
+<li>Velikost skoku v bodě je pravděpodobnost té hodnoty:</li>
+</ul>
+\[ p(X = x_i) = F(x_i^{+}) - F(x_i) \]
+<ul>
+<li>Opačné nerovnosti přes doplněk: \(p(X \ge a) = 1 - F(a)\).</li>
+</ul>
+<table class="vars">
+<tr><td>\(F(x_i^{+})\)</td><td>hodnota těsně vpravo od bodu \(x_i\) (po skoku)</td></tr>
+<tr><td>\(F(x_i)\)</td><td>hodnota v bodě = před skokem (protože \(X &lt; x_i\) hodnotu \(x_i\) nezahrnuje)</td></tr>
+</table></div>
+
+<div class="box postup" id="postup-rozdeleni"><div class="box-t">Jak poznat a jak postupovat: urči rozdělení a distribuční funkci</div>
+<p><b>Poznáš to:</b> <span class="kw">determine its distribution</span>, <span class="kw">probability function</span>, <span class="kw">distribution function</span>; X je „počet něčeho“.</p>
+<ol>
+<li>Vypiš všechny hodnoty, kterých může X nabýt (nejmenší až největší).</li>
+<li>Pro každou hodnotu spočítej \(p(X = x_i)\) – většinou násobením pravděpodobností po sobě jdoucích kroků (věta o násobení).</li>
+<li>Kontrola: součet = 1.</li>
+<li>Distribuční funkce: postupně sčítej. Na \((-\infty, x_1\rangle\) je 0, na \((x_1, x_2\rangle\) je \(p(x_1)\), na \((x_2, x_3\rangle\) je \(p(x_1) + p(x_2)\), …, za poslední hodnotou 1.</li>
+</ol></div>
+
+<div class="box uloha" id="u-s2-1"><div class="box-t">Úloha S2/1 <span class="en">set 2, task 1</span></div>
+<p>V sáčku jsou 3 bílé a 2 červené kuličky. Taháme bez vracení, dokud nevytáhneme červenou. X = počet tahů. Urči rozdělení a distribuční funkci X.</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">do not put them back</span> → bez vracení, pravděpodobnosti se v každém tahu mění; <span class="kw">we end … when we draw the red</span> → X = pořadí první červené. <b>Výsledek:</b> \(p(1) = 0{,}4\), \(p(2) = 0{,}3\), \(p(3) = 0{,}2\), \(p(4) = 0{,}1\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Hodnoty: nejdřív v 1. tahu, nejpozději ve 4. (tři bílé mohou přijít před červenou): \(X \in \{1, 2, 3, 4\}\).</p>
+<p>2. Pravděpodobnosti (bílé, …, bílé, pak červená; v každém tahu ubude jedna kulička):</p>
+\[ \begin{aligned} p(1) &amp;= \tfrac{2}{5} = 0{,}4 \\ p(2) &amp;= \tfrac{3}{5} \cdot \tfrac{2}{4} = 0{,}3 \\ p(3) &amp;= \tfrac{3}{5} \cdot \tfrac{2}{4} \cdot \tfrac{2}{3} = 0{,}2 \\ p(4) &amp;= \tfrac{3}{5} \cdot \tfrac{2}{4} \cdot \tfrac{1}{3} \cdot \tfrac{2}{2} = 0{,}1 \end{aligned} \]
+<p>3. Kontrola: \(0{,}4 + 0{,}3 + 0{,}2 + 0{,}1 = 1\).</p>
+<p>4. Distribuční funkce \(F(x) = p(X &lt; x)\):</p>
+\[ F(x) = \begin{cases} 0, &amp; x \in (-\infty, 1\rangle \\ 0{,}4, &amp; x \in (1, 2\rangle \\ 0{,}7, &amp; x \in (2, 3\rangle \\ 0{,}9, &amp; x \in (3, 4\rangle \\ 1, &amp; x \in (4, \infty) \end{cases} \]
+</div></details></div>
+
+<figure class="wide"><div class="paper"><img src="figures/fig03_pmf_cdf.png" alt="Vlevo sloupce pravděpodobností 0,4, 0,3, 0,2, 0,1; vpravo schodovitá distribuční funkce se skoky v bodech 1 až 4" loading="lazy"></div>
+<figcaption><b>Obr. 3.1</b> Úloha S2/1: pravděpodobnostní funkce (vlevo) a distribuční funkce \(F(x) = p(X &lt; x)\) (vpravo). Plné kolečko = hodnota v bodě, prázdné = hodnota hned za bodem.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Výška každého schodu = výška sloupce vlevo. V samotném bodě skoku je F ještě na nižší úrovni (plné kolečko dole), protože \(X &lt; x\) danou hodnotu nezahrnuje.</p></div>
+
+<div class="box uloha" id="u-s2-3"><div class="box-t">Úloha S2/3 <span class="en">set 2, task 3</span></div>
+<p>X = počet opravených písemek za hodinu. Distribuční funkce je 0 na \((-\infty, 8\rangle\), 0,1 na \((8, 9\rangle\), 0,3 na \((9, 10\rangle\), 0,6 na \((10, 11\rangle\), 0,9 na \((11, 12\rangle\) a 1 na \((12, \infty)\). Urči pravděpodobnost, že za hodinu bude opraveno (a) právě 10, (b) méně než 10, (c) aspoň 10 písemek.</p>
+<p class="meta"><b>V zadání:</b> <span class="kw">just 10</span> = právě 10, <span class="kw">less than</span> = méně než, <span class="kw">at least</span> = aspoň. <b>Výsledek:</b> (a) 0,3; (b) 0,3; (c) 0,7.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Z distribuční funkce zpět na pravděpodobnostní: skok v bodě = pravděpodobnost hodnoty.</p>
+\[ \begin{aligned} p(8) &amp;= 0{,}1 - 0 = 0{,}1 \\ p(9) &amp;= 0{,}3 - 0{,}1 = 0{,}2 \\ p(10) &amp;= 0{,}6 - 0{,}3 = 0{,}3 \\ p(11) &amp;= 0{,}9 - 0{,}6 = 0{,}3 \\ p(12) &amp;= 1 - 0{,}9 = 0{,}1 \end{aligned} \]
+<p>2. (a) Právě 10: \(p(X = 10) = 0{,}3\).</p>
+<p>3. (b) Méně než 10 – to je přímo definice F:</p>
+\[ p(X &lt; 10) = F(10) = 0{,}3 \]
+<p>4. (c) Aspoň 10 – doplněk k (b):</p>
+\[ p(X \ge 10) = 1 - F(10) = 0{,}7 \]
+</div></details></div>
+
+<h2 id="charakteristiky">Střední hodnota a rozptyl</h2>
+<div class="box definice" id="def-stredni-hodnota"><div class="box-t">Definice: střední hodnota <span class="en">expected value, mean</span></div>
+<p><b>Střední hodnota</b> diskrétní náhodné veličiny je</p>
+\[ EX = \sum_i x_i\, p(x_i), \]
+<p>pokud řada absolutně konverguje.</p>
+<p class="jinak">vážený průměr hodnot, kde vahami jsou pravděpodobnosti. Kdybychom pokus opakovali mnohokrát, průměr výsledků by se blížil EX. Je to „těžiště“ sloupců grafu.</p></div>
+<div class="box definice" id="def-rozptyl"><div class="box-t">Definice: rozptyl a směrodatná odchylka <span class="en">variance, standard deviation</span></div>
+<p><b>Rozptyl</b> je střední hodnota čtverce odchylky od střední hodnoty, \(DX = E(X - EX)^2\); <b>směrodatná odchylka</b> je \(\sigma = \sqrt{DX}\).</p>
+<p class="jinak">jak daleko od průměru hodnoty typicky padají. Rozptyl je v „jednotkách na druhou“, proto se pro představu bere jeho odmocnina σ ve stejných jednotkách jako X. Skripta značí rozptyl \(DX\) nebo \(D(X)\), anglicky též \(\operatorname{Var} X\).</p></div>
+<div class="box vzorec"><div class="box-t">Výpočetní vzorec pro rozptyl</div>
+\[ \begin{aligned} DX &amp;= EX^2 - (EX)^2 \\ EX^2 &amp;= \sum_i x_i^2\, p(x_i) \end{aligned} \]
+<table class="vars">
+<tr><td>\(EX^2\)</td><td>střední hodnota druhé mocniny – stejný součet jako EX, jen s \(x_i^2\)</td></tr>
+<tr><td>\((EX)^2\)</td><td>druhá mocnina střední hodnoty</td></tr>
+</table>
+<p>Vlastnosti: \(E(aX + b) = a\,EX + b\), \(D(aX + b) = a^2\,DX\) (posunutí rozptyl nemění, natažení ho násobí čtvercem).</p></div>
+
+<div class="box postup" id="postup-ex-dx"><div class="box-t">Jak poznat a jak postupovat: EX a DX z tabulky</div>
+<p><b>Poznáš to:</b> <span class="kw">expected (mean) value</span>, <span class="kw">expected number of</span>, <span class="kw">variance</span>, <span class="kw">average</span>.</p>
+<ol>
+<li>Do tabulky přidej řádky \(x_i\,p_i\) a \(x_i^2\,p_i\).</li>
+<li>\(EX\) = součet řádku \(x_i\,p_i\); \(EX^2\) = součet řádku \(x_i^2\,p_i\).</li>
+<li>\(DX = EX^2 - (EX)^2\); kontrola: rozptyl nesmí vyjít záporný.</li>
+</ol></div>
+
+<div class="box uloha" id="u-s2-5"><div class="box-t">Úloha S2/5 <span class="en">set 2, task 5</span></div>
+<p>X = počet dní, které student věnuje přípravě na zkoušku:</p>
+<div class="tablewrap"><table class="compact">
+<tr><th>\(x_i\)</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+<tr><th>\(p(x_i)\)</th><td>0,4</td><td>0,35</td><td>0,15</td><td>0,05</td><td>0,03</td><td>0,01</td><td>0,01</td></tr>
+</table></div>
+<p>(a) Urči střední počet dní přípravy. (b) Urči rozptyl.</p>
+<p class="meta"><b>Výsledek:</b> (a) \(EX = 1{,}03\); (b) \(DX = 1{,}4291\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Střední hodnota:</p>
+<p>Součiny \(x_i\,p_i\) jsou 0; 0,35; 0,3; 0,15; 0,12; 0,05; 0,06. Sečteme je:</p>
+\[ \begin{aligned} EX &amp;= 0{,}35 + 0{,}3 + 0{,}15 \\ &amp;\quad + 0{,}12 + 0{,}05 + 0{,}06 \\ &amp;= 1{,}03 \end{aligned} \]
+<p>2. Střední hodnota čtverců:</p>
+<p>Součiny \(x_i^2\,p_i\) jsou 0; 0,35; 0,6; 0,45; 0,48; 0,25; 0,36:</p>
+\[ \begin{aligned} EX^2 &amp;= 0{,}35 + 0{,}6 + 0{,}45 \\ &amp;\quad + 0{,}48 + 0{,}25 + 0{,}36 \\ &amp;= 2{,}49 \end{aligned} \]
+<p>3. Rozptyl:</p>
+\[ DX = 2{,}49 - 1{,}03^2 = 2{,}49 - 1{,}0609 = 1{,}4291 \]
+<p>Směrodatná odchylka \(\sigma = \sqrt{1{,}4291} \approx 1{,}20\) dne.</p>
+</div></details></div>
+
+<figure><div class="paper"><img src="figures/fig03_ex_dx.png" alt="Sloupce pravděpodobností počtu dní přípravy, svislá čára střední hodnoty 1,03 a šipka plus minus sigma 1,20" loading="lazy"></div>
+<figcaption><b>Obr. 3.2</b> Úloha S2/5: střední hodnota jako těžiště a ±σ kolem ní.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>EX nemusí být hodnota, které X skutečně nabývá (1,03 dne) – je to těžiště. Nejpravděpodobnější hodnota (0) je jiná věc. Dlouhý „ocas“ doprava táhne těžiště od nuly.</p></div>
+
+<div class="box uloha" id="u-s2-6"><div class="box-t">Úloha S2/6 <span class="en">set 2, task 6</span></div>
+<p>X = počet dní bezporuchového chodu přístroje. Ze zadané tabulky neznáme \(p(0)\) a \(p(3)\):</p>
+<div class="tablewrap"><table class="compact">
+<tr><th>\(x_i\)</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+<tr><th>\(p(x_i)\)</th><td>?</td><td>0,35</td><td>0,15</td><td>?</td><td>0,03</td><td>0,01</td><td>0,01</td></tr>
+</table></div>
+<p>Urči je, víš-li, že střední počet dní bez poruchy je 1,5.</p>
+<p class="meta"><b>V zadání:</b> dvě neznámé → dvě rovnice: součet pravděpodobností = 1 a vzorec pro EX. <b>Výsledek:</b> \(p(0) \approx 0{,}2433\), \(p(3) \approx 0{,}2067\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Normování (součet je 1); známé hodnoty dávají 0,55:</p>
+\[ p(0) + p(3) = 1 - 0{,}55 = 0{,}45 \]
+<p>2. Střední hodnota (člen s \(x = 0\) je nulový):</p>
+\[ 0{,}35 + 0{,}3 + 3\,p(3) + 0{,}12 + 0{,}05 + 0{,}06 = 1{,}5 \]
+\[ 0{,}88 + 3\,p(3) = 1{,}5 \;\Rightarrow\; p(3) = \frac{0{,}62}{3} \approx 0{,}2067 \]
+<p>3. Dopočet z normování:</p>
+\[ p(0) = 0{,}45 - 0{,}2067 \approx 0{,}2433 \]
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Častá past: EX² není (EX)²</div>
+<p>\(EX^2\) znamená \(E(X^2)\) – nejdřív umocnit hodnoty, pak průměrovat. \((EX)^2\) je umocněný průměr. Jejich rozdíl je právě rozptyl, a ten je vždy \(\ge 0\). Vyjde-li záporný, je chyba v jednom z nich.</p></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Diskrétní náhodná veličina nabývá konečně nebo spočetně mnoha hodnot; popisuje ji pravděpodobnostní funkce \(p(x_i) = p(X = x_i)\), jejíž hodnoty dávají součet 1. Distribuční funkce \(F(x) = p(X &lt; x)\) je u ní schodovitá, neklesající, zleva spojitá a skáče v každé hodnotě o její pravděpodobnost. Střední hodnota je vážený průměr \(\sum x_i p_i\), rozptyl je střední kvadratická odchylka od ní, prakticky \(EX^2 - (EX)^2\).“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Tabulka hodnot a pravděpodobností (součet 1) → nasčítáním distribuční funkce, váženým průměrem EX, průměrem čtverců mínus čtverec průměru DX.</p></div>
+
+<div class="box slovicka"><div class="box-t">Anglická slovíčka</div>
+<table>
+<tr><th>česky</th><th>anglicky</th></tr>
+<tr><td>náhodná veličina</td><td>random variable</td></tr>
+<tr><td>diskrétní / spojitá</td><td>discrete / continuous</td></tr>
+<tr><td>rozdělení (pravděpodobnosti)</td><td>(probability) distribution</td></tr>
+<tr><td>pravděpodobnostní funkce</td><td>probability function, frequency function, pmf</td></tr>
+<tr><td>distribuční funkce</td><td>distribution function, cumulative distribution function (CDF)</td></tr>
+<tr><td>střední hodnota</td><td>expected value, mean (value), expectation</td></tr>
+<tr><td>rozptyl</td><td>variance (dispersion)</td></tr>
+<tr><td>směrodatná odchylka</td><td>standard deviation</td></tr>
+<tr><td>schodovitá funkce</td><td>step function</td></tr>
+<tr><td>spojitá zleva</td><td>left-continuous</td></tr>
+<tr><td>bezporuchový chod</td><td>trouble-free operation, uptime</td></tr>
+</table>
+<p><b>Fráze ze zadání:</b> <span class="kw">determine its distribution</span> = urči rozdělení (tabulku / vzorec \(p(x_i)\)); <span class="kw">just 10</span> = právě 10; <span class="kw">less than</span> / <span class="kw">at least</span> / <span class="kw">at most</span> / <span class="kw">more than</span> = méně než / aspoň / nejvýše / více než.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Náhodná veličina převádí výsledek pokusu na číslo. Diskrétní veličinu popisuje pravděpodobnostní funkce (tabulka hodnot a jejich pravděpodobností se součtem 1) nebo ekvivalentně distribuční funkce \(F(x) = p(X &lt; x)\), která je schodovitá a v každé hodnotě skočí o její pravděpodobnost. Z distribuční funkce se pravděpodobnost hodnoty čte jako výška skoku a pravděpodobnost „menší než a“ přímo jako \(F(a)\). Střední hodnota je vážený průměr hodnot, rozptyl je průměr čtverců odchylek, počítaný jako \(EX^2 - (EX)^2\).</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>„Urči rozdělení“ = vypiš všechny hodnoty a jejich pravděpodobnosti; zkontroluj součet 1.</li>
+<li>V tomto předmětu \(F(x) = p(X &lt; x)\): intervaly \((x_i, x_{i+1}\rangle\), \(p(X &lt; a) = F(a)\), \(p(X \ge a) = 1 - F(a)\).</li>
+<li>Skok distribuční funkce = pravděpodobnost hodnoty.</li>
+<li>Střední hodnota \(EX = \sum x_i p_i\), směrodatná odchylka \(\sigma = \sqrt{DX}\).</li>
+<li>Rozptyl \(DX = \sum x_i^2 p_i - (EX)^2\).</li>
+<li>Neznámé pravděpodobnosti dopočti ze dvou rovnic: součet = 1 a zadané EX.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Co je náhodná veličina a kdy je diskrétní?</summary><div>
+<p>Funkce, která každému výsledku pokusu přiřadí reálné číslo. Diskrétní je, když nabývá jen konečně nebo spočetně mnoha hodnot – typicky počty. Její distribuční funkce je schodovitá.</p></div></details>
+<details class="q"><summary>Definujte distribuční funkci a vyjmenujte její vlastnosti.</summary><div>
+<p>\(F(x) = p(X &lt; x)\). Je neklesající, má hodnoty v \(\langle 0, 1\rangle\), \(F(-\infty) = 0\), \(F(\infty) = 1\), je spojitá zleva a platí \(p(a \le X &lt; b) = F(b) - F(a)\). U diskrétní veličiny skáče v každé hodnotě o její pravděpodobnost.</p></div></details>
+<details class="q"><summary>Jak z distribuční funkce zjistíte pravděpodobnost konkrétní hodnoty?</summary><div>
+<p>Jako výšku skoku v tom bodě: hodnota těsně vpravo minus hodnota v bodě, \(p(X = x_i) = F(x_i^+) - F(x_i)\). Např. když F skočí z 0,3 na 0,6 v bodě 10, je \(p(X = 10) = 0{,}3\).</p></div></details>
+<details class="q"><summary>Co vyjadřuje střední hodnota a jak se počítá?</summary><div>
+<p>Průměrnou hodnotu, ke které by se blížil průměr výsledků při mnoha opakováních – těžiště rozdělení. \(EX = \sum x_i\,p(x_i)\).</p></div></details>
+<details class="q"><summary>Co vyjadřuje rozptyl a proč se počítá i směrodatná odchylka?</summary><div>
+<p>Rozptyl \(DX = E(X - EX)^2\) měří, jak moc hodnoty kolísají kolem střední hodnoty. Je ale v jednotkách na druhou, proto se pro interpretaci používá \(\sigma = \sqrt{DX}\) ve stejných jednotkách jako X. Počítá se \(DX = EX^2 - (EX)^2\).</p></div></details>
+<details class="q"><summary>Jak se změní EX a DX, když veličinu vynásobíme konstantou a přičteme konstantu?</summary><div>
+<p>\(E(aX + b) = a\,EX + b\) a \(D(aX + b) = a^2\,DX\). Posunutí o b posune průměr, ale rozptyl nezmění; vynásobení a násobí průměr a rozptyl čtvercem \(a^2\).</p></div></details>
+
+<nav class="pager"><a class="prev" href="02_podminena.html"><small>← předchozí</small>Podmíněná pravděpodobnost a Bayes</a><a class="next" href="04_diskretni_rozdeleni.html"><small>další →</small>Diskrétní rozdělení</a></nav>
+</main>
+</div>
+</body>
+</html>
