@@ -51,6 +51,7 @@ PAGES = [
 # Níže je společný „engine“ – stejný pro všechny předměty, obvykle se nemění.
 # =====================================================================================================================
 from pathlib import Path
+import hashlib
 import html
 import re
 import sys
@@ -61,6 +62,7 @@ ROOT = Path(__file__).resolve().parent.parent          # složka předmětu (nap
 SRC = Path(__file__).resolve().parent / "obsah"         # fragmenty stránek
 SITE = f"https://balnerm.github.io/pripravy/{ROOT.name}/"
 KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist"
+ASSET_V = hashlib.md5(b"".join((ROOT / "assets" / f).read_bytes() for f in ("style.css", "app.js"))).hexdigest()[:8]  # změna souboru = nová adresa (obejde cache prohlížeče)
 ALL = "skripta_vse"  # stránka se všemi kapitolami za sebou (podklad pro jedno PDF celých skript)
 
 TEXTS = {
@@ -131,10 +133,10 @@ TEMPLATE = """<!doctype html>
 <meta name="description" content="{desc}">
 <script>try{{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}}catch(e){{}}</script>
 <link rel="stylesheet" href="{katex}/katex.min.css">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/style.css?v={av}">
 <script defer src="{katex}/katex.min.js"></script>
 <script defer src="{katex}/contrib/auto-render.min.js"></script>
-<script defer src="assets/app.js"></script>
+<script defer src="assets/app.js?v={av}"></script>
 </head>
 <body>
 <header class="topbar">
@@ -176,7 +178,7 @@ def strip_tags(s):
 
 
 def render(**kw):
-    return TEMPLATE.format(lang=LANG, t=T, katex=KATEX, brand=BRAND, brand_sub=BRAND_SUB, short=SHORT.lower(), **kw)
+    return TEMPLATE.format(lang=LANG, t=T, katex=KATEX, brand=BRAND, brand_sub=BRAND_SUB, short=SHORT.lower(), av=ASSET_V, **kw)
 
 
 def chrome(slug, page_title):

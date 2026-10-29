@@ -33,6 +33,7 @@ ALT = None
 # Níže je společný „engine“ – stejný pro všechny předměty, obvykle se nemění.
 # =====================================================================================================================
 from pathlib import Path
+import hashlib
 import html
 import re
 import sys
@@ -43,6 +44,7 @@ ROOT = Path(__file__).resolve().parent.parent          # složka předmětu (nap
 SRC = Path(__file__).resolve().parent / "obsah"         # fragmenty stránek
 SITE = f"https://balnerm.github.io/pripravy/{ROOT.name}/"
 KATEX = "https://cdn.jsdelivr.net/npm/katex@0.16.11/dist"
+ASSET_V = hashlib.md5(b"".join((ROOT / "assets" / f).read_bytes() for f in ("style.css", "app.js"))).hexdigest()[:8]  # změna souboru = nová adresa (obejde cache prohlížeče)
 ALL = "skripta_vse"  # stránka se všemi kapitolami za sebou (podklad pro jedno PDF celých skript)
 
 TEXTS = {
@@ -135,10 +137,10 @@ TEMPLATE = """<!doctype html>
 <meta name="description" content="{desc}">
 {alternate}<script>try{{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}}catch(e){{}}</script>
 <link rel="stylesheet" href="{katex}/katex.min.css">
-<link rel="stylesheet" href="{up}assets/style.css">
+<link rel="stylesheet" href="{up}assets/style.css?v={av}">
 <script defer src="{katex}/katex.min.js"></script>
 <script defer src="{katex}/contrib/auto-render.min.js"></script>
-<script defer src="{up}assets/app.js"></script>
+<script defer src="{up}assets/app.js?v={av}"></script>
 </head>
 <body>
 <header class="topbar">
@@ -189,7 +191,7 @@ def render(s, slug, **kw):
                    f'title="{o["t"]["lang_title"]}">{o["t"]["lang_label"]}</a>')
         alternate = f'<link rel="alternate" hreflang="{o["lang"]}" href="{href}">\n'
     return TEMPLATE.format(lang=s["lang"], t=s["t"], katex=KATEX, brand=s["brand"], brand_sub=s["brand_sub"],
-                           up=s["up"], short=SHORT.lower(), langbtn=langbtn, alternate=alternate, **kw)
+                           up=s["up"], short=SHORT.lower(), av=ASSET_V, langbtn=langbtn, alternate=alternate, **kw)
 
 
 def chrome(s, slug, page_title):
