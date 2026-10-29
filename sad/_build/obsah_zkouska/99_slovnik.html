@@ -11,7 +11,7 @@
 <p><b>Úprava signálu</b> je blok akviziční cesty mezi převodníkem a A/D převodem, který signál zesílí, odfiltruje rušení a přizpůsobí jeho rozsah vstupu převodníku.</p>
 <p class="jinak">signál ze senzoru je slabý a zarušený; úprava z něj udělá „čisté“ napětí ve správném rozsahu. Stavebními kameny jsou zesilovače s OZ (<a href="12_uprava.html#oz">P2</a>, <a href="14_oz_zapojeni.html">P4</a>) a filtry (<a href="15_aktivni_filtry.html">P5</a>).</p><p class="slovnik-odkaz"><a href="11_signal.html#def-uprava-signalu">výklad v kapitole P1 →</a></p></div>
 <div class="box definice" id="s-multiplexace"><div class="box-t">multiplexace</div>
-<p><b>Multiplexace</b> (MPX) je postupné přepínání více vstupních signálů na jednu společnou cestu (vodič, převodník, kanál přenosu), takže se signály o tuto cestu dělí v čase.</p>
+<p><b>Multiplexace</b> (MPX) je proces, který kombinuje více analogových signálů nebo více digitálních datových toků do jednoho signálu na společné cestě (vodič, převodník, kanál přenosu), aby se tato cesta efektivně využila. Nejčastěji jde o postupné přepínání vstupů, kdy se signály o cestu dělí v čase.</p>
 <p class="jinak">jeden A/D převodník nebo jeden přenosový kanál obslouží víc signálů tím, že je „obchází“ jeden po druhém. Podrobně v přednášce P8.</p><p class="slovnik-odkaz"><a href="11_signal.html#def-multiplexace">výklad v kapitole P1 →</a></p></div>
 <div class="box definice" id="s-galvanicke-oddeleni"><div class="box-t">galvanické oddělení</div>
 <p><b>Galvanické oddělení</b> je přenos signálu mezi dvěma částmi obvodu bez vodivého (galvanického) spojení – např. opticky, magneticky nebo kapacitně – takže mezi nimi nemůže protékat proud.</p>
@@ -452,3 +452,34 @@
 <div class="box definice" id="s-sar-adc"><div class="box-t">ADC s postupnou aproximací</div>
 <p><b>ADC s postupnou aproximací</b> (SAR, successive approximation register) určuje v každém taktu hodin jeden bit výsledku, od MSB směrem k LSB: registr postupné aproximace nastaví zkoušený bit na 1, DAC převede kód na napětí a komparátor rozhodne, zda bit zůstane 1 (\(U_\mathrm{IN} > U_\mathrm{DAC}\)), nebo se vrátí na 0 (\(U_\mathrm{IN} &lt; U_\mathrm{DAC}\)).</p>
 <p class="jinak">metoda půlení intervalů – jako hádání čísla od 0 do 15 otázkami „je to víc než …?“. Každá otázka vyloučí polovinu možností, takže na 4bitové číslo stačí vždy přesně 4 otázky.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-sar-adc">výklad v kapitole P7 →</a></p></div>
+<h2 id="kP8" class="slovnik-kap">P8 · Multiplexace signálů</h2>
+<div class="box definice" id="s-multiplexor"><div class="box-t">multiplexor</div>
+<p><b>Multiplexor</b> (MUX nebo MPX, také <b>datový selektor</b>) je zařízení provádějící multiplexování: má více signálových vstupů \(X_0, X_1, \dots\), jeden výstup \(Y\) a výběrové (adresové) vstupy, jejichž kombinace určuje, který vstup se připojí na výstup.</p>
+<p class="jinak">přepínač „mnoho do jednoho“. Adresa (např. dva bity A, B) řekne, kterou ze čtyř cest pustit dál; ostatní jsou v tu chvíli odpojené.</p><p class="slovnik-odkaz"><a href="18_multiplexace.html#def-multiplexor">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="s-demultiplexor"><div class="box-t">demultiplexor</div>
+<p><b>Demultiplexor</b> (DEMUX nebo DEMPX, také <b>datový distributor</b>) je zařízení provádějící demultiplexování: má jeden vstup \(X\), více výstupů \(Y_0, Y_1, \dots\) a výběrové vstupy, jejichž kombinace určuje, na který výstup se vstup připojí.</p>
+<p class="jinak">přepínač „jeden do mnoha“. Vybírá vždy jen jeden signál – ten, který byl multiplexorem spojen s ostatními – a pošle ho na jeho vlastní výstup.</p><p class="slovnik-odkaz"><a href="18_multiplexace.html#def-demultiplexor">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="s-digitalni-mux"><div class="box-t">digitální multiplexor</div>
+<p><b>Digitální multiplexor</b> je multiplexor složený z logických hradel, který na výstup přenáší pouze <b>logickou úroveň</b> (0 nebo 1) vybraného vstupu.</p>
+<p class="jinak">výstup se „znovu vyrobí“ hradly: buď je tam log. 0, nebo log. 1. Spojitou hodnotu (např. 0,37 V) takový obvod přenést neumí.</p><p class="slovnik-odkaz"><a href="18_multiplexace.html#def-digitalni-mux">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="s-analogovy-mux"><div class="box-t">analogový multiplexor</div>
+<p><b>Analogový multiplexor</b> je multiplexor, ve kterém vybraný vstup propojí s výstupem <b>analogový spínač</b> (tranzistor), takže na výstup přenáší <b>spojitou hodnotu</b> napětí vybraného vstupu.</p>
+<p class="jinak">uvnitř je „vodivá cesta“ přes sepnutý tranzistor, ne logický obvod. Co přijde na vstup, to (téměř beze změny) projde na výstup – spojitý signál i logické úrovně.</p><p class="slovnik-odkaz"><a href="18_multiplexace.html#def-analogovy-mux">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="s-preslech"><div class="box-t">přeslech</div>
+<p><b>Přeslech</b> (crosstalk) je nežádoucí pronikání signálu jednoho kanálu do jiného kanálu téhož přenosového systému.</p>
+<p class="jinak">jako když v telefonu slyšíš cizí hovor. V měření to znamená, že v naměřeném EKG svodu je kousek signálu ze sousedního svodu.</p><p class="slovnik-odkaz"><a href="18_multiplexace.html#def-preslech">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="s-tdm"><div class="box-t">časový multiplex (TDM)</div>
+<p><b>Časový multiplex</b> (Time Division Multiplexing, TDM) je technika, která umožňuje posílat více signálů prostřednictvím společného přenosového kanálu přidělením <b>pevného časového úseku</b> (okna) každému signálu.</p>
+<p class="jinak">signály se střídají jako řečníci s časovým limitem: každý dostane své okno, mluví celým hlasem (celým pásmem), a pak předá slovo dalšímu. Pořadí se pořád opakuje.</p><p class="slovnik-odkaz"><a href="18_multiplexace.html#def-tdm">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="s-fdm"><div class="box-t">frekvenční multiplex (FDM)</div>
+<p><b>Frekvenční multiplex</b> (Frequency Division Multiplexing, FDM) je technika, která kombinuje více signálů pro <b>současný</b> přenos přes sdílené komunikační médium tak, že každý signál zabírá v přenosovém kanálu <b>vlastní, oddělené pásmo frekvencí</b>.</p>
+<p class="jinak">jako rozhlasové stanice: všechny vysílají najednou, ale každá na jiné frekvenci. Přijímač si „naladí“ jen tu svou a ostatní odfiltruje.</p><p class="slovnik-odkaz"><a href="18_multiplexace.html#def-fdm">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="s-ochranne-pasmo"><div class="box-t">ochranné pásmo</div>
+<p><b>Ochranné pásmo</b> (guard band) je nevyužitý úsek frekvencí mezi pásmy sousedních kanálů frekvenčního multiplexu, který omezuje přeslechy mezi nimi.</p>
+<p class="jinak">„nárazník“ mezi kanály. Filtr přijímače nemá svislou hranu, ale klesá postupně; ochranné pásmo mu dá prostor, aby utlumil sousední kanál dřív, než začne.</p><p class="slovnik-odkaz"><a href="18_multiplexace.html#def-ochranne-pasmo">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="s-wdm"><div class="box-t">vlnový multiplex (WDM)</div>
+<p><b>Vlnový multiplex</b> (Wavelength Division Multiplexing, WDM) je technika multiplexace opticky modulovaných signálů, při které je každý signál přenášen světlem jiné <b>vlnové délky</b> (barvy) a všechny vlnové délky se současně šíří jedním <b>optickým vláknem</b>.</p>
+<p class="jinak">každý kanál „svítí jinou barvou“. Barvy se složí do jednoho paprsku, projdou vláknem a na konci se hranolem zase rozloží na jednotlivé barvy.</p><p class="slovnik-odkaz"><a href="18_multiplexace.html#def-wdm">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="s-seriove-paralelni-spinac"><div class="box-t">sériově-paralelní spínač</div>
+<p><b>Sériově-paralelní spínač</b> je dvojice spínačů řízených společným signálem \(X_k\): spínač <b>a</b> zapojený v sérii se signálovým vstupem a spínač <b>b</b> zapojený paralelně, ze vstupu sledovače na zem, přičemž je vždy sepnut právě jeden z nich.</p>
+<p class="jinak">signál se nejdřív odpojí (a) a pak se vstup pro jistotu ještě uzemní (b). Nevybraný kanál tak není „skoro nula“ přes dělič, ale opravdu nula.</p><p class="slovnik-odkaz"><a href="18_multiplexace.html#def-seriove-paralelni-spinac">výklad v kapitole P8 →</a></p></div>

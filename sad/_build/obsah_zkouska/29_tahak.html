@@ -127,6 +127,17 @@
 <tr><td>postupná aproximace</td><td>\(T_C = n\,T_\mathrm{CLK}\)</td><td>půlení intervalů, bit za takt od MSB</td></tr>
 </table></div>
 
+<h2 id="p8">P8 · Multiplexace signálů (<a href="18_multiplexace.html">kapitola</a>)</h2>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec / princip</th><th>poznámka</th></tr>
+<tr><td>MUX / DEMUX</td><td>\(n\) adresových bitů → \(2^n\) vstupů</td><td>stejná adresa na obou stranách (synchronizace)</td></tr>
+<tr><td>TDM</td><td>pevné časové okno, celé pásmo</td><td>ostatní blokovány → přeslech minimální; analogový signál se rozseká</td></tr>
+<tr><td>FDM</td><td>současně, každý kanál své pásmo</td><td>omezené pásmo, přeslechy → ochranná pásma; analogové signály</td></tr>
+<tr><td>WDM</td><td>každá vlnová délka jeden signál, hranol, optické vlákno</td><td>příbuzné FDM; zároveň galvanické oddělení</td></tr>
+<tr><td>analogový MPX s OZ</td><td>\(u_o \approx -\frac{R_3}{R_2}\,u_k\)</td><td>tranzistory k zemi sepnuty = nulují; výběr = rozepnutí; sledovač</td></tr>
+<tr><td>chyba „nuly“</td><td>\(u_{o(0)} \cong u_i\,\frac{R_{X_1}}{R_1}\)</td><td>100 Ω / 10 kΩ → 1 %; odstraní sériově-paralelní spínač</td></tr>
+</table></div>
+
 <h2 id="chytaky">Nejčastější chytáky</h2>
 <div class="box pozor"><div class="box-t">Na co si dát pozor u zkoušky</div>
 <ul>
@@ -141,4 +152,6 @@
 <li><b>Zatížený dělič:</b> zátěž je paralelně k \(R_2\); biozdroj je měkký, proto velký vstupní odpor.</li>
 <li><b>Převodník f/U:</b> ve výsledku je \(R_A\) (vybíjecí), ne \(R_1\) – výsledek odvoď z rovnosti nábojů.</li>
 <li><b>Dlouhodobá stabilita</b> roste s \(\sqrt{t}\), ne lineárně.</li>
+<li><b>Analogový MPX:</b> tranzistor je k zemi a kanál se vybere jeho <b>rozepnutím</b>, ne sepnutím; analogový MUX přenese i logiku, digitální ne.</li>
+<li><b>TDM vs. FDM:</b> TDM má celé pásmo a minimální přeslech, FDM současný přenos, ale omezené pásmo a přeslechy.</li>
 </ul></div>

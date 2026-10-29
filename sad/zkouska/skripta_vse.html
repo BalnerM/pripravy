@@ -16,7 +16,7 @@
 <header class="topbar">
   <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
   <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
-  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P7 se základy</small></a>
+  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P8 se základy</small></a>
   <span class="spacer"></span>
   <a class="iconbtn back" href="../../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
   
@@ -40,6 +40,7 @@
     <li><a href="15_aktivni_filtry.html"><span class="n">P5</span><span>Aplikace OZ II: aktivní filtry</span></a></li>
     <li><a href="16_komparator.html"><span class="n">P6</span><span>Komparátor, omezovač a úvod do A/D převodu</span></a></li>
     <li><a href="17_prevodniky.html"><span class="n">P7</span><span>A/D a D/A převodníky</span></a></li>
+    <li><a href="18_multiplexace.html"><span class="n">P8</span><span>Multiplexace signálů</span></a></li>
     <li><a href="29_tahak.html"><span class="n">★</span><span>Tahák ke zkoušce</span></a></li>
     <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
   </ol>
@@ -51,7 +52,7 @@
 <section class="kapitola" id="k00">
 
 <h1>SAD – příprava na závěrečnou zkoušku</h1>
-<p class="lead">Skripta k předmětu <b>Měření a zpracování biosignálů</b> ke zkoušce. Po jedné kapitole procházejí přednášky – od signálu přes jeho úpravu, napájení a reference až po komparátor a A/D převod. Elektrotechnické základy (dělič, zapojení s OZ, RC filtry…) nejsou zvlášť: jsou <b>vložené přímo do přednášek</b> jako připomenutí v místě, kde jsou poprvé potřeba. Skripta jsou psaná tak, aby se dala <b>číst jako celek od začátku do konce</b> bez přeskakování.</p>
+<p class="lead">Skripta k předmětu <b>Měření a zpracování biosignálů</b> ke zkoušce. Po jedné kapitole procházejí přednášky – od signálu přes jeho úpravu, napájení a reference až po komparátor, A/D převod a multiplexaci. Elektrotechnické základy (dělič, zapojení s OZ, RC filtry…) nejsou zvlášť: jsou <b>vložené přímo do přednášek</b> jako připomenutí v místě, kde jsou poprvé potřeba. Skripta jsou psaná tak, aby se dala <b>číst jako celek od začátku do konce</b> bez přeskakování.</p>
 
 <h2 id="k00-retezec">Měřicí řetězec: kde je která přednáška</h2>
 <div class="schema">
@@ -93,7 +94,7 @@
 <tr><td>P5</td><td>Aplikace OZ II – aktivní filtry</td><td><a href="#k15">P5 · Aplikace OZ II: aktivní filtry</a></td></tr>
 <tr><td>P6</td><td>Komparátor</td><td><a href="#k16">P6 · Komparátor, omezovač a úvod do A/D převodu</a></td></tr>
 <tr><td>P7</td><td>A/D a D/A převodníky</td><td><a href="#k17">P7 · A/D a D/A převodníky</a></td></tr>
-<tr><td>P8</td><td>Multiplexace signálů</td><td class="muted">připravuje se</td></tr>
+<tr><td>P8</td><td>Multiplexace signálů</td><td><a href="#k18">P8 · Multiplexace signálů</a></td></tr>
 <tr><td>P9, P10</td><td>další přednášky</td><td class="muted">zatím nevyšly</td></tr>
 </tbody></table></div>
 
@@ -129,6 +130,7 @@
 <a class="card" href="#k15"><div class="n">Přednáška P5</div><div class="t">Aplikace OZ II: aktivní filtry</div><div class="d">Připomenutí pasivních RC filtrů; přenosová funkce, ideální a reálný filtr, strmost v dB/okt a dB/dek; články 1. řádu, Sallen-Key a MFB; pásmová zádrž s dvojitým T a Wienovým-Robinsonovým můstkem; Butterworth, Čebyšev, Bessel.</div></a>
 <a class="card" href="#k16"><div class="n">Přednáška P6</div><div class="t">Komparátor, omezovač a úvod do A/D převodu</div><div class="d">Precizní a oboustranný omezovač (Zenerovy diody, můstek); komparátor, chyba přeběhu a falešná překlopení; Schmittův klopný obvod a hystereze; amplitudový selektor; kvantování a vzorkování; paralelní (flash) ADC a rezistorová síť.</div></a>
 <a class="card" href="#k17"><div class="n">Přednáška P7</div><div class="t">A/D a D/A převodníky</div><div class="d">DAC s váhovými rezistory a s příčkovou sítí R–2R; half-flash ADC; integrační převodníky single a dual slope; kompenzační převodníky counter, tracking a s postupnou aproximací (SAR); čas konverze a srovnání.</div></a>
+<a class="card" href="#k18"><div class="n">Přednáška P8</div><div class="t">Multiplexace signálů</div><div class="d">Multiplexor a demultiplexor, digitální a analogový MUX; princip časového (TDM), frekvenčního (FDM) a vlnového (WDM) multiplexu; analogový multiplexor s OZ, chyba sepnutého tranzistoru a sériově-paralelní spínač.</div></a>
 <a class="card" href="#k29"><div class="n">★ Opakování</div><div class="t">Tahák ke zkoušce</div><div class="d">Vzorce a schémata z přednášek i základů na jedné stránce, typické chytáky.</div></a>
 <a class="card" href="#k99"><div class="n">Opakování</div><div class="t">Slovník pojmů</div><div class="d">Všechny definice ze skript ke zkoušce na jednom místě, včetně základů.</div></a>
 </div>
@@ -158,7 +160,7 @@
 <p>Když měříme <b>víc signálů</b> (např. 12 svodů EKG), nemá každý kanál vlastní počítač. Kanály se postupně přepínají na společnou cestu – <b>multiplexují</b> – a to buď ještě analogově (před A/D převodem), nebo až číslicově (každý kanál má svůj A/D převodník).</p>
 
 <div class="box definice" id="k11-def-multiplexace"><div class="box-t">Definice: multiplexace</div>
-<p><b>Multiplexace</b> (MPX) je postupné přepínání více vstupních signálů na jednu společnou cestu (vodič, převodník, kanál přenosu), takže se signály o tuto cestu dělí v čase.</p>
+<p><b>Multiplexace</b> (MPX) je proces, který kombinuje více analogových signálů nebo více digitálních datových toků do jednoho signálu na společné cestě (vodič, převodník, kanál přenosu), aby se tato cesta efektivně využila. Nejčastěji jde o postupné přepínání vstupů, kdy se signály o cestu dělí v čase.</p>
 <p class="jinak">jeden A/D převodník nebo jeden přenosový kanál obslouží víc signálů tím, že je „obchází“ jeden po druhém. Podrobně v přednášce P8.</p></div>
 
 <div class="box definice" id="k11-def-galvanicke-oddeleni"><div class="box-t">Definice: galvanické oddělení</div>
@@ -4193,6 +4195,385 @@
 <p>Maximální vzorkovací frekvence je převrácená hodnota nejdelšího času konverze (pro 12 bitů asi 2,44 kHz proti 833 kHz). Čítací převodníky se s každým bitem zpomalí dvakrát, SAR jen o jeden takt.</p></div></details>
 
 </section>
+<section class="kapitola" id="k18">
+<p class="kicker">Přednáška 8</p>
+<h1>Multiplexace signálů</h1>
+<p class="lead">Biosignálů bývá víc (svody EKG, kanály EEG, teplota, tlak…), ale převodník, vodič nebo přenosová cesta je jen jedna. <b>Multiplexace</b> je způsob, jak po jedné cestě poslat víc signálů a na druhé straně je zase oddělit. Kapitola vysvětluje <b>princip</b> tří základních technik – časové (TDM), frekvenční (FDM) a vlnové (WDM) multiplexace – a pak ukazuje, jak se analogové signály přepínají v praxi: multiplexor se spínači a operačními zesilovači.</p>
+
+<p>V měřicím řetězci (slide „Multiplex“) leží multiplexace mezi úpravou signálu a <a href="#k11-def-galvanicke-oddeleni">galvanickým oddělením</a> (přednáška P9). Pojem <a href="#k11-def-multiplexace">multiplexace</a> už známe z P1. Tam šlo o postupné přepínání vstupů na jeden převodník – to je jen jedna z technik, časový multiplex. Tato kapitola ukáže i další.</p>
+
+<h2 id="k18-mux-demux">Multiplexování a demultiplexování</h2>
+<p>Podle slidu je <b>multiplexování</b> proces využívaný v elektronice, telekomunikacích a počítačových sítích, který kombinuje více analogových signálů nebo více digitálních datových toků <b>do jednoho signálu</b>. Smyslem je <b>efektivní využití přenosového média</b> – místo deseti vodičů stačí jeden. <b>Demultiplexování</b> je opačný proces: jeden tok signálu rozdělí zpět do více signálů. Smyslem je <b>obnovení původních signálů</b> z přenosového média.</p>
+
+<div class="box definice" id="k18-def-multiplexor"><div class="box-t">Definice: multiplexor</div>
+<p><b>Multiplexor</b> (MUX nebo MPX, také <b>datový selektor</b>) je zařízení provádějící multiplexování: má více signálových vstupů \(X_0, X_1, \dots\), jeden výstup \(Y\) a výběrové (adresové) vstupy, jejichž kombinace určuje, který vstup se připojí na výstup.</p>
+<p class="jinak">přepínač „mnoho do jednoho“. Adresa (např. dva bity A, B) řekne, kterou ze čtyř cest pustit dál; ostatní jsou v tu chvíli odpojené.</p></div>
+
+<div class="box definice" id="k18-def-demultiplexor"><div class="box-t">Definice: demultiplexor</div>
+<p><b>Demultiplexor</b> (DEMUX nebo DEMPX, také <b>datový distributor</b>) je zařízení provádějící demultiplexování: má jeden vstup \(X\), více výstupů \(Y_0, Y_1, \dots\) a výběrové vstupy, jejichž kombinace určuje, na který výstup se vstup připojí.</p>
+<p class="jinak">přepínač „jeden do mnoha“. Vybírá vždy jen jeden signál – ten, který byl multiplexorem spojen s ostatními – a pošle ho na jeho vlastní výstup.</p></div>
+
+<div class="schema">
+<svg viewBox="0 0 760 280" role="img" aria-label="Multiplexor 4 na 1 se vstupy X0 až X3 a adresou A, B; společný kanál; demultiplexor 1 na 4 s výstupy Y0 až Y3 a stejnou adresou. Pro A B = 0 1 vede cesta X1, společný kanál, Y1">
+  <defs><marker id="k18-ar8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <polygon points="150,20 240,50 240,190 150,220" class="node fl1"/>
+  <text x="195" y="125" text-anchor="middle">MUX</text>
+  <text x="30" y="55">X<tspan baseline-shift="sub" font-size="10">0</tspan></text>
+  <text x="30" y="100">X<tspan baseline-shift="sub" font-size="10">1</tspan></text>
+  <text x="30" y="145">X<tspan baseline-shift="sub" font-size="10">2</tspan></text>
+  <text x="30" y="190">X<tspan baseline-shift="sub" font-size="10">3</tspan></text>
+  <path d="M58 50 H148" class="ln" marker-end="url(#k18-ar8)"/>
+  <path d="M58 95 H148" class="ln s1" marker-end="url(#k18-ar8)"/>
+  <path d="M58 140 H148" class="ln" marker-end="url(#k18-ar8)"/>
+  <path d="M58 185 H148" class="ln" marker-end="url(#k18-ar8)"/>
+  <path d="M152 95 L238 120" class="ln s1" style="stroke-width:3"/>
+  <path d="M240 120 H518" class="ln s1" style="stroke-width:3" marker-end="url(#k18-ar8)"/>
+  <text x="380" y="108" text-anchor="middle" class="t2">společný kanál (jedna cesta)</text>
+  <polygon points="520,50 610,20 610,220 520,190" class="node fl2"/>
+  <text x="565" y="125" text-anchor="middle">DEMUX</text>
+  <path d="M522 120 L608 95" class="ln s1" style="stroke-width:3"/>
+  <path d="M612 50 H700" class="ln" marker-end="url(#k18-ar8)"/>
+  <path d="M612 95 H700" class="ln s1" marker-end="url(#k18-ar8)"/>
+  <path d="M612 140 H700" class="ln" marker-end="url(#k18-ar8)"/>
+  <path d="M612 185 H700" class="ln" marker-end="url(#k18-ar8)"/>
+  <text x="710" y="55">Y<tspan baseline-shift="sub" font-size="10">0</tspan></text>
+  <text x="710" y="100">Y<tspan baseline-shift="sub" font-size="10">1</tspan></text>
+  <text x="710" y="145">Y<tspan baseline-shift="sub" font-size="10">2</tspan></text>
+  <text x="710" y="190">Y<tspan baseline-shift="sub" font-size="10">3</tspan></text>
+  <path d="M195 250 V207" class="ln" marker-end="url(#k18-ar8)"/>
+  <path d="M565 250 V207" class="ln" marker-end="url(#k18-ar8)"/>
+  <path d="M195 250 H565" class="ln dash"/>
+  <text x="380" y="270" text-anchor="middle" class="t2">stejná adresa A B = 0 1 na obou stranách (synchronizace)</text>
+</svg></div>
+<p class="muted">Schéma: multiplexor 4 → 1 a demultiplexor 1 → 4 se dvěma adresovými bity A, B (podle slidů „Multiplexování“ a „Demultiplexování“). Zvýrazněna je cesta pro adresu A B = 0 1.</p>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>MUX vybere podle adresy <b>jeden</b> vstup a pustí ho do společného kanálu; DEMUX ho podle <b>stejné</b> adresy pošle na odpovídající výstup.</li>
+<li>Obě strany musí přepínat <b>současně</b> (synchronně), jinak by signál \(X_1\) skončil na cizím výstupu.</li>
+<li>Dva adresové bity dají \(2^2 = 4\) kombinace, tedy 4 vstupy; tři bity 8 vstupů, čtyři bity 16.</li>
+</ul></div>
+
+<h3 id="k18-digitalni-mux">Digitální multiplexor</h3>
+<p>Na slidu jsou u vstupů multiplexoru napsané kombinace adresy: \(X_0\) má \(A'B'\), \(X_1\) má \(A'B\), \(X_2\) má \(AB'\) a \(X_3\) má \(AB\) (čárka = negace). Každý vstup tedy projde jen při „své“ kombinaci A, B. V logických obvodech se to zapíše jako součet součinů:</p>
+<div class="box vzorec"><div class="box-t">Výstup multiplexoru 4 → 1</div>
+\[ \begin{aligned} Y = {} & \overline{A}\,\overline{B}\,X_0 + \overline{A}\,B\,X_1 \\ & + A\,\overline{B}\,X_2 + A\,B\,X_3 \end{aligned} \]
+<table class="vars">
+<tr><td>\(Y\)</td><td>výstup multiplexoru</td></tr>
+<tr><td>\(X_0 \dots X_3\)</td><td>vstupy (logické úrovně 0/1)</td></tr>
+<tr><td>\(A, B\)</td><td>adresové bity; \(\overline{A}\) (na slidu \(A'\)) je negace \(A\)</td></tr>
+<tr><td>\(\cdot\), \(+\)</td><td>logický součin (AND) a součet (OR)</td></tr>
+</table>
+<p>Pro každou adresu je právě jeden součin nenulový, takže na výstup projde právě jeden vstup.</p></div>
+
+<div class="box definice" id="k18-def-digitalni-mux"><div class="box-t">Definice: digitální multiplexor</div>
+<p><b>Digitální multiplexor</b> je multiplexor složený z logických hradel, který na výstup přenáší pouze <b>logickou úroveň</b> (0 nebo 1) vybraného vstupu.</p>
+<p class="jinak">výstup se „znovu vyrobí“ hradly: buď je tam log. 0, nebo log. 1. Spojitou hodnotu (např. 0,37 V) takový obvod přenést neumí.</p></div>
+<div class="box definice" id="k18-def-analogovy-mux"><div class="box-t">Definice: analogový multiplexor</div>
+<p><b>Analogový multiplexor</b> je multiplexor, ve kterém vybraný vstup propojí s výstupem <b>analogový spínač</b> (tranzistor), takže na výstup přenáší <b>spojitou hodnotu</b> napětí vybraného vstupu.</p>
+<p class="jinak">uvnitř je „vodivá cesta“ přes sepnutý tranzistor, ne logický obvod. Co přijde na vstup, to (téměř beze změny) projde na výstup – spojitý signál i logické úrovně.</p></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Analogový multiplexer je automaticky i digitální, ale digitální nemůže být zároveň analogový. Digitální přenáší logiku, analogový přenáší spojitou hodnotu.“</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>MUX = mnoho vstupů do jednoho kanálu podle adresy, DEMUX = jeden kanál zpět na mnoho výstupů podle stejné adresy. Digitální MUX přenáší jen 0/1, analogový spojité napětí.</p></div>
+
+<h2 id="k18-techniky">Základní techniky multiplexace</h2>
+<p>Techniky se podle slidu liší způsobem <b>„řazení“</b> signálu do přenosového kanálu:</p>
+<ul>
+<li><b>Time Division Multiplexing</b> – časový multiplex (TDM),</li>
+<li><b>Frequency Division Multiplexing</b> – frekvenční multiplex (FDM),</li>
+<li><b>Wavelength Division Multiplexing</b> – vlnový multiplex (WDM).</li>
+</ul>
+<p>Zásadní rozdíl je kromě způsobu řazení i v tom, jak technika využívá <b>přenosové pásmo</b> kanálu (bandwidth, viz <a href="#k12-def-sirka-pasma">šířka pásma</a>). Nejlépe je to vidět na rovině čas × frekvence: kanál je „plocha“, kterou si signály musí rozdělit.</p>
+
+<figure><div class="paper"><img src="../figures/fig18_cas_frekvence.png" alt="Dva obdélníky čas na vodorovné ose, frekvence na svislé: vlevo TDM rozdělené na svislé pruhy 1, 2, 3, 1, 2, 3, každý přes celou výšku; vpravo FDM rozdělené na tři vodorovné pásy kanál 1, 2, 3, každý přes celou šířku" loading="lazy"></div>
+<figcaption><b>Obr. P8.1</b> Jak si tři kanály dělí přenosový kanál (podle obrázků na slidech TDM a FDM). TDM dělí <b>čas</b>, FDM dělí <b>frekvence</b>.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>TDM</b>: každý kanál dostane <b>celé pásmo</b> (celou výšku), ale jen na krátký <b>časový úsek</b>; pak přijde na řadu další.</li>
+<li><b>FDM</b>: všechny kanály se přenášejí <b>současně</b> (celou šířku), ale každý jen v <b>omezeném pásmu</b> frekvencí.</li>
+<li>Mezi pásy FDM jsou mezery – ochranná pásma proti přeslechům (viz dále).</li>
+</ul></div>
+
+<div class="box definice" id="k18-def-preslech"><div class="box-t">Definice: přeslech</div>
+<p><b>Přeslech</b> (crosstalk) je nežádoucí pronikání signálu jednoho kanálu do jiného kanálu téhož přenosového systému.</p>
+<p class="jinak">jako když v telefonu slyšíš cizí hovor. V měření to znamená, že v naměřeném EKG svodu je kousek signálu ze sousedního svodu.</p></div>
+
+<h3 id="k18-tdm">Časový multiplex (TDM)</h3>
+<div class="box definice" id="k18-def-tdm"><div class="box-t">Definice: časový multiplex (TDM)</div>
+<p><b>Časový multiplex</b> (Time Division Multiplexing, TDM) je technika, která umožňuje posílat více signálů prostřednictvím společného přenosového kanálu přidělením <b>pevného časového úseku</b> (okna) každému signálu.</p>
+<p class="jinak">signály se střídají jako řečníci s časovým limitem: každý dostane své okno, mluví celým hlasem (celým pásmem), a pak předá slovo dalšímu. Pořadí se pořád opakuje.</p></div>
+
+<div class="box intuice"><div class="box-t">Princip TDM</div>
+<ul>
+<li>Na obou koncích kanálu je přepínač – na slidu „Mux“ a „Demux“ s hovory Conversation A–E. MUX postupně připojuje vstupy A, B, C, … na společné vedení.</li>
+<li>DEMUX na druhém konci přepíná <b>synchronně</b> se MUX: ve chvíli, kdy vedením jde hovor A, je připojen výstup A.</li>
+<li>„Dostávám časové sloty“: každý kanál má v opakujícím se rámci své okno, ve kterém mu patří celý kanál.</li>
+<li>V době přenosu jednoho kanálu jsou ostatní kanály <b>blokovány</b>. Signály se nikdy nepřenášejí současně, proto je <b>přeslech minimální</b>.</li>
+</ul></div>
+<p>Podle slidu se TDM využívá pro multiplexování <b>digitálních i analogových</b> signálů. U digitálního signálu je to přirozené – data se posílají po blocích. U analogového signálu je potřeba si uvědomit, co se se spojitým průběhem stane:</p>
+
+<figure><div class="paper"><img src="../figures/fig18_tdm_prubeh.png" alt="Tři grafy pod sebou: nahoře tři spojité signály kanálů 1, 2, 3; uprostřed výstup MUX složený z krátkých úseků střídajících se barev po 0,1 s; dole původní kanál 1 slabě a tučně jen úseky, které DEMUX propustí, s mezerami mezi nimi" loading="lazy"></div>
+<figcaption><b>Obr. P8.2</b> TDM tří analogových signálů (vlastní signály): každý kanál má okno 0,1 s, celý rámec trvá 0,3 s.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Ve společném kanálu (uprostřed) je v každém okamžiku jen <b>jeden</b> signál – kanály se nemíchají.</li>
+<li>Z kanálu 1 se ale přenese jen třetina průběhu (tučně dole). Spojitý analogový signál je TDM „rozsekaný“ – mezi okny o něm nic nevíme.</li>
+<li>Analogový TDM je proto ve skutečnosti <a href="#k16-def-vzorkovani">vzorkování</a>: každý kanál musí být navštíven dost často vzhledem k tomu, jak rychle se mění. Čím víc kanálů, tím méně často na každý dojde řada.</li>
+</ul></div>
+<div class="box pozor"><div class="box-t">Časový multiplex a rychlost</div>
+<p>Kanály se v TDM o čas dělí: pokud jeden převodník obsluhuje \(N\) kanálů, připadne na každý kanál jen \(1/N\) jeho vzorkovací frekvence. Časový multiplex tedy šetří převodník a vodiče, ale „platí“ se za to rychlostí převodu každého kanálu.</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>TDM: každý kanál má pevné časové okno a v něm celé pásmo; ostatní jsou blokované, takže přeslech je minimální. MUX a DEMUX musí přepínat synchronně; analogový signál se tím rozseká na vzorky.</p></div>
+
+<h3 id="k18-fdm">Frekvenční multiplex (FDM)</h3>
+<div class="box definice" id="k18-def-fdm"><div class="box-t">Definice: frekvenční multiplex (FDM)</div>
+<p><b>Frekvenční multiplex</b> (Frequency Division Multiplexing, FDM) je technika, která kombinuje více signálů pro <b>současný</b> přenos přes sdílené komunikační médium tak, že každý signál zabírá v přenosovém kanálu <b>vlastní, oddělené pásmo frekvencí</b>.</p>
+<p class="jinak">jako rozhlasové stanice: všechny vysílají najednou, ale každá na jiné frekvenci. Přijímač si „naladí“ jen tu svou a ostatní odfiltruje.</p></div>
+
+<div class="box intuice"><div class="box-t">Princip FDM</div>
+<ul>
+<li>Signály mají často stejné frekvenční pásmo – na slidu tři hovorové signály, každý v pásmu 300–3400 Hz. Kdyby se jen sečetly, nešly by od sebe oddělit.</li>
+<li>Proto se každý signál <b>posune</b> (modulací na vlastní nosnou frekvenci) do jiné části spektra. Na slidu se tři signály posunou vedle sebe do pásma 10–20 kHz.</li>
+<li>Posunuté signály se sečtou a přenášejí se <b>současně</b> po jednom kanálu – v čase spojitě, bez oken.</li>
+<li>Na přijímací straně oddělí každý signál <a href="#k15-def-pp">pásmová propust</a> naladěná na jeho pásmo a signál se posune zpět do původního pásma.</li>
+</ul></div>
+
+<figure><div class="paper"><img src="../figures/fig18_fdm_spektrum.png" alt="Vlevo tři stejná pásma 0,3 až 3,4 kHz pro signály 1, 2, 3; vpravo stejná tři pásma posunutá vedle sebe mezi 10 a 20 kHz, mezi nimi úzké mezery označené ochranné pásmo" loading="lazy"></div>
+<figcaption><b>Obr. P8.3</b> FDM podle slidu: tři signály 300–3400 Hz posunuté do společného pásma 10–20 kHz (přesné polohy pásem jsou ilustrační). Mezery mezi pásmy jsou ochranná pásma (na slidu německy „Schutzbänder“).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Každý signál má šířku \(3400 - 300 = 3100\) Hz; tři signály potřebují 9,3 kHz. Ve společném pásmu 10 kHz tak na ochranná pásma zbývá jen 0,7 kHz.</li>
+<li>Každý kanál smí využít <b>jen svůj úsek</b> pásma – celé pásmo kanálu nemá k dispozici žádný z nich.</li>
+<li>Bez ochranných pásem by se pásma dotýkala a reálné filtry (se strmostí, ne svislou hranou) by propouštěly kus sousedního kanálu.</li>
+</ul></div>
+<div class="box definice" id="k18-def-ochranne-pasmo"><div class="box-t">Definice: ochranné pásmo</div>
+<p><b>Ochranné pásmo</b> (guard band) je nevyužitý úsek frekvencí mezi pásmy sousedních kanálů frekvenčního multiplexu, který omezuje přeslechy mezi nimi.</p>
+<p class="jinak">„nárazník“ mezi kanály. Filtr přijímače nemá svislou hranu, ale klesá postupně; ochranné pásmo mu dá prostor, aby utlumil sousední kanál dřív, než začne.</p></div>
+<p>Podle slidu se FDM využívá pro multiplexování <b>analogových</b> signálů. Má dvě nevýhody:</p>
+<ul>
+<li>sice probíhá současný přenos zdrojových signálů, ale ve frekvenční oblasti je možné využít jen <b>omezené přenosové pásmo</b>, definované rozsahem frekvencí kanálu,</li>
+<li>díky současnému přenosu více kanálů může docházet k <a href="#k18-def-preslech">přeslechům</a> mezi kanály – oddělují je jen filtry, a ty nejsou <a href="#k15-def-idealni-filtr">ideální</a>.</li>
+</ul>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>FDM: všechny kanály současně, každý ve svém pásmu frekvencí (posunutý modulací). Využije jen část pásma a kvůli současnému přenosu hrozí přeslechy, které omezují ochranná pásma.</p></div>
+
+<h3 id="k18-wdm">Vlnový multiplex (WDM)</h3>
+<div class="box definice" id="k18-def-wdm"><div class="box-t">Definice: vlnový multiplex (WDM)</div>
+<p><b>Vlnový multiplex</b> (Wavelength Division Multiplexing, WDM) je technika multiplexace opticky modulovaných signálů, při které je každý signál přenášen světlem jiné <b>vlnové délky</b> (barvy) a všechny vlnové délky se současně šíří jedním <b>optickým vláknem</b>.</p>
+<p class="jinak">každý kanál „svítí jinou barvou“. Barvy se složí do jednoho paprsku, projdou vláknem a na konci se hranolem zase rozloží na jednotlivé barvy.</p></div>
+<div class="box intuice"><div class="box-t">Princip WDM</div>
+<ul>
+<li>WDM vychází z fyziky světla: paprsek bílého světla lze rozložit na spektrum dílčích vlnových délek (jako hranol rozloží světlo na duhu).</li>
+<li>Každá dílčí vlnová délka (barva) je <b>modulována samostatně</b> vstupním signálem.</li>
+<li>Dílčí modulované signály se optickým hranolem složí zpět do „bílého světla“, které se přenáší <b>optickým vláknem</b>.</li>
+<li>Na konci vlákna druhý hranol světlo opět rozloží a každou barvu přijme vlastní přijímač.</li>
+</ul></div>
+<div class="schema">
+<svg viewBox="0 0 760 210" role="img" aria-label="WDM: tři zdroje světla s vlnovými délkami lambda 1 až 3 modulované signály, hranol je složí do jednoho paprsku, optické vlákno, druhý hranol paprsek rozloží na tři barvy do tří přijímačů">
+  <polygon points="20,32 50,47 20,62" class="node fl1"/>
+  <polygon points="20,87 50,102 20,117" class="node fl2"/>
+  <polygon points="20,142 50,157 20,172" class="node fl3"/>
+  <path d="M50 47 L180 95" class="ln s1" style="stroke-width:2.5"/>
+  <path d="M50 102 L180 102" class="ln s2" style="stroke-width:2.5"/>
+  <path d="M50 157 L180 109" class="ln s3" style="stroke-width:2.5"/>
+  <polygon points="170,55 200,80 200,124 170,149" class="node"/>
+  <text x="185" y="172" text-anchor="middle" class="t2">hranol</text>
+  <rect x="215" y="88" width="330" height="28" rx="14" class="node"/>
+  <path d="M200 98 H560" class="ln s1"/>
+  <path d="M200 102 H560" class="ln s2"/>
+  <path d="M200 106 H560" class="ln s3"/>
+  <text x="380" y="76" text-anchor="middle" class="t2">optické vlákno – „bílé světlo“, všechny barvy současně</text>
+  <polygon points="590,55 560,80 560,124 590,149" class="node"/>
+  <text x="575" y="172" text-anchor="middle" class="t2">hranol</text>
+  <path d="M580 95 L710 47" class="ln s1" style="stroke-width:2.5"/>
+  <path d="M580 102 L710 102" class="ln s2" style="stroke-width:2.5"/>
+  <path d="M580 109 L710 157" class="ln s3" style="stroke-width:2.5"/>
+  <polygon points="740,32 710,47 740,62" class="node fl1"/>
+  <polygon points="740,87 710,102 740,117" class="node fl2"/>
+  <polygon points="740,142 710,157 740,172" class="node fl3"/>
+  <text x="60" y="30" class="t2">λ₁ … λ₃ modulované signály</text>
+  <text x="700" y="198" text-anchor="end" class="t2">přijímače</text>
+</svg></div>
+<p class="muted">Schéma: princip WDM podle slidu – zdroje, hranol, optické vlákno, hranol, přijímače.</p>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Všechny barvy jdou vláknem <b>současně</b> – přenos je (jako u FDM) v časové oblasti <b>kontinuální</b>.</li>
+<li>Kanály se rozlišují <b>vlnovou délkou</b>, tedy vlastně frekvencí světla (\(\lambda = c/f\)). Proto je WDM technika multiplexace <b>příbuzná FDM</b>, jen v optické oblasti.</li>
+<li>Mezi vysílačem a přijímačem vede jen sklo nebo plast vlákna, žádný vodič.</li>
+</ul></div>
+<p>Podle slidu se WDM využívá pro přenos <b>opticky modulovaných</b> signálů. Díky optickému vláknu (tedy neelektrickému vedení) je technika WDM současně <a href="#k11-def-galvanicke-oddeleni"><b>galvanickým oddělením</b></a> signálové cesty – mezi oběma stranami nemůže protékat proud. Tím kapitola navazuje na další přednášku o galvanickém oddělení.</p>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>WDM: každý signál moduluje světlo jiné vlnové délky, hranol barvy složí do jednoho vlákna a na konci je zase rozloží. Je to „FDM se světlem“, přenos je spojitý v čase a vlákno zároveň galvanicky odděluje.</p></div>
+
+<h3 id="k18-srovnani">Srovnání technik</h3>
+<div class="tablewrap"><table class="compact">
+<thead><tr><th></th><th>TDM</th><th>FDM</th><th>WDM</th></tr></thead>
+<tbody>
+<tr><td>co se dělí</td><td>čas (okna)</td><td>frekvence (pásma)</td><td>vlnové délky (barvy)</td></tr>
+<tr><td>přenos kanálů</td><td>postupně, střídavě</td><td>současně, spojitě v čase</td><td>současně, spojitě v čase</td></tr>
+<tr><td>pásmo pro kanál</td><td>celé pásmo kanálu</td><td>jen omezená část</td><td>jen vlastní vlnová délka</td></tr>
+<tr><td>přeslech</td><td>minimální (ostatní blokovány)</td><td>může vznikat (filtry)</td><td>příbuzné FDM</td></tr>
+<tr><td>signály</td><td>digitální i analogové</td><td>analogové</td><td>opticky modulované</td></tr>
+<tr><td>médium</td><td>vodič, převodník</td><td>vodič, rádiový kanál</td><td>optické vlákno (= galvanické oddělení)</td></tr>
+</tbody></table></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„TDM dělí čas: každý kanál dostane svůj časový slot a v něm celé pásmo, ostatní jsou blokované, proto je přeslech minimální; spojitý analogový signál se tím ale rozseká. FDM dělí frekvence: všechny kanály jdou současně, každý posunutý do svého pásma, takže má jen omezenou část pásma a mezi kanály mohou vznikat přeslechy – proto ochranná pásma. WDM je obdoba FDM se světlem: každá vlnová délka nese jeden signál, hranol je složí do optického vlákna a vlákno zároveň galvanicky odděluje.“</p></div>
+
+<h2 id="k18-analogovy-mpx">Multiplexor analogových signálů s OZ</h2>
+<p>Poslední tři slidy ukazují, jak se v praxi přepíná <b>analogový</b> signál – tedy multiplexor, jaký stojí např. před A/D převodníkem. Každý vstup má svůj rezistor \(R_1\), tranzistor \(X_i\) zapojený k zemi a <a href="#k11-def-sledovac">napěťový sledovač</a> OZ<sub>i</sub>. Výstupy sledovačů se přes \(R_2\) sčítají v zesilovači OZ<sub>S</sub>.</p>
+
+<figure><div class="paper"><img src="../figures/fig18_mpx_analog.png" alt="Schéma: vstup ui1 přes R1 na neinvertující vstup sledovače OZ1, z tohoto uzlu tranzistor JFET řízený X1 na zem; stejně vstup uin, OZn a Xn; výstupy u1 až un přes R2 do společného uzlu na invertujícím vstupu OZs se zpětnou vazbou R3, výstup uo; čárkovaně další vstupy uk" loading="lazy"></div>
+<figcaption><b>Obr. P8.4</b> Multiplexor analogových signálů (podle slidu „MPX analogových signálů“). Tranzistory \(X_i\) jsou JFET s kanálem N; na slidu je u gate \(X_1\) řídicí impuls z 0 V na −10 V.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Tranzistor není v sérii se signálem, ale <b>paralelně k zemi</b>: když je sepnutý, „zkratuje“ neinvertující vstup sledovače na zem.</li>
+<li>\(R_1\) a sepnutý tranzistor tvoří <a href="#k11-def-delic">dělič napětí</a> – vstupní signál zůstane na \(R_1\), na sledovač se dostane jen nepatrná část.</li>
+<li>Všechny kanály končí ve <b>společném uzlu</b> před OZ<sub>S</sub>; projde ale jen ten, jehož tranzistor je rozepnutý.</li>
+</ul></div>
+
+<div class="box postup"><div class="box-t">Jak analogový MPX vybírá kanál</div>
+<ol>
+<li><b>Výchozí stav:</b> všechny tranzistory \(X_i\) jsou <b>sepnuty</b> (u JFET s kanálem N při napětí gate 0 V). Signál každého vstupu je přes \(R_1\) <b>nulován</b> – tranzistory posílají do země všechny signály kromě toho, který chci.</li>
+<li><b>Výběr vstupu:</b> k selekci dochází <b>rozepnutím</b> příslušného tranzistoru (zde \(X_1\), impuls na gate −10 V JFET zavře). Uzel za \(R_1\) přestane být spojen se zemí a signál \(u_{i1}\) projde dál.</li>
+<li><b>Sledovač:</b> vybraný signál prochází napěťovým sledovačem. Ten má velmi velký vstupní odpor (\(R_{OZ_n} > 100\ \text{M}\Omega\)), proto je vliv \(R_1\) na vybraný signál zanedbatelný, a jeho výstup \(u_1\) je tvrdý zdroj.</li>
+<li><b>Sčítání:</b> výstupy OZ<sub>i</sub> jsou přivedeny přes \(R_2\) na rozdílový součtový zesilovač OZ<sub>S</sub>. Nevybrané kanály mají na výstupu (téměř) nulu, takže výsledek obsahuje jen vybraný kanál.</li>
+</ol></div>
+<div class="box vzorec"><div class="box-t">Výstup součtového zesilovače OZ<sub>S</sub></div>
+<p>OZ<sub>S</sub> je zapojen jako <a href="#k11-def-invertujici">invertující zesilovač</a> s více vstupy: invertující vstup je na <a href="#k11-def-virtualni-zkrat">virtuální nule</a>, proudy \(u_k/R_2\) ze všech kanálů se sečtou a protečou \(R_3\):</p>
+\[ u_o = -\frac{R_3}{R_2}\left(u_1 + u_2 + \dots + u_n\right) \]
+<p>Když je vybraný jen kanál \(k\) a ostatní \(u_i \approx 0\):</p>
+\[ u_o \approx -\frac{R_3}{R_2}\,u_k \]
+<table class="vars">
+<tr><td>\(u_o\)</td><td>výstupní napětí multiplexoru</td></tr>
+<tr><td>\(u_1 \dots u_n\)</td><td>výstupy sledovačů jednotlivých kanálů</td></tr>
+<tr><td>\(u_k\)</td><td>výstup sledovače vybraného kanálu (\(= u_{ik}\))</td></tr>
+<tr><td>\(R_2\)</td><td>vstupní rezistory součtového zesilovače (stejné pro všechny kanály)</td></tr>
+<tr><td>\(R_3\)</td><td>rezistor ve zpětné vazbě OZ<sub>S</sub>; poměr \(R_3/R_2\) je zesílení</td></tr>
+</table></div>
+<div class="box intuice"><div class="box-t">Proč jsou ve schématu sledovače</div>
+<ul>
+<li>„Velká impedance = omezím přeslechy“: sledovač má obrovský vstupní odpor, takže neodebírá proud ze zdroje signálu ani z děliče \(R_1\)–tranzistor.</li>
+<li>Výstup sledovače je tvrdý zdroj. Sčítací uzel je na virtuální nule, takže kanály se přes \(R_2\) navzájem neovlivňují – signál jednoho kanálu se „nepřelije“ zpět do jiného.</li>
+<li>Každý kanál je tak oddělen dvakrát: tranzistorem k zemi a vlastním OZ.</li>
+</ul></div>
+
+<h3 id="k18-chyba-mpx">Chyba „nulového“ napětí</h3>
+<p>Vliv \(R_1\) na vybraný kanál je zanedbatelný (\(R_{OZ_n} > 100\ \text{M}\Omega\)). Vliv však mají <b>impedance sepnutých tranzistorů</b>: sepnutý tranzistor není ideální zkrat, má odpor \(R_X\). Nevybraný kanál proto není přesně nula – \(R_1\) a \(R_X\) tvoří dělič a na sledovač projde malý zbytek signálu. Ten se na výstupu přičte k vybranému kanálu jako chyba.</p>
+<div class="box vzorec"><div class="box-t">„Nulové“ napětí nevybraného kanálu (slide)</div>
+\[ u_{o(0)} \cong u_i \cdot \frac{R_{X_1}}{R_1} \]
+<p>Je to dělič \(R_1\) a \(R_{X_1}\) zjednodušený pro \(R_1 \gg R_{X_1}\):</p>
+\[ u_i\,\frac{R_{X_1}}{R_1 + R_{X_1}} \approx u_i\,\frac{R_{X_1}}{R_1} \]
+<table class="vars">
+<tr><td>\(u_{o(0)}\)</td><td>napětí, které projde z nevybraného („vynulovaného“) kanálu – chyba</td></tr>
+<tr><td>\(u_i\)</td><td>vstupní napětí nevybraného kanálu</td></tr>
+<tr><td>\(R_{X_1}\)</td><td>odpor sepnutého tranzistoru \(X_1\)</td></tr>
+<tr><td>\(R_1\)</td><td>vstupní rezistor kanálu</td></tr>
+</table></div>
+<div class="box priklad"><div class="box-t">Příklad: jak velký má být \(R_1\) (čísla ze slidu)</div>
+<p>Sepnutý tranzistor má \(R_{X_1} = 100\ \Omega\).</p>
+<p>1. Pro \(R_1 = 10\ \text{k}\Omega\):</p>
+\[ \frac{R_{X_1}}{R_1} = \frac{100\ \Omega}{10\,000\ \Omega} = 0{,}01 = 1\ \% \]
+<p>Pro \(R_1 &gt; 10\ \text{k}\Omega\) bude tedy chyba \(&lt; 1\ \%\ u_i\).</p>
+<p>2. Pro \(R_1 = 1\ \text{M}\Omega\):</p>
+\[ \frac{R_{X_1}}{R_1} = \frac{100\ \Omega}{1\,000\,000\ \Omega} = 10^{-4} = 0{,}1\ \text{‰} \]
+<p>Pro \(R_1 &gt; 1\ \text{M}\Omega\) bude chyba \(&lt; 0{,}1\ \text{‰}\ u_i\) (tj. 0,01 %).</p>
+<p>Přesný vzorec děliče dá 0,99 % a 0,0099 % – zjednodušení na \(R_{X_1}/R_1\) je tu naprosto dostatečné.</p></div>
+<figure><div class="paper"><img src="../figures/fig18_chyba_r1.png" alt="Logaritmický graf chyby v procentech vstupního napětí na odporu R1 od 1 kilo do 10 mega ohmů pro RX 100 ohmů; klesající přímka, body 10 kiloohmů 1 procento a 1 megaohm 0,01 procenta; přibližný a přesný vzorec splývají" loading="lazy"></div>
+<figcaption><b>Obr. P8.5</b> Chyba „nulového“ napětí v závislosti na \(R_1\) pro \(R_{X_1} = 100\ \Omega\) (hodnoty ze slidu).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Desetkrát větší \(R_1\) = desetkrát menší chyba (přímka v log-log grafu).</li>
+<li>Přibližný vzorec ze slidu a přesný dělič splývají, dokud je \(R_1\) mnohem větší než \(R_{X_1}\).</li>
+</ul></div>
+<div class="box pozor"><div class="box-t">\(R_1\) nelze zvětšovat donekonečna</div>
+<p>Pro <b>vybraný</b> kanál tvoří \(R_1\) dělič se vstupním odporem sledovače. Ten je velký (\(&gt; 100\ \text{M}\Omega\)), ale konečný: \(R_1\) musí být mnohem větší než \(R_X\) (malá chyba nevybraných kanálů) a zároveň mnohem menší než vstupní odpor OZ (žádná ztráta vybraného kanálu). Pro \(R_1 = 10\ \text{k}\Omega\) a 100 MΩ je ztráta jen 0,01 %, pro \(R_1 = 1\ \text{M}\Omega\) už asi 1 %. Proto se volí OZ s co největším vstupním odporem.</p></div>
+
+<h3 id="k18-seriove-paralelni">Sériově-paralelní spínač</h3>
+<p>Vliv impedance tranzistorů lze <b>eliminovat</b> připojením <b>sériově-paralelních spínačů</b> do každého signálového vstupu. V takovém případě bude vstupní signál zcela odpojen a neinvertující vstup příslušného napěťového sledovače uzemněn.</p>
+<div class="box definice" id="k18-def-seriove-paralelni-spinac"><div class="box-t">Definice: sériově-paralelní spínač</div>
+<p><b>Sériově-paralelní spínač</b> je dvojice spínačů řízených společným signálem \(X_k\): spínač <b>a</b> zapojený v sérii se signálovým vstupem a spínač <b>b</b> zapojený paralelně, ze vstupu sledovače na zem, přičemž je vždy sepnut právě jeden z nich.</p>
+<p class="jinak">signál se nejdřív odpojí (a) a pak se vstup pro jistotu ještě uzemní (b). Nevybraný kanál tak není „skoro nula“ přes dělič, ale opravdu nula.</p></div>
+<figure><div class="paper"><img src="../figures/fig18_spinac_sp.png" alt="Dvě varianty vstupu kanálu k: uik přes R1 a sériový spínač a na neinvertující vstup sledovače OZk, z tohoto uzlu spínač b na zem; vlevo kanál nevybrán, a rozepnut a b sepnut; vpravo kanál vybrán, a sepnut a b rozepnut" loading="lazy"></div>
+<figcaption><b>Obr. P8.6</b> Sériově-paralelní spínač na vstupu kanálu \(k\) (podle slidu). Oba spínače řídí stejný signál \(X_k\), vždy v opačném stavu.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>Nevybraný kanál</b> (vlevo): a je rozepnutý, takže \(u_{ik}\) je od sledovače zcela odpojeno; b uzemní vstup sledovače. Odpor sepnutého b nevadí – teče jím jen zanedbatelný proud do vstupu OZ, takže na něm není žádný úbytek.</li>
+<li><b>Vybraný kanál</b> (vpravo): a je sepnutý a signál jde na sledovač; b je rozepnutý a nic neuzemňuje. Odpor sepnutého a je v sérii s obrovským vstupním odporem OZ, proto také nevadí.</li>
+<li>Dělič \(R_1\)–\(R_X\) z předchozího zapojení zmizel – chyba \(u_i R_X/R_1\) už nevzniká.</li>
+</ul></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Analogový MPX: tranzistory k zemi kanály standardně nulují, kanál se vybere rozepnutím jeho tranzistoru, sledovač oddělí a OZ<sub>S</sub> sečte. Odpor sepnutého tranzistoru způsobí chybu \(u_i R_X/R_1\) (proto velké \(R_1\)); úplně ji odstraní sériově-paralelní spínač.</p></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Ve výchozím stavu jsou všechny tranzistory sepnuté a posílají do země všechny signály kromě toho, který chci. Kanál vyberu rozepnutím jeho tranzistoru, signál pak projde sledovačem – velká vstupní impedance omezí přeslechy – a přes \(R_2\) na součtový zesilovač. Sepnutý tranzistor ale není ideální zkrat, s \(R_1\) tvoří dělič a nevybraný kanál propustí \(u_i R_X/R_1\); pro 100 Ω a 10 kΩ je to 1 %. Řešením je sériově-paralelní spínač: vstup se odpojí a zároveň uzemní.“</p></div>
+
+<section class="souhrn" id="k18-shrnuti">
+<h2>Shrnutí</h2>
+<p><b>Multiplexování</b> kombinuje více analogových signálů nebo digitálních datových toků do jednoho signálu, aby se efektivně využilo přenosové médium; <b>demultiplexování</b> je opačný proces, který obnoví původní signály. Multiplexor (datový selektor) vybírá podle adresy jeden vstup, demultiplexor (datový distributor) ho podle stejné adresy posílá na odpovídající výstup. Digitální multiplexor z hradel přenáší jen logickou úroveň, analogový se spínači přenáší spojitou hodnotu – a tedy i logiku.</p>
+<p>Základní techniky se liší způsobem „řazení“ signálu do kanálu a využitím pásma. <b>TDM</b> dává každému signálu pevné časové okno a v něm celé pásmo kanálu; ostatní kanály jsou blokovány, přeslech je minimální; používá se pro digitální i analogové signály, analogový signál se ale rozseká na vzorky. <b>FDM</b> přenáší všechny signály současně, každý posunutý do vlastního pásma; každý kanál má jen omezenou část pásma a mohou vznikat přeslechy, proti kterým slouží ochranná pásma; používá se pro analogové signály. <b>WDM</b> je obdoba FDM se světlem: každá vlnová délka je modulována samostatně, hranol je složí do optického vlákna; přenos je spojitý v čase a vlákno zároveň galvanicky odděluje.</p>
+<p><b>Analogový multiplexor s OZ</b> má na každém vstupu \(R_1\) a tranzistor k zemi, který je ve výchozím stavu sepnutý a signál nuluje. Kanál se vybere rozepnutím tranzistoru, projde sledovačem a přes \(R_2\) do součtového zesilovače OZ<sub>S</sub>. Odpor sepnutého tranzistoru způsobí, že nevybraný kanál propustí \(u_i R_X/R_1\) (pro 100 Ω a 10 kΩ 1 %, pro 1 MΩ 0,1 \text{‰}). Sériově-paralelní spínač vstup zcela odpojí a uzemní, a tuto chybu odstraní.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Multiplexace = více signálů do jednoho kanálu kvůli efektivnímu využití média; demultiplexace je obnoví.</li>
+<li>MUX a DEMUX přepínají podle stejné adresy, synchronně; \(n\) adresových bitů vybere z \(2^n\) vstupů.</li>
+<li>TDM dělí čas: celé pásmo, pevné okno, minimální přeslech; analogový signál se rozseká.</li>
+<li>FDM dělí frekvence: současný přenos, omezené pásmo, hrozí přeslechy → ochranná pásma.</li>
+<li>WDM = FDM se světlem v optickém vlákně, zároveň galvanické oddělení.</li>
+<li>Analogový MUX přenese i logiku, digitální jen logiku.</li>
+<li>Analogový MPX s OZ: tranzistory k zemi nulují, výběr = rozepnutí, sledovač odděluje, OZ<sub>S</sub> sčítá.</li>
+<li>Chyba nevybraného kanálu \(u_i R_X/R_1\); odstraní ji sériově-paralelní spínač.</li>
+</ol></div>
+</section>
+
+<h2 id="k18-otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Co je multiplexování a demultiplexování? Jak se nazývají zařízení a jak vybírají kanál?</summary><div>
+<p><b>Multiplexování</b> je proces, který kombinuje více analogových signálů nebo více digitálních datových toků do jednoho signálu. Smyslem je efektivní využití přenosového média. Provádí ho <b>multiplexor</b> (MUX, MPX, datový selektor).</p>
+<p><b>Demultiplexování</b> je opačný proces: jeden tok signálu rozdělí do více signálů, smyslem je obnovení původních signálů. Provádí ho <b>demultiplexor</b> (DEMUX, DEMPX, datový distributor).</p>
+<p>Kanál se vybírá adresovými vstupy: dva bity A, B dají 4 kombinace, tedy 4 vstupy. Pro MUX 4 → 1 platí:</p>
+\[ \begin{aligned} Y = {} & \overline{A}\,\overline{B}\,X_0 + \overline{A}\,B\,X_1 \\ & + A\,\overline{B}\,X_2 + A\,B\,X_3 \end{aligned} \]
+<p>DEMUX musí mít stejnou adresu jako MUX ve stejném okamžiku (synchronizace), jinak by signál skončil na cizím výstupu.</p></div></details>
+<details class="q"><summary>Vysvětlete princip časového multiplexu (TDM). Proč je přeslech minimální a co se děje s analogovým signálem?</summary><div>
+<p>TDM posílá více signálů společným kanálem tak, že každý signál dostane <b>pevný časový úsek</b>. MUX postupně připojuje vstupy na vedení a DEMUX synchronně přepíná výstupy. V každém okně má kanál k dispozici <b>celé přenosové pásmo</b>.</p>
+<p>V době přenosu jednoho kanálu jsou ostatní kanály <b>blokovány</b> – signály se nikdy nepřenášejí současně, a proto je přeslech minimální.</p>
+<p>TDM se používá pro digitální i analogové signály. Spojitý analogový signál se ale přenese jen ve svých oknech, je „rozsekaný“ – ve skutečnosti se vzorkuje. Každý kanál musí být navštíven dost často a při \(N\) kanálech na něj připadne jen \(1/N\) času.</p></div></details>
+<details class="q"><summary>Vysvětlete princip frekvenčního multiplexu (FDM). Proč u něj vznikají přeslechy a jak se omezují?</summary><div>
+<p>FDM přenáší více signálů <b>současně</b> přes sdílené médium. Každý signál se posune (modulací na vlastní nosnou) do jiného frekvenčního pásma – na slidu tři hovorové signály 300–3400 Hz vedle sebe do pásma 10–20 kHz. Na přijímací straně každý signál oddělí pásmová propust a posune se zpět.</p>
+<ul>
+<li>Každý kanál může využít jen <b>omezené pásmo</b>, ne celé pásmo kanálu.</li>
+<li>Kanály se přenášejí současně a oddělují je jen filtry, které nemají svislou hranu – proto mohou vznikat <b>přeslechy</b>.</li>
+<li>Omezují je <b>ochranná pásma</b> (nevyužité mezery mezi pásmy kanálů).</li>
+</ul>
+<p>FDM se používá pro analogové signály.</p></div></details>
+<details class="q"><summary>Co je vlnový multiplex (WDM), jak souvisí s FDM a proč je zároveň galvanickým oddělením?</summary><div>
+<p>WDM vychází z fyziky světla: bílé světlo lze rozložit na spektrum vlnových délek. Každá dílčí vlnová délka (barva) je modulována samostatně vstupním signálem, dílčí signály se optickým hranolem složí zpět do „bílého světla“ a přenášejí se <b>optickým vláknem</b>. Na konci je druhý hranol rozloží na barvy pro jednotlivé přijímače.</p>
+<p>S FDM je příbuzná, protože kanály se liší vlnovou délkou, tedy frekvencí světla, a přenos je jako u FDM v čase kontinuální. Používá se pro opticky modulované signály.</p>
+<p>Optické vlákno je neelektrické vedení – mezi vysílačem a přijímačem není vodivé spojení, takže WDM současně galvanicky odděluje signálovou cestu.</p></div></details>
+<details class="q"><summary>Porovnejte TDM, FDM a WDM z hlediska využití přenosového pásma a času.</summary><div>
+<ul>
+<li><b>TDM</b>: kanály se střídají v čase; každý má v okně <b>celé pásmo</b>, ale jen část času. Přeslech minimální; digitální i analogové signály.</li>
+<li><b>FDM</b>: kanály jdou <b>současně</b> a spojitě v čase, ale každý jen v <b>omezené části pásma</b>. Možné přeslechy; analogové signály.</li>
+<li><b>WDM</b>: jako FDM, jen kanály jsou vlnové délky světla v optickém vlákně; spojitý přenos a navíc galvanické oddělení.</li>
+</ul>
+<p>Zkráceně: TDM dělí čas, FDM a WDM dělí frekvence (vlnové délky).</p></div></details>
+<details class="q"><summary>Popište multiplexor analogových signálů s OZ ze slidu. Jak se vybírá kanál a k čemu slouží sledovače a OZ<sub>S</sub>?</summary><div>
+<p>Každý vstup má rezistor \(R_1\), tranzistor \(X_i\) z uzlu za \(R_1\) na zem a napěťový sledovač OZ<sub>i</sub>. Výstupy sledovačů jdou přes \(R_2\) na součtový zesilovač OZ<sub>S</sub> se zpětnou vazbou \(R_3\).</p>
+<ol>
+<li>Ve výchozím stavu jsou všechny tranzistory sepnuté a signály jsou přes \(R_1\) nulovány.</li>
+<li>Kanál se vybere <b>rozepnutím</b> jeho tranzistoru (např. \(X_1\) impulsem z 0 V na −10 V).</li>
+<li>Vybraný signál projde sledovačem: velký vstupní odpor nezatěžuje \(R_1\) ani zdroj a omezuje přeslechy, výstup je tvrdý zdroj.</li>
+<li>OZ<sub>S</sub> sečte výstupy všech kanálů; nevybrané jsou nulové, takže:</li>
+</ol>
+\[ u_o \approx -\frac{R_3}{R_2}\,u_k \]</div></details>
+<details class="q"><summary>Odkud se bere chyba „nulového“ napětí analogového multiplexoru, jak velká je a jak ji zmenšit nebo odstranit?</summary><div>
+<p>Sepnutý tranzistor nevybraného kanálu není ideální zkrat, má odpor \(R_X\). S rezistorem \(R_1\) tvoří dělič, takže na sledovač projde zbytek signálu:</p>
+\[ u_{o(0)} \cong u_i \cdot \frac{R_{X_1}}{R_1} \]
+<p>Pro \(R_{X_1} = 100\ \Omega\):</p>
+\[ \begin{aligned} R_1 &= 10\ \text{k}\Omega: & \text{chyba} &= 1\ \%\ u_i \\ R_1 &= 1\ \text{M}\Omega: & \text{chyba} &= 0{,}1\ \text{‰}\ u_i \end{aligned} \]
+<p>Chybu <b>zmenší</b> větší \(R_1\) (musí ale zůstat mnohem menší než vstupní odpor sledovače). <b>Odstraní</b> ji sériově-paralelní spínač: spínač a v sérii vstup zcela odpojí a spínač b uzemní neinvertující vstup sledovače, takže dělič \(R_1\)–\(R_X\) vůbec nevznikne.</p></div></details>
+<details class="q"><summary>Jaký je rozdíl mezi analogovým a digitálním multiplexorem?</summary><div>
+<p><b>Digitální multiplexor</b> je složen z logických hradel a na výstup přenáší jen logickou úroveň (0/1) vybraného vstupu. <b>Analogový multiplexor</b> propojí vybraný vstup s výstupem analogovým spínačem (tranzistorem), takže přenese spojitou hodnotu napětí.</p>
+<p>Analogový multiplexor je proto automaticky použitelný i pro digitální signál (logická úroveň je jen zvláštní případ napětí), ale digitální nemůže přenést analogový signál. Digitální přenáší logiku, analogový přenáší spojitou hodnotu.</p></div></details>
+
+</section>
 <section class="kapitola" id="k29">
 
 <h1>Tahák ke zkoušce: vzorce, schémata a chytáky</h1>
@@ -4324,6 +4705,17 @@
 <tr><td>postupná aproximace</td><td>\(T_C = n\,T_\mathrm{CLK}\)</td><td>půlení intervalů, bit za takt od MSB</td></tr>
 </table></div>
 
+<h2 id="k29-p8">P8 · Multiplexace signálů (<a href="#k18">kapitola</a>)</h2>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec / princip</th><th>poznámka</th></tr>
+<tr><td>MUX / DEMUX</td><td>\(n\) adresových bitů → \(2^n\) vstupů</td><td>stejná adresa na obou stranách (synchronizace)</td></tr>
+<tr><td>TDM</td><td>pevné časové okno, celé pásmo</td><td>ostatní blokovány → přeslech minimální; analogový signál se rozseká</td></tr>
+<tr><td>FDM</td><td>současně, každý kanál své pásmo</td><td>omezené pásmo, přeslechy → ochranná pásma; analogové signály</td></tr>
+<tr><td>WDM</td><td>každá vlnová délka jeden signál, hranol, optické vlákno</td><td>příbuzné FDM; zároveň galvanické oddělení</td></tr>
+<tr><td>analogový MPX s OZ</td><td>\(u_o \approx -\frac{R_3}{R_2}\,u_k\)</td><td>tranzistory k zemi sepnuty = nulují; výběr = rozepnutí; sledovač</td></tr>
+<tr><td>chyba „nuly“</td><td>\(u_{o(0)} \cong u_i\,\frac{R_{X_1}}{R_1}\)</td><td>100 Ω / 10 kΩ → 1 %; odstraní sériově-paralelní spínač</td></tr>
+</table></div>
+
 <h2 id="k29-chytaky">Nejčastější chytáky</h2>
 <div class="box pozor"><div class="box-t">Na co si dát pozor u zkoušky</div>
 <ul>
@@ -4338,6 +4730,8 @@
 <li><b>Zatížený dělič:</b> zátěž je paralelně k \(R_2\); biozdroj je měkký, proto velký vstupní odpor.</li>
 <li><b>Převodník f/U:</b> ve výsledku je \(R_A\) (vybíjecí), ne \(R_1\) – výsledek odvoď z rovnosti nábojů.</li>
 <li><b>Dlouhodobá stabilita</b> roste s \(\sqrt{t}\), ne lineárně.</li>
+<li><b>Analogový MPX:</b> tranzistor je k zemi a kanál se vybere jeho <b>rozepnutím</b>, ne sepnutím; analogový MUX přenese i logiku, digitální ne.</li>
+<li><b>TDM vs. FDM:</b> TDM má celé pásmo a minimální přeslech, FDM současný přenos, ale omezené pásmo a přeslechy.</li>
 </ul></div>
 
 </section>
@@ -4356,7 +4750,7 @@
 <p><b>Úprava signálu</b> je blok akviziční cesty mezi převodníkem a A/D převodem, který signál zesílí, odfiltruje rušení a přizpůsobí jeho rozsah vstupu převodníku.</p>
 <p class="jinak">signál ze senzoru je slabý a zarušený; úprava z něj udělá „čisté“ napětí ve správném rozsahu. Stavebními kameny jsou zesilovače s OZ (<a href="#k12-oz">P2</a>, <a href="#k14">P4</a>) a filtry (<a href="#k15">P5</a>).</p><p class="slovnik-odkaz"><a href="#k11-def-uprava-signalu">výklad v kapitole P1 →</a></p></div>
 <div class="box definice" id="k99-s-multiplexace"><div class="box-t">multiplexace</div>
-<p><b>Multiplexace</b> (MPX) je postupné přepínání více vstupních signálů na jednu společnou cestu (vodič, převodník, kanál přenosu), takže se signály o tuto cestu dělí v čase.</p>
+<p><b>Multiplexace</b> (MPX) je proces, který kombinuje více analogových signálů nebo více digitálních datových toků do jednoho signálu na společné cestě (vodič, převodník, kanál přenosu), aby se tato cesta efektivně využila. Nejčastěji jde o postupné přepínání vstupů, kdy se signály o cestu dělí v čase.</p>
 <p class="jinak">jeden A/D převodník nebo jeden přenosový kanál obslouží víc signálů tím, že je „obchází“ jeden po druhém. Podrobně v přednášce P8.</p><p class="slovnik-odkaz"><a href="#k11-def-multiplexace">výklad v kapitole P1 →</a></p></div>
 <div class="box definice" id="k99-s-galvanicke-oddeleni"><div class="box-t">galvanické oddělení</div>
 <p><b>Galvanické oddělení</b> je přenos signálu mezi dvěma částmi obvodu bez vodivého (galvanického) spojení – např. opticky, magneticky nebo kapacitně – takže mezi nimi nemůže protékat proud.</p>
@@ -4797,6 +5191,37 @@
 <div class="box definice" id="k99-s-sar-adc"><div class="box-t">ADC s postupnou aproximací</div>
 <p><b>ADC s postupnou aproximací</b> (SAR, successive approximation register) určuje v každém taktu hodin jeden bit výsledku, od MSB směrem k LSB: registr postupné aproximace nastaví zkoušený bit na 1, DAC převede kód na napětí a komparátor rozhodne, zda bit zůstane 1 (\(U_\mathrm{IN} > U_\mathrm{DAC}\)), nebo se vrátí na 0 (\(U_\mathrm{IN} &lt; U_\mathrm{DAC}\)).</p>
 <p class="jinak">metoda půlení intervalů – jako hádání čísla od 0 do 15 otázkami „je to víc než …?“. Každá otázka vyloučí polovinu možností, takže na 4bitové číslo stačí vždy přesně 4 otázky.</p><p class="slovnik-odkaz"><a href="#k17-def-sar-adc">výklad v kapitole P7 →</a></p></div>
+<h2 id="k99-kP8" class="slovnik-kap">P8 · Multiplexace signálů</h2>
+<div class="box definice" id="k99-s-multiplexor"><div class="box-t">multiplexor</div>
+<p><b>Multiplexor</b> (MUX nebo MPX, také <b>datový selektor</b>) je zařízení provádějící multiplexování: má více signálových vstupů \(X_0, X_1, \dots\), jeden výstup \(Y\) a výběrové (adresové) vstupy, jejichž kombinace určuje, který vstup se připojí na výstup.</p>
+<p class="jinak">přepínač „mnoho do jednoho“. Adresa (např. dva bity A, B) řekne, kterou ze čtyř cest pustit dál; ostatní jsou v tu chvíli odpojené.</p><p class="slovnik-odkaz"><a href="#k18-def-multiplexor">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="k99-s-demultiplexor"><div class="box-t">demultiplexor</div>
+<p><b>Demultiplexor</b> (DEMUX nebo DEMPX, také <b>datový distributor</b>) je zařízení provádějící demultiplexování: má jeden vstup \(X\), více výstupů \(Y_0, Y_1, \dots\) a výběrové vstupy, jejichž kombinace určuje, na který výstup se vstup připojí.</p>
+<p class="jinak">přepínač „jeden do mnoha“. Vybírá vždy jen jeden signál – ten, který byl multiplexorem spojen s ostatními – a pošle ho na jeho vlastní výstup.</p><p class="slovnik-odkaz"><a href="#k18-def-demultiplexor">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="k99-s-digitalni-mux"><div class="box-t">digitální multiplexor</div>
+<p><b>Digitální multiplexor</b> je multiplexor složený z logických hradel, který na výstup přenáší pouze <b>logickou úroveň</b> (0 nebo 1) vybraného vstupu.</p>
+<p class="jinak">výstup se „znovu vyrobí“ hradly: buď je tam log. 0, nebo log. 1. Spojitou hodnotu (např. 0,37 V) takový obvod přenést neumí.</p><p class="slovnik-odkaz"><a href="#k18-def-digitalni-mux">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="k99-s-analogovy-mux"><div class="box-t">analogový multiplexor</div>
+<p><b>Analogový multiplexor</b> je multiplexor, ve kterém vybraný vstup propojí s výstupem <b>analogový spínač</b> (tranzistor), takže na výstup přenáší <b>spojitou hodnotu</b> napětí vybraného vstupu.</p>
+<p class="jinak">uvnitř je „vodivá cesta“ přes sepnutý tranzistor, ne logický obvod. Co přijde na vstup, to (téměř beze změny) projde na výstup – spojitý signál i logické úrovně.</p><p class="slovnik-odkaz"><a href="#k18-def-analogovy-mux">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="k99-s-preslech"><div class="box-t">přeslech</div>
+<p><b>Přeslech</b> (crosstalk) je nežádoucí pronikání signálu jednoho kanálu do jiného kanálu téhož přenosového systému.</p>
+<p class="jinak">jako když v telefonu slyšíš cizí hovor. V měření to znamená, že v naměřeném EKG svodu je kousek signálu ze sousedního svodu.</p><p class="slovnik-odkaz"><a href="#k18-def-preslech">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="k99-s-tdm"><div class="box-t">časový multiplex (TDM)</div>
+<p><b>Časový multiplex</b> (Time Division Multiplexing, TDM) je technika, která umožňuje posílat více signálů prostřednictvím společného přenosového kanálu přidělením <b>pevného časového úseku</b> (okna) každému signálu.</p>
+<p class="jinak">signály se střídají jako řečníci s časovým limitem: každý dostane své okno, mluví celým hlasem (celým pásmem), a pak předá slovo dalšímu. Pořadí se pořád opakuje.</p><p class="slovnik-odkaz"><a href="#k18-def-tdm">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="k99-s-fdm"><div class="box-t">frekvenční multiplex (FDM)</div>
+<p><b>Frekvenční multiplex</b> (Frequency Division Multiplexing, FDM) je technika, která kombinuje více signálů pro <b>současný</b> přenos přes sdílené komunikační médium tak, že každý signál zabírá v přenosovém kanálu <b>vlastní, oddělené pásmo frekvencí</b>.</p>
+<p class="jinak">jako rozhlasové stanice: všechny vysílají najednou, ale každá na jiné frekvenci. Přijímač si „naladí“ jen tu svou a ostatní odfiltruje.</p><p class="slovnik-odkaz"><a href="#k18-def-fdm">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="k99-s-ochranne-pasmo"><div class="box-t">ochranné pásmo</div>
+<p><b>Ochranné pásmo</b> (guard band) je nevyužitý úsek frekvencí mezi pásmy sousedních kanálů frekvenčního multiplexu, který omezuje přeslechy mezi nimi.</p>
+<p class="jinak">„nárazník“ mezi kanály. Filtr přijímače nemá svislou hranu, ale klesá postupně; ochranné pásmo mu dá prostor, aby utlumil sousední kanál dřív, než začne.</p><p class="slovnik-odkaz"><a href="#k18-def-ochranne-pasmo">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="k99-s-wdm"><div class="box-t">vlnový multiplex (WDM)</div>
+<p><b>Vlnový multiplex</b> (Wavelength Division Multiplexing, WDM) je technika multiplexace opticky modulovaných signálů, při které je každý signál přenášen světlem jiné <b>vlnové délky</b> (barvy) a všechny vlnové délky se současně šíří jedním <b>optickým vláknem</b>.</p>
+<p class="jinak">každý kanál „svítí jinou barvou“. Barvy se složí do jednoho paprsku, projdou vláknem a na konci se hranolem zase rozloží na jednotlivé barvy.</p><p class="slovnik-odkaz"><a href="#k18-def-wdm">výklad v kapitole P8 →</a></p></div>
+<div class="box definice" id="k99-s-seriove-paralelni-spinac"><div class="box-t">sériově-paralelní spínač</div>
+<p><b>Sériově-paralelní spínač</b> je dvojice spínačů řízených společným signálem \(X_k\): spínač <b>a</b> zapojený v sérii se signálovým vstupem a spínač <b>b</b> zapojený paralelně, ze vstupu sledovače na zem, přičemž je vždy sepnut právě jeden z nich.</p>
+<p class="jinak">signál se nejdřív odpojí (a) a pak se vstup pro jistotu ještě uzemní (b). Nevybraný kanál tak není „skoro nula“ přes dělič, ale opravdu nula.</p><p class="slovnik-odkaz"><a href="#k18-def-seriove-paralelni-spinac">výklad v kapitole P8 →</a></p></div>
 
 </section>
 

@@ -2113,7 +2113,7 @@ def _rad1(name, hp, inv):
                 elm.Dot(open=True).label(VST, loc="left")
                 elm.Capacitor().at(n.center).down().label("$C_1$", loc="bottom")
             elm.Ground()
-            elm.Line().at(op.in1).left(u * 0.25)
+            elm.Line().at(op.in1).left(u * 0.2)
             elm.Line().down(u * 0.45)
             m = elm.Dot()
             elm.Resistor().right().tox(op.out).label("$R_2$", loc="bottom")
@@ -3378,6 +3378,195 @@ def fig17_cas_konverze():
     save(fig, "fig17_cas_konverze")
 
 
+# =====================================================================  přednáška P8: multiplexace signálů
+def _jfet_kanal(d, x, y, vst, ovl, zv):
+    """Jeden vstup analogového MPX (slide „MPX analogových signálů“): R1, JFET k zemi, sledovač. Vrací OZ."""
+    u = d.unit
+    svorka(d, (x, y), vst)
+    elm.Resistor().at((x, y)).right(u * 0.9).label("$R_1$")
+    n = elm.Dot()
+    op = elm.Opamp(leads=True, flip=True).right().anchor("in2").at((n.center[0] + u * 1.0, y)).label(zv, ofst=(-0.2, 0.0))
+    elm.Line().at(n.center).to(op.in2)
+    ln = elm.Line().at(n.center).down(u * 0.2)
+    # JFET s kanálem N jako na slidu: šipka gate míří do kanálu (schemdraw ji tak kreslí u JFetP)
+    j = elm.JFetP().at(ln.end).anchor("drain").left().flip()           # drain nahoře, gate vlevo
+    elm.Line().at(j.source).down(u * 0.1)
+    elm.Ground()
+    elm.Line().at(j.gate).left(u * 0.35)
+    elm.Dot(open=True).label(ovl, loc="left")
+    elm.Line().at(op.in1).left(u * 0.2)
+    elm.Line().down(u * 0.45)
+    elm.Line().right().tox(op.out[0] + u * 0.15)
+    elm.Line().up().toy(op.out[1])
+    return op
+
+
+def fig18_mpx_analog():
+    """Analogový MPX ze slidu: vstupy přes R1, JFET X_i k zemi (výchozí stav sepnut), sledovače OZ1…OZn, součtový OZs."""
+    with schema("fig18_mpx_analog", unit=2.4) as d:
+        u = d.unit
+        op1 = _jfet_kanal(d, 0, 0, "$u_{i1}$", "$X_1$", "OZ1")
+        opn = _jfet_kanal(d, 0, -u * 2.2, "$u_{in}$", "$X_n$", "OZn")
+        xb = op1.out[0] + u * 1.6
+        for op, nm in ((op1, "$u_1$"), (opn, "$u_n$")):
+            elm.Line().at(op.out).right(u * 0.15).dot().label(nm, loc="bottom", fontsize=11)
+            elm.Resistor().right().tox(xb).label("$R_2$")
+            elm.Dot()
+        elm.Line().at((xb, op1.out[1])).down().toy(opn.out[1])
+        ym = (op1.out[1] + opn.out[1]) / 2
+        elm.Line().at((xb - u * 1.0, ym)).right().tox(xb).linestyle("--").label("$u_k$", loc="top", fontsize=11)
+        ops = elm.Opamp(leads=True).right().anchor("in1").at((xb + u * 0.9, ym)).label("OZs", ofst=(-0.2, 0.0))
+        elm.Line().at((xb, ym)).to(ops.in1)
+        elm.Dot().at((xb, ym))
+        elm.Line().at(ops.in2).left(u * 0.25)
+        elm.Ground()
+        elm.Line().at((xb, op1.out[1])).right(u * 0.35)
+        elm.Resistor().right().tox(ops.out[0] + u * 0.2).label("$R_3$")
+        elm.Line().down().toy(ops.out[1])
+        elm.Line().left().tox(ops.out[0])
+        elm.Line().at((ops.out[0] + u * 0.2, ops.out[1])).right(u * 0.3)
+        elm.Dot(open=True).label("$u_o$", loc="right")
+
+
+def fig18_spinac_sp():
+    """Sériově-paralelní spínač na vstupu kanálu k (slide): a v sérii se signálem, b z + vstupu na zem, oba řídí X_k."""
+    with schema("fig18_spinac_sp", unit=2.4) as d:
+        u = d.unit
+        for x0, a_sep, nadpis in ((0, False, "kanál nevybrán: a rozepnut, b sepnut"),
+                                  (u * 5.8, True, "kanál vybrán: a sepnut, b rozepnut")):
+            col = C3 if a_sep else C2
+            svorka(d, (x0, 0), "$u_{ik}$")
+            elm.Resistor().at((x0, 0)).right(u * 0.8).label("$R_1$")
+            elm.Switch(nc=a_sep).right(u * 0.7).label("a", color=col).color(col)
+            n = elm.Dot()
+            op = elm.Opamp(leads=True, flip=True).right().anchor("in2").at((n.center[0] + u * 0.9, 0)).label("OZk", ofst=(-0.2, 0.0))
+            elm.Line().at(n.center).to(op.in2)
+            elm.Switch(nc=not a_sep).at(n.center).down(u * 0.7).label("b", loc="bottom", color=col).color(col)
+            elm.Ground()
+            elm.Line().at(op.in1).left(u * 0.2)
+            elm.Line().down(u * 0.45)
+            elm.Line().right().tox(op.out[0] + u * 0.15)
+            elm.Line().up().toy(op.out[1])
+            elm.Line().at(op.out).right(u * 0.25)
+            elm.Dot(open=True).label("$u_k$", loc="right")
+            elm.Label().at((x0 + u * 1.9, u * 0.95)).label(nadpis, fontsize=11, color=col)
+            elm.Label().at((x0 + u * 0.6, -u * 0.55)).label("$X_k$ řídí a i b", fontsize=10, color=MUTED)
+
+
+def fig18_cas_frekvence():
+    """Rozdělení roviny čas × frekvence: TDM (svislé pruhy, celé pásmo) vs. FDM (vodorovné pásy, celý čas) – slidy TDM a FDM."""
+    fig, axs = plt.subplots(1, 2, figsize=(9.6, 3.9), sharey=True)
+    ax = axs[0]
+    for i in range(9):
+        k = i % 3
+        ax.add_patch(plt.Rectangle((i, 0), 0.92, 3, color=CAT[k], alpha=0.8, lw=0))
+        ax.text(i + 0.46, 1.5, f"{k + 1}", ha="center", va="center", color="white", fontsize=11, weight="semibold")
+    ax.set_xlim(0, 9)
+    ax.set_title("TDM: každý kanál má své časové okno", loc="left")
+    ax = axs[1]
+    for k in range(3):
+        ax.add_patch(plt.Rectangle((0, k + 0.06), 9, 0.84, color=CAT[k], alpha=0.8, lw=0))
+        ax.text(4.5, k + 0.48, f"kanál {k + 1}", ha="center", va="center", color="white", fontsize=11, weight="semibold")
+    ax.set_xlim(0, 9)
+    ax.set_title("FDM: každý kanál má své frekvenční pásmo", loc="left")
+    for ax in axs:
+        ax.set_ylim(0, 3)
+        ax.set_xlabel("čas")
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.grid(False)
+    axs[0].set_ylabel("frekvence")
+    save(fig, "fig18_cas_frekvence")
+
+
+def _sig18(t):
+    """Tři pomalé analogové signály (vlastní)."""
+    return [np.sin(2 * np.pi * 0.9 * t) + 0.3 * np.sin(2 * np.pi * 2.3 * t),
+            0.8 * np.cos(2 * np.pi * 0.45 * t) - 0.2,
+            0.6 * np.sin(2 * np.pi * 1.6 * t + 1.0) + 0.3]
+
+
+def fig18_tdm_prubeh():
+    """TDM tří analogových signálů: rámec 0,3 s, každý kanál okno 0,1 s; výstup MUX a co z něj vybere DEMUX pro kanál 1."""
+    t = np.linspace(0, 3, 3001)
+    s = _sig18(t)
+    okno = 0.1
+    k = (np.floor(t / okno + 1e-9).astype(int)) % 3
+    fig, axs = plt.subplots(3, 1, figsize=(8.6, 6.6), sharex=True)
+    ax = axs[0]
+    for i in range(3):
+        ax.plot(t, s[i], color=CAT[i], lw=1.8, label=f"kanál {i + 1}")
+    ax.legend(loc="upper right", ncol=3, fontsize=9)
+    ax.set_ylabel("vstupy [V]")
+    ax.set_title("tři analogové signály na vstupech MUX", loc="left")
+    ax = axs[1]
+    ax.plot(t, np.choose(k, s), color=MUTED, lw=0.6, zorder=0)
+    for i in range(3):
+        ax.plot(t, np.where(k == i, s[i], np.nan), color=CAT[i], lw=2.2)
+    ax.set_ylabel("společný kanál [V]")
+    ax.set_title("výstup MUX: kanály se střídají po 0,1 s (rámec 0,3 s)", loc="left")
+    ax = axs[2]
+    ax.plot(t, s[0], color=C1, lw=1, alpha=0.35, label="původní kanál 1")
+    ax.plot(t, np.where(k == 0, s[0], np.nan), color=C1, lw=2.4, label="co DEMUX pustí na výstup 1")
+    ax.legend(loc="upper right", fontsize=9, ncol=2)
+    ax.set_ylabel("výstup 1 [V]")
+    ax.set_xlabel("čas [s]")
+    ax.set_title("DEMUX: kanál 1 jen ve svých oknech – spojitý signál je „rozsekaný“", loc="left")
+    for ax in axs:
+        ax.set_ylim(-1.6, 1.9)
+    save(fig, "fig18_tdm_prubeh")
+
+
+F18_NOSNE = [10.0, 13.3, 16.6]                                  # posun pásma (kHz): 10,3–13,4 / 13,6–16,7 / 16,9–20,0
+
+
+def fig18_fdm_spektrum():
+    """FDM podle slidu: tři hovorové signály 300–3400 Hz posunuté do pásma 10–20 kHz s ochrannými pásmy (posuny vlastní)."""
+    fig, axs = plt.subplots(1, 2, figsize=(9.6, 3.6), gridspec_kw=dict(width_ratios=[1, 2.3]))
+    ax = axs[0]
+    for i in range(3):
+        ax.add_patch(plt.Rectangle((0.3, 2 - i + 0.1), 3.1, 0.75, color=CAT[i], alpha=0.85, lw=0))
+        ax.text(3.6, 2 - i + 0.47, f"signál {i + 1}", va="center", fontsize=9.5, color=INK2)
+    ax.set_xlim(0, 6.5)
+    ax.set_ylim(0, 3)
+    ax.set_xticks([0.3, 3.4])
+    ax.set_xticklabels(["0,3", "3,4"])
+    ax.set_title("vstupy: každý 300–3400 Hz", loc="left")
+    ax = axs[1]
+    for i, fn in enumerate(F18_NOSNE):
+        ax.add_patch(plt.Rectangle((fn + 0.3, 0), 3.1, 1, color=CAT[i], alpha=0.85, lw=0))
+        ax.text(fn + 1.85, 0.5, f"{i + 1}", ha="center", va="center", color="white", fontsize=12, weight="semibold")
+    for g in (F18_NOSNE[1] + 0.15, F18_NOSNE[2] + 0.15):
+        ax.annotate("ochranné\npásmo", (g, 1.0), (g, 1.45), ha="center", fontsize=9, color=INK2,
+                    arrowprops=dict(arrowstyle="->", color=INK2))
+    ax.set_xlim(0, 21)
+    ax.set_ylim(0, 1.9)
+    ax.set_xticks([0, 10, 20])
+    ax.set_title("společný kanál: pásma vedle sebe v 10–20 kHz", loc="left")
+    for ax in axs:
+        ax.set_yticks([])
+        ax.grid(False)
+        ax.set_xlabel("frekvence [kHz]")
+    save(fig, "fig18_fdm_spektrum")
+
+
+def fig18_chyba_r1():
+    """Chyba „nulového“ napětí u_o(0)/u_i ≅ R_X/R1 pro R_X = 100 Ω (slide): 10 kΩ → 1 %, 1 MΩ → 0,1 ‰."""
+    r1 = np.logspace(3, 7, 200)
+    rx = 100.0
+    fig, ax = plt.subplots(figsize=(7.4, 4.0))
+    ax.loglog(r1, rx / r1 * 100, color=C1, label="přibližně $R_{X_1}/R_1$ (slide)")
+    ax.loglog(r1, rx / (r1 + rx) * 100, "--", color=C2, lw=1.4, label="přesně (dělič) $R_{X_1}/(R_1 + R_{X_1})$")
+    for r, txt, off in ((1e4, "10 kΩ → 1 %", (1.8e4, 2.5)), (1e6, "1 MΩ → 0,01 % = 0,1 ‰", (1.5e6, 0.04))):
+        ax.plot(r, rx / r * 100, "o", color=C1, ms=7)
+        ax.annotate(txt, (r, rx / r * 100), off, fontsize=9.5, color=INK2, arrowprops=dict(arrowstyle="->", color=INK2))
+    ax.set_xlabel("$R_1$ [Ω]")
+    ax.set_ylabel("chyba [% $u_i$]")
+    ax.set_title("$R_{X_1}$ = 100 Ω (sepnutý tranzistor nevybraného kanálu)", loc="left")
+    ax.legend(loc="lower left", fontsize=9)
+    save(fig, "fig18_chyba_r1")
+
+
 ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig02_xc, fig02_dp_hp, fig02_bode_dp, fig02_bode_hp, fig02_postup, fig02_typy, fig02_pp_schema,
        fig02_bode_pp, fig02_pz_schema, fig02_bode_pz,
@@ -3398,7 +3587,8 @@ ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig15_strmost, fig15_sk_q, fig15_pp_mfb, fig15_pz_q, fig15_kaskada, fig15_butterworth, fig15_aproximace,
        fig16_omezovac, fig16_oboustranny, fig16_zener_omezovac, fig16_zd_mustek, fig16_komp_omezeni, fig16_schmitt, fig16_schmitt_zd, fig16_selektor, fig16_flash, fig16_omezovac_char, fig16_oboustranny_char, fig16_zener_char, fig16_komparator_char, fig16_rusivy, fig16_komp_omezeni_prubeh, fig16_schmitt_char, fig16_selektor_prubeh, fig16_kvantovani, fig16_adc_char,
        fig17_dac_vahovy, fig17_dac_r2r, fig17_single_slope, fig17_dual_slope, fig17_single_prubeh, fig17_dual_prubeh,
-       fig17_counter_tracking, fig17_sar_prubeh, fig17_cas_konverze]
+       fig17_counter_tracking, fig17_sar_prubeh, fig17_cas_konverze,
+       fig18_mpx_analog, fig18_spinac_sp, fig18_cas_frekvence, fig18_tdm_prubeh, fig18_fdm_spektrum, fig18_chyba_r1]
 
 if __name__ == "__main__":
     vyber = sys.argv[1:]
