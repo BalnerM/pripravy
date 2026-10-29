@@ -10,11 +10,12 @@
   if (stored === "light" || stored === "dark") root.setAttribute("data-theme", stored);
 
   // ---------- velikost písma a postranní panel (klíče sdílené mezi předměty; základ nastavuje skript v <head>) ----------
-  const FS_STEPS = [0.85, 1, 1.15, 1.3, 1.5];
+  const FS_STEPS = [0.85, 0.9, 0.95, 1, 1.05, 1.1];
+  const FS_DEFAULT = 3;   // index výchozí velikosti (100 %)
   function setKey(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* bez úložiště */ } }
   function fsIndex() {
     const f = parseFloat(root.style.getPropertyValue("--fs")) || 1;
-    let best = 1;
+    let best = FS_DEFAULT;
     FS_STEPS.forEach((s, i) => { if (Math.abs(s - f) < Math.abs(FS_STEPS[best] - f)) best = i; });
     return best;
   }
@@ -74,11 +75,11 @@
       applyFs(fsIndex());
       fsDown.addEventListener("click", () => applyFs(fsIndex() - 1));
       fsUp.addEventListener("click", () => applyFs(fsIndex() + 1));
-      fsVal.addEventListener("click", () => applyFs(1));
+      fsVal.addEventListener("click", () => applyFs(FS_DEFAULT));
     }
     // jiná než výchozí velikost: tlačítko PDF otevře tisk stránky (hotová PDF mají jen výchozí velikost)
     if (pdfBtn) pdfBtn.addEventListener("click", e => {
-      if (FS_STEPS[fsIndex()] !== 1) { e.preventDefault(); window.print(); }
+      if (fsIndex() !== FS_DEFAULT) { e.preventDefault(); window.print(); }
     });
     const sb = document.getElementById("sideBtn");
     if (sb) {

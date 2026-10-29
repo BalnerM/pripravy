@@ -15,7 +15,7 @@ README.md                     přehled předmětů a návod pro uživatele
 AGENTS.md / CLAUDE.md         tato pravidla
 pyproject.toml, uv.lock       Python prostředí pro grafy (uv); dev skupina: playwright pro tools/check_layout.py
 tools/check_layout.py         kontrola vykreslených stránek v Chromu: přetékání, rozbité obrázky, chyby KaTeX, husté odstavce
-                              (`--fs 1.5` = s největším písmem z lišty)
+                              (`--fs 1.1` = s největším písmem z lišty)
 .github/workflows/pages.yml   při pushi do main: všechny */_build/build.py → */_build/make_pdf.py → GitHub Pages
 _sablona/                     kostra nového předmětu (nesestavuje se, nenasazuje se)
 vmm/                          hotová skripta VMM – referenční příklad kvality a stylu
@@ -106,7 +106,7 @@ Elektrická schémata (R, C, OZ…) kresli knihovnou `schemdraw` v `make_figures
 
 ## Ovládání v liště (assets/app.js, style.css, TEMPLATE v build.py – ve všech předmětech stejně)
 
-Velikost písma = CSS `zoom` na `main` přes `--fs` (kroky 0,85–1,5), klíč `localStorage["vmm-fs"]`; skrytý panel = třída
+Velikost písma = CSS `zoom` na `main` přes `--fs` (kroky 0,85 / 0,9 / 0,95 / 1 / 1,05 / 1,1), klíč `localStorage["vmm-fs"]`; skrytý panel = třída
 `side-hidden` na `<html>`, klíč `vmm-side`. Základ nastavuje inline skript v `<head>` (bez bliknutí); stejné klíče má `index.html`.
 Tlačítko PDF při `--fs ≠ 1` volá `window.print()` (hotová PDF z Actions jsou jen ve výchozí velikosti, `?pdf` vynutí `--fs: 1`).
 Při úpravě ovládání uprav všechny předměty (`_sablona`, `vmm`, `sad`, `mlr`) i `index.html`.
