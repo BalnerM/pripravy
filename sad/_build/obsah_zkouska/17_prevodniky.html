@@ -663,13 +663,6 @@
 <tr><td>4 (LSB)</td><td>0111</td><td>7 V</td><td>\(U_\mathrm{IN} &lt; U_\mathrm{DAC}\)</td><td>0</td><td>6 až 7 V</td></tr>
 </tbody></table></div>
 <p>Výsledek je \(0110 = 6\), tedy 6 V: vstup 6,4 V leží v intervalu 6 až 7 V a výsledkem je jeho dolní hrana.</p></div>
-<figure><div class="paper"><img src="figures/fig17_sar_prubeh.png" alt="Postupná aproximace ve čtyřech taktech: zkoušené napětí 8, 4, 6 a 7 V proti vstupu 6,4 V; interval, ve kterém vstup leží, se zužuje na 0–8, 4–8, 6–8 a 6–7 V; výsledek 0110 = 6 V" loading="lazy"></div>
-<figcaption><b>Obr. P7.14</b> Postupná aproximace pro \(U_\mathrm{IN} = 6{,}4\) V, \(U_\mathrm{REF} = 16\) V (vlastní čísla, stejná cesta jako ve stromu na obr. P7.13). Zeleně \(U_\mathrm{IN} > U_\mathrm{DAC}\), oranžově \(U_\mathrm{IN} &lt; U_\mathrm{DAC}\) – stejně jako barvy větví ve stromu.</figcaption></figure>
-<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
-<ul>
-<li>Modrý pruh (interval, kde vstup určitě leží) se v každém taktu <b>zmenší na polovinu</b>: 8 V → 4 V → 2 V → 1 V.</li>
-<li>Po čtyřech taktech je interval široký jeden krok (1 LSB) a jeho spodní hrana je výsledek.</li>
-</ul></div>
 <div class="box vzorec"><div class="box-t">Čas konverze SAR</div>
 \[ T_C = n \cdot T_\mathrm{CLK} \]
 <table class="vars">
@@ -695,7 +688,7 @@
 \[ T_C = 16 \cdot 10^{-7}\ \text{s} = 1{,}6\ \mu\text{s} \]
 <p>Přidání 4 bitů prodloužilo čítací převodníky 16krát (z 409,5 µs na 6,55 ms), SAR jen o 4 takty (z 1,2 µs na 1,6 µs).</p></div>
 <figure><div class="paper"><img src="figures/fig17_cas_konverze.png" alt="Graf nejdelšího času konverze v mikrosekundách na logaritmické ose podle počtu bitů 4 až 16: čítací převodníky rostou exponenciálně až na 6,55 ms, postupná aproximace lineárně od 0,4 do 1,6 µs" loading="lazy"></div>
-<figcaption><b>Obr. P7.15</b> Nejdelší čas konverze podle počtu bitů pro \(T_\mathrm{CLK} = 100\) ns (vzorce ze slidů; logaritmická osa).</figcaption></figure>
+<figcaption><b>Obr. P7.14</b> Nejdelší čas konverze podle počtu bitů pro \(T_\mathrm{CLK} = 100\) ns (vzorce ze slidů; logaritmická osa).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <ul>
 <li>Čítací převodníky (counter, tracking, single slope) se s každým bitem zpomalí <b>dvakrát</b> (exponenciální růst – na log. ose přímka).</li>

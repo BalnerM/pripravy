@@ -3319,43 +3319,6 @@ def fig17_counter_tracking():
     save(fig, "fig17_counter_tracking")
 
 
-def fig17_sar_prubeh():
-    """SAR, 4 bity, U_REF = 16 V (krok 1 V), U_IN = 6,4 V: zkoušené kódy 1000, 0100, 0110, 0111 → 0110 (podle stromu ze slidu)."""
-    uin, kod, pokusy, intervaly = 6.4, 0, [], []
-    lo, hi = 0, 16
-    for b in (3, 2, 1, 0):
-        zk = kod | (1 << b)
-        vys = uin >= zk
-        pokusy.append((zk, vys))
-        if vys:
-            kod, lo = zk, zk
-        else:
-            hi = zk
-        intervaly.append((lo, hi))
-    fig, ax = plt.subplots(figsize=(7.8, 4.4))
-    for i, ((zk, vys), (a, b)) in enumerate(zip(pokusy, intervaly), start=1):
-        ax.add_patch(plt.Rectangle((i - 0.38, a), 0.76, b - a, color=C1, alpha=0.12, lw=0))
-        c, mk = (C3, "^") if vys else (C2, "v")
-        ax.plot([i - 0.38, i + 0.38], [zk, zk], color=c, lw=2.4)
-        ax.plot([i], [zk], mk, color=c, ms=8)
-        ax.text(i, zk - 0.6 if vys else zk + 0.6, f"zkouším {zk:04b} = {zk} V", fontsize=9, color=c, ha="center",
-                va="top" if vys else "bottom")
-        ax.text(i, -1.3, "$U_\\mathrm{IN} > U_\\mathrm{DAC}$\nbit = 1" if vys else "$U_\\mathrm{IN} < U_\\mathrm{DAC}$\nbit = 0",
-                ha="center", fontsize=8.5, color=c)
-    ax.axhline(uin, color=C1, lw=1.6, ls="--")
-    ax.text(0.45, uin + 0.3, "$U_\\mathrm{IN}$ = 6,4 V", color=C1, fontsize=9.5)
-    ax.plot([4.65, 5.45], [6, 6], color=INK, lw=2.4)
-    ax.text(5.05, 5.4, "výsledek\n0110 = 6 V", fontsize=10, color=INK, va="top", ha="center", weight="semibold")
-    ax.set_xticks([1, 2, 3, 4])
-    ax.set_xticklabels(["takt 1\n(MSB)", "takt 2", "takt 3", "takt 4\n(LSB)"])
-    ax.set_xlim(0.4, 5.6)
-    ax.set_ylim(-2.4, 16.5)
-    ax.set_yticks(range(0, 17, 2))
-    ax.set_ylabel("napětí [V]")
-    ax.set_title("modrý pruh = interval, ve kterém $U_\\mathrm{IN}$ po porovnání určitě leží", loc="left", fontsize=10)
-    save(fig, "fig17_sar_prubeh")
-
-
 def fig17_cas_konverze():
     """Nejdelší čas konverze podle počtu bitů: (2^n − 1)·T_CLK vs. n·T_CLK, T_CLK = 100 ns (slidy „Příklady času konverze“)."""
     n = np.arange(4, 17)
@@ -3842,7 +3805,7 @@ ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig15_strmost, fig15_sk_q, fig15_pp_mfb, fig15_pz_q, fig15_kaskada, fig15_butterworth, fig15_aproximace,
        fig16_omezovac, fig16_oboustranny, fig16_zener_omezovac, fig16_zd_mustek, fig16_komp_omezeni, fig16_schmitt, fig16_schmitt_zd, fig16_selektor, fig16_flash, fig16_omezovac_char, fig16_oboustranny_char, fig16_zener_char, fig16_komparator_char, fig16_rusivy, fig16_komp_omezeni_prubeh, fig16_schmitt_char, fig16_selektor_prubeh, fig16_kvantovani, fig16_adc_char,
        fig17_dac_vahovy, fig17_dac_r2r, fig17_single_slope, fig17_dual_slope, fig17_single_prubeh, fig17_dual_prubeh,
-       fig17_counter_tracking, fig17_sar_prubeh, fig17_cas_konverze,
+       fig17_counter_tracking, fig17_cas_konverze,
        fig18_mpx_analog, fig18_spinac_sp, fig18_cas_frekvence, fig18_tdm_prubeh, fig18_fdm_spektrum, fig18_chyba_r1,
        fig19_trafo, fig19_trafo_frekvence, fig19_kapacitni_prubeh, fig19_opto_nelinearita, fig19_lin_zesilovac,
        fig19_linearizace, fig19_pwm, fig19_pwm_menic, fig19_pwm_zvlneni]
