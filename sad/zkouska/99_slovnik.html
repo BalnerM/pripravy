@@ -491,6 +491,9 @@
 <div class="box definice" id="s-sample-hold"><div class="box-t">vzorkovací obvod (Sample &amp; Hold)</div>
 <p><b>Vzorkovací obvod</b> (Sample &amp; Hold, S/H) v okamžiku vzorkování odebere hodnotu vstupního napětí a po dobu převodu ji na svém výstupu drží konstantní.</p>
 <p class="jinak">„vyfotí“ napětí a fotku drží, dokud převodník nedopočítá. Převodník, který pracuje ve více krocích, tak celou dobu převádí stejnou hodnotu, i když se vstup mezitím mění.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-sample-hold">výklad v kapitole P7 →</a></p></div>
+<div class="box definice" id="s-hodinovy-signal"><div class="box-t">hodinový signál</div>
+<p><b>Hodinový signál</b> (clock, CLK) je periodický obdélníkový signál, který střídá úrovně log. 0 a log. 1 se stálou frekvencí \(f_\mathrm{CLK}\). Jeho hrany (obvykle náběžné, z log. 0 do log. 1) určují okamžiky, kdy číslicové obvody – čítač, registr, řídicí logika – provedou další krok. Jedna perioda \(T_\mathrm{CLK}\) se nazývá <b>takt</b>.</p>
+<p class="jinak">metronom celého převodníku: číslicová část nic nedělá „sama od sebe“, ale vždy na tiknutí hodin. Počet tiknutí zároveň slouží jako stopky – když víme, jak dlouho trvá jedno tiknutí, změříme čas tím, že tiknutí počítáme.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-hodinovy-signal">výklad v kapitole P7 →</a></p></div>
 <div class="box definice" id="s-integracni-adc"><div class="box-t">integrační A/D převodník</div>
 <p><b>Integrační A/D převodník</b> převádí napětí na <b>čas</b> pomocí integrátoru: měří, jak dlouho trvá, než výstup integrátoru dosáhne určité úrovně, a tuto dobu změří čítáním impulzů hodinového signálu.</p>
 <p class="jinak">napětí se nepočítá přímo – převodník „stopuje“, jak dlouho trvá nabití kondenzátoru, a počet tiknutí hodin je výsledné číslo.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-integracni-adc">výklad v kapitole P7 →</a></p></div>

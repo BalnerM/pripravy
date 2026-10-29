@@ -187,6 +187,54 @@
 <div class="box kostka"><div class="box-t">V kostce</div>
 <p>Half-flash = dva malé flash převodníky za sebou: první určí MSB, DAC je odečte od vstupu a druhý převede zbytek na LSB. Komparátorů je řádově méně (30 místo 255) a rychlost zůstane blízká flash převodníku.</p></div>
 
+<h2 id="hodiny">Hodinový signál (CLK)</h2>
+<p>Všechny další převodníky v kapitole mají vstup <b>CLK</b>: integrační jím měří čas, kompenzační podle něj dělají jednotlivé kroky. Proto nejdřív, co to je, jak se získá a k čemu slouží.</p>
+<div class="box definice" id="def-hodinovy-signal"><div class="box-t">Definice: hodinový signál</div>
+<p><b>Hodinový signál</b> (clock, CLK) je periodický obdélníkový signál, který střídá úrovně log. 0 a log. 1 se stálou frekvencí \(f_\mathrm{CLK}\). Jeho hrany (obvykle náběžné, z log. 0 do log. 1) určují okamžiky, kdy číslicové obvody – čítač, registr, řídicí logika – provedou další krok. Jedna perioda \(T_\mathrm{CLK}\) se nazývá <b>takt</b>.</p>
+<p class="jinak">metronom celého převodníku: číslicová část nic nedělá „sama od sebe“, ale vždy na tiknutí hodin. Počet tiknutí zároveň slouží jako stopky – když víme, jak dlouho trvá jedno tiknutí, změříme čas tím, že tiknutí počítáme.</p></div>
+<div class="schema narrow">
+<svg viewBox="0 0 560 170" role="img" aria-label="Hodinový signál: obdélník střídající log. 0 a log. 1, vyznačená perioda TCLK mezi dvěma náběžnými hranami; náběžné hrany očíslované 1 až 5 jako kroky čítače">
+  <defs><marker id="ar7h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <text x="8" y="49" class="t2">log. 1</text><text x="8" y="109" class="t2">log. 0</text>
+  <path d="M60 104 H90 V44 H140 V104 H190 V44 H240 V104 H290 V44 H340 V104 H390 V44 H440 V104 H490 V44 H540" class="ln s1" style="stroke-width:2"/>
+  <path d="M192 31 H288" class="ln" marker-start="url(#ar7h)" marker-end="url(#ar7h)"/>
+  <text x="240" y="15" text-anchor="middle">T<tspan baseline-shift="sub" font-size="10">CLK</tspan> = 1 takt</text>
+  <path d="M190 34 V40 M290 34 V40" class="ln2"/>
+  <text x="90" y="126" text-anchor="middle" class="t2">1</text><text x="190" y="126" text-anchor="middle" class="t2">2</text><text x="290" y="126" text-anchor="middle" class="t2">3</text><text x="390" y="126" text-anchor="middle" class="t2">4</text><text x="490" y="126" text-anchor="middle" class="t2">5</text>
+  <text x="290" y="156" text-anchor="middle" class="t2">náběžné hrany = okamžiky, kdy čítač nebo registr udělá krok</text>
+</svg></div>
+<p class="muted">Obr. P7.4 Hodinový signál. Perioda \(T_\mathrm{CLK}\) (jeden takt) je doba mezi dvěma náběžnými hranami; na každou hranu udělá číslicová část převodníku jeden krok.</p>
+<div class="box vzorec"><div class="box-t">Perioda a frekvence hodin</div>
+\[ T_\mathrm{CLK} = \frac{1}{f_\mathrm{CLK}} \]
+<table class="vars">
+<tr><td>\(T_\mathrm{CLK}\)</td><td>perioda hodin = délka jednoho taktu</td></tr>
+<tr><td>\(f_\mathrm{CLK}\)</td><td>frekvence hodin = počet taktů za sekundu</td></tr>
+</table>
+<p>Hodnoty ze slidu: \(f_\mathrm{CLK} = 10\) MHz, tedy \(T_\mathrm{CLK} = 100\) ns.</p></div>
+
+<h3 id="hodiny-k-cemu">K čemu jsou hodiny v převodníku</h3>
+<ul>
+<li><b>Časová základna (stopky).</b> Integrační převodníky převádějí napětí na čas a ten změří tak, že čítač počítá takty: doba je \(T = N\,T_\mathrm{CLK}\). Hradlo AND (logický součin s hodinovým signálem) pustí impulzy do čítače jen po dobu, kterou chceme změřit.</li>
+<li><b>Takt algoritmu.</b> Kompenzační převodníky udělají v každém taktu jeden krok: counter type přičte 1, tracking type přičte nebo odečte 1, SAR rozhodne o jednom bitu.</li>
+<li><b>Synchronizace.</b> Všechny bity čítače nebo registru se změní najednou, na stejné hraně. Mezi hranami mají DAC a komparátor čas se ustálit, takže logika čte vždy platné rozhodnutí.</li>
+<li><b>Rychlost převodu.</b> <a href="#cas-konverze">Čas konverze</a> je vždy násobek \(T_\mathrm{CLK}\): rychlejší hodiny = rychlejší převod.</li>
+</ul>
+
+<h3 id="hodiny-zdroj">Jak hodinový signál získat</h3>
+<p>Hodiny vyrábí <b>oscilátor</b> – obvod, který sám od sebe kmitá a na výstupu dává obdélník:</p>
+<ul>
+<li><b>Krystalový oscilátor:</b> výbrus křemene (krystal) je mechanický rezonátor s velmi přesnou vlastní frekvencí. Zapojí se do zpětné vazby zesilovače (v praxi hradla – invertoru), který ho udržuje v kmitání, a výstup se tvaruje na obdélník. Frekvence je přesná a stálá (odchylka řádově desítky ppm), proto se používá všude, kde hodiny měří čas.</li>
+<li><b>RC oscilátor (astabilní klopný obvod):</b> <a href="16_komparator.html#def-schmitt">Schmittův klopný obvod</a> doplněný o kondenzátor, který se přes rezistor střídavě nabíjí a vybíjí. Když napětí na \(C\) dosáhne horní překlápěcí úrovně, výstup překlopí a kondenzátor se začne vybíjet; po dosažení dolní úrovně výstup překlopí zpět. Výstup je obdélník s periodou úměrnou \(RC\). Je jednoduchý a levný, ale frekvence se mění s teplotou a tolerancí součástek (o procenta).</li>
+<li><b>V mikrokontroléru</b> bývá vnitřní RC oscilátor nebo vnější krystal; potřebná frekvence se z něj vyrobí dělením (čítač jako dělička frekvence) nebo násobením (fázový závěs, PLL).</li>
+</ul>
+<div class="box pozor"><div class="box-t">Na hodinách záleží</div>
+<ul>
+<li><b>Nelze je zrychlovat libovolně.</b> V každém taktu se musí ustálit napětí DAC a komparátor musí stihnout překlopit. Při příliš rychlých hodinách by logika přečetla ještě neustálené rozhodnutí a výsledek by byl chybný. Nejvyšší \(f_\mathrm{CLK}\) proto určují nejpomalejší části převodníku.</li>
+<li><b>U měření času rozhoduje stálost.</b> Single slope měří dobu \(T = N\,T_\mathrm{CLK}\), takže změna \(f_\mathrm{CLK}\) změní výsledek \(N\). Dual slope měří \(T_1\) i \(T_2\) stejnými hodinami, takže pomalá změna \(f_\mathrm{CLK}\) se vykrátí stejně jako \(RC\).</li>
+</ul></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Hodiny = obdélník se stálou frekvencí z oscilátoru (krystal je přesný, RC levný). V převodníku slouží jako stopky (integrační převodníky čítají takty) a jako takt, ve kterém se udělá jeden krok (kompenzační převodníky).</p></div>
+
 <h2 id="integracni">Integrační převodníky</h2>
 <div class="box definice" id="def-integracni-adc"><div class="box-t">Definice: integrační A/D převodník</div>
 <p><b>Integrační A/D převodník</b> převádí napětí na <b>čas</b> pomocí integrátoru: měří, jak dlouho trvá, než výstup integrátoru dosáhne určité úrovně, a tuto dobu změří čítáním impulzů hodinového signálu.</p>
@@ -208,7 +256,7 @@
 <p class="jinak">„stopky“: pila startuje z nuly vždy stejnou rychlostí, a čím vyšší je měřené napětí, tím déle trvá, než ho dožene. Čítač počítá tiknutí hodin, dokud se to nestane.</p></div>
 
 <figure><div class="paper"><img src="figures/fig17_single_slope.png" alt="Schéma single slope ADC: integrátor s R a C, na vstupu −UREF, spínač pro vybití C; výstup integrátoru na invertující vstup komparátoru, UIN na neinvertující; výstup komparátoru a CLK do hradla AND, jeho výstup do čítače s binárním výstupem" loading="lazy"></div>
-<figcaption><b>Obr. P7.4</b> Single slope ADC (podle slidů). Spínač pro vybití \(C\) (oranžově) slide výslovně nekreslí, jen uvádí, že integrátor je třeba po převodu vybít.</figcaption></figure>
+<figcaption><b>Obr. P7.5</b> Single slope ADC (podle slidů). Spínač pro vybití \(C\) (oranžově) slide výslovně nekreslí, jen uvádí, že integrátor je třeba po převodu vybít.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <ul>
 <li>První OZ pracuje jako <b>integrátor</b> referenčního napětí, druhý OZ jako <b>komparátor</b> \(U_\mathrm{REF}\) (pily) a \(U_\mathrm{IN}\).</li>
@@ -234,13 +282,13 @@
 <tr><td>\(T_\mathrm{CLK}\)</td><td>perioda hodinového signálu</td></tr>
 </table></div>
 <figure><div class="paper"><img src="figures/fig17_single_prubeh.png" alt="Nahoře tři pily integrátoru se stejnou strmostí 2 V/ms, které skončí na úrovních 1,0 V, 0,5 V a 1,5 V po 0,50, 0,25 a 0,75 ms; dole impulzy hodin propuštěné hradlem: 10, 5 a 15 impulzů" loading="lazy"></div>
-<figcaption><b>Obr. P7.5</b> Tři převody single slope za sebou (vlastní čísla: \(U_\mathrm{REF} = 2\) V, \(RC = 1\) ms, \(T_\mathrm{CLK} = 50\ \mu\)s). Tečkovaně je vybití integrátoru.</figcaption></figure>
+<figcaption><b>Obr. P7.6</b> Tři převody single slope za sebou (vlastní čísla: \(U_\mathrm{REF} = 2\) V, \(RC = 1\) ms, \(T_\mathrm{CLK} = 50\ \mu\)s). Tečkovaně je vybití integrátoru.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <ul>
 <li>Všechny pily mají <b>stejnou strmost</b> \(U_\mathrm{REF}/RC\); liší se jen tím, jak vysoko musí vystoupat.</li>
 <li><b>Vyšší napětí = delší převod</b> a víc impulzů: 1,5 V trvá třikrát déle než 0,5 V.</li>
 </ul></div>
-<div class="box priklad"><div class="box-t">Příklad: single slope (vlastní čísla, obr. P7.5)</div>
+<div class="box priklad"><div class="box-t">Příklad: single slope (vlastní čísla, obr. P7.6)</div>
 <p>\(U_\mathrm{REF} = 2\) V, \(RC = 1\) ms, hodiny \(T_\mathrm{CLK} = 50\ \mu\)s, \(U_\mathrm{IN} = 1{,}5\) V.</p>
 <p>1. Doba převodu:</p>
 \[ T = 1\ \text{ms} \cdot \frac{1{,}5}{2} = 0{,}75\ \text{ms} \]
@@ -259,7 +307,7 @@
 <p class="jinak">kbelík: pevnou dobu do něj teče voda proudem úměrným \(U_\mathrm{IN}\), pak se vypouští známým proudem úměrným \(U_\mathrm{REF}\). Z doby vypouštění se pozná, kolik vody nateklo – a velikost kbelíku (\(RC\)) na výsledku nezáleží.</p></div>
 
 <figure><div class="paper"><img src="figures/fig17_dual_slope.png" alt="Schéma dual slope ADC: přepínač na vstupu volí UIN nebo −UREF, přes R na invertující vstup OZ, kondenzátor C ve zpětné vazbě a paralelně k němu spínač pro vybití" loading="lazy"></div>
-<figcaption><b>Obr. P7.6</b> Integrátor dual slope ADC (podle slidu): přepínač na vstupu volí \(U_\mathrm{IN}\) nebo \(-U_\mathrm{REF}\), spínač paralelně ke \(C\) ho před převodem vybije. Komparátor a čítač, které měří \(T_2\), slide nekreslí.</figcaption></figure>
+<figcaption><b>Obr. P7.7</b> Integrátor dual slope ADC (podle slidu): přepínač na vstupu volí \(U_\mathrm{IN}\) nebo \(-U_\mathrm{REF}\), spínač paralelně ke \(C\) ho před převodem vybije. Komparátor a čítač, které měří \(T_2\), slide nekreslí.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <ul>
 <li>Je tu <b>jediný integrátor</b>, který postupně integruje dvě různá napětí – proto „dual slope“, dvě strmosti.</li>
@@ -289,13 +337,13 @@
 </table>
 <p>Ve vzorci není \(R\) ani \(C\): na jejich přesnosti a stálosti výsledek nezávisí.</p></div>
 <figure><div class="paper"><img src="figures/fig17_dual_prubeh.png" alt="Dva grafy průběhu dual slope: vlevo pro UIN 1,5 a 0,75 V klesá výstup za 10 ms na −1,5 a −0,75 V a vrací se za 7,5 a 3,75 ms; vpravo pro stejné UIN a RC 10 a 20 ms klesne na −1,5 a −0,75 V, ale oba se vrátí za stejných 7,5 ms" loading="lazy"></div>
-<figcaption><b>Obr. P7.7</b> Průběh výstupu integrátoru dual slope (vlastní čísla: \(U_\mathrm{REF} = 2\) V, \(T_1 = 10\) ms). Vlevo dvě různá vstupní napětí, vpravo stejné napětí s dvojnásobným \(RC\).</figcaption></figure>
+<figcaption><b>Obr. P7.8</b> Průběh výstupu integrátoru dual slope (vlastní čísla: \(U_\mathrm{REF} = 2\) V, \(T_1 = 10\) ms). Vlevo dvě různá vstupní napětí, vpravo stejné napětí s dvojnásobným \(RC\).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <ul>
 <li>Vlevo: dvojnásobné \(U_\mathrm{IN}\) = dvakrát hlubší \(V_1\) = dvakrát delší \(T_2\). Zpáteční strmost je pro všechna napětí stejná.</li>
 <li>Vpravo: větší \(RC\) zmenší \(V_1\) na polovinu, ale stejně tak zpomalí návrat, takže \(T_2\) <b>vyjde stejně</b>. To je hlavní výhoda dual slope.</li>
 </ul></div>
-<div class="box priklad"><div class="box-t">Příklad: dual slope (vlastní čísla, obr. P7.7)</div>
+<div class="box priklad"><div class="box-t">Příklad: dual slope (vlastní čísla, obr. P7.8)</div>
 <p>\(U_\mathrm{REF} = 2\) V, \(T_1 = 10\) ms, \(RC = 10\) ms, \(U_\mathrm{IN} = 1{,}5\) V; hodiny \(T_\mathrm{CLK} = 10\ \mu\)s.</p>
 <p>1. Napětí na konci 1. fáze:</p>
 \[ V_1 = -\frac{1{,}5}{10\ \text{ms}} \cdot 10\ \text{ms} = -1{,}5\ \text{V} \]
@@ -317,79 +365,91 @@
 <p><b>Counter type ADC</b> (čítací převodník) má čítač, jehož výstup řídí DAC. Na začátku převodu se čítač vynuluje a dokud je \(U_\mathrm{IN} > U_\mathrm{DAC}\), propouští hradlo AND impulzy hodin a čítač zvyšuje kód o jeden krok. Když \(U_\mathrm{DAC}\) překročí \(U_\mathrm{IN}\), komparátor překlopí, čítač se zastaví a jeho stav se zapíše do registru (latch).</p>
 <p class="jinak">postupně čítá jednotlivé krůčky: \(U_\mathrm{DAC}\) stoupá po schodech od nuly, dokud nepřeleze vstupní napětí. Počet schodů je výsledek.</p></div>
 <div class="schema">
-<svg viewBox="0 0 760 270" role="img" aria-label="Counter type ADC: komparátor (UIN na +, VDAC na −), výstup do hradla AND s hodinami CLK a do bloku Control; AND do vstupu CLK čítače, Control nuluje čítač (CLEAR) a zapisuje do registru Latch; výstup čítače do DAC a do Latch, DAC dává VDAC zpět na komparátor">
+<svg viewBox="0 0 780 330" role="img" aria-label="Counter type ADC podle slidu: komparátor (UIN na +, UDAC na −); jeho výstup jde do hradla AND spolu s hodinami CLK a horním vodičem do bloku Control; výstup AND vede na hodinový vstup čítače; Control nuluje čítač vstupem CLEAR a dává registru Latch pokyn k zápisu; paralelní výstupy čítače vedou do DAC i do Latch, Latch dává binární výstup; DAC vrací UDAC na komparátor">
   <defs><marker id="ar7b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
-  <text x="10" y="85">U<tspan baseline-shift="sub" font-size="10">IN</tspan></text>
-  <path d="M45 80 H88" class="ln" marker-end="url(#ar7b)"/>
-  <path d="M90 60 L90 140 L160 100 Z" class="node fl1"/>
-  <text x="98" y="85" class="t2">+</text><text x="98" y="128" class="t2">−</text>
-  <text x="125" y="165" text-anchor="middle" class="t2">komparátor</text>
-  <path d="M160 100 H200" class="ln"/>
-  <path d="M200 100 V30 H540 V48" class="ln" marker-end="url(#ar7b)"/>
-  <path d="M200 100 H238" class="ln" marker-end="url(#ar7b)"/>
-  <rect x="240" y="84" width="60" height="44" rx="6" class="node fl2"/><text x="270" y="111" text-anchor="middle">AND</text>
-  <text x="222" y="176" class="t2" text-anchor="middle">CLK</text>
-  <path d="M222 162 V118 H238" class="ln" marker-end="url(#ar7b)"/>
-  <path d="M300 106 H338" class="ln" marker-end="url(#ar7b)"/>
-  <rect x="340" y="76" width="130" height="60" rx="6" class="node fl3"/>
-  <text x="405" y="102" text-anchor="middle">čítač</text><text x="405" y="122" text-anchor="middle" class="t2">nahoru, CLEAR</text>
-  <rect x="500" y="50" width="80" height="40" rx="6" class="node"/><text x="540" y="75" text-anchor="middle">Control</text>
-  <path d="M500 70 H405 V73" class="ln dash" marker-end="url(#ar7b)"/>
-  <text x="440" y="64" class="t2">CLEAR</text>
-  <path d="M540 90 V158" class="ln dash" marker-end="url(#ar7b)"/>
-  <path d="M405 136 V188" class="ln" marker-end="url(#ar7b)"/>
-  <path d="M440 136 V160 H498" class="ln" marker-end="url(#ar7b)"/>
-  <rect x="500" y="160" width="80" height="44" rx="6" class="node"/><text x="540" y="187" text-anchor="middle">Latch</text>
-  <path d="M580 182 H640" class="ln" marker-end="url(#ar7b)"/><text x="648" y="178">binární</text><text x="648" y="196">výstup</text>
-  <rect x="345" y="190" width="120" height="44" rx="6" class="node fl2"/><text x="405" y="217" text-anchor="middle">DAC</text>
-  <path d="M345 212 H60 V120 H88" class="ln" marker-end="url(#ar7b)"/>
-  <text x="200" y="200" class="t2">U<tspan baseline-shift="sub" font-size="10">DAC</tspan></text>
+  <text x="14" y="110">U<tspan baseline-shift="sub" font-size="10">IN</tspan></text>
+  <path d="M48 105 H98" class="ln" marker-end="url(#ar7b)"/>
+  <path d="M100 80 L100 180 L180 130 Z" class="node fl1"/>
+  <text x="107" y="110" class="t2">+</text><text x="107" y="160" class="t2">−</text>
+  <text x="140" y="204" text-anchor="middle" class="t2">komparátor</text>
+  <path d="M180 130 H260" class="ln" marker-end="url(#ar7b)"/>
+  <circle cx="205" cy="130" r="3.5" style="fill:var(--ink-2)"/>
+  <path d="M205 130 V28 H615 V43" class="ln" marker-end="url(#ar7b)"/>
+  <text x="228" y="56" text-anchor="middle" class="t2">CLK</text>
+  <path d="M212 78 H218 V62 H226 V78 H234 V62 H242 V78" class="ln s1" style="stroke-width:1.8"/>
+  <path d="M242 78 H246 V104 H260" class="ln" marker-end="url(#ar7b)"/>
+  <path d="M262 92 H288 A26 26 0 0 1 288 144 H262 Z" class="node fl2"/><text x="282" y="123" text-anchor="middle" class="t2">AND</text>
+  <path d="M314 118 H338" class="ln" marker-end="url(#ar7b)"/>
+  <text x="410" y="78" text-anchor="middle">čítač (Counter)</text>
+  <rect x="340" y="88" width="140" height="60" rx="6" class="node fl3"/>
+  <path d="M340 110 L350 118 L340 126" class="ln"/><text x="354" y="123" class="t2">CLK</text>
+  <text x="474" y="112" text-anchor="end" class="t2">CLEAR</text>
+  <path d="M600 83 V108 H482" class="ln" marker-end="url(#ar7b)"/>
+  <path d="M630 83 V183" class="ln" marker-end="url(#ar7b)"/>
+  <path d="M365 148 V270 M395 148 V270 M425 148 V270 M455 148 V270" class="ln"/>
+  <path d="M455 198 H590 M425 213 H590 M395 228 H590 M365 243 H590" class="ln"/>
+  <circle cx="455" cy="198" r="3.5" style="fill:var(--ink-2)"/><circle cx="425" cy="213" r="3.5" style="fill:var(--ink-2)"/><circle cx="395" cy="228" r="3.5" style="fill:var(--ink-2)"/><circle cx="365" cy="243" r="3.5" style="fill:var(--ink-2)"/>
+  <rect x="590" y="185" width="70" height="72" rx="6" class="node"/><text x="625" y="226" text-anchor="middle">Latch</text>
+  <path d="M660 198 H700 M660 213 H700 M660 228 H700 M660 243 H700" class="ln"/>
+  <text x="708" y="217">binární</text><text x="708" y="235">výstup</text>
+  <rect x="345" y="270" width="130" height="40" rx="6" class="node fl2"/><text x="410" y="295" text-anchor="middle">DAC</text>
+  <text x="220" y="283" class="t2">U<tspan baseline-shift="sub" font-size="10">DAC</tspan></text>
+  <rect x="575" y="45" width="80" height="38" rx="6" class="node"/><text x="615" y="69" text-anchor="middle">Control</text>
+  <path d="M345 290 H70 V155 H98" class="ln" marker-end="url(#ar7b)"/>
 </svg></div>
-<p class="muted">Obr. P7.8 Blokové schéma counter type ADC (podle slidu).</p>
-<div class="box postup"><div class="box-t">Jak counter type převádí</div>
+<p class="muted">Obr. P7.9 Blokové schéma counter type ADC (podle slidu). Čtyři svislé čáry jsou paralelní výstup čítače (jeden vodič na bit); tečka značí spojení – stejné bity jdou do DAC i do registru Latch.</p>
+<div class="box postup"><div class="box-t">Jak counter type převádí (podle schématu)</div>
 <ol>
-<li>Control vynuluje čítač (CLEAR), \(U_\mathrm{DAC} = 0\).</li>
-<li>\(U_\mathrm{IN} > U_\mathrm{DAC}\): komparátor je v log. 1, hradlo AND propouští hodiny a čítač s každým taktem přičte jedničku. \(U_\mathrm{DAC}\) vystoupá o jeden schod (1 LSB).</li>
-<li>Jakmile \(U_\mathrm{DAC}\) překročí \(U_\mathrm{IN}\), komparátor překlopí do log. 0, hradlo se zavře a čítač stojí.</li>
-<li>Control zapíše stav čítače do registru (Latch) – to je výsledek – a celý převod začne znovu od nuly.</li>
-</ol></div>
+<li><b>Start:</b> blok Control vynuluje čítač vstupem CLEAR. Na výstupu čítače je 0000 a DAC dává \(U_\mathrm{DAC} = 0\).</li>
+<li><b>Čítání:</b> komparátor porovnává \(U_\mathrm{IN}\) (vstup +) s \(U_\mathrm{DAC}\) (vstup −). Dokud je \(U_\mathrm{IN} > U_\mathrm{DAC}\), má na výstupu log. 1 a hradlo AND propouští <a href="#def-hodinovy-signal">hodiny</a> CLK na hodinový vstup čítače.</li>
+<li><b>Schody:</b> s každým taktem čítač přičte 1. Jeho paralelní výstup vede do DAC, takže \(U_\mathrm{DAC}\) vystoupá o jeden schod (1 LSB).</li>
+<li><b>Konec:</b> jakmile \(U_\mathrm{DAC}\) překročí \(U_\mathrm{IN}\), komparátor překlopí do log. 0. Hradlo AND zavře hodiny a čítač stojí.</li>
+<li><b>Zápis:</b> překlopení komparátoru vidí i Control (horní vodič). Dá registru Latch pokyn, aby převzal stav čítače – to je výsledek na binárním výstupu – a čítač znovu vynuluje (CLEAR). Další převod začíná od nuly.</li>
+</ol>
+<p>Latch drží poslední hotový výsledek, zatímco čítač už počítá další převod. Bez něj by se na výstupu „protáčela“ všechna čísla od nuly.</p></div>
 
 <h3 id="tracking">Tracking type ADC</h3>
 <div class="box definice" id="def-tracking-adc"><div class="box-t">Definice: tracking type ADC</div>
 <p><b>Tracking type ADC</b> (sledovací převodník) má vratný čítač (Up/Down), jehož směr čítání určuje přímo výstup komparátoru: při \(U_\mathrm{IN} > U_\mathrm{DAC}\) čítá s každým taktem hodin nahoru, při \(U_\mathrm{IN} &lt; U_\mathrm{DAC}\) dolů. Čítač se mezi převody nenuluje, takže \(U_\mathrm{DAC}\) průběžně sleduje vstupní napětí.</p>
 <p class="jinak">místo aby začínal pokaždé od nuly, převodník si pamatuje poslední hodnotu a v každém taktu jen dorovná o jeden krok nahoru nebo dolů.</p></div>
 <div class="schema">
-<svg viewBox="0 0 760 250" role="img" aria-label="Tracking type ADC: komparátor (UIN na +, VDAC na −) řídí vstup Up/Down vratného čítače, hodiny CLK jdou přímo do čítače; výstup čítače do DAC a do registru Latch, Control zapisuje do registru; DAC dává VDAC zpět na komparátor">
+<svg viewBox="0 0 780 330" role="img" aria-label="Tracking type ADC podle slidu: komparátor (UIN na +, UDAC na −); jeho výstup vede přímo na vstup Up/Down vratného čítače a horním vodičem do bloku Control; hodiny CLK jdou přímo na hodinový vstup čítače; paralelní výstupy čítače vedou do DAC i do registru Latch, Control dává pokyn k zápisu do Latch; DAC vrací UDAC na komparátor">
   <defs><marker id="ar7c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
-  <text x="10" y="85">U<tspan baseline-shift="sub" font-size="10">IN</tspan></text>
-  <path d="M45 80 H88" class="ln" marker-end="url(#ar7c)"/>
-  <path d="M90 60 L90 140 L160 100 Z" class="node fl1"/>
-  <text x="98" y="85" class="t2">+</text><text x="98" y="128" class="t2">−</text>
-  <text x="125" y="165" text-anchor="middle" class="t2">komparátor</text>
-  <path d="M160 100 H200" class="ln"/>
-  <path d="M200 100 V30 H540 V48" class="ln" marker-end="url(#ar7c)"/>
-  <path d="M200 100 H338" class="ln" marker-end="url(#ar7c)"/>
-  <text x="270" y="92" class="t2" text-anchor="middle">Up / Down</text>
-  <text x="250" y="150" class="t2">CLK</text>
-  <path d="M280 146 H310 V122 H338" class="ln" marker-end="url(#ar7c)"/>
-  <rect x="340" y="76" width="130" height="60" rx="6" class="node fl3"/>
-  <text x="405" y="102" text-anchor="middle">vratný čítač</text><text x="405" y="122" text-anchor="middle" class="t2">Up / Down</text>
-  <rect x="500" y="50" width="80" height="40" rx="6" class="node"/><text x="540" y="75" text-anchor="middle">Control</text>
-  <path d="M540 90 V158" class="ln dash" marker-end="url(#ar7c)"/>
-  <path d="M405 136 V188" class="ln" marker-end="url(#ar7c)"/>
-  <path d="M440 136 V160 H498" class="ln" marker-end="url(#ar7c)"/>
-  <rect x="500" y="160" width="80" height="44" rx="6" class="node"/><text x="540" y="187" text-anchor="middle">Latch</text>
-  <path d="M580 182 H640" class="ln" marker-end="url(#ar7c)"/><text x="648" y="178">binární</text><text x="648" y="196">výstup</text>
-  <rect x="345" y="190" width="120" height="44" rx="6" class="node fl2"/><text x="405" y="217" text-anchor="middle">DAC</text>
-  <path d="M345 212 H60 V120 H88" class="ln" marker-end="url(#ar7c)"/>
-  <text x="200" y="200" class="t2">U<tspan baseline-shift="sub" font-size="10">DAC</tspan></text>
+  <text x="14" y="84">U<tspan baseline-shift="sub" font-size="10">IN</tspan></text>
+  <path d="M48 79 H98" class="ln" marker-end="url(#ar7c)"/>
+  <path d="M100 54 L100 154 L180 104 Z" class="node fl1"/>
+  <text x="107" y="84" class="t2">+</text><text x="107" y="134" class="t2">−</text>
+  <text x="140" y="178" text-anchor="middle" class="t2">komparátor</text>
+  <path d="M180 104 H338" class="ln" marker-end="url(#ar7c)"/>
+  <circle cx="205" cy="104" r="3.5" style="fill:var(--ink-2)"/>
+  <path d="M205 104 V28 H615 V43" class="ln" marker-end="url(#ar7c)"/>
+  <text x="410" y="78" text-anchor="middle">vratný čítač (Counter)</text>
+  <rect x="340" y="88" width="140" height="60" rx="6" class="node fl3"/>
+  <text x="346" y="109" class="t2">Up / Down</text>
+  <path d="M340 122 L350 130 L340 138" class="ln"/><text x="354" y="135" class="t2">CLK</text>
+  <path d="M258 188 H266 V172 H276 V188 H286 V172 H296 V188 H304" class="ln s1" style="stroke-width:1.8"/>
+  <text x="281" y="208" text-anchor="middle" class="t2">CLK</text>
+  <path d="M304 188 H314 V130 H338" class="ln" marker-end="url(#ar7c)"/>
+  <path d="M615 83 V183" class="ln" marker-end="url(#ar7c)"/>
+  <path d="M365 148 V270 M395 148 V270 M425 148 V270 M455 148 V270" class="ln"/>
+  <path d="M455 198 H590 M425 213 H590 M395 228 H590 M365 243 H590" class="ln"/>
+  <circle cx="455" cy="198" r="3.5" style="fill:var(--ink-2)"/><circle cx="425" cy="213" r="3.5" style="fill:var(--ink-2)"/><circle cx="395" cy="228" r="3.5" style="fill:var(--ink-2)"/><circle cx="365" cy="243" r="3.5" style="fill:var(--ink-2)"/>
+  <rect x="590" y="185" width="70" height="72" rx="6" class="node"/><text x="625" y="226" text-anchor="middle">Latch</text>
+  <path d="M660 198 H700 M660 213 H700 M660 228 H700 M660 243 H700" class="ln"/>
+  <text x="708" y="217">binární</text><text x="708" y="235">výstup</text>
+  <rect x="345" y="270" width="130" height="40" rx="6" class="node fl2"/><text x="410" y="295" text-anchor="middle">DAC</text>
+  <text x="220" y="283" class="t2">U<tspan baseline-shift="sub" font-size="10">DAC</tspan></text>
+  <rect x="575" y="45" width="80" height="38" rx="6" class="node"/><text x="615" y="69" text-anchor="middle">Control</text>
+  <path d="M345 290 H70 V129 H98" class="ln" marker-end="url(#ar7c)"/>
 </svg></div>
-<p class="muted">Obr. P7.9 Blokové schéma tracking type ADC (podle slidu): oproti counter type chybí hradlo AND i nulování, komparátor řídí směr čítání.</p>
-<div class="box postup"><div class="box-t">Jak tracking type převádí</div>
+<p class="muted">Obr. P7.10 Blokové schéma tracking type ADC (podle slidu). Oproti counter type chybí hradlo AND i nulování CLEAR: hodiny jdou do čítače přímo a komparátor určuje směr čítání (Up / Down).</p>
+<div class="box postup"><div class="box-t">Jak tracking type převádí (podle schématu)</div>
 <ol>
-<li>Na začátku je \(U_\mathrm{DAC} = 0\) a čítač čítá nahoru, dokud \(U_\mathrm{DAC}\) nedosáhne vstupu – to je <b>náběh první digitalizace</b>.</li>
-<li>Pak se komparátor <b>překlápí</b>: při \(U_\mathrm{DAC} > U_\mathrm{IN}\) čítač o krok sníží, při \(U_\mathrm{DAC} &lt; U_\mathrm{IN}\) o krok zvýší.</li>
-<li>\(U_\mathrm{DAC}\) tak sleduje signál a v každém taktu je k dispozici nová hodnota. U ustáleného signálu kód kmitá o \(\pm 1\) LSB kolem správné hodnoty.</li>
+<li><b>Směr:</b> výstup komparátoru vede přímo na vstup Up / Down vratného čítače: log. 1 (\(U_\mathrm{IN} > U_\mathrm{DAC}\)) = čítej nahoru, log. 0 (\(U_\mathrm{IN} &lt; U_\mathrm{DAC}\)) = čítej dolů.</li>
+<li><b>Hodiny:</b> CLK jde do čítače přímo, bez hradla. S každým taktem se kód změní o +1 nebo −1 a \(U_\mathrm{DAC}\) o jeden schod.</li>
+<li><b>Náběh:</b> na začátku je \(U_\mathrm{DAC} = 0\), čítač tedy čítá nahoru, dokud \(U_\mathrm{DAC}\) poprvé nedosáhne vstupu – to je <b>náběh první digitalizace</b>.</li>
+<li><b>Sledování:</b> potom se komparátor překlápí a \(U_\mathrm{DAC}\) sleduje signál. U ustáleného signálu kód kmitá o \(\pm 1\) LSB kolem správné hodnoty.</li>
+<li><b>Výstup:</b> čítač se nenuluje, Control jen průběžně zapisuje jeho stav do registru Latch – nová hodnota je k dispozici v každém taktu.</li>
 </ol></div>
 <div class="box pozor"><div class="box-t">Problém tracking převodníku</div>
 <ul>
@@ -397,7 +457,7 @@
 <li>Převodník se dokáže v jednom taktu posunout jen o 1 LSB. Když se signál mění rychleji, schody za ním zaostávají.</li>
 </ul></div>
 <figure><div class="paper"><img src="figures/fig17_counter_tracking.png" alt="Dva grafy se stejným vstupním signálem 4 až 12 V: nahoře counter type – schodovité rampy od nuly vždy až nad signál, pak pád na nulu, zapsané výsledky; dole tracking type – po náběhu od nuly schody sledují signál krokem plus minus 1" loading="lazy"></div>
-<figcaption><b>Obr. P7.10</b> Counter type a tracking type na stejném signálu (vlastní signál, 4 bity, krok 1 V = 1 LSB; podle průběhů na slidech).</figcaption></figure>
+<figcaption><b>Obr. P7.11</b> Counter type a tracking type na stejném signálu (vlastní signál, 4 bity, krok 1 V = 1 LSB; podle průběhů na slidech).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <ul>
 <li><b>Counter type</b> začíná každý převod od nuly: při vysokém napětí trvá převod dlouho (mnoho schodů), při nízkém krátce. Výsledky (zelené trojúhelníky) proto nepřicházejí v pravidelných intervalech.</li>
@@ -423,27 +483,34 @@
 <p><b>ADC s postupnou aproximací</b> (SAR, successive approximation register) určuje v každém taktu hodin jeden bit výsledku, od MSB směrem k LSB: registr postupné aproximace nastaví zkoušený bit na 1, DAC převede kód na napětí a komparátor rozhodne, zda bit zůstane 1 (\(U_\mathrm{IN} > U_\mathrm{DAC}\)), nebo se vrátí na 0 (\(U_\mathrm{IN} &lt; U_\mathrm{DAC}\)).</p>
 <p class="jinak">metoda půlení intervalů – jako hádání čísla od 0 do 15 otázkami „je to víc než …?“. Každá otázka vyloučí polovinu možností, takže na 4bitové číslo stačí vždy přesně 4 otázky.</p></div>
 <div class="schema">
-<svg viewBox="0 0 760 230" role="img" aria-label="ADC s postupnou aproximací: UIN přes Sample and Hold na + komparátoru, na − je VDAC; výstup komparátoru do řídicí logiky a registru postupné aproximace SAR; výstup SAR do DAC (s referencí VREF) a na binární výstup; DAC dává VDAC zpět na komparátor">
+<svg viewBox="0 0 780 300" role="img" aria-label="ADC s postupnou aproximací podle slidu: UIN přes Sample and Hold na + komparátoru, na − je UDAC; výstup komparátoru do řídicí logiky, kterou krokují hodiny CLK; řídicí logika tlustou šipkou ovládá registr postupné aproximace SAR; čtyři paralelní výstupy SAR vedou do DAC a na binární výstup; DAC s referencí UREF vrací UDAC na komparátor">
   <defs><marker id="ar7d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
-  <text x="10" y="75">U<tspan baseline-shift="sub" font-size="10">IN</tspan></text>
-  <path d="M45 70 H68" class="ln" marker-end="url(#ar7d)"/>
-  <rect x="70" y="48" width="70" height="44" rx="6" class="node fl1"/><text x="105" y="75" text-anchor="middle">S/H</text>
-  <path d="M140 70 H178" class="ln" marker-end="url(#ar7d)"/>
-  <path d="M180 50 L180 130 L250 90 Z" class="node fl1"/>
-  <text x="188" y="75" class="t2">+</text><text x="188" y="118" class="t2">−</text>
-  <text x="215" y="152" text-anchor="middle" class="t2">komparátor</text>
-  <path d="M250 90 H298" class="ln" marker-end="url(#ar7d)"/>
-  <rect x="300" y="66" width="100" height="48" rx="6" class="node"/><text x="350" y="88" text-anchor="middle">řídicí</text><text x="350" y="106" text-anchor="middle">logika</text>
-  <path d="M400 90 H438" class="ln" marker-end="url(#ar7d)"/>
-  <rect x="440" y="62" width="150" height="56" rx="6" class="node fl3"/><text x="515" y="86" text-anchor="middle">SAR</text><text x="515" y="106" text-anchor="middle" class="t2">půlení intervalů</text>
-  <path d="M590 90 H650" class="ln" marker-end="url(#ar7d)"/><text x="658" y="86">binární</text><text x="658" y="104">výstup</text>
-  <path d="M515 118 V158" class="ln" marker-end="url(#ar7d)"/>
-  <rect x="455" y="160" width="120" height="44" rx="6" class="node fl2"/><text x="515" y="187" text-anchor="middle">DAC</text>
-  <path d="M640 182 H577" class="ln" marker-end="url(#ar7d)"/><text x="648" y="187" class="t2">U<tspan baseline-shift="sub" font-size="10">REF</tspan></text>
-  <path d="M455 182 H160 V110 H178" class="ln" marker-end="url(#ar7d)"/>
-  <text x="300" y="170" class="t2">U<tspan baseline-shift="sub" font-size="10">DAC</tspan></text>
+  <text x="12" y="86">U<tspan baseline-shift="sub" font-size="10">IN</tspan></text>
+  <path d="M44 80 H68" class="ln" marker-end="url(#ar7d)"/>
+  <rect x="70" y="60" width="60" height="40" rx="6" class="node fl1"/><text x="100" y="85" text-anchor="middle">S/H</text>
+  <path d="M130 80 H178" class="ln" marker-end="url(#ar7d)"/>
+  <path d="M180 55 L180 155 L250 105 Z" class="node fl1"/>
+  <text x="187" y="85" class="t2">+</text><text x="187" y="135" class="t2">−</text>
+  <text x="215" y="178" text-anchor="middle" class="t2">komparátor</text>
+  <path d="M250 105 H298" class="ln" marker-end="url(#ar7d)"/>
+  <rect x="300" y="80" width="100" height="50" rx="6" class="node"/><text x="350" y="101" text-anchor="middle">řídicí</text><text x="350" y="119" text-anchor="middle">logika</text>
+  <path d="M326 46 H334 V30 H344 V46 H354 V30 H364 V46 H372" class="ln s1" style="stroke-width:1.8"/>
+  <text x="380" y="43" class="t2">CLK</text>
+  <path d="M350 50 V78" class="ln" marker-end="url(#ar7d)"/>
+  <path d="M400 105 H452" class="ln" style="stroke-width:9"/><path d="M450 92 L470 105 L450 118 Z" style="fill:var(--ink-2)"/>
+  <text x="540" y="70" text-anchor="middle" class="t2">registr postupné aproximace</text>
+  <rect x="470" y="80" width="140" height="50" rx="6" class="node fl3"/><text x="540" y="110" text-anchor="middle">SAR</text>
+  <path d="M495 130 V240 M525 130 V240 M555 130 V240 M585 130 V240" class="ln"/>
+  <path d="M585 150 H678 M555 168 H678 M525 186 H678 M495 204 H678" class="ln"/>
+  <circle cx="585" cy="150" r="3.5" style="fill:var(--ink-2)"/><circle cx="555" cy="168" r="3.5" style="fill:var(--ink-2)"/><circle cx="525" cy="186" r="3.5" style="fill:var(--ink-2)"/><circle cx="495" cy="204" r="3.5" style="fill:var(--ink-2)"/>
+  <text x="686" y="172">binární</text><text x="686" y="190">výstup</text>
+  <rect x="470" y="240" width="140" height="45" rx="6" class="node fl2"/><text x="540" y="268" text-anchor="middle">DAC</text>
+  <path d="M470 252 H160 V130 H178" class="ln" marker-end="url(#ar7d)"/>
+  <text x="330" y="245" class="t2">U<tspan baseline-shift="sub" font-size="10">DAC</tspan></text>
+  <text x="392" y="280" class="t2">U<tspan baseline-shift="sub" font-size="10">REF</tspan></text>
+  <path d="M425 275 H468" class="ln" marker-end="url(#ar7d)"/>
 </svg></div>
-<p class="muted">Obr. P7.11 Blokové schéma ADC s postupnou aproximací (podle slidu). Oproti counter type tu není čítač ani hradlo AND – kód nastavuje registr SAR.</p>
+<p class="muted">Obr. P7.12 Blokové schéma ADC s postupnou aproximací (podle slidu). Tlustá šipka je řízení registru (který bit nastavit a který vynulovat); hodiny CLK, které řídicí logiku krokují, jsou doplněné. Oproti counter type tu není čítač ani hradlo AND – kód nastavuje registr SAR.</p>
 <div class="box intuice"><div class="box-t">Princip postupné aproximace</div>
 <p>Pořád postupuju a srovnávám: jsem vysoko? Jsem nízko? Až nakonec mi vypadne číslo – a proces trvá pokaždé stejně dlouho.</p>
 <ul>
@@ -451,16 +518,142 @@
 <li>Další bit rozpůlí tu polovinu, která zbyla – a tak dál až k LSB.</li>
 <li>Převodník s \(n\) bity potřebuje vždy přesně \(n\) porovnání, ať je vstupní napětí jakékoli. U 16bitového převodníku trvá převod 16 taktů.</li>
 </ul></div>
-<div class="box postup"><div class="box-t">Jak SAR převádí</div>
+<div class="box postup"><div class="box-t">Jak SAR převádí (podle schématu)</div>
 <ol>
-<li>S/H podrží vstupní napětí.</li>
-<li>SAR nastaví MSB na 1 a ostatní bity na 0; DAC vyrobí \(U_\mathrm{DAC}\) = polovina rozsahu.</li>
-<li>Komparátor: \(U_\mathrm{IN} > U_\mathrm{DAC}\) → bit zůstane 1; \(U_\mathrm{IN} &lt; U_\mathrm{DAC}\) → bit se vrátí na 0.</li>
-<li>SAR nastaví na 1 další nižší bit a porovnání se opakuje.</li>
-<li>Po \(n\) taktech (po vyhodnocení LSB) je v registru hotový výsledek.</li>
+<li><b>S/H</b> podrží vstupní napětí, aby se během převodu neměnilo – porovnává se s ním několikrát za sebou.</li>
+<li><b>Takt 1:</b> řídicí logika nastaví v registru SAR MSB na 1 a ostatní bity na 0 (1000). DAC z tohoto kódu a z reference \(U_\mathrm{REF}\) vyrobí \(U_\mathrm{DAC}\) = polovina rozsahu.</li>
+<li><b>Rozhodnutí:</b> komparátor porovná \(U_\mathrm{IN}\) (vstup +) s \(U_\mathrm{DAC}\) (vstup −). Řídicí logika podle něj v dalším taktu zkoušený bit buď ponechá (\(U_\mathrm{IN} > U_\mathrm{DAC}\) → 1), nebo vynuluje (\(U_\mathrm{IN} &lt; U_\mathrm{DAC}\) → 0), a zároveň nastaví na 1 další nižší bit.</li>
+<li><b>Opakování:</b> totéž proběhne pro každý další bit – v každém taktu jeden.</li>
+<li><b>Konec:</b> po \(n\) taktech (po rozhodnutí o LSB) je v registru hotový výsledek; jeho paralelní výstup je binární výstup převodníku.</li>
 </ol></div>
-<div class="box priklad"><div class="box-t">Příklad: 4bitový SAR, výsledek 0110 (strom ze slidu)</div>
-<p>Slide ukazuje strom všech možných kódů 4bitového převodníku a cestu pro vstup, jehož výsledek je 0110. Pro konkrétní čísla zvolme \(U_\mathrm{REF} = 16\) V (krok 1 V) a \(U_\mathrm{IN} = 6{,}4\) V:</p>
+
+<p>Všechny možné průběhy 4bitového převodu lze nakreslit jako <b>binární strom</b>. Každý uzel je kód, který SAR v daném taktu zkouší, a z každého uzlu vedou dvě větve podle odpovědi komparátoru. Strom je nakreslený pro \(U_\mathrm{REF} = 16\) V, tedy krok 1 LSB = 1 V, a <b>každý uzel leží ve výšce svého napětí</b> \(U_\mathrm{DAC}\) – vyšší kód je výš.</p>
+<div class="schema">
+<svg viewBox="0 0 780 460" role="img" aria-label="Binární strom 4bitového převodníku s postupnou aproximací: kořen 1000, v každém taktu se větví nahoru (vstup větší, bit zůstane 1) nebo dolů (vstup menší, bit se vynuluje); 16 listů 0000 až 1111 seřazených podle napětí. Zvýrazněná cesta pro vstup 6,4 V: 1000, 0100, 0110, 0111, výsledek 0110">
+  <text x="70" y="18" text-anchor="middle" class="t2">takt 1 (MSB)</text>
+  <text x="210" y="18" text-anchor="middle" class="t2">takt 2</text>
+  <text x="350" y="18" text-anchor="middle" class="t2">takt 3</text>
+  <text x="490" y="18" text-anchor="middle" class="t2">takt 4 (LSB)</text>
+  <text x="630" y="18" text-anchor="middle" class="t2">výsledek</text>
+  <path d="M8 274.4 H662" class="ln s1 dash"/>
+  <text x="8" y="292.4" class="t2">U<tspan baseline-shift="sub" font-size="9">IN</tspan> = 6,4 V</text>
+  <path d="M100 236 L180 140" class="ln s3" style="opacity:.5"/>
+  <path d="M100 236 L180 332" class="ln s2" style="stroke-width:3.2"/>
+  <path d="M240 140 L320 92" class="ln s3" style="opacity:.5"/>
+  <path d="M240 140 L320 188" class="ln s2" style="opacity:.5"/>
+  <path d="M240 332 L320 284" class="ln s3" style="stroke-width:3.2"/>
+  <path d="M240 332 L320 380" class="ln s2" style="opacity:.5"/>
+  <path d="M380 92 L460 68" class="ln s3" style="opacity:.5"/>
+  <path d="M380 92 L460 116" class="ln s2" style="opacity:.5"/>
+  <path d="M380 188 L460 164" class="ln s3" style="opacity:.5"/>
+  <path d="M380 188 L460 212" class="ln s2" style="opacity:.5"/>
+  <path d="M380 284 L460 260" class="ln s3" style="stroke-width:3.2"/>
+  <path d="M380 284 L460 308" class="ln s2" style="opacity:.5"/>
+  <path d="M380 380 L460 356" class="ln s3" style="opacity:.5"/>
+  <path d="M380 380 L460 404" class="ln s2" style="opacity:.5"/>
+  <path d="M520 68 L600 56" class="ln s3" style="opacity:.5"/>
+  <path d="M520 68 L600 80" class="ln s2" style="opacity:.5"/>
+  <path d="M520 116 L600 104" class="ln s3" style="opacity:.5"/>
+  <path d="M520 116 L600 128" class="ln s2" style="opacity:.5"/>
+  <path d="M520 164 L600 152" class="ln s3" style="opacity:.5"/>
+  <path d="M520 164 L600 176" class="ln s2" style="opacity:.5"/>
+  <path d="M520 212 L600 200" class="ln s3" style="opacity:.5"/>
+  <path d="M520 212 L600 224" class="ln s2" style="opacity:.5"/>
+  <path d="M520 260 L600 248" class="ln s3" style="opacity:.5"/>
+  <path d="M520 260 L600 272" class="ln s2" style="stroke-width:3.2"/>
+  <path d="M520 308 L600 296" class="ln s3" style="opacity:.5"/>
+  <path d="M520 308 L600 320" class="ln s2" style="opacity:.5"/>
+  <path d="M520 356 L600 344" class="ln s3" style="opacity:.5"/>
+  <path d="M520 356 L600 368" class="ln s2" style="opacity:.5"/>
+  <path d="M520 404 L600 392" class="ln s3" style="opacity:.5"/>
+  <path d="M520 404 L600 416" class="ln s2" style="opacity:.5"/>
+  <rect x="40" y="225" width="60" height="22" rx="4" class="node fl1" style="stroke:var(--c1);stroke-width:2"/><text x="70" y="241" text-anchor="middle" font-weight="600">1000</text>
+  <text x="70" y="221" text-anchor="middle" class="t2">8 V</text>
+  <rect x="180" y="129" width="60" height="22" rx="4" class="node"/><text x="210" y="145" text-anchor="middle">1100</text>
+  <text x="210" y="125" text-anchor="middle" class="t2">12 V</text>
+  <rect x="180" y="321" width="60" height="22" rx="4" class="node fl1" style="stroke:var(--c1);stroke-width:2"/><text x="210" y="337" text-anchor="middle" font-weight="600">0100</text>
+  <text x="210" y="317" text-anchor="middle" class="t2">4 V</text>
+  <rect x="320" y="81" width="60" height="22" rx="4" class="node"/><text x="350" y="97" text-anchor="middle">1110</text>
+  <text x="350" y="77" text-anchor="middle" class="t2">14 V</text>
+  <rect x="320" y="177" width="60" height="22" rx="4" class="node"/><text x="350" y="193" text-anchor="middle">1010</text>
+  <text x="350" y="173" text-anchor="middle" class="t2">10 V</text>
+  <rect x="320" y="273" width="60" height="22" rx="4" class="node fl1" style="stroke:var(--c1);stroke-width:2"/><text x="350" y="289" text-anchor="middle" font-weight="600">0110</text>
+  <text x="350" y="269" text-anchor="middle" class="t2">6 V</text>
+  <rect x="320" y="369" width="60" height="22" rx="4" class="node"/><text x="350" y="385" text-anchor="middle">0010</text>
+  <text x="350" y="365" text-anchor="middle" class="t2">2 V</text>
+  <rect x="460" y="57" width="60" height="22" rx="4" class="node"/><text x="490" y="73" text-anchor="middle">1111</text>
+  <text x="490" y="53" text-anchor="middle" class="t2">15 V</text>
+  <rect x="460" y="105" width="60" height="22" rx="4" class="node"/><text x="490" y="121" text-anchor="middle">1101</text>
+  <text x="490" y="101" text-anchor="middle" class="t2">13 V</text>
+  <rect x="460" y="153" width="60" height="22" rx="4" class="node"/><text x="490" y="169" text-anchor="middle">1011</text>
+  <text x="490" y="149" text-anchor="middle" class="t2">11 V</text>
+  <rect x="460" y="201" width="60" height="22" rx="4" class="node"/><text x="490" y="217" text-anchor="middle">1001</text>
+  <text x="490" y="197" text-anchor="middle" class="t2">9 V</text>
+  <rect x="460" y="249" width="60" height="22" rx="4" class="node fl1" style="stroke:var(--c1);stroke-width:2"/><text x="490" y="265" text-anchor="middle" font-weight="600">0111</text>
+  <text x="490" y="245" text-anchor="middle" class="t2">7 V</text>
+  <rect x="460" y="297" width="60" height="22" rx="4" class="node"/><text x="490" y="313" text-anchor="middle">0101</text>
+  <text x="490" y="293" text-anchor="middle" class="t2">5 V</text>
+  <rect x="460" y="345" width="60" height="22" rx="4" class="node"/><text x="490" y="361" text-anchor="middle">0011</text>
+  <text x="490" y="341" text-anchor="middle" class="t2">3 V</text>
+  <rect x="460" y="393" width="60" height="22" rx="4" class="node"/><text x="490" y="409" text-anchor="middle">0001</text>
+  <text x="490" y="389" text-anchor="middle" class="t2">1 V</text>
+  <rect x="600" y="406" width="60" height="20" rx="4" class="node"/><text x="630" y="421" text-anchor="middle">0000</text>
+  <text x="668" y="421" class="t2">0–1 V</text>
+  <rect x="600" y="382" width="60" height="20" rx="4" class="node"/><text x="630" y="397" text-anchor="middle">0001</text>
+  <text x="668" y="397" class="t2">1–2 V</text>
+  <rect x="600" y="358" width="60" height="20" rx="4" class="node"/><text x="630" y="373" text-anchor="middle">0010</text>
+  <text x="668" y="373" class="t2">2–3 V</text>
+  <rect x="600" y="334" width="60" height="20" rx="4" class="node"/><text x="630" y="349" text-anchor="middle">0011</text>
+  <text x="668" y="349" class="t2">3–4 V</text>
+  <rect x="600" y="310" width="60" height="20" rx="4" class="node"/><text x="630" y="325" text-anchor="middle">0100</text>
+  <text x="668" y="325" class="t2">4–5 V</text>
+  <rect x="600" y="286" width="60" height="20" rx="4" class="node"/><text x="630" y="301" text-anchor="middle">0101</text>
+  <text x="668" y="301" class="t2">5–6 V</text>
+  <rect x="600" y="262" width="60" height="20" rx="4" class="node fl1" style="stroke:var(--c1);stroke-width:2"/><text x="630" y="277" text-anchor="middle" font-weight="600">0110</text>
+  <text x="668" y="277" class="t2">6–7 V</text>
+  <rect x="600" y="238" width="60" height="20" rx="4" class="node"/><text x="630" y="253" text-anchor="middle">0111</text>
+  <text x="668" y="253" class="t2">7–8 V</text>
+  <rect x="600" y="214" width="60" height="20" rx="4" class="node"/><text x="630" y="229" text-anchor="middle">1000</text>
+  <text x="668" y="229" class="t2">8–9 V</text>
+  <rect x="600" y="190" width="60" height="20" rx="4" class="node"/><text x="630" y="205" text-anchor="middle">1001</text>
+  <text x="668" y="205" class="t2">9–10 V</text>
+  <rect x="600" y="166" width="60" height="20" rx="4" class="node"/><text x="630" y="181" text-anchor="middle">1010</text>
+  <text x="668" y="181" class="t2">10–11 V</text>
+  <rect x="600" y="142" width="60" height="20" rx="4" class="node"/><text x="630" y="157" text-anchor="middle">1011</text>
+  <text x="668" y="157" class="t2">11–12 V</text>
+  <rect x="600" y="118" width="60" height="20" rx="4" class="node"/><text x="630" y="133" text-anchor="middle">1100</text>
+  <text x="668" y="133" class="t2">12–13 V</text>
+  <rect x="600" y="94" width="60" height="20" rx="4" class="node"/><text x="630" y="109" text-anchor="middle">1101</text>
+  <text x="668" y="109" class="t2">13–14 V</text>
+  <rect x="600" y="70" width="60" height="20" rx="4" class="node"/><text x="630" y="85" text-anchor="middle">1110</text>
+  <text x="668" y="85" class="t2">14–15 V</text>
+  <rect x="600" y="46" width="60" height="20" rx="4" class="node"/><text x="630" y="61" text-anchor="middle">1111</text>
+  <text x="668" y="61" class="t2">15–16 V</text>
+</svg>
+</div>
+<p class="muted">Obr. P7.13 Binární strom 4bitového SAR (\(U_\mathrm{REF} = 16\) V, nad uzly napětí \(U_\mathrm{DAC}\)). Zeleně \(U_\mathrm{IN} > U_\mathrm{DAC}\): bit zůstane 1 a cesta jde nahoru. Oranžově \(U_\mathrm{IN} &lt; U_\mathrm{DAC}\): bit se vynuluje a cesta jde dolů. Zvýrazněná je cesta pro \(U_\mathrm{IN} = 6{,}4\) V (modrá čárkovaná čára).</p>
+<div class="box postup"><div class="box-t">Jak strom číst – logika větvení</div>
+<ol>
+<li><b>Kořen 1000</b> (8 V): v prvním taktu se vždy zkouší polovina rozsahu.</li>
+<li><b>Zkoušený bit</b> je v každém uzlu ta nejnižší jednička: v 1000 je to MSB, v 0100 a 1100 druhý bit, v 0110 třetí bit, v 0111 LSB.</li>
+<li><b>Větvení:</b> když je \(U_\mathrm{IN} > U_\mathrm{DAC}\), zkoušený bit zůstane 1 (zelená větev nahoru); když je \(U_\mathrm{IN} &lt; U_\mathrm{DAC}\), vynuluje se (oranžová větev dolů). Zároveň se nastaví na 1 další nižší bit – proto z 1000 vede cesta buď do 1100, nebo do 0100.</li>
+<li><b>Půlení:</b> potomci uzlu leží vždy o polovinu předchozího kroku výš a níž: z 8 V na 12 nebo 4 V (±4 V), pak ±2 V, pak ±1 V. Interval, ve kterém vstup leží, se tak v každém taktu zúží na polovinu.</li>
+<li><b>Poslední takt (LSB):</b> už se žádný nižší bit nenastavuje, rozhoduje se jen o LSB. Z uzlu 0111 proto vede cesta do 0111 (vstup větší), nebo do 0110 (vstup menší).</li>
+<li><b>Listy</b> jsou všech 16 výsledků 0000 až 1111 seřazených podle napětí. List s kódem \(k\) znamená, že vstup leží mezi \(k\) a \(k+1\) kroky – výsledek je dolní hrana tohoto intervalu.</li>
+</ol></div>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Cesta z kořene do listu má vždy <b>4 kroky</b>, pro každé napětí stejně. Proto má SAR stálý čas konverze \(n\,T_\mathrm{CLK}\).</li>
+<li>Cesta se v každém taktu stáčí <b>směrem k čárkované čáře</b> \(U_\mathrm{IN}\): z uzlu nad ní jde dolů, z uzlu pod ní nahoru.</li>
+<li>Pro 6,4 V: 1000 (8 V, dolů) → 0100 (4 V, nahoru) → 0110 (6 V, nahoru) → 0111 (7 V, dolů) → výsledek <b>0110</b>.</li>
+</ul></div>
+<div class="box pozor"><div class="box-t">Častá chyba ve stromu</div>
+<ul>
+<li>Další uzel nevznikne přičtením nebo odečtením jedničky, ale <b>úpravou zkoušeného bitu a nastavením nižšího bitu</b>. Z 1000 se jde do 1100 nebo 0100, z 1100 do 1110 nebo 1010 – nikdy ne do 0101.</li>
+<li>Uzel ve 4. taktu ještě není výsledek: 0111 se po odpovědi „vstup menší“ změní na 0110. Výsledek je až v listu.</li>
+</ul></div>
+<div class="box priklad"><div class="box-t">Příklad: 4bitový SAR, výsledek 0110 (cesta ve stromu)</div>
+<p>Zvýrazněná cesta z obr. P7.13 krok po kroku: \(U_\mathrm{REF} = 16\) V (krok 1 V) a \(U_\mathrm{IN} = 6{,}4\) V.</p>
 <div class="tablewrap"><table class="compact">
 <thead><tr><th>takt</th><th>zkoušený kód</th><th>\(U_\mathrm{DAC}\)</th><th>porovnání</th><th>bit</th><th>\(U_\mathrm{IN}\) leží v</th></tr></thead>
 <tbody>
@@ -469,9 +662,9 @@
 <tr><td>3</td><td>0110</td><td>6 V</td><td>\(U_\mathrm{IN} > U_\mathrm{DAC}\)</td><td>1</td><td>6 až 8 V</td></tr>
 <tr><td>4 (LSB)</td><td>0111</td><td>7 V</td><td>\(U_\mathrm{IN} &lt; U_\mathrm{DAC}\)</td><td>0</td><td>6 až 7 V</td></tr>
 </tbody></table></div>
-<p>Výsledek je \(0110 = 6\), tedy 6 V. Ve stromu ze slidu je cesta 1000 → 0100 → 0110 → 0111 → 0110: v každém kroku se jde „nahoru“ (k nižším kódům) nebo „dolů“ (k vyšším). Listy stromu jsou seřazené od nejnižší hodnoty (0000) po nejvyšší (1111); pod uzlem 1100 leží uzly 1010 a 1110.</p></div>
+<p>Výsledek je \(0110 = 6\), tedy 6 V: vstup 6,4 V leží v intervalu 6 až 7 V a výsledkem je jeho dolní hrana.</p></div>
 <figure><div class="paper"><img src="figures/fig17_sar_prubeh.png" alt="Postupná aproximace ve čtyřech taktech: zkoušené napětí 8, 4, 6 a 7 V proti vstupu 6,4 V; interval, ve kterém vstup leží, se zužuje na 0–8, 4–8, 6–8 a 6–7 V; výsledek 0110 = 6 V" loading="lazy"></div>
-<figcaption><b>Obr. P7.12</b> Postupná aproximace pro \(U_\mathrm{IN} = 6{,}4\) V, \(U_\mathrm{REF} = 16\) V (vlastní čísla, cesta podle stromu ze slidu). Zeleně \(U_\mathrm{IN} > U_\mathrm{DAC}\), oranžově \(U_\mathrm{IN} &lt; U_\mathrm{DAC}\) – stejně jako barvy hran ve slidu.</figcaption></figure>
+<figcaption><b>Obr. P7.14</b> Postupná aproximace pro \(U_\mathrm{IN} = 6{,}4\) V, \(U_\mathrm{REF} = 16\) V (vlastní čísla, stejná cesta jako ve stromu na obr. P7.13). Zeleně \(U_\mathrm{IN} > U_\mathrm{DAC}\), oranžově \(U_\mathrm{IN} &lt; U_\mathrm{DAC}\) – stejně jako barvy větví ve stromu.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <ul>
 <li>Modrý pruh (interval, kde vstup určitě leží) se v každém taktu <b>zmenší na polovinu</b>: 8 V → 4 V → 2 V → 1 V.</li>
@@ -502,7 +695,7 @@
 \[ T_C = 16 \cdot 10^{-7}\ \text{s} = 1{,}6\ \mu\text{s} \]
 <p>Přidání 4 bitů prodloužilo čítací převodníky 16krát (z 409,5 µs na 6,55 ms), SAR jen o 4 takty (z 1,2 µs na 1,6 µs).</p></div>
 <figure><div class="paper"><img src="figures/fig17_cas_konverze.png" alt="Graf nejdelšího času konverze v mikrosekundách na logaritmické ose podle počtu bitů 4 až 16: čítací převodníky rostou exponenciálně až na 6,55 ms, postupná aproximace lineárně od 0,4 do 1,6 µs" loading="lazy"></div>
-<figcaption><b>Obr. P7.13</b> Nejdelší čas konverze podle počtu bitů pro \(T_\mathrm{CLK} = 100\) ns (vzorce ze slidů; logaritmická osa).</figcaption></figure>
+<figcaption><b>Obr. P7.15</b> Nejdelší čas konverze podle počtu bitů pro \(T_\mathrm{CLK} = 100\) ns (vzorce ze slidů; logaritmická osa).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <ul>
 <li>Čítací převodníky (counter, tracking, single slope) se s každým bitem zpomalí <b>dvakrát</b> (exponenciální růst – na log. ose přímka).</li>
@@ -525,6 +718,7 @@
 <div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
 <p>„DAC převádí číslo na napětí na odporové síti: buď váhové R, 2R, 4R…, kde MSB má nejmenší odpor, nebo R–2R, kde se proud v každém uzlu dělí napůl a stačí dvě hodnoty odporu. OZ proudy sečte, výstup je úměrný číslu.</p>
 <p>Half-flash je varianta flash převodníku: první flash určí MSB, DAC je převede zpět, odečte se to od vstupu a druhý flash převede zbytek na LSB. Pro 8 bitů stačí 30 komparátorů místo 255 a rychlost zůstane.</p>
+<p>Hodinový signál je obdélník se stálou frekvencí z oscilátoru – krystalového (přesný) nebo RC (levný). Převodníkům dává takt a slouží jako stopky: čas se měří počtem taktů.</p>
 <p>Integrační převodníky převádějí napětí na čas. Single slope integruje referenci a čítá hodiny, dokud pila nedosáhne vstupu; doba převodu závisí na napětí a výsledek na \(RC\). Dual slope integruje pevnou dobu vstup a pak referenci zpět na nulu; doba \(T_2 = T_1 U_\mathrm{IN}/U_\mathrm{REF}\) na \(R\) ani \(C\) nezávisí.</p>
 <p>Kompenzační převodníky mají DAC ve zpětné vazbě komparátoru. Counter type čítá krůčky od nuly, tracking type sleduje signál o jeden krok nahoru nebo dolů, ale první digitalizace má náběh. Oba, i single slope, mají nejdelší čas konverze \((2^n - 1)T_\mathrm{CLK}\). Postupná aproximace půlí interval: v každém taktu jeden bit od MSB, převod trvá vždy \(n\,T_\mathrm{CLK}\) – pro 12 bitů a 100 ns je to 1,2 µs místo 409,5 µs.“</p></div>
 
@@ -535,12 +729,14 @@
 <h2 id="shrnuti-h">Shrnutí</h2>
 <p><b>D/A převodník</b> převádí binární hodnotu na analogovou; princip je výrazně jednodušší než u ADC a DAC se často používá jako pomocný obvod v ADC. <b>Váhový DAC</b> (R, 2R, 4R, …) má na každý bit rezistor s váhou mocniny dvou; proudy do virtuální nuly OZ sečte přes \(R_f\). <b>DAC R–2R</b> má jen dvě hodnoty odporu a v každém uzlu se proud dělí napůl, výstup je \(U_o = -U_\mathrm{REF}(R_f/R)\sum B_i/2^{n-i}\).</p>
 <p><b>Half-flash ADC</b> (komparační) převádí ve dvou krocích: flash MSB, DAC, odečtení, flash zbytku na LSB; pro 8 bitů 30 komparátorů místo 255, rychlost zůstane (nejpomalejší je registr či kodér). Příklad: 12,4 V při \(U_\mathrm{REF} = 16\) V → 1100 a zbytek 0,4 V → 0110.</p>
+<p><b>Hodinový signál</b> (CLK) je obdélník se stálou frekvencí \(f_\mathrm{CLK}\); jedna perioda \(T_\mathrm{CLK} = 1/f_\mathrm{CLK}\) je takt. Vyrábí ho oscilátor: krystalový (přesný, desítky ppm) nebo RC – Schmittův KO s nabíjeným a vybíjeným kondenzátorem (levný, méně přesný). V převodníku je časovou základnou (čítání taktů) a taktem, ve kterém se udělá jeden krok; čas konverze je násobek \(T_\mathrm{CLK}\).</p>
 <p><b>Integrační převodníky</b> stojí na integrátoru (\(\tau = RC\), invertující vstup = záporná integrace). <b>Single slope</b> integruje \(-U_\mathrm{REF}\), komparátor s \(U_\mathrm{IN}\) přes hradlo AND pouští hodiny do čítače; doba převodu \(T = RC\,U_\mathrm{IN}/U_\mathrm{REF}\) závisí na vstupu, integrátor se pak musí vybít. <b>Dual slope</b> integruje \(U_\mathrm{IN}\) po pevnou dobu \(T_1\), pak \(-U_\mathrm{REF}\) do nuly: \(T_2 = T_1 U_\mathrm{IN}/U_\mathrm{REF}\) bez vlivu \(R\) a \(C\).</p>
 <p><b>Kompenzační převodníky</b> porovnávají \(U_\mathrm{IN}\) s výstupem DAC. <b>Counter type</b> čítá krůčky od nuly, <b>tracking type</b> vratným čítačem sleduje signál o ±1 LSB (problém: náběh první digitalizace). Jejich nejdelší čas konverze (i single slope) je \((2^n - 1)T_\mathrm{CLK}\). <b>Postupná aproximace</b> půlí interval, v každém taktu jeden bit od MSB k LSB, \(T_C = n\,T_\mathrm{CLK}\): pro 12 bitů a 100 ns 1,2 µs proti 409,5 µs, pro 16 bitů 1,6 µs proti 6,55 ms.</p>
 <div class="takehome"><h3>Take-home messages</h3><ol>
 <li>DAC = odporová síť + OZ sčítající proudy; výstup je úměrný číslu \(D\): \(U_o = -U_\mathrm{REF}D/2^n\) (pro R–2R a \(R_f = R\)).</li>
 <li>Váhová síť potřebuje \(n\) různých přesných odporů, R–2R jen dva (proud se v uzlu dělí napůl).</li>
 <li>Half-flash: hrubě (MSB) – DAC – odečíst – jemně (LSB); \(2(2^{n/2} - 1)\) komparátorů místo \(2^n - 1\).</li>
+<li>Hodiny CLK = obdélník se stálou frekvencí z oscilátoru (krystal přesný, RC levný); v převodníku takt a časová základna.</li>
 <li>Integrační ADC převádí napětí na čas a čas měří čítáním hodin.</li>
 <li>Single slope: doba převodu roste s \(U_\mathrm{IN}\), výsledek závisí na \(RC\).</li>
 <li>Dual slope: \(T_2 = T_1 U_\mathrm{IN}/U_\mathrm{REF}\) – \(R\) a \(C\) se vykrátí.</li>
@@ -569,6 +765,22 @@
 </ol>
 \[ \begin{aligned} \text{flash: } & 2^8 - 1 = 255 \\ \text{half-flash: } & 2\cdot(2^4 - 1) = 30 \end{aligned} \]
 <p>Rychlost zůstane zachována, protože DAC je jen R síť; nejpomalejší je registr či kodér.</p></div></details>
+<details class="q"><summary>Co je hodinový signál, jak se získá a k čemu ho A/D převodníky potřebují?</summary><div>
+<p>Hodinový signál (CLK) je periodický obdélník, který střídá log. 0 a log. 1 se stálou frekvencí. Jedna perioda je takt:</p>
+\[ T_\mathrm{CLK} = \frac{1}{f_\mathrm{CLK}} \]
+<p>Číslicové obvody (čítač, registr, řídicí logika) dělají kroky na jeho hranách.</p>
+<p>Získá se z oscilátoru:</p>
+<ul>
+<li><b>krystalový oscilátor</b> – křemenný rezonátor ve zpětné vazbě hradla; frekvence přesná a stálá,</li>
+<li><b>RC oscilátor</b> – Schmittův klopný obvod s RC článkem, kondenzátor se střídavě nabíjí a vybíjí mezi překlápěcími úrovněmi; levný, ale méně přesný,</li>
+<li>v mikrokontroléru se frekvence dál dělí (čítačem) nebo násobí (PLL).</li>
+</ul>
+<p>K čemu je v převodníku:</p>
+<ul>
+<li>integrační převodníky jím měří čas – čítač počítá takty, \(T = N\,T_\mathrm{CLK}\);</li>
+<li>kompenzační převodníky dělají v každém taktu jeden krok (counter +1, tracking ±1, SAR jeden bit);</li>
+<li>čas konverze je násobek \(T_\mathrm{CLK}\); hodiny ale nelze zrychlovat libovolně, v každém taktu se musí ustálit DAC a překlopit komparátor.</li>
+</ul></div></details>
 <details class="q"><summary>Popište single slope ADC. Proč doba převodu závisí na vstupním napětí?</summary><div>
 <p>První OZ je integrátor referenčního napětí \(-U_\mathrm{REF}\): na výstupu roste pila se strmostí \(U_\mathrm{REF}/RC\). Druhý OZ je komparátor pily a \(U_\mathrm{IN}\). Dokud je pila pod \(U_\mathrm{IN}\), komparátor je v log. 1 a hradlo AND propouští hodiny do čítače. Jakmile pila dosáhne \(U_\mathrm{IN}\), komparátor překlopí a čítač se zastaví; jeho stav je výsledek. Pak je třeba integrátor vybít.</p>
 <p>Pila má vždy stejnou strmost, takže na vyšší napětí stoupá déle:</p>
@@ -596,7 +808,7 @@
 <li>0110 (6 V): vstup větší → bit = 1.</li>
 <li>0111 (7 V): vstup menší → LSB = 0.</li>
 </ol>
-<p>Výsledek \(0110\). Převod trvá vždy \(n\) taktů, \(T_C = n\,T_\mathrm{CLK}\), bez ohledu na vstup.</p></div></details>
+<p>Všechny možnosti tvoří binární strom: kořen 1000, v každém taktu větev nahoru (vstup větší, bit zůstane 1) nebo dolů (vstup menší, bit se vynuluje a nastaví se nižší bit), 16 listů 0000 až 1111. Výsledek \(0110\). Převod trvá vždy \(n\) taktů, \(T_C = n\,T_\mathrm{CLK}\), bez ohledu na vstup.</p></div></details>
 <details class="q"><summary>Porovnejte čas konverze counter/tracking/single slope a SAR pro 12 bitů a 16 bitů při \(f_\mathrm{CLK} = 10\) MHz.</summary><div>
 <p>Counter, tracking a single slope mají čas závislý na vstupu, nejdelší pro \(U_\mathrm{IN}\) blízké \(U_\mathrm{REF}\). SAR má čas pro všechna napětí stejný:</p>
 \[ \begin{aligned} T_{C(\mathrm{MAX})} &= (2^n - 1)\,T_\mathrm{CLK} \\ T_{C,\mathrm{SAR}} &= n\,T_\mathrm{CLK} \end{aligned} \]
