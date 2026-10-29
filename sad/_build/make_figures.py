@@ -1980,6 +1980,69 @@ def fig14_usm_prubeh():
     save(fig, "fig14_usm_prubeh")
 
 
+UT = 0.02585                                   # tepelné napětí při 27 °C [V]
+IS_SI, IS_SCH = 1.2e-14, 6.3e-8                # saturační proudy: Si dioda (1 mA při 0,65 V), Schottky (1 mA při 0,25 V)
+
+
+def _proud_diody_rl(u, n_diod=1, rl=1e3):
+    """Proud obvodem n diod v sérii s R_L: řeší u = n·U_T·ln(1 + I/I_S) + I·R_L bisekcí (Shockley)."""
+    u = np.maximum(u, 0)
+    lo, hi = np.zeros_like(u), u / rl
+    for _ in range(80):
+        mid = (lo + hi) / 2
+        f = n_diod * UT * np.log1p(mid / IS_SI) + mid * rl - u
+        lo, hi = np.where(f < 0, mid, lo), np.where(f < 0, hi, mid)
+    return lo
+
+
+def fig14_dioda_va():
+    """VA charakteristika křemíkové a Schottkyho diody (Shockleyho model) + prahový model 0,7 V."""
+    u = np.linspace(-2.0, 1.6, 1800)
+    fig, ax = plt.subplots(figsize=(7.8, 3.9))
+    ax.axhline(0, color=AXIS, lw=0.9)
+    ax.axvline(0, color=AXIS, lw=0.9)
+    for i_s, barva, styl, popis in ((IS_SI, C1, "-", "křemíková dioda"), (IS_SCH, C2, "--", "Schottkyho dioda")):
+        i = i_s * (np.exp(u / UT) - 1) * 1e3
+        ax.plot(u, np.where(i < 32, i, np.nan), color=barva, ls=styl, label=popis)
+    ax.plot([-2.0, 0.7, 0.7], [0, 0, 32], color=MUTED, lw=1.3, ls=":", label="prahový model (0,7 V)")
+    ax.annotate("propustný směr:\nnad prahem proud\nprudce roste", (0.735, 16), xytext=(0.9, 12), ha="left",
+                fontsize=9.5, color=INK2, arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.annotate("závěrný směr: teče jen nepatrný\nzávěrný proud (nA, u Schottkyho µA)", (-1.2, 0), xytext=(-1.95, -10),
+                fontsize=9.5, color=INK2, arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
+    ax.set_xlabel("napětí na diodě U (anoda − katoda) [V]")
+    ax.set_ylabel("proud diodou I [mA]")
+    ax.set_xlim(-2.0, 1.6)
+    ax.set_ylim(-14, 32)
+    ax.legend(loc="upper left", fontsize=9)
+    save(fig, "fig14_dioda_va")
+
+
+def fig14_usm_va():
+    """Proud zátěží R_L = 1 kΩ v závislosti na u_i: dioda sama / s OZ, diodový můstek / precizní dvoucestný."""
+    u = np.linspace(-2.0, 2.0, 1601)
+    rl, a, ud = 1e3, 1e5, 0.7
+    oz = np.maximum(0, (a * u - ud) / (a + 1)) / rl * 1e3          # jednocestný s OZ: u_o = (A·u_i − U_D)/(A + 1)
+    fig, axs = plt.subplots(2, 1, figsize=(7.8, 5.6), sharex=True)
+    axs[0].plot(u, oz, color=C1, label="dioda ve zpětné vazbě OZ")
+    axs[0].plot(u, _proud_diody_rl(u) * 1e3, color=C2, ls="--", label="jen dioda")
+    axs[0].axvspan(0, 0.65, color=C2, alpha=0.12, lw=0)
+    axs[0].text(0.06, 1.55, "práh diody:\nproud skoro neteče", fontsize=9, color=INK2)
+    axs[0].set_title("jednocestné usměrnění", loc="left")
+    axs[1].plot(u, np.abs(u) / rl * 1e3, color=C1, label="precizní dvoucestný ($|u_i|$)")
+    axs[1].plot(u, _proud_diody_rl(np.abs(u), n_diod=2) * 1e3, color=C2, ls="--", label="diodový můstek (2 diody)")
+    axs[1].axvspan(-1.3, 1.3, color=C2, alpha=0.12, lw=0)
+    axs[1].text(0, 1.55, "dvojnásobný práh ±1,3 V", fontsize=9, color=INK2, ha="center")
+    axs[1].set_title("dvoucestné usměrnění", loc="left")
+    for ax in axs:
+        ax.axhline(0, color=AXIS, lw=0.9)
+        ax.axvline(0, color=AXIS, lw=0.9)
+        ax.set_ylim(-0.2, 2.3)
+        ax.set_ylabel("proud zátěží $I_L$ [mA]")
+        ax.legend(loc="upper left", fontsize=9)
+    axs[1].set_xlabel("vstupní napětí $u_i$ [V]")
+    save(fig, "fig14_usm_va")
+
+
 def fig14_vrchol_prubeh():
     """Vrcholový detektor: u_C drží maximum, v čase 70 ms obnovení nuly (vlastní ilustrace, tvar podle slidu)."""
     dt = 1e-5
@@ -2466,7 +2529,7 @@ ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig13_omezeni_va, fig13_vlecny, fig13_proudovy,
        fig14_nulovani, fig14_neinv_int, fig14_dif_int, fig14_der_osetreny, fig14_jednocestny, fig14_usm_a,
        fig14_usm_b, fig14_dvoucestny, fig14_vrcholovy, fig14_int_prubeh, fig14_nulovani_prubeh, fig14_der_bode,
-       fig14_der_trojuhelnik, fig14_usm_prubeh, fig14_vrchol_prubeh,
+       fig14_der_trojuhelnik, fig14_usm_prubeh, fig14_dioda_va, fig14_usm_va, fig14_vrchol_prubeh,
        fig15_dp1_neinv, fig15_dp1_inv, fig15_hp1_neinv, fig15_hp1_inv, fig15_sk_dp, fig15_sk_hp, fig15_mfb_dp,
        fig15_mfb_hp, fig15_mfb_pp, fig15_twint, fig15_wien, fig15_kaskada_schema, fig15_idealni_realny,
        fig15_strmost, fig15_sk_q, fig15_pp_mfb, fig15_pz_q, fig15_kaskada, fig15_butterworth, fig15_aproximace]

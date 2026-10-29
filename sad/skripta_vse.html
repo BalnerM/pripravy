@@ -147,8 +147,8 @@
 <div class="cards">
 <a class="card" href="#k11"><div class="n">Přednáška P1</div><div class="t">Úvod: signál a jeho převod na napětí</div><div class="d">Akviziční cesta, druhy signálů, měkký zdroj; převod proudu, frekvence a odporu na napětí; Wheatstoneův můstek.</div></a>
 <a class="card" href="#k12"><div class="n">Přednáška P2</div><div class="t">Úprava signálu: tranzistorové zesilovače a OZ</div><div class="d">Zesilovač s bipolárním tranzistorem a jeho stabilizace, SC, Darlington, rozdílový a laděný zesilovač, MOSFET; reálný OZ, offset, slew rate, odkud jsou 3 dB, komparátor.</div></a>
-<a class="card" href="#k13"><div class="n">Přednáška P3</div><div class="t">Napájení a zdroje referenčního napětí</div><div class="d">Přesnost a stabilita reference (ppm, drift, stárnutí), proč 1,024 V; stabilizátor se Zenerovou diodou a OZ, posílení a omezení proudu, foldback, vlečný zdroj, zdroj konstantního proudu, LM317.</div></a>
-<a class="card" href="#k14"><div class="n">Přednáška P4</div><div class="t">Aplikace OZ: integrátor, derivátor, usměrňovač</div><div class="d">Millerův integrátor jako analogová paměť, nulovací obvod, neinvertující a diferenční integrátor, 6 dB na oktávu; ošetření nestability derivátoru; precizní jedno- a dvoucestný usměrňovač; vrcholový detektor a obnovení nuly.</div></a>
+<a class="card" href="#k13"><div class="n">Přednáška P3</div><div class="t">Napájení a zdroje referenčního napětí</div><div class="d">Přesnost a stabilita reference (ppm, drift, stárnutí), proč 1,024 V; stabilizátor se Zenerovou diodou a OZ, posílení a omezení proudu, foldback, vlečný zdroj, zdroj konstantního proudu.</div></a>
+<a class="card" href="#k14"><div class="n">Přednáška P4</div><div class="t">Aplikace OZ: integrátor, derivátor, usměrňovač</div><div class="d">Millerův integrátor jako analogová paměť, nulovací obvod, neinvertující a diferenční integrátor, 6 dB na oktávu; ošetření nestability derivátoru; dioda a její VA charakteristika; precizní jedno- a dvoucestný usměrňovač; vrcholový detektor a obnovení nuly.</div></a>
 <a class="card" href="#k15"><div class="n">Přednáška P5</div><div class="t">Aplikace OZ II: aktivní filtry</div><div class="d">Přenosová funkce, ideální a reálný filtr, strmost v dB/okt a dB/dek; pasivní vs. aktivní filtry; články 1. řádu, Sallen-Key a MFB pro DP, HP a PP; pásmová zádrž s dvojitým T a Wienovým-Robinsonovým můstkem; kaskáda; Butterworth, Čebyšev, Bessel.</div></a>
 </div>
 <p class="muted">Základy (Z1–Z4) nevycházejí z přednášek předmětu, ale ze standardní elektrotechniky; kapitoly přednášek (P1–P10) se drží slidů. Pokud přednášející používá jiné značení (např. \(K\) nebo \(P\) pro přenos, \(A_\text{cm}\) pro souhlasné zesílení), význam je stejný.</p>
@@ -2088,8 +2088,8 @@
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>VA charakteristika je „zatížena“ prahovým napětím: do 1,8 V se nic neděje, pak proud prudce roste. Aby tranzistor zesiloval i malý střídavý signál, musí být gate předem posunuta nad práh – <b>předpětí</b>.</p></div>
 
-<div class="box pozor"><div class="box-t">Pozor na slide: gate, ne „gain“</div>
-<p>Na slidu je napsáno „řízen polem na vstupu <b>g</b>ain“. Správně je <b>gate</b> (hradlo) – proto zkratka g.</p></div>
+<div class="box pozor"><div class="box-t">Pozor: g jako gate</div>
+<p>Tranzistor je řízen polem na vstupu <b>gate</b> (hradlo) – odtud zkratka g. Nejde o „gain“ (zisk).</p></div>
 
 <h3 id="k12-ss-sd">Zapojení SS a SD</h3>
 <p>MOSFET má stejná základní zapojení jako bipolární tranzistor, jen se vývody jmenují jinak: <b>společný source (SS)</b> odpovídá SE, <b>společný drain (SD)</b> odpovídá SC.</p>
@@ -2539,8 +2539,8 @@
 
 <h3 id="k13-posileni">Stabilizátor s proudovým zesílením</h3>
 <p>Výstup OZ je zatížitelný jen <b>malým odběrem</b> (jednotky až desítky mA). Proudové posílení lze provést již známým <a href="#k12-def-sc">emitorovým sledovačem</a> za výstupem OZ.</p>
-<div class="box pozor"><div class="box-t">Pozor: „zapojení SE“ na slidu</div>
-<p>Slide píše „emitorový sledovač (zapojení SE)“. Emitorový sledovač je ale v <a href="#k12-sc">P2</a> zapojení se <b>společným kolektorem (SC)</b>: vstup do báze, výstup z emitoru, napěťové zesílení 1, zesiluje proud. Na schématu je přesně tohle (výstup \(U_0\) z emitoru), takže u zkoušky říkej emitorový sledovač / SC, ne společný emitor.</p></div>
+<div class="box pozor"><div class="box-t">Pozor: emitorový sledovač = zapojení SC</div>
+<p>Emitorový sledovač je v <a href="#k12-sc">P2</a> zapojení se <b>společným kolektorem (SC)</b>: vstup do báze, výstup z emitoru, napěťové zesílení 1, zesiluje proud. Na schématu je přesně tohle (výstup \(U_0\) z emitoru), takže u zkoušky říkej emitorový sledovač / SC, ne společný emitor (SE).</p></div>
 <figure><div class="paper"><img src="figures/fig13_posileni.png" alt="Stabilizátor s proudovým zesílením: reference ZD přes RD z UCC na neinvertující vstup OZ, výstup OZ do báze NPN tranzistoru, kolektor na UCC, emitor je výstup U0 se zátěží RZ, dělič R2 a R1 z emitoru na invertující vstup" loading="lazy"></div>
 <figcaption><b>Obr. P3.6</b> Stabilizátor s proudovým zesílením emitorovým sledovačem (slide „Stabilizace napětí s proudovým zesílením“, levé schéma).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
@@ -2662,32 +2662,12 @@
 <div class="box intuice"><div class="box-t">Proč se hodí pro měření odporu a pilu (nad rámec slidu)</div>
 <p>Teče-li známý stálý proud \(I\) neznámým odporem, je napětí na něm podle <a href="#k01-def-ohmuv-zakon">Ohmova zákona</a> přímo úměrné odporu: \(U = R I\). Teče-li stálý proud do kondenzátoru, napětí na něm roste rovnoměrně s časem – vznikne lineární náběh, tedy pilový průběh. Viz také <a href="#k11-def-mereni-odporu-oz">měření odporu s OZ v P1</a>.</p></div>
 
-<h2 id="k13-lm317">Příklad referenčního zdroje – LM317</h2>
-<p>Slide uvádí obvod <b>LM317</b> (Texas Instruments): velmi univerzální obvod <b>lineárního stabilizátoru napětí</b> nebo <b>proudového zdroje</b> s vlastní referencí.</p>
-<ul>
-<li>Výstupní napětí nastavitelné u zdroje napětí v rozsahu <b>1,25 V až 37 V</b>.</li>
-<li>Výstupní proud nastavitelný u zdroje proudu až do <b>1,5 A</b>.</li>
-<li>Uvnitř (blokové schéma na slidu): reference <b>1,25 V</b> mezi vývody Output a Adj, zdroj proudu \(I_\text{adj}\), OZ, výkonový Darlington a ochrana proti přehřátí a nadproudu (<i>Over Temp &amp; Over Current Protection</i>) – tedy všechno z této přednášky v jednom pouzdře.</li>
-</ul>
-
-<div class="box vzorec"><div class="box-t">Nastavení LM317 (nad rámec slidu, podle katalogového listu)</div>
-<p>Jako zdroj napětí s děličem \(R_1\) (Output–Adj) a \(R_2\) (Adj–zem):</p>
-\[ U_\text{out} \approx 1{,}25\ \text{V} \cdot \left(1 + \frac{R_2}{R_1}\right) \]
-<p>Jako zdroj proudu s rezistorem \(R\) mezi Output a Adj:</p>
-\[ I_\text{out} = \frac{1{,}25\ \text{V}}{R} \]
-<table class="vars">
-<tr><td>\(U_\text{out}\), \(I_\text{out}\)</td><td>výstupní napětí / proud</td></tr>
-<tr><td>1,25 V</td><td>vnitřní reference mezi Output a Adj</td></tr>
-<tr><td>\(R_1\), \(R_2\), \(R\)</td><td>vnější rezistory; malý proud \(I_\text{adj}\) (desítky µA) se zanedbává</td></tr>
-</table>
-<p>Je to stejný princip jako u stabilizátoru se ZD a OZ (neinvertující zesilovač reference) a u zdroje proudu s OZ (\(I = U_\text{REF}/R\)). Např. pro 5 V stačí \(R_2/R_1 = 3\) (240 Ω a 720 Ω).</p></div>
-
 <div class="box kostka"><div class="box-t">V kostce</div>
 <p>Reference je přesné „pravítko“ (malý proud, vysoká stabilita); stabilizátor je zesílená reference (OZ jako neinvertující zesilovač), proud dodá tranzistor, ochranu proti zkratu tranzistor snímající úbytek na malém rezistoru; zdroj proudu drží napětí \(U_\text{REF}\) na rezistoru, a tím i proud.</p></div>
 
 <section class="souhrn" id="k13-shrnuti">
 <h2 id="k13-shrnuti-h">Shrnutí</h2>
-<p><b>Napěťová reference</b> je přesný zdroj napětí, se kterým se porovnává měřený signál; nejdůležitější je <b>přesnost a stabilita</b>. Chybu reference popisuje <b>počáteční přesnost</b> (výrobní odchylka při 25 °C, odstranitelná kalibrací), <b>teplotní drift</b> v ppm/°C (nelineární), <b>dlouhodobá stabilita</b> v ppm/\(\sqrt{\text{kHr}}\) (stárnutí, roste s odmocninou času) a <b>teplotní hystereze</b>. Hodnoty jako 1,024 V dávají s 10bitovým převodníkem krok přesně 1 mV. Reference dá jen jednotky mA. <b>Zdroj napětí</b> drží napětí bez ohledu na proud, napájení může být <b>nesymetrické</b> (+5 V) nebo <b>symetrické</b> (±5 V). <b>Stabilizátor</b> se Zenerovou diodou a OZ je neinvertující zesilovač reference – výstup je napětí ZD zesílené poměrem rezistorů; ZD napájená z výstupu je stabilnější, ale potřebuje ochrannou diodu proti záporné špičce. Proud posílí <b>emitorový sledovač</b> nebo Darlington, <b>proudové omezení</b> tranzistorem \(T_3\) snímá úbytek na \(R_I\) a omezí proud na hodnotu danou prahem asi 0,5 V a velikostí \(R_I\); foldback při zkratu proud ještě sníží. <b>Vlečný zdroj</b> drží symetrii invertorem se ziskem −1. <b>Zdroj konstantního proudu</b> s OZ drží na emitorovém rezistoru napětí reference, a tím i stálý proud. LM317 obsahuje vše v jednom obvodu.</p>
+<p><b>Napěťová reference</b> je přesný zdroj napětí, se kterým se porovnává měřený signál; nejdůležitější je <b>přesnost a stabilita</b>. Chybu reference popisuje <b>počáteční přesnost</b> (výrobní odchylka při 25 °C, odstranitelná kalibrací), <b>teplotní drift</b> v ppm/°C (nelineární), <b>dlouhodobá stabilita</b> v ppm/\(\sqrt{\text{kHr}}\) (stárnutí, roste s odmocninou času) a <b>teplotní hystereze</b>. Hodnoty jako 1,024 V dávají s 10bitovým převodníkem krok přesně 1 mV. Reference dá jen jednotky mA. <b>Zdroj napětí</b> drží napětí bez ohledu na proud, napájení může být <b>nesymetrické</b> (+5 V) nebo <b>symetrické</b> (±5 V). <b>Stabilizátor</b> se Zenerovou diodou a OZ je neinvertující zesilovač reference – výstup je napětí ZD zesílené poměrem rezistorů; ZD napájená z výstupu je stabilnější, ale potřebuje ochrannou diodu proti záporné špičce. Proud posílí <b>emitorový sledovač</b> nebo Darlington, <b>proudové omezení</b> tranzistorem \(T_3\) snímá úbytek na \(R_I\) a omezí proud na hodnotu danou prahem asi 0,5 V a velikostí \(R_I\); foldback při zkratu proud ještě sníží. <b>Vlečný zdroj</b> drží symetrii invertorem se ziskem −1. <b>Zdroj konstantního proudu</b> s OZ drží na emitorovém rezistoru napětí reference, a tím i stálý proud.</p>
 <div class="takehome"><h3>Take-home messages</h3><ol>
 <li>Reference = přesné a stabilní „pravítko“ měření; chyba reference se přenese do každého vzorku.</li>
 <li>Počáteční přesnost je konstantní → kalibrace; teplotní drift (ppm/°C) a hystereze kalibraci znehodnocují.</li>
@@ -2737,11 +2717,10 @@
 <details class="q"><summary>Co je symetrické napájení a jak funguje vlečný zdroj?</summary><div>
 <p>Symetrické napájení dodává vůči GND napětí ve dvou větvích, např. ±5 V (nesymetrické jen jednu, např. +5 V). Potřebují ho např. OZ zpracovávající střídavý signál a symetrie se musí zachovat i při chybových stavech.</p>
 <p>Vlečný zdroj: kladnou větev tvoří neinvertující zesilovač reference 3,3 V, \(U_{o1} = 3{,}3(1 + R_a/R_b)\). Zápornou větev tvoří invertor se dvěma rezistory 330 kΩ (zesílení −1); jeho invertující vstup drží virtuální nulu, takže \(U_{o2} = -U_{o1}\). Záporná větev se „vleče“ za kladnou.</p></div></details>
-<details class="q"><summary>Popište zdroj konstantního proudu s OZ. Kde se používá? Co umí obvod LM317?</summary><div>
+<details class="q"><summary>Popište zdroj konstantního proudu s OZ. Kde se používá?</summary><div>
 <p>Ideální zdroj proudu dodává stálý proud bez ohledu na napětí – má nekonečný výstupní odpor. Zapojení: \(U_\text{REF}\) na neinvertujícím vstupu OZ, výstup budí Darlington, v emitoru je \(R_1\) na zem a z něj zpětná vazba na invertující vstup, zátěž je v kolektoru. Na \(R_1\) je napětí \(U_\text{REF}\), takže</p>
 \[ I_o \approx \frac{U_\text{REF}}{R_1} \]
-<p>(přesně \(I_o + I_B\), proud báze je zanedbatelný). Používá se při měření odporů, napájení LED a generování pilového průběhu.</p>
-<p>LM317 je univerzální lineární stabilizátor napětí (1,25 až 37 V) nebo zdroj proudu (do 1,5 A) s vlastní referencí 1,25 V, OZ, výkonovým tranzistorem a ochranou proti přehřátí a nadproudu.</p></div></details>
+<p>(přesně \(I_o + I_B\), proud báze je zanedbatelný). Používá se při měření odporů, napájení LED a generování pilového průběhu.</p></div></details>
 
 </section>
 <section class="kapitola" id="k14">
@@ -2779,8 +2758,10 @@
 <tr><td>\(u_o(0)\)</td><td>výstupní napětí v čase spuštění integrátoru \(t = 0\) (daná nábojem kondenzátoru na začátku)</td></tr>
 </table></div>
 
-<div class="box pozor"><div class="box-t">Pozor: znaménko počátečního členu na slidu</div>
-<p>Slide píše vztah jako \(u_o = -\frac{1}{RC}\int u_i\,dt - u_o\), kde poslední člen znamená počáteční stav „při \(t = 0\)“. Se znaménkem minus to platí, když se počátečním stavem myslí napětí <b>kondenzátoru</b> \(u_C(0)\), protože \(u_o = -u_C\). Pokud počáteční stav zapíšeme jako <b>výstupní</b> napětí \(u_o(0)\), je znaménko plus (vzorec výše). Fyzikálně jde o totéž: integrátor pokračuje z napětí, které na kondenzátoru už bylo.</p></div>
+<div class="box pozor"><div class="box-t">Pozor: znaménko počátečního stavu</div>
+<p>Počáteční stav integrátoru lze zapsat dvěma rovnocennými způsoby. Pomocí napětí <b>kondenzátoru</b> \(u_C(0)\) je znaménko minus, protože \(u_o = -u_C\):</p>
+\[ u_o(t) = -\frac{1}{RC} \int_0^t u_i(t)\,dt - u_C(0) \]
+<p>Pomocí <b>výstupního</b> napětí \(u_o(0)\) je znaménko plus (vzorec výše). Fyzikálně jde o totéž: integrátor pokračuje z napětí, které na kondenzátoru už bylo.</p></div>
 
 <h3 id="k14-prubehy">Časové průběhy Millerova integrátoru</h3>
 <figure><div class="paper"><img src="figures/fig14_int_prubeh.png" alt="Dva sloupce grafů: vlevo skok vstupu na +0,5 V a výstup lineárně klesající z 0 na −12 V, kde zůstane v saturaci; vpravo skok na −0,5 V a výstup rostoucí na +12 V" loading="lazy"></div>
@@ -2952,8 +2933,10 @@
 \[ C_1 = \frac{R_1 C}{R} = \frac{10^3 \cdot 10^{-6}}{10^5} = 10\ \text{nF} \]
 <p>3. Kontrola (přesný výpočet z impedancí): při \(\omega\) = 100 rad/s je zisk 9,90 (asymptota \(\omega CR\) = 10), při \(\omega_K\) je 50 (34,0 dB), při 10 000 rad/s opět 9,90.</p></div>
 
-<div class="box pozor"><div class="box-t">Pozor: popisek asymptoty na slidu</div>
-<p>Na slidu je u klesající části grafu napsáno \(1/(\omega C_1 R)\). Při \(\omega = \omega_K = 1/(R C_1)\) by to dalo zisk 1 (0 dB), ale graf má v tomto místě zisk kolem 100. Odvození z impedancí dává \(1/(\omega C_1 R_1)\), které v \(\omega_K\) vychází \(R/R_1\) a na graf sedí. Tvar grafu (derivace – propust – integrace) i vzorec pro \(\omega_K\) platí beze změny.</p></div>
+<div class="box pozor"><div class="box-t">Pozor: v integrační části je \(R_1\), ne \(R\)</div>
+<p>Klesající asymptota je \(1/(\omega C_1 R_1)\). Kontrola: v \(\omega_K = 1/(R_1 C)\) dává</p>
+\[ \frac{1}{\omega_K C_1 R_1} = \frac{C}{C_1} = \frac{R}{R_1} \]
+<p>tedy stejný zisk jako propust, takže obě asymptoty na sebe navazují (v příkladu 100).</p></div>
 
 <h3 id="k14-trojuhelnik">Reakce derivátoru na trojúhelník</h3>
 <p>Ukázka na slidu: na vstupu je trojúhelníkový průběh napětí a zapojení <b>reaguje na změny</b>. Dochází tak k „modulaci“ průběhu se změnami (např. trojúhelníků) na pravoúhlé signály, které je snadné čítat nebo detekovat hrany (RE – <i>rising edge</i>, náběžná hrana; FE – <i>falling edge</i>, sestupná hrana).</p>
@@ -2976,6 +2959,44 @@
 
 <h2 id="k14-usmernovac">Usměrňovač</h2>
 <p>Použití klasického diodového usměrňovače na <b>malých signálech</b> by vedlo k deformaci signálu. Kromě malé (vstupní) impedance, která zatěžuje zdroj signálu, se projevuje i <b>napěťový práh PN přechodu</b>.</p>
+<p>Aby bylo jasné, odkud práh pochází a co s ním OZ udělá, nejdřív krátká vsuvka o samotné diodě.</p>
+
+<h3 id="k14-dioda">Vsuvka: dioda a její VA charakteristika</h3>
+<div class="box definice" id="k14-def-dioda"><div class="box-t">Definice: dioda</div>
+<p><b>Dioda</b> je polovodičová součástka se dvěma vývody, <b>anodou</b> (A) a <b>katodou</b> (K), tvořená <b>PN přechodem</b>. Proud vede jen jedním směrem: v <b>propustném směru</b> (anoda kladnější než katoda alespoň o prahové napětí) proud teče, v <b>závěrném směru</b> (katoda kladnější než anoda) prakticky neteče.</p>
+<p class="jinak">elektrický „jednosměrný ventil“. Šipka ve schematické značce ukazuje směr, kterým proud projde. Toho využívá usměrňovač: půlvlnu jedné polarity propustí, druhou zablokuje.</p></div>
+
+<div class="box intuice"><div class="box-t">Princip PN přechodu (bez vzorců)</div>
+<ul>
+<li>Polovodič typu <b>P</b> má přebytek kladných nosičů náboje (děr), typ <b>N</b> přebytek volných elektronů.</li>
+<li>Na jejich styku se díry a elektrony navzájem „vyruší“ a vznikne tenká vrstva bez volných nosičů – <b>hradlová (ochuzená) vrstva</b>. Ta působí jako <b>potenciálová bariéra</b>, u křemíku asi 0,6 – 0,7 V.</li>
+<li><b>Propustný směr</b> (+ na P, − na N): vnější napětí bariéru snižuje. Jakmile ji překoná, nosiče přes přechod volně přecházejí a proud prudce roste.</li>
+<li><b>Závěrný směr</b> (+ na N, − na P): napětí bariéru ještě zvětší a teče jen nepatrný závěrný proud. Při velkém závěrném napětí nastane <b>průraz</b> – toho záměrně využívá <a href="#k13-def-zenerova-dioda">Zenerova dioda</a> (P3).</li>
+</ul></div>
+
+<div class="box definice" id="k14-def-va-charakteristika"><div class="box-t">Definice: VA charakteristika</div>
+<p><b>VA (voltampérová) charakteristika</b> je graf závislosti proudu procházejícího součástkou (nebo obvodem) na napětí, které je na ni přivedeno, \(I = f(U)\).</p>
+<p class="jinak">„portrét“ součástky. Rezistor má přímku (<a href="#k01-def-ohmuv-zakon">Ohmův zákon</a>), dioda zalomenou křivku: vlevo skoro nulový proud, vpravo za prahem prudký nárůst.</p></div>
+
+<div class="box vzorec"><div class="box-t">Shockleyho rovnice diody (nad rámec slidů)</div>
+\[ I = I_S\left(e^{\,U/(n\,U_T)} - 1\right) \]
+<table class="vars">
+<tr><td>\(I\)</td><td>proud diodou (kladný v propustném směru)</td></tr>
+<tr><td>\(U\)</td><td>napětí mezi anodou a katodou</td></tr>
+<tr><td>\(I_S\)</td><td>saturační (závěrný) proud, velmi malý – u malé křemíkové diody řádově \(10^{-14}\) A</td></tr>
+<tr><td>\(n\)</td><td>činitel ideality, 1 až 2</td></tr>
+<tr><td>\(U_T\)</td><td>tepelné napětí, při pokojové teplotě asi 26 mV</td></tr>
+</table>
+<p>Proud roste s napětím <b>exponenciálně</b>: při \(n = 1\) se zvýší desetkrát na každých asi 60 mV. Proto se zdá, že dioda má ostrý práh – pod 0,5 V teče jen několik µA, kolem 0,65 V už miliampéry.</p></div>
+
+<figure><div class="paper"><img src="figures/fig14_dioda_va.png" alt="VA charakteristika: v závěrném směru a při malém kladném napětí je proud nulový; Schottkyho dioda začne vést kolem 0,25 V, křemíková kolem 0,65 V, kde proud strmě roste; tečkovaně prahový model zalomený v 0,7 V" loading="lazy"></div>
+<figcaption><b>Obr. P4.11</b> VA charakteristika křemíkové a Schottkyho diody (Shockleyho rovnice, vlastní ilustrace).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Charakteristika je silně <b>nelineární</b>: v závěrném směru i v propustném směru pod prahem je proud prakticky nulový, nad prahem roste strmě vzhůru.</li>
+<li>Na vedoucí diodě je proto skoro stálé napětí (asi 0,65 – 0,7 V), ať jí teče 1 mA, nebo 30 mA. V příkladech se počítá s <b>prahovým modelem</b> (tečkovaně): do 0,7 V dioda nevede, nad ním na ní zůstane 0,7 V.</li>
+<li>Schottkyho dioda má stejný tvar křivky, jen posunutý k nižšímu napětí (asi 0,25 V).</li>
+</ul></div>
 
 <div class="box definice" id="k14-def-prah-pn"><div class="box-t">Definice: napěťový práh PN přechodu</div>
 <p><b>Napěťový práh PN přechodu</b> je napětí v propustném směru (u křemíkové diody asi 0,35 – 0,7 V), pod kterým dioda prakticky nevede proud. Teprve nad ním proud diodou prudce roste.</p>
@@ -2985,12 +3006,16 @@
 <p><b>Schottkyho dioda</b> je dioda s přechodem kov–polovodič, která má malý úbytek napětí v propustném směru (asi 0,1 – 0,3 V).</p>
 <p class="jinak">dioda s „lehčí pružinou“. Ani ona ale práh neodstraní úplně – to dokáže až zapojení s OZ.</p></div>
 
+<p>Jak se VA charakteristika změní, když diodu zapojíme do zpětné vazby OZ, a jak vypadá u dvoucestného usměrňovače, ukazuje <a href="#k14-va-usmernovace">obr. P4.17</a> na konci oddílu o usměrňovačích.</p>
+
+<h3 id="k14-usm-oz">Usměrňovač s OZ</h3>
+
 <div class="box definice" id="k14-def-precizni-usmernovac"><div class="box-t">Definice: usměrňovač s OZ (precizní usměrňovač)</div>
 <p><b>Usměrňovač s OZ</b> (precizní, aktivní usměrňovač) je zapojení, ve kterém je dioda zapojena do obvodu operačního zesilovače, takže se usměrní i napěťově malé signály. Vysoká vstupní impedance OZ nezatíží vstupní signál a k jeho usměrnění dochází <b>na výstupu</b>, <b>ve zpětné vazbě</b>, nebo <b>v kaskádě mezi více OZ</b>.</p>
 <p class="jinak">OZ „přidá“ diodě přesně tolik napětí, kolik potřebuje na otevření. Zpětná vazba hlídá výstup, ne výstup OZ, takže úbytek na diodě se ve výsledku neprojeví. Výhodné je navíc použít diody s malým úbytkem, např. Schottkyho.</p></div>
 
 <figure><div class="paper"><img src="figures/fig14_usm_prubeh.png" alt="Nahoře sinus 1 V: precizní jednocestný usměrňovač propustí celé kladné půlvlny do 1 V, samotná dioda jen špičky do 0,3 V; dole precizní dvoucestný usměrňovač dává absolutní hodnotu sinusu" loading="lazy"></div>
-<figcaption><b>Obr. P4.11</b> Sinus s amplitudou 1 V: samotná dioda s prahem 0,7 V proti usměrňovačům s OZ (vlastní ilustrace).</figcaption></figure>
+<figcaption><b>Obr. P4.12</b> Sinus s amplitudou 1 V: samotná dioda s prahem 0,7 V proti usměrňovačům s OZ (vlastní ilustrace).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <ul>
 <li>Samotná dioda propustí jen to, co je nad prahem: z půlvlny 1 V zbude špička 0,3 V a změní se i tvar. Signál pod 0,7 V by zmizel úplně.</li>
@@ -3003,7 +3028,7 @@
 <p class="jinak">„ventil“, který pustí jen kladné půlvlny. Protože OZ hlídá napětí za diodou, propustí i milivoltové signály celé.</p></div>
 
 <figure><div class="paper"><img src="figures/fig14_jednocestny.png" alt="Jednocestný usměrňovač: vstup ui na neinvertující vstup, výstup OZ u1 přes diodu D na uzel uo, z něj RL na zem a zpětná vazba zpět na invertující vstup" loading="lazy"></div>
-<figcaption><b>Obr. P4.12</b> Jednocestný usměrňovač (podle slidu): sledovač, ve kterém je dioda uvnitř zpětné vazby.</figcaption></figure>
+<figcaption><b>Obr. P4.13</b> Jednocestný usměrňovač (podle slidu): sledovač, ve kterém je dioda uvnitř zpětné vazby.</figcaption></figure>
 
 <div class="box postup"><div class="box-t">Jak pracuje a vliv úbytku \(U_D\)</div>
 <ol>
@@ -3037,16 +3062,16 @@
 <p>Slide ukazuje další dvě zapojení (jen schémata a průběhy). Obě vycházejí z <a href="#k03-def-invertujici">invertujícího zesilovače</a> s diodami ve zpětné vazbě; rozbor je vlastní.</p>
 
 <figure><div class="paper"><img src="figures/fig14_usm_a.png" alt="Invertující usměrňovač: vstup přes R1 na invertující vstup; z invertujícího vstupu dioda D1 k výstupu OZ a rezistor R2 k výstupní svorce; dioda D2 z výstupu OZ k výstupní svorce" loading="lazy"></div>
-<figcaption><b>Obr. P4.13</b> Varianta s \(D_1\) a \(D_2\): na výstupu jsou kladné půlvlny (podle slidu, vlevo).</figcaption></figure>
+<figcaption><b>Obr. P4.14</b> Varianta s \(D_1\) a \(D_2\): na výstupu jsou kladné půlvlny (podle slidu, vlevo).</figcaption></figure>
 <ul>
 <li><b>Vstup kladný:</b> výstup OZ jde do záporu, otevře se \(D_1\) a uzavře zpětnou vazbu; \(D_2\) je zavřená. Výstupní svorka je přes \(R_2\) spojena s virtuální nulou → výstup 0 V.</li>
 <li><b>Vstup záporný:</b> výstup OZ jde do kladu, \(D_1\) se zavře, otevře se \(D_2\). Obvod je invertující zesilovač:
 \[ u_\text{výst} = -\frac{R_2}{R_1}\,u_\text{vst} > 0 \]</li>
-<li>Výstupem jsou tedy kladné půlvlny (invertované záporné půlvlny vstupu). Výhoda proti obr. P4.12 (nad rámec slidu): OZ má zpětnou vazbu vždy uzavřenou přes jednu z diod, nikdy nejde do saturace, a proto je rychlejší.</li>
+<li>Výstupem jsou tedy kladné půlvlny (invertované záporné půlvlny vstupu). Výhoda proti obr. P4.13 (nad rámec slidu): OZ má zpětnou vazbu vždy uzavřenou přes jednu z diod, nikdy nejde do saturace, a proto je rychlejší.</li>
 </ul>
 
 <figure><div class="paper"><img src="figures/fig14_usm_b.png" alt="Usměrňovač se dvěma výstupy: vstup přes R na invertující vstup, z něj R1 k výstupu A a R2 k výstupu B; výstup OZ je mezi diodami D1 (od A) a D2 (k B)" loading="lazy"></div>
-<figcaption><b>Obr. P4.14</b> Varianta se dvěma výstupy: A dává záporné, B kladné půlvlny (podle slidu, vpravo).</figcaption></figure>
+<figcaption><b>Obr. P4.15</b> Varianta se dvěma výstupy: A dává záporné, B kladné půlvlny (podle slidu, vpravo).</figcaption></figure>
 <ul>
 <li><b>Vstup kladný:</b> výstup OZ jde do záporu, vede \(D_1\): \(u_A = -\frac{R_1}{R}\,u_\text{vst}\) (záporné půlvlny), \(D_2\) zavřená, \(u_B = 0\).</li>
 <li><b>Vstup záporný:</b> vede \(D_2\): \(u_B = -\frac{R_2}{R}\,u_\text{vst}\) (kladné půlvlny), \(u_A = 0\).</li>
@@ -3058,7 +3083,7 @@
 <p class="jinak">„převracečka“ záporných půlvln: kladné projdou beze změny, záporné se otočí nahoru. Díky OZ to funguje i pro signály v milivoltech.</p></div>
 
 <figure><div class="paper"><img src="figures/fig14_dvoucestny.png" alt="Tři OZ: OZ1 sledovač se vstupem ui přes Rs; jeho výstup ui přes R1 na invertující vstup OZ2 a přes druhý R1 na uzel u+; OZ2 má neinvertující vstup na zemi a výstup přes diodu D na uzel u+; u+ jde na OZ3 zapojený jako sledovač s výstupem uo = |ui|" loading="lazy"></div>
-<figcaption><b>Obr. P4.15</b> Precizní dvoucestný usměrňovač (podle slidu).</figcaption></figure>
+<figcaption><b>Obr. P4.16</b> Precizní dvoucestný usměrňovač (podle slidu).</figcaption></figure>
 
 <div class="box postup"><div class="box-t">Jak pracuje (slide + doplnění)</div>
 <ol>
@@ -3077,8 +3102,6 @@
 <tr><td>\(u_o\)</td><td>výstupní napětí, vždy kladné</td></tr>
 </table></div>
 
-<div class="box pozor"><div class="box-t">Pozor: překlep na slidu</div>
-<p>Slide říká „<i>Vstupní</i> napětí je tak vždy kladné (při obou polaritách vstupního napětí)“. Vždy kladné je <b>výstupní</b> napětí, \(u_o = |u_i|\) – vstup může mít obě polarity.</p></div>
 
 <div class="box priklad"><div class="box-t">Příklad (vlastní čísla, \(R_1\) = 10 kΩ)</div>
 <p>1. \(u_i = -0{,}3\) V: D vede, OZ2 invertuje:</p>
@@ -3087,13 +3110,39 @@
 \[ u_+ = u_i = 0{,}3\ \text{V} \]
 <p>V obou případech \(u_o\) = 0,3 V. Obyčejný diodový můstek by při 0,3 V nepropustil nic (dvě diody v sérii, asi 1,4 V).</p></div>
 
+<h3 id="k14-va-usmernovace">Jak se změní VA charakteristika: kompenzace OZ a dvoucestné usměrnění</h3>
+<p>Usměrňovač můžeme brát jako celek a nakreslit jeho VA charakteristiku: na vodorovné ose vstupní napětí \(u_i\), na svislé proud zátěží \(I_L = u_o / R_L\). Srovnáme samotnou diodu s diodou ve zpětné vazbě OZ a diodový můstek s precizním dvoucestným usměrňovačem.</p>
+
+<figure><div class="paper"><img src="figures/fig14_usm_va.png" alt="Dva grafy proudu zátěží na vstupním napětí. Nahoře jednocestné usměrnění: samotná dioda vede až od asi 0,65 V a pak roste zaobleně, dioda s OZ roste přímkově hned od nuly. Dole dvoucestné: diodový můstek má mrtvé pásmo od −1,3 do 1,3 V, precizní dvoucestný usměrňovač má tvar písmene V s vrcholem v nule" loading="lazy"></div>
+<figcaption><b>Obr. P4.17</b> VA charakteristika usměrňovačů se zátěží \(R_L\) = 1 kΩ: samotné diody podle Shockleyho rovnice, zapojení s OZ podle vztahu jednocestného usměrňovače (\(A = 10^5\), \(U_D\) = 0,7 V); vlastní ilustrace.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>Kompenzace OZ:</b> zlom charakteristiky se posune z asi 0,7 V na \(U_D/A \approx 7\ \mu\text{V}\), tedy prakticky do nuly. Nad ním je charakteristika přímka \(I_L = u_i/R_L\) bez zaoblení – zapojení se chová jako <b>ideální dioda</b> (nulový práh, v závěrném směru nulový proud).</li>
+<li>Úbytek na diodě přitom nezmizel: OZ ho jen „doplatí“ tím, že má svůj výstup o \(U_D\) výš (\(u_1 = u_o + U_D\)). Na zátěži se proto neprojeví.</li>
+<li><b>Dvoucestné usměrnění:</b> záporná polarita se už neblokuje, ale <b>převrací</b>. Charakteristika je souměrná podle svislé osy a má tvar písmene <b>V</b>, \(I_L = |u_i|/R_L\).</li>
+<li>Diodový můstek má také tvar V, ale proud jde vždy přes <b>dvě diody v sérii</b>, takže se prahy sečtou: vzniká <b>mrtvé pásmo</b> asi ±1,3 V, kde neteče nic. Precizní dvoucestný usměrňovač má zlom přímo v nule.</li>
+</ul></div>
+
+<div class="box priklad"><div class="box-t">Příklad: odečet z obr. P4.17 (vlastní čísla, \(R_L\) = 1 kΩ)</div>
+<div class="tablewrap"><table>
+<thead><tr><th>zapojení</th><th>\(u_i = +1\) V</th><th>\(u_i = -1\) V</th></tr></thead>
+<tbody>
+<tr><td>samotná dioda</td><td>0,38 mA</td><td>0</td></tr>
+<tr><td>dioda ve zpětné vazbě OZ</td><td>1,00 mA</td><td>0</td></tr>
+<tr><td>diodový můstek</td><td>0,003 mA</td><td>0,003 mA</td></tr>
+<tr><td>precizní dvoucestný</td><td>1,00 mA</td><td>1,00 mA</td></tr>
+</tbody></table></div>
+<p>U samotné diody zbude na zátěži jen asi 0,38 V, zbytek „spolkne“ dioda. U zapojení s OZ (vztah jednocestného usměrňovače):</p>
+\[ u_o = \frac{10^5 \cdot 1 - 0{,}7}{10^5 + 1} \approx 0{,}99999\ \text{V} \]
+<p>Můstek při 1 V prakticky nevede, protože je pod součtem dvou prahů.</p></div>
+
 <h2 id="k14-vrcholovy">Vrcholový detektor</h2>
 <div class="box definice" id="k14-def-vrcholovy-detektor"><div class="box-t">Definice: vrcholový detektor</div>
 <p><b>Vrcholový detektor</b> je zapojení s OZ, diodou a kondenzátorem, které slouží k detekci a <i>zapamatování si</i> předchozího vyššího napětí na vstupu. Kondenzátor se přes diodu dobíjí na vrcholovou hodnotu vstupního napětí a dioda mu nedovolí se zpět vybít.</p>
 <p class="jinak">„ručička maxima“ na teploměru: ukazuje nejvyšší hodnotu, kterou signál od posledního vynulování dosáhl. Používá se např. k měření amplitudy signálu.</p></div>
 
 <figure><div class="paper"><img src="figures/fig14_vrcholovy.png" alt="Vrcholový detektor: ui na neinvertující vstup OZ1, výstup OZ1 přes diodu D na uzel, odkud je zpětná vazba na invertující vstup OZ1; z uzlu kondenzátor C na zem, čárkovaný RV se spínačem obnovení nuly na zem a neinvertující vstup OZ2 zapojeného jako sledovač s výstupem uo" loading="lazy"></div>
-<figcaption><b>Obr. P4.16</b> Vrcholový detektor (podle slidu).</figcaption></figure>
+<figcaption><b>Obr. P4.18</b> Vrcholový detektor (podle slidu).</figcaption></figure>
 
 <div class="box postup"><div class="box-t">Jak pracuje (slide)</div>
 <ol>
@@ -3108,23 +3157,13 @@
 <p class="jinak">„vynulování ručičky maxima“ – stejná myšlenka jako nulovací obvod integrátoru. \(R_V\) omezí vybíjecí proud, aby spínač nezatížil kondenzátor zkratem.</p></div>
 
 <figure><div class="paper"><img src="figures/fig14_vrchol_prubeh.png" alt="Graf napětí v čase: čárkovaný vstup kolísá; plné napětí kondenzátoru sleduje vstup při růstu a drží vrcholy 1,8 V a 2,5 V, ve 70 ms spadne při obnovení nuly na 0 a pak drží nové vrcholy" loading="lazy"></div>
-<figcaption><b>Obr. P4.17</b> Průběh napětí vrcholového detektoru: vstup čárkovaně, \(u_C\) plně (tvar podle slidu, vlastní čísla; v 70 ms obnovení nuly).</figcaption></figure>
+<figcaption><b>Obr. P4.19</b> Průběh napětí vrcholového detektoru: vstup čárkovaně, \(u_C\) plně (tvar podle slidu, vlastní čísla; v 70 ms obnovení nuly).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <ul>
 <li>Když vstup roste nad dosavadní maximum, \(u_C\) ho <b>sleduje</b>. Když vstup klesá, \(u_C\) <b>drží</b> poslední vrchol (vodorovné úseky – na slidu označené šipkami).</li>
 <li>Rozdíl mezi vstupem a \(u_C\) v době držení je rozdílové napětí OZ1 \(|u_d|\) (na slidu).</li>
 <li>Menší vrchol po větším se nezaznamená – detektor zná jen maximum. Po obnovení nuly začne znovu od nuly.</li>
 </ul></div>
-
-<div class="box priklad"><div class="box-t">Příklad: jak dlouho detektor udrží vrchol (vlastní čísla)</div>
-<p>\(C\) = 100 nF, vybíjení jen odporem OZ2 \(10^{12}\ \Omega\), zapamatováno 5 V.</p>
-<p>1. Časová konstanta vybíjení:</p>
-\[ \tau = R_{OZ2} \cdot C = 10^{12} \cdot 10^{-7} = 10^5\ \text{s} \approx 27{,}8\ \text{h} \]
-<p>2. Počáteční pokles napětí:</p>
-\[ \frac{du_C}{dt} = \frac{u_C}{\tau} = \frac{5}{10^5} = 50\ \mu\text{V/s} \]
-<p>3. Obnovení nuly přes \(R_V\) = 1 kΩ:</p>
-\[ \tau_V = R_V \cdot C = 10^3 \cdot 10^{-7} = 0{,}1\ \text{ms} \]
-<p>Za \(5\tau_V\) = 0,5 ms zbude na C jen \(e^{-5} \approx 0{,}7\ \%\) napětí. Ve skutečnosti drží detektor kratší dobu, protože se přidá svod kondenzátoru a závěrný proud diody.</p></div>
 
 <h2 id="k14-srovnani">Srovnání zapojení</h2>
 <div class="tablewrap"><table class="compact">
@@ -3151,7 +3190,7 @@
 <p><b>Millerův integrátor</b> má rezistor \(R\) na vstupu a kondenzátor \(C\) ve zpětné vazbě; vstupní proud nabíjí kondenzátor, který slouží jako <b>analogová paměť</b>, a výstup je \(u_o = -\frac{1}{RC}\int u_i\,dt\) plus počáteční stav. Při stálém vstupu výstup lineárně klesá (kladný vstup) nebo roste (záporný vstup), až narazí na <b>saturaci</b> (±12 V při napájení ±12 V). Novou integraci umožní <b>nulovací obvod</b>: tranzistor \(T_1\) paralelně ke kondenzátoru ho před integrací zkratuje.</p>
 <p><b>Neinvertující integrátor</b> integruje bez minus, <b>diferenční integrátor</b> integruje rozdíl \(u_2 - u_1\). Integrátor je frekvenčně velmi závislý: \(|A| = 1/(\omega RC)\), s dvojnásobkem frekvence klesá zisk na polovinu (−6 dB na oktávu).</p>
 <p><b>Derivační zesilovač</b> má kondenzátor na vstupu, \(u_o = -RC\,du_i/dt\), stejnosměrnou složku nepropustí a zisk mu roste o 6 dB na oktávu. Vysoké frekvence ho mohou rozkmitat; ošetří se rezistorem \(R_1\) (omezení zisku na \(R/R_1\)) a kondenzátorem \(C_1\) ve zpětné vazbě – vznikne <b>derivačně-integrační zesilovač</b> se zlomem \(\omega_K = 1/(R_1C) = 1/(RC_1)\). Trojúhelník mění na obdélník, jehož výška udává rychlost změny (měření rychlosti vibrací, detekce hran).</p>
-<p>Obyčejná dioda má <b>napěťový práh</b> 0,35 – 0,7 V (Schottkyho 0,1 – 0,3 V), malé signály by zdeformovala. <b>Usměrňovač s OZ</b> má diodu ve zpětné vazbě, takže se práh zmenší na \(U_D/A\). <b>Jednocestný</b> propustí jednu půlvlnu, <b>precizní dvoucestný</b> se třemi OZ dává \(u_o = |u_i|\). <b>Vrcholový detektor</b> nabíjí přes diodu kondenzátor na vrcholovou hodnotu vstupu, dioda brání vybití, sledovač OZ2 (\(10^{12}\ \Omega\)) ho nezatíží a <b>obnovení nuly</b> ho vybije přes \(R_V\) do GND.</p>
+<p><b>Dioda</b> je PN přechod, který vede proud jen v propustném směru. Její <b>VA charakteristika</b> je exponenciální: pod <b>napěťovým prahem</b> 0,35 – 0,7 V (Schottkyho 0,1 – 0,3 V) neteče skoro nic, nad ním proud strmě roste, takže obyčejná dioda malé signály zdeformuje. <b>Usměrňovač s OZ</b> má diodu ve zpětné vazbě, takže se práh zmenší na \(U_D/A\) – VA charakteristika celku je přímka ze samé nuly, jako u ideální diody. <b>Jednocestný</b> propustí jednu půlvlnu, <b>precizní dvoucestný</b> se třemi OZ dává \(u_o = |u_i|\) a jeho VA charakteristika má tvar V bez mrtvého pásma, které má diodový můstek (±1,3 V). <b>Vrcholový detektor</b> nabíjí přes diodu kondenzátor na vrcholovou hodnotu vstupu, dioda brání vybití, sledovač OZ2 (\(10^{12}\ \Omega\)) ho nezatíží a <b>obnovení nuly</b> ho vybije přes \(R_V\) do GND.</p>
 <div class="takehome"><h3>Take-home messages</h3><ol>
 <li>Millerův integrátor: \(u_o = -\frac{1}{RC}\int u_i\,dt + u_o(0)\); kondenzátor = analogová paměť.</li>
 <li>Bez nulování skončí integrátor v saturaci; tranzistor \(T_1\) paralelně k \(C\) ho před novou integrací vybije.</li>
@@ -3159,7 +3198,7 @@
 <li>Integrátor: \(|A| = 1/(\omega RC)\), −6 dB/okt; derivátor: \(|A| = \omega RC\), +6 dB/okt.</li>
 <li>Derivátor je nestabilní a šumí → \(R_1\) do série s \(C\), \(C_1\) paralelně k \(R\), \(\omega_K = 1/(R_1C) = 1/(RC_1)\).</li>
 <li>Derivátor mění trojúhelník na obdélník; výška obdélníku = rychlost změny (vibrace, hrany RE/FE).</li>
-<li>Dioda ve zpětné vazbě OZ: práh \(U_D/A\) (µV) místo 0,7 V; dvoucestný precizní usměrňovač dává \(|u_i|\).</li>
+<li>Dioda: VA charakteristika s prahem asi 0,7 V. Ve zpětné vazbě OZ práh \(U_D/A\) (µV) → chová se jako ideální dioda; precizní dvoucestný usměrňovač dává \(|u_i|\), VA charakteristika ve tvaru V.</li>
 <li>Vrcholový detektor: D + C drží maximum, OZ2 sledovač nezatíží C, obnovení nuly přes \(R_V\).</li>
 </ol></div>
 </section>
@@ -3187,11 +3226,12 @@
 \[ \omega_K = \frac{1}{R_1C} = \frac{1}{RC_1} \]</div></details>
 <details class="q"><summary>Co udělá derivátor s trojúhelníkovým signálem a k čemu se to dá využít?</summary><div>
 <p>Trojúhelník má po částech stálý sklon, derivace je proto po částech konstantní – výstup je obdélník (při růstu vstupu záporný, při poklesu kladný, protože zapojení invertuje). Výška obdélníku je úměrná rychlosti změny: s \(RC\) = 1 ms dá trojúhelník ±1 V s periodou 4 ms (1000 V/s) obdélník ∓1 V, pomalejší s periodou 8 ms jen ∓0,5 V. Využití: měření rychlosti vibrací, rychlých změn v pomalých signálech; pravoúhlé signály se snadno čítají a detekují se na nich hrany (RE, FE).</p></div></details>
-<details class="q"><summary>Proč se malé signály neusměrňují obyčejnou diodou a jak funguje jednocestný usměrňovač s OZ?</summary><div>
-<p>Dioda má napěťový práh PN přechodu 0,35 – 0,7 V (Schottkyho 0,1 – 0,3 V): signál pod prahem neprojde a větší signál se zdeformuje. Klasický usměrňovač má navíc malou vstupní impedanci a zatěžuje zdroj.</p>
+<details class="q"><summary>Co je dioda a jak vypadá její VA charakteristika? Proč se malé signály neusměrňují obyčejnou diodou a jak funguje jednocestný usměrňovač s OZ?</summary><div>
+<p>Dioda je polovodičová součástka s PN přechodem, která vede proud jen jedním směrem (anoda → katoda). Na přechodu je potenciálová bariéra: v propustném směru ji vnější napětí snižuje, v závěrném zvětšuje. VA charakteristika je proto exponenciální – v závěrném směru teče jen nepatrný proud, v propustném nad prahem proud strmě roste.</p>
+<p>Napěťový práh je 0,35 – 0,7 V (Schottkyho 0,1 – 0,3 V): signál pod prahem neprojde a větší signál se zdeformuje. Klasický usměrňovač má navíc malou vstupní impedanci a zatěžuje zdroj.</p>
 <p>V jednocestném usměrňovači s OZ je dioda mezi výstupem OZ a zátěží \(R_L\) a zpětná vazba se bere za diodou. Pro \(u_i > 0\) dioda vede a obvod je sledovač, OZ si sám přidá úbytek diody. Pro \(u_i &lt; 0\) je dioda zavřená a výstup je nulový. Z rovnice ze slidu</p>
 \[ u_i = \frac{U_D}{A} + \frac{u_o}{A} + u_o \]
-<p>plyne, že se práh zmenší \(A\)-krát: s \(A = 10^5\) je to 7 µV místo 0,7 V.</p></div></details>
+<p>plyne, že se práh zmenší \(A\)-krát: s \(A = 10^5\) je to 7 µV místo 0,7 V. VA charakteristika celého zapojení (proud zátěží proti \(u_i\)) je tedy přímka \(u_i/R_L\) zalomená prakticky v nule, jako u ideální diody. U precizního dvoucestného usměrňovače má tvar V, \(|u_i|/R_L\); diodový můstek má V s mrtvým pásmem kolem ±1,3 V.</p></div></details>
 <details class="q"><summary>Nakreslete precizní dvoucestný usměrňovač se třemi OZ a vysvětlete, co se děje při kladném a záporném vstupu.</summary><div>
 <p>OZ1 je sledovač (nezatíží zdroj s \(R_s\)), jeho výstup jde přes \(R_1\) na invertující vstup OZ2 a dalším \(R_1\) na uzel \(u_+\); výstup OZ2 jde přes diodu D na \(u_+\), neinvertující vstup OZ2 je na zemi. \(u_+\) jde na OZ3 zapojený jako sledovač.</p>
 <ul>
@@ -3201,7 +3241,7 @@
 <p>Výsledek \(u_o = |u_i|\) – výstupní napětí je vždy kladné.</p></div></details>
 <details class="q"><summary>Popište vrcholový detektor. Proč je za kondenzátorem sledovač a k čemu je obnovení nuly?</summary><div>
 <p>Vstup \(u_i\) jde na OZ1, jeho výstup přes diodu D nabíjí kondenzátor C; zpětná vazba OZ1 se bere z kondenzátoru, takže úbytek diody se neprojeví. Je-li \(u_i > u_C\), dioda je otevřená a C se dobije na vrcholovou hodnotu. Je-li \(u_i &lt; u_C\), dioda je v závěrném směru a C se vybíjí jen vnitřním odporem a vstupním odporem OZ2 (asi \(10^{12}\ \Omega\)) – napětí drží.</p>
-<p>OZ2 je sledovač, aby výstup šlo zatížit, aniž by se kondenzátor vybíjel (např. se 100 nF je časová konstanta \(10^5\) s). Obnovení nuly je vybíjecí obvod: spínač vybije \(u_C\) přes \(R_V\) do GND a detektor může hledat nový vrchol.</p></div></details>
+<p>OZ2 je sledovač, aby výstup šlo zatížit, aniž by se kondenzátor vybíjel. Obnovení nuly je vybíjecí obvod: spínač vybije \(u_C\) přes \(R_V\) do GND a detektor může hledat nový vrchol.</p></div></details>
 
 </section>
 <section class="kapitola" id="k15">
@@ -4177,6 +4217,12 @@
 <div class="box definice" id="k99-s-derivacne-integracni"><div class="box-t">derivačně-integrační zesilovač</div>
 <p><b>Derivačně-integrační zesilovač</b> je derivační zesilovač ošetřený proti nestabilitě: do série se vstupním kondenzátorem \(C\) je zařazen rezistor \(R_1\) a paralelně k rezistoru \(R\) ve zpětné vazbě kondenzátor \(C_1\). Pod zlomovou frekvencí \(\omega_K\) derivuje, kolem ní zesiluje (propust) a nad ní integruje.</p>
 <p class="jinak">derivátor, kterému jsme „přistřihli“ zisk na vysokých frekvencích. Pomalé změny derivuje jako dřív, ale šum a rychlé zákmity už nezesiluje, takže se nerozkmitá.</p><p class="slovnik-odkaz"><a href="#k14-def-derivacne-integracni">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="k99-s-dioda"><div class="box-t">dioda</div>
+<p><b>Dioda</b> je polovodičová součástka se dvěma vývody, <b>anodou</b> (A) a <b>katodou</b> (K), tvořená <b>PN přechodem</b>. Proud vede jen jedním směrem: v <b>propustném směru</b> (anoda kladnější než katoda alespoň o prahové napětí) proud teče, v <b>závěrném směru</b> (katoda kladnější než anoda) prakticky neteče.</p>
+<p class="jinak">elektrický „jednosměrný ventil“. Šipka ve schematické značce ukazuje směr, kterým proud projde. Toho využívá usměrňovač: půlvlnu jedné polarity propustí, druhou zablokuje.</p><p class="slovnik-odkaz"><a href="#k14-def-dioda">výklad v kapitole P4 →</a></p></div>
+<div class="box definice" id="k99-s-va-charakteristika"><div class="box-t">VA charakteristika</div>
+<p><b>VA (voltampérová) charakteristika</b> je graf závislosti proudu procházejícího součástkou (nebo obvodem) na napětí, které je na ni přivedeno, \(I = f(U)\).</p>
+<p class="jinak">„portrét“ součástky. Rezistor má přímku (<a href="#k01-def-ohmuv-zakon">Ohmův zákon</a>), dioda zalomenou křivku: vlevo skoro nulový proud, vpravo za prahem prudký nárůst.</p><p class="slovnik-odkaz"><a href="#k14-def-va-charakteristika">výklad v kapitole P4 →</a></p></div>
 <div class="box definice" id="k99-s-prah-pn"><div class="box-t">napěťový práh PN přechodu</div>
 <p><b>Napěťový práh PN přechodu</b> je napětí v propustném směru (u křemíkové diody asi 0,35 – 0,7 V), pod kterým dioda prakticky nevede proud. Teprve nad ním proud diodou prudce roste.</p>
 <p class="jinak">dioda je „dveře se pružinou“: dokud signál netlačí aspoň 0,7 V, neprojde nic. Signál 0,5 V obyčejná dioda vůbec neusměrní a signálu 1 V „ukousne“ 0,7 V.</p><p class="slovnik-odkaz"><a href="#k14-def-prah-pn">výklad v kapitole P4 →</a></p></div>

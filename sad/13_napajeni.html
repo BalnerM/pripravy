@@ -47,7 +47,6 @@
     <li><a href="#omezeni">Stabilizace napětí s proudovým omezením</a></li>
     <li><a href="#vlecny">Symetrické napájení – vlečný zdroj</a></li>
     <li><a href="#zdroj-proudu">Zdroje konstantního proudu</a></li>
-    <li><a href="#lm317">Příklad referenčního zdroje – LM317</a></li>
     <li><a href="#shrnuti-h">Shrnutí</a></li>
     <li><a href="#otazky">Otázky ke zkoušce</a></li>
   </ul>
@@ -261,8 +260,8 @@
 
 <h3 id="posileni">Stabilizátor s proudovým zesílením</h3>
 <p>Výstup OZ je zatížitelný jen <b>malým odběrem</b> (jednotky až desítky mA). Proudové posílení lze provést již známým <a href="12_uprava.html#def-sc">emitorovým sledovačem</a> za výstupem OZ.</p>
-<div class="box pozor"><div class="box-t">Pozor: „zapojení SE“ na slidu</div>
-<p>Slide píše „emitorový sledovač (zapojení SE)“. Emitorový sledovač je ale v <a href="12_uprava.html#sc">P2</a> zapojení se <b>společným kolektorem (SC)</b>: vstup do báze, výstup z emitoru, napěťové zesílení 1, zesiluje proud. Na schématu je přesně tohle (výstup \(U_0\) z emitoru), takže u zkoušky říkej emitorový sledovač / SC, ne společný emitor.</p></div>
+<div class="box pozor"><div class="box-t">Pozor: emitorový sledovač = zapojení SC</div>
+<p>Emitorový sledovač je v <a href="12_uprava.html#sc">P2</a> zapojení se <b>společným kolektorem (SC)</b>: vstup do báze, výstup z emitoru, napěťové zesílení 1, zesiluje proud. Na schématu je přesně tohle (výstup \(U_0\) z emitoru), takže u zkoušky říkej emitorový sledovač / SC, ne společný emitor (SE).</p></div>
 <figure><div class="paper"><img src="figures/fig13_posileni.png" alt="Stabilizátor s proudovým zesílením: reference ZD přes RD z UCC na neinvertující vstup OZ, výstup OZ do báze NPN tranzistoru, kolektor na UCC, emitor je výstup U0 se zátěží RZ, dělič R2 a R1 z emitoru na invertující vstup" loading="lazy"></div>
 <figcaption><b>Obr. P3.6</b> Stabilizátor s proudovým zesílením emitorovým sledovačem (slide „Stabilizace napětí s proudovým zesílením“, levé schéma).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
@@ -384,32 +383,12 @@
 <div class="box intuice"><div class="box-t">Proč se hodí pro měření odporu a pilu (nad rámec slidu)</div>
 <p>Teče-li známý stálý proud \(I\) neznámým odporem, je napětí na něm podle <a href="01_obvody.html#def-ohmuv-zakon">Ohmova zákona</a> přímo úměrné odporu: \(U = R I\). Teče-li stálý proud do kondenzátoru, napětí na něm roste rovnoměrně s časem – vznikne lineární náběh, tedy pilový průběh. Viz také <a href="11_signal.html#def-mereni-odporu-oz">měření odporu s OZ v P1</a>.</p></div>
 
-<h2 id="lm317">Příklad referenčního zdroje – LM317</h2>
-<p>Slide uvádí obvod <b>LM317</b> (Texas Instruments): velmi univerzální obvod <b>lineárního stabilizátoru napětí</b> nebo <b>proudového zdroje</b> s vlastní referencí.</p>
-<ul>
-<li>Výstupní napětí nastavitelné u zdroje napětí v rozsahu <b>1,25 V až 37 V</b>.</li>
-<li>Výstupní proud nastavitelný u zdroje proudu až do <b>1,5 A</b>.</li>
-<li>Uvnitř (blokové schéma na slidu): reference <b>1,25 V</b> mezi vývody Output a Adj, zdroj proudu \(I_\text{adj}\), OZ, výkonový Darlington a ochrana proti přehřátí a nadproudu (<i>Over Temp &amp; Over Current Protection</i>) – tedy všechno z této přednášky v jednom pouzdře.</li>
-</ul>
-
-<div class="box vzorec"><div class="box-t">Nastavení LM317 (nad rámec slidu, podle katalogového listu)</div>
-<p>Jako zdroj napětí s děličem \(R_1\) (Output–Adj) a \(R_2\) (Adj–zem):</p>
-\[ U_\text{out} \approx 1{,}25\ \text{V} \cdot \left(1 + \frac{R_2}{R_1}\right) \]
-<p>Jako zdroj proudu s rezistorem \(R\) mezi Output a Adj:</p>
-\[ I_\text{out} = \frac{1{,}25\ \text{V}}{R} \]
-<table class="vars">
-<tr><td>\(U_\text{out}\), \(I_\text{out}\)</td><td>výstupní napětí / proud</td></tr>
-<tr><td>1,25 V</td><td>vnitřní reference mezi Output a Adj</td></tr>
-<tr><td>\(R_1\), \(R_2\), \(R\)</td><td>vnější rezistory; malý proud \(I_\text{adj}\) (desítky µA) se zanedbává</td></tr>
-</table>
-<p>Je to stejný princip jako u stabilizátoru se ZD a OZ (neinvertující zesilovač reference) a u zdroje proudu s OZ (\(I = U_\text{REF}/R\)). Např. pro 5 V stačí \(R_2/R_1 = 3\) (240 Ω a 720 Ω).</p></div>
-
 <div class="box kostka"><div class="box-t">V kostce</div>
 <p>Reference je přesné „pravítko“ (malý proud, vysoká stabilita); stabilizátor je zesílená reference (OZ jako neinvertující zesilovač), proud dodá tranzistor, ochranu proti zkratu tranzistor snímající úbytek na malém rezistoru; zdroj proudu drží napětí \(U_\text{REF}\) na rezistoru, a tím i proud.</p></div>
 
 <section class="souhrn" id="shrnuti">
 <h2 id="shrnuti-h">Shrnutí</h2>
-<p><b>Napěťová reference</b> je přesný zdroj napětí, se kterým se porovnává měřený signál; nejdůležitější je <b>přesnost a stabilita</b>. Chybu reference popisuje <b>počáteční přesnost</b> (výrobní odchylka při 25 °C, odstranitelná kalibrací), <b>teplotní drift</b> v ppm/°C (nelineární), <b>dlouhodobá stabilita</b> v ppm/\(\sqrt{\text{kHr}}\) (stárnutí, roste s odmocninou času) a <b>teplotní hystereze</b>. Hodnoty jako 1,024 V dávají s 10bitovým převodníkem krok přesně 1 mV. Reference dá jen jednotky mA. <b>Zdroj napětí</b> drží napětí bez ohledu na proud, napájení může být <b>nesymetrické</b> (+5 V) nebo <b>symetrické</b> (±5 V). <b>Stabilizátor</b> se Zenerovou diodou a OZ je neinvertující zesilovač reference – výstup je napětí ZD zesílené poměrem rezistorů; ZD napájená z výstupu je stabilnější, ale potřebuje ochrannou diodu proti záporné špičce. Proud posílí <b>emitorový sledovač</b> nebo Darlington, <b>proudové omezení</b> tranzistorem \(T_3\) snímá úbytek na \(R_I\) a omezí proud na hodnotu danou prahem asi 0,5 V a velikostí \(R_I\); foldback při zkratu proud ještě sníží. <b>Vlečný zdroj</b> drží symetrii invertorem se ziskem −1. <b>Zdroj konstantního proudu</b> s OZ drží na emitorovém rezistoru napětí reference, a tím i stálý proud. LM317 obsahuje vše v jednom obvodu.</p>
+<p><b>Napěťová reference</b> je přesný zdroj napětí, se kterým se porovnává měřený signál; nejdůležitější je <b>přesnost a stabilita</b>. Chybu reference popisuje <b>počáteční přesnost</b> (výrobní odchylka při 25 °C, odstranitelná kalibrací), <b>teplotní drift</b> v ppm/°C (nelineární), <b>dlouhodobá stabilita</b> v ppm/\(\sqrt{\text{kHr}}\) (stárnutí, roste s odmocninou času) a <b>teplotní hystereze</b>. Hodnoty jako 1,024 V dávají s 10bitovým převodníkem krok přesně 1 mV. Reference dá jen jednotky mA. <b>Zdroj napětí</b> drží napětí bez ohledu na proud, napájení může být <b>nesymetrické</b> (+5 V) nebo <b>symetrické</b> (±5 V). <b>Stabilizátor</b> se Zenerovou diodou a OZ je neinvertující zesilovač reference – výstup je napětí ZD zesílené poměrem rezistorů; ZD napájená z výstupu je stabilnější, ale potřebuje ochrannou diodu proti záporné špičce. Proud posílí <b>emitorový sledovač</b> nebo Darlington, <b>proudové omezení</b> tranzistorem \(T_3\) snímá úbytek na \(R_I\) a omezí proud na hodnotu danou prahem asi 0,5 V a velikostí \(R_I\); foldback při zkratu proud ještě sníží. <b>Vlečný zdroj</b> drží symetrii invertorem se ziskem −1. <b>Zdroj konstantního proudu</b> s OZ drží na emitorovém rezistoru napětí reference, a tím i stálý proud.</p>
 <div class="takehome"><h3>Take-home messages</h3><ol>
 <li>Reference = přesné a stabilní „pravítko“ měření; chyba reference se přenese do každého vzorku.</li>
 <li>Počáteční přesnost je konstantní → kalibrace; teplotní drift (ppm/°C) a hystereze kalibraci znehodnocují.</li>
@@ -459,11 +438,10 @@
 <details class="q"><summary>Co je symetrické napájení a jak funguje vlečný zdroj?</summary><div>
 <p>Symetrické napájení dodává vůči GND napětí ve dvou větvích, např. ±5 V (nesymetrické jen jednu, např. +5 V). Potřebují ho např. OZ zpracovávající střídavý signál a symetrie se musí zachovat i při chybových stavech.</p>
 <p>Vlečný zdroj: kladnou větev tvoří neinvertující zesilovač reference 3,3 V, \(U_{o1} = 3{,}3(1 + R_a/R_b)\). Zápornou větev tvoří invertor se dvěma rezistory 330 kΩ (zesílení −1); jeho invertující vstup drží virtuální nulu, takže \(U_{o2} = -U_{o1}\). Záporná větev se „vleče“ za kladnou.</p></div></details>
-<details class="q"><summary>Popište zdroj konstantního proudu s OZ. Kde se používá? Co umí obvod LM317?</summary><div>
+<details class="q"><summary>Popište zdroj konstantního proudu s OZ. Kde se používá?</summary><div>
 <p>Ideální zdroj proudu dodává stálý proud bez ohledu na napětí – má nekonečný výstupní odpor. Zapojení: \(U_\text{REF}\) na neinvertujícím vstupu OZ, výstup budí Darlington, v emitoru je \(R_1\) na zem a z něj zpětná vazba na invertující vstup, zátěž je v kolektoru. Na \(R_1\) je napětí \(U_\text{REF}\), takže</p>
 \[ I_o \approx \frac{U_\text{REF}}{R_1} \]
-<p>(přesně \(I_o + I_B\), proud báze je zanedbatelný). Používá se při měření odporů, napájení LED a generování pilového průběhu.</p>
-<p>LM317 je univerzální lineární stabilizátor napětí (1,25 až 37 V) nebo zdroj proudu (do 1,5 A) s vlastní referencí 1,25 V, OZ, výkonovým tranzistorem a ochranou proti přehřátí a nadproudu.</p></div></details>
+<p>(přesně \(I_o + I_B\), proud báze je zanedbatelný). Používá se při měření odporů, napájení LED a generování pilového průběhu.</p></div></details>
 
 <nav class="pager"><a class="prev" href="12_uprava.html"><small>← předchozí</small>Úprava signálu: tranzistorové zesilovače a OZ</a><a class="next" href="14_oz_zapojeni.html"><small>další →</small>Aplikace OZ: integrátor, derivátor, usměrňovač</a></nav>
 </main>
