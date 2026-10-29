@@ -3567,6 +3567,261 @@ def fig18_chyba_r1():
     save(fig, "fig18_chyba_r1")
 
 
+# =====================================================================  přednáška P9: galvanické oddělení
+def fig19_trafo():
+    """Transformátorová vazba: zdroj a zátěž bez vodivého spojení, každá strana má vlastní zem (GND1 ≠ GND2)."""
+    with schema("fig19_trafo", unit=2.4) as d:
+        u = d.unit
+        t = elm.Transformer(t1=5, t2=5, core=True)
+        elm.Line().at(t.p1).left(u * 0.8)
+        elm.SourceSin().down().toy(t.p2).label("$u_1$ (AC)", loc="bottom")
+        elm.Line().tox(t.p2)
+        elm.Ground().at(((t.p1[0] - u * 0.4), t.p2[1]))
+        elm.Line().at(t.s1).right(u * 0.8)
+        elm.Resistor().down().toy(t.s2).label("$R_Z$", loc="bottom")
+        elm.Line().tox(t.s2)
+        elm.GroundSignal().at(((t.s1[0] + u * 0.4), t.s2[1]))
+        xm = (t.p1[0] + t.s1[0]) / 2
+        elm.Line().at((xm, t.p1[1] + 0.9)).down(t.p1[1] - t.p2[1] + 2.4).linestyle("--").color(C2)
+        elm.Label().at((xm, t.p1[1] + 1.55)).label("izolační bariéra\n(přenos magnetickým polem)", fontsize=11, color=C2)
+        elm.Label().at((t.p1[0] - u * 0.4, t.p2[1] - 1.25)).label("GND1", fontsize=11, color=MUTED)
+        elm.Label().at((t.s1[0] + u * 0.4, t.s2[1] - 1.25)).label("GND2", fontsize=11, color=MUTED)
+
+
+def fig19_trafo_frekvence():
+    """Ilustrační frekvenční závislost převodu transformátoru: DC neprojde, pracovní pásmo mezi f_d a f_h."""
+    f = np.logspace(-0.5, 5.6, 600)
+    fd, fh = 40.0, 20e3
+    h = (1j * f / fd) / (1 + 1j * f / fd) / (1 + 1j * f / fh) ** 2
+    fig, ax = plt.subplots(figsize=(8.4, 3.8))
+    ax.axvspan(fd, fh * 0.64, color=C3, alpha=0.12, lw=0)
+    ax.plot(f, db(h), color=C1)
+    ax.axhline(-3, color=MUTED, lw=0.8, ls=":")
+    ax.text(np.sqrt(fd * fh * 0.64), -8, "pracovní pásmo\n(převod přibližně stálý)", ha="center", va="top", fontsize=10, color=INK2)
+    ax.annotate("k f → 0 (DC) převod klesá k nule:\nkonstantní proud neindukuje napětí", (1, db(h[np.argmin(abs(f - 1))])),
+                (2.2, -42), fontsize=9.5, color=INK2, arrowprops=dict(arrowstyle="->", color=INK2))
+    ax.annotate("vysoké frekvence: rozptyl\na kapacity vinutí", (2e5, db(h[np.argmin(abs(f - 2e5))])),
+                (1.2e4, -44), fontsize=9.5, color=INK2, arrowprops=dict(arrowstyle="->", color=INK2))
+    log_osa(ax)
+    ax.set_ylim(-50, 5)
+    ax.set_ylabel("převod [dB]")
+    ax.set_title("transformátor přenáší jen v určitém pásmu frekvencí (ilustrační model)", loc="left")
+    save(fig, "fig19_trafo_frekvence")
+
+
+def fig19_kapacitni_prubeh():
+    """Kapacitní vazba v DC/DC (podle slidu: driver ST1/ST2, f_OSC 100 kHz): protifázové obdélníky, za kondenzátory
+    zbude jen střídavá složka, diodový můstek ji usměrní (ideální diody)."""
+    t = np.linspace(0, 30, 3001)                                         # µs, perioda 10 µs = 100 kHz
+    st1 = np.where((t % 10) < 5, 5.0, 0.0)
+    st2 = 5.0 - st1
+    rozdil = st1 - st2
+    fig, axs = plt.subplots(2, 1, figsize=(8.4, 5.2), sharex=True)
+    ax = axs[0]
+    ax.plot(t, st1, color=C1, label="ST1")
+    ax.plot(t, st2, "--", color=C2, label="ST2")
+    ax.axhline(2.5, color=MUTED, lw=0.8, ls=":")
+    ax.text(0.3, 2.75, "střední hodnota 2,5 V", fontsize=9, color=MUTED)
+    ax.set_ylim(-0.8, 6.2)
+    ax.set_ylabel("napětí [V]")
+    ax.set_title("výstupy driveru: dva obdélníky 0–5 V v protifázi", loc="left")
+    ax.legend(loc="upper right", ncol=2, fontsize=9)
+    ax = axs[1]
+    ax.plot(t, rozdil, color=C1, label="za kondenzátory (vstup můstku)")
+    ax.plot(t, np.abs(rozdil) + 0.25, "--", color=C3, lw=2.4, label="po usměrnění můstkem (kresleno o 0,25 V výš)")
+    ax.axhline(0, color=AXIS, lw=0.8)
+    ax.set_ylim(-6.5, 7.5)
+    ax.set_ylabel("napětí [V]")
+    ax.set_xlabel("čas [µs]")
+    ax.set_title("bariérou projde jen střídavá složka ±5 V, můstek z ní udělá opět stejnosměrné napětí", loc="left")
+    ax.legend(loc="upper right", ncol=2, fontsize=9)
+    save(fig, "fig19_kapacitni_prubeh")
+
+
+def _opto(x):
+    """Ilustrační nelineární převod optické vazby (normováno 0–1)."""
+    return np.tanh(1.8 * x) / np.tanh(1.8)
+
+
+def fig19_opto_nelinearita():
+    """Nelinearita přímé optické vazby: analogový signál se zkreslí, digitální (0/1) projde."""
+    fig, axs = plt.subplots(1, 2, figsize=(9.6, 3.9), gridspec_kw=dict(width_ratios=[1, 1.6]))
+    ax = axs[0]
+    x = np.linspace(0, 1, 200)
+    ax.plot(x, x, ":", color=MUTED, lw=1.2, label="lineární (ideál)")
+    ax.plot(x, _opto(x), color=C1, label="skutečná vazba")
+    ax.set_xlabel("proud LED $I_F$ (normovaný)")
+    ax.set_ylabel("proud fotodetektoru (normovaný)")
+    ax.set_title("a) převodní charakteristika", loc="left")
+    ax.legend(loc="lower right", fontsize=9)
+    ax = axs[1]
+    t = np.linspace(0, 2, 800)
+    sin_in = 0.5 + 0.45 * np.sin(2 * np.pi * t)
+    dig_in = np.where((t % 1) < 0.5, 0.95, 0.05)
+    ax.plot(t, sin_in, ":", color=C1, lw=1.3, label="analogový vstup")
+    ax.plot(t, _opto(sin_in), color=C1, label="analogový výstup – zkreslený")
+    ax.plot(t, dig_in - 1.25, ":", color=C2, lw=1.3, label="digitální vstup")
+    ax.plot(t, _opto(dig_in) - 1.25, color=C2, label="digitální výstup – 0/1 poznám")
+    ax.set_yticks([])
+    ax.set_xlabel("čas (perioda = 1)")
+    ax.set_title("b) co projde přímou optickou vazbou", loc="left")
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.2), ncol=2, fontsize=9)
+    save(fig, "fig19_opto_nelinearita")
+
+
+def fig19_lin_zesilovac():
+    """Izolační zesilovač s linearizovanou vazbou (podle slidu, HCNR200): A1 + PD1 + LED vysílací část, PD2 + A2 přijímací."""
+    with schema("fig19_lin_zesilovac", unit=2.2) as d:
+        u = d.unit
+        svorka(d, (0, 0), "$U_{IN}$")
+        elm.Resistor().at((0, 0)).right(u * 0.9).label("$R_1$")
+        n1 = elm.Dot()
+        elm.Photodiode().at(n1.center).down(u * 0.8).reverse().label("PD1", loc="bottom")
+        elm.Ground()
+        a1 = elm.Opamp(leads=True, flip=True).right().anchor("in2").at((n1.center[0] + u * 0.7, 0)).label("A1", ofst=(-0.2, 0))
+        elm.Line().at(n1.center).to(a1.in2)
+        elm.Line().at(a1.in1).left(u * 0.15)
+        elm.Line().down(u * 0.45)
+        elm.Ground()
+        elm.Line().at(a1.out).right(u * 0.35)
+        led = elm.LED().down(u * 0.8).label("LED", loc="bottom")
+        elm.Ground()
+        x2 = a1.out[0] + u * 2.0
+        n2 = elm.Dot().at((x2, 0))
+        elm.Photodiode().at(n2.center).down(u * 0.8).reverse().label("PD2", loc="top")
+        elm.GroundSignal()
+        a2 = elm.Opamp(leads=True).right().anchor("in1").at((x2 + u * 0.7, 0)).label("A2", ofst=(-0.2, 0))
+        elm.Line().at(n2.center).to(a2.in1)
+        elm.Line().at(a2.in2).left(u * 0.15)
+        elm.Line().down(u * 0.45)
+        elm.GroundSignal()
+        elm.Line().at(n2.center).up(u * 0.6)
+        elm.Resistor().right().tox(a2.out[0] + u * 0.2).label("$R_2$")
+        elm.Line().down().toy(a2.out[1])
+        elm.Line().left().tox(a2.out[0])
+        elm.Line().at((a2.out[0] + u * 0.2, a2.out[1])).right(u * 0.3)
+        elm.Dot(open=True).label("$U_{OUT}$", loc="right")
+        xb = (led.center[0] + x2) / 2 - u * 0.15
+        elm.Line().at((xb, u * 1.2)).down(u * 2.6).linestyle("--").color(C2)
+        elm.Label().at((xb, u * 1.4)).label("izolační bariéra", fontsize=11, color=C2)
+        elm.Label().at((a1.center[0] - u * 0.5, u * 1.05)).label("vysílací část (GND1)", fontsize=11, color=C1)
+        elm.Label().at((a2.center[0] - u * 0.3, u * 1.05)).label("přijímací část (GND2)", fontsize=11, color=C3)
+        elm.Label().at((n1.center[0] - u * 0.55, -u * 1.25)).label("$I_{PD1} = K_1 I_F$", fontsize=11, color=C1)
+        elm.Label().at((x2 - u * 0.15, -u * 1.25)).label("$I_{PD2} = K_2 I_F$", fontsize=11, color=C3)
+        elm.Label().at((led.center[0] - u * 0.4, led.center[1] + u * 0.05)).label("$I_F$", fontsize=11, color=INK2)
+
+
+def fig19_linearizace():
+    """Linearizovaná vazba: A1 si sám najde (nelineární) proud LED, výstup je přímka (ilustrační, K2/K1 = 1, R2 = R1)."""
+    u = np.linspace(0, 1, 200)
+    i_f = np.arctanh(u * np.tanh(1.8)) / 1.8                             # inverze _opto: proud LED, aby I_PD1 ~ U_IN
+    fig, axs = plt.subplots(1, 2, figsize=(9.6, 3.8))
+    ax = axs[0]
+    ax.plot(u, u, ":", color=MUTED, lw=1.2, label="kdyby byla LED lineární")
+    ax.plot(u, i_f, color=C2, label="proud LED, který nastaví A1")
+    ax.set_xlabel("$U_{IN}$ (normované)")
+    ax.set_ylabel("$I_F$ (normovaný)")
+    ax.set_title("a) A1 „předkřiví“ proud LED", loc="left")
+    ax.legend(loc="upper left", fontsize=9)
+    ax = axs[1]
+    ax.plot(u, _opto(u), "--", color=C2, label="přímá vazba ($I_F \\sim U_{IN}$)")
+    ax.plot(u, u, color=C1, lw=2.4, label="linearizovaná vazba")
+    ax.set_xlabel("$U_{IN}$ (normované)")
+    ax.set_ylabel("$U_{OUT}$ (normované)")
+    ax.set_title("b) výstup: přímka díky PD1 ve zpětné vazbě", loc="left")
+    ax.legend(loc="lower right", fontsize=9)
+    save(fig, "fig19_linearizace")
+
+
+def fig19_pwm():
+    """PWM bipolárního signálu (vlastní čísla): rozsah ±10 V, U_in = 0 → střída 50 %, U_MAX = 5 V; demodulace střední hodnotou."""
+    T = 1.0
+    t = np.linspace(0, 16, 16001)
+    sig = lambda x: 7 * np.sin(2 * np.pi * x / 16) + 2.5 * np.sin(2 * np.pi * x / 5.3)
+    k = np.floor(t / T)
+    dc = 0.5 + sig(k * T) / 20
+    pwm = np.where((t - k * T) < dc * T, 5.0, 0.0)
+    stred = np.convolve(pwm, np.ones(1000) / 1000, mode="same")
+    fig, axs = plt.subplots(3, 1, figsize=(8.6, 6.6), sharex=True)
+    ax = axs[0]
+    ax.plot(t, sig(t), color=C1)
+    ax.plot(np.arange(16) * T, sig(np.arange(16) * T), "o", color=C1, ms=5, mfc=SURF)
+    ax.axhline(0, color=AXIS, lw=0.8)
+    ax.set_ylabel("$U_{in}$ [V]")
+    ax.set_title("vstupní signál (vzorkuje se na začátku každé periody)", loc="left")
+    ax = axs[1]
+    ax.plot(t, pwm, color=C2, lw=1.4)
+    ax.set_ylim(-0.6, 6.4)
+    ax.set_ylabel("PWM [V]")
+    ax.set_title("PWM: kladné napětí → střída nad 50 %, záporné → pod 50 %", loc="left")
+    ax = axs[2]
+    m = (t > 0.6) & (t < 15.4)
+    ax.plot(t, sig(t), ":", color=C1, lw=1.3, label="původní $U_{in}$")
+    ax.plot(t[m], (stred[m] - 2.5) * 4, color=C3, lw=2.2, label="z PWM: $(\\bar u - 2{,}5\\ \\mathrm{V})\\cdot 4$")
+    ax.axhline(0, color=AXIS, lw=0.8)
+    ax.set_ylabel("$U_{out}$ [V]")
+    ax.set_xlabel("čas [periody PWM]")
+    ax.set_title("demodulace: střední hodnota za periodu vrátí signál", loc="left")
+    ax.legend(loc="lower left", fontsize=9, ncol=2)
+    save(fig, "fig19_pwm")
+
+
+def fig19_pwm_menic():
+    """Obecný princip přenosu napětí pomocí PWM (slide): spínač řízený PWM, dioda, cívka (akumulace/filtr), zátěž."""
+    with schema("fig19_pwm_menic", unit=2.4) as d:
+        u = d.unit
+        svorka(d, (0, 0), "$U_S$")
+        elm.Line().at((0, 0)).right(u * 0.4)
+        sw = elm.Switch().right(u * 0.8).label("spínač", loc="bottom")
+        n = elm.Dot()
+        elm.Inductor2(loops=3).right(u * 1.2).label("$L$")
+        elm.Line().right(u * 0.5)
+        r = elm.Resistor().down(u * 1.2).label("$R$ (zátěž)")
+        elm.Line().left().tox(n.center[0])
+        g = elm.Dot()
+        elm.Ground()
+        elm.Diode().at(n.center).down().toy(g.center).reverse().label("$D$", loc="top")
+        xs = sw.center[0]
+        elm.Line().at((xs, 0.3)).up(u * 0.5).linestyle("--")
+        elm.Label().at((xs, 0.3 + u * 0.5 + 0.35)).label("řízení PWM", fontsize=12)
+        elm.Label().at((r.center[0] + u * 0.45, r.center[1])).label("$U_O$", fontsize=13)
+
+
+def fig19_pwm_zvlneni():
+    """Výstup PWM měniče (RL podle slidu): velikost dává střída, zvlnění perioda vůči τ = L/R (U_S = 12 V)."""
+    us, tau = 12.0, 1.0
+
+    def sim(D, T, tmax):
+        t = np.linspace(0, tmax, 40001)
+        dt = t[1] - t[0]
+        v = np.where((t % T) < D * T, us, 0.0)
+        out = np.zeros_like(t)
+        for i in range(1, len(t)):
+            out[i] = out[i - 1] + dt / tau * (v[i - 1] - out[i - 1])
+        return t, v, out
+
+    fig, axs = plt.subplots(1, 2, figsize=(9.8, 3.9), sharey=True)
+    ax = axs[0]
+    for (T, c, ls, lab) in ((2.0, C2, "--", "T = 2τ: velké zvlnění"), (0.2, C1, "-", "T = 0,2τ: malé zvlnění")):
+        t, v, o = sim(0.5, T, 8)
+        ax.plot(t, o, ls, color=c, label=lab)
+    ax.axhline(6, color=MUTED, lw=0.8, ls=":")
+    ax.set_title("a) střída 50 %, dvě periody PWM", loc="left")
+    ax.set_xlabel("čas [τ = L/R]")
+    ax.set_ylabel("$U_O$ [V]")
+    ax.legend(loc="lower right", fontsize=9)
+    ax = axs[1]
+    for D, c, mk in ((0.25, C1, "o"), (0.5, C2, "s"), (0.75, C3, "^")):
+        t, v, o = sim(D, 0.2, 8)
+        ax.plot(t, o, color=c, label=f"střída {int(D * 100)} % → {cz(D * us, 0)} V")
+        ax.plot(t[-1], o[-1], mk, color=c, ms=6)
+    ax.set_title("b) T = 0,2τ, tři různé střídy", loc="left")
+    ax.set_xlabel("čas [τ = L/R]")
+    ax.legend(loc="upper left", fontsize=9)
+    ax.set_ylim(0, 12.5)
+    save(fig, "fig19_pwm_zvlneni")
+
+
 ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig02_xc, fig02_dp_hp, fig02_bode_dp, fig02_bode_hp, fig02_postup, fig02_typy, fig02_pp_schema,
        fig02_bode_pp, fig02_pz_schema, fig02_bode_pz,
@@ -3588,7 +3843,9 @@ ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig16_omezovac, fig16_oboustranny, fig16_zener_omezovac, fig16_zd_mustek, fig16_komp_omezeni, fig16_schmitt, fig16_schmitt_zd, fig16_selektor, fig16_flash, fig16_omezovac_char, fig16_oboustranny_char, fig16_zener_char, fig16_komparator_char, fig16_rusivy, fig16_komp_omezeni_prubeh, fig16_schmitt_char, fig16_selektor_prubeh, fig16_kvantovani, fig16_adc_char,
        fig17_dac_vahovy, fig17_dac_r2r, fig17_single_slope, fig17_dual_slope, fig17_single_prubeh, fig17_dual_prubeh,
        fig17_counter_tracking, fig17_sar_prubeh, fig17_cas_konverze,
-       fig18_mpx_analog, fig18_spinac_sp, fig18_cas_frekvence, fig18_tdm_prubeh, fig18_fdm_spektrum, fig18_chyba_r1]
+       fig18_mpx_analog, fig18_spinac_sp, fig18_cas_frekvence, fig18_tdm_prubeh, fig18_fdm_spektrum, fig18_chyba_r1,
+       fig19_trafo, fig19_trafo_frekvence, fig19_kapacitni_prubeh, fig19_opto_nelinearita, fig19_lin_zesilovac,
+       fig19_linearizace, fig19_pwm, fig19_pwm_menic, fig19_pwm_zvlneni]
 
 if __name__ == "__main__":
     vyber = sys.argv[1:]

@@ -5,7 +5,7 @@ Dvoje samostatná skripta:
 - **Půlsemestrální test** – https://balnerm.github.io/pripravy/sad/ – jen základy: 1 Ohmův zákon, Kirchhoffovy
   zákony, dělič napětí · 2 RC filtry (DP, HP, PP, PZ, Bodeho graf) · 3 operační zesilovače a CMRR · 4 sledovač,
   integrátor, derivátor · ★ tahák · slovník. Fragmenty v `_build/obsah/`, obsah vychází ze standardní elektrotechniky.
-- **Závěrečná zkouška** – https://balnerm.github.io/pripravy/sad/zkouska/ – přednášky P1–P7 (další přibývají),
+- **Závěrečná zkouška** – https://balnerm.github.io/pripravy/sad/zkouska/ – přednášky P1–P9 (další přibývají),
   ★ tahák, slovník. Fragmenty v `_build/obsah_zkouska/`. Látka základů je vložená do přednášek jako
   „Připomenutí ze základů“ (`<div class="zaklad">`) v místě, kde je poprvé potřeba, aby se skripta dala číst
   jako celek; definice ze základů mají stejná id jako v testu (`def-delic`, `def-invertujici` …).

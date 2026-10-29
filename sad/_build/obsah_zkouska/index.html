@@ -3,14 +3,14 @@
 
 <h2 id="retezec">Měřicí řetězec: kde je která přednáška</h2>
 <div class="schema">
-<svg viewBox="0 0 760 220" role="img" aria-label="Měřicí řetězec: senzor a signál (P1), úprava signálu zesílením a filtrací (P2, P4, P5), multiplexace (P8), A/D převodník (P7) a číslicové zpracování; napájení a reference (P3) napájí zesilovače i převodník, komparátor (P6) je stavební blok převodníku">
+<svg viewBox="0 0 760 220" role="img" aria-label="Měřicí řetězec: senzor a signál (P1), úprava signálu zesílením a filtrací (P2, P4, P5), multiplexace a galvanické oddělení (P8, P9), A/D převodník (P7) a číslicové zpracování; napájení a reference (P3) napájí zesilovače i převodník, komparátor (P6) je stavební blok převodníku">
   <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
   <rect x="10" y="20" width="130" height="64" rx="8" class="node fl1"/>
   <text x="75" y="46" text-anchor="middle">senzor, signál</text><text x="75" y="66" text-anchor="middle" class="t2">P1</text>
   <rect x="162" y="20" width="130" height="64" rx="8" class="node fl2"/>
   <text x="227" y="46" text-anchor="middle">úprava signálu</text><text x="227" y="66" text-anchor="middle" class="t2">P2, P4, P5</text>
   <rect x="314" y="20" width="130" height="64" rx="8" class="node fl2"/>
-  <text x="379" y="46" text-anchor="middle">multiplexace</text><text x="379" y="66" text-anchor="middle" class="t2">P8</text>
+  <text x="379" y="46" text-anchor="middle">MPX, oddělení</text><text x="379" y="66" text-anchor="middle" class="t2">P8, P9</text>
   <rect x="466" y="20" width="130" height="64" rx="8" class="node fl3"/>
   <text x="531" y="46" text-anchor="middle">A/D převodník</text><text x="531" y="66" text-anchor="middle" class="t2">P7</text>
   <rect x="618" y="20" width="132" height="64" rx="8" class="node"/>
@@ -27,7 +27,7 @@
   <path d="M420 140 L500 89" class="ln dash" marker-end="url(#arr)"/>
   <path d="M531 140 V89" class="ln dash" marker-end="url(#arr)"/>
 </svg></div>
-<p>Signál ze senzoru je slabý a zarušený, a tak se nejdřív <b>upraví</b> (zesílí, odfiltruje). Pak se jedním převodníkem postupně měří víc kanálů (<b>multiplexace</b>). <b>A/D převodník</b> ho převede na čísla – uvnitř pracuje s <b>komparátory</b> a porovnává signál s <b>referenčním napětím</b>. Celý řetězec potřebuje stabilní <b>napájení</b>.</p>
+<p>Signál ze senzoru je slabý a zarušený, a tak se nejdřív <b>upraví</b> (zesílí, odfiltruje). Pak se jedním převodníkem postupně měří víc kanálů (<b>multiplexace</b>) a signál se přes izolační bariéru přenese dál k převodníku a počítači (<b>galvanické oddělení</b> – ochrana pacienta i obvodů). <b>A/D převodník</b> ho převede na čísla – uvnitř pracuje s <b>komparátory</b> a porovnává signál s <b>referenčním napětím</b>. Celý řetězec potřebuje stabilní <b>napájení</b>.</p>
 
 <h2 id="prednasky">Přednášky</h2>
 <p>Kapitoly přednášek přibývají postupně.</p>
@@ -42,7 +42,8 @@
 <tr><td>P6</td><td>Komparátor</td><td><a href="16_komparator.html">P6 · Komparátor, omezovač a úvod do A/D převodu</a></td></tr>
 <tr><td>P7</td><td>A/D a D/A převodníky</td><td><a href="17_prevodniky.html">P7 · A/D a D/A převodníky</a></td></tr>
 <tr><td>P8</td><td>Multiplexace signálů</td><td><a href="18_multiplexace.html">P8 · Multiplexace signálů</a></td></tr>
-<tr><td>P9, P10</td><td>další přednášky</td><td class="muted">zatím nevyšly</td></tr>
+<tr><td>P9</td><td>Galvanické oddělení signálu</td><td><a href="19_galvanicke_oddeleni.html">P9 · Galvanické oddělení signálu</a></td></tr>
+<tr><td>P10</td><td>další přednáška</td><td class="muted">zatím nevyšla</td></tr>
 </tbody></table></div>
 
 <h2 id="zaklady">Kde jsou základy</h2>
@@ -78,6 +79,7 @@
 <a class="card" href="16_komparator.html"><div class="n">Přednáška P6</div><div class="t">Komparátor, omezovač a úvod do A/D převodu</div><div class="d">Precizní a oboustranný omezovač (Zenerovy diody, můstek); komparátor, chyba přeběhu a falešná překlopení; Schmittův klopný obvod a hystereze; amplitudový selektor; kvantování a vzorkování; paralelní (flash) ADC a rezistorová síť.</div></a>
 <a class="card" href="17_prevodniky.html"><div class="n">Přednáška P7</div><div class="t">A/D a D/A převodníky</div><div class="d">DAC s váhovými rezistory a s příčkovou sítí R–2R; half-flash ADC; integrační převodníky single a dual slope; kompenzační převodníky counter, tracking a s postupnou aproximací (SAR); čas konverze a srovnání.</div></a>
 <a class="card" href="18_multiplexace.html"><div class="n">Přednáška P8</div><div class="t">Multiplexace signálů</div><div class="d">Multiplexor a demultiplexor, digitální a analogový MUX; princip časového (TDM), frekvenčního (FDM) a vlnového (WDM) multiplexu; analogový multiplexor s OZ, chyba sepnutého tranzistoru a sériově-paralelní spínač.</div></a>
+<a class="card" href="19_galvanicke_oddeleni.html"><div class="n">Přednáška P9</div><div class="t">Galvanické oddělení signálu</div><div class="d">Proč a co oddělovat; transformátorová, kapacitní a optická vazba, optočlen; izolační zesilovač s linearizovanou vazbou a jeho bipolární verze; PWM a střída, přenos napětí pomocí PWM; izolační DC/DC měnič.</div></a>
 <a class="card" href="29_tahak.html"><div class="n">★ Opakování</div><div class="t">Tahák ke zkoušce</div><div class="d">Vzorce a schémata z přednášek i základů na jedné stránce, typické chytáky.</div></a>
 <a class="card" href="99_slovnik.html"><div class="n">Opakování</div><div class="t">Slovník pojmů</div><div class="d">Všechny definice ze skript ke zkoušce na jednom místě, včetně základů.</div></a>
 </div>

@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Galvanické oddělení signálu – SAD</title>
+<meta name="description" content="Proč oddělovat; transformátorová, kapacitní a optická vazba; optočlen; izolační zesilovač s linearizovanou vazbou (i bipolární); PWM a střída; přenos napětí pomocí PWM; izolační DC/DC měnič.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css?v=58c8d0bd">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js?v=58c8d0bd"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P9 se základy</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/19_galvanicke_oddeleni.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="11_signal.html"><span class="n">P1</span><span>Úvod: signál a jeho převod na napětí</span></a></li>
+    <li><a href="12_uprava.html"><span class="n">P2</span><span>Úprava signálu: tranzistorové zesilovače a OZ</span></a></li>
+    <li><a href="13_napajeni.html"><span class="n">P3</span><span>Napájení a zdroje referenčního napětí</span></a></li>
+    <li><a href="14_oz_zapojeni.html"><span class="n">P4</span><span>Aplikace OZ: integrátor, derivátor, usměrňovač</span></a></li>
+    <li><a href="15_aktivni_filtry.html"><span class="n">P5</span><span>Aplikace OZ II: aktivní filtry</span></a></li>
+    <li><a href="16_komparator.html"><span class="n">P6</span><span>Komparátor, omezovač a úvod do A/D převodu</span></a></li>
+    <li><a href="17_prevodniky.html"><span class="n">P7</span><span>A/D a D/A převodníky</span></a></li>
+    <li><a href="18_multiplexace.html"><span class="n">P8</span><span>Multiplexace signálů</span></a></li>
+    <li><a href="19_galvanicke_oddeleni.html" class="active"><span class="n">P9</span><span>Galvanické oddělení signálu</span></a></li>
+    <li><a href="29_tahak.html"><span class="n">★</span><span>Tahák ke zkoušce</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#co-je">Co je galvanické oddělení</a></li>
+    <li><a href="#trafo">Izolace transformátorovou vazbou</a></li>
+    <li><a href="#kapacitni">Izolace kapacitní vazbou</a></li>
+    <li><a href="#opticka">Izolace optickou vazbou</a></li>
+    <li><a href="#signal">Oddělení signálových obvodů: izolační zesilovače</a></li>
+    <li><a href="#pwm">PWM – pulzně šířková modulace</a></li>
+    <li><a href="#napajeni">Oddělení napájecích obvodů: izolační DC/DC měnič</a></li>
+    <li><a href="#srovnani">Srovnání vazeb</a></li>
+    <li><a href="#otazky">Otázky ke zkoušce</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">SAD – závěrečná zkouška · Galvanické oddělení signálu – SAD · https://balnerm.github.io/pripravy/sad/zkouska/19_galvanicke_oddeleni.html</p>
+<p class="kicker">Přednáška 9</p>
+<h1>Galvanické oddělení signálu</h1>
+<p class="lead">Měřicí přístroj je připojený k pacientovi a zároveň k síti, počítači nebo jinému přístroji. Pokud by mezi těmito částmi vedla vodivá cesta, mohl by jí při poruše protéct nebezpečný proud. <b>Galvanické oddělení</b> přenese signál nebo energii přes <b>izolační bariéru</b>, kterou proud projít nemůže. Kapitola vysvětluje <b>princip</b> tří základních vazeb – transformátorové, kapacitní a optické – a ukazuje, jak se jimi oddělují signálové a napájecí obvody: izolační zesilovač s linearizovanou vazbou, pulzně šířková modulace (PWM) a izolační DC/DC měnič.</p>
+
+<p>V akviziční cestě z <a href="11_signal.html#def-akvizicni-cesta">P1</a> leží galvanické oddělení mezi <a href="18_multiplexace.html">multiplexací</a> a A/D převodem. Pojem <a href="11_signal.html#def-galvanicke-oddeleni">galvanické oddělení</a> už známe z P1 – tady se podíváme, <b>proč</b> je potřeba a <b>jak</b> se technicky dělá.</p>
+
+<h2 id="co-je">Co je galvanické oddělení</h2>
+<p>Přednáška vysvětluje potřebu oddělení na dvou obvodech A a B ve třech krocích:</p>
+<ol>
+<li><b>Běžný stav:</b> při správné funkci obvodů proudí mezi dílčími obvody (obvodovými celky) „správné“ proudy – běžné proudy v signálové nebo napájecí oblasti – a obvody fungují bezpečně. Oba obvody jsou na <b>stejné zemi</b>, GND je oběma obvodům společný.</li>
+<li><b>Porucha:</b> pokud jeden z obvodů zasáhne <b>vysoké napětí</b>, potenciály obou obvodů jsou různé a mezi obvody mohou téct <b>nebezpečné proudy</b> (DC i AC). To může v lepším případě způsobit chyby, v horším vytvořit nebezpečné provozní podmínky.</li>
+<li><b>Řešení:</b> za těchto okolností je zapotřebí galvanické oddělení.</li>
+</ol>
+
+<div class="schema">
+<svg viewBox="0 0 760 250" role="img" aria-label="Tři situace obvodů A a B. a) běžný stav: obvody si vyměňují signál a mají společnou zem. b) obvod A zasáhne vysoké napětí, přes propojení a společnou zem teče nebezpečný proud do obvodu B. c) galvanické oddělení: mezi A a B je izolační bariéra a každý obvod má vlastní zem GND1 a GND2">
+  <defs><marker id="ar9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <text x="125" y="22" text-anchor="middle">a) běžný stav</text>
+  <rect x="20" y="40" width="70" height="50" rx="6" class="node fl3"/><text x="55" y="70" text-anchor="middle">A</text>
+  <rect x="160" y="40" width="70" height="50" rx="6" class="node fl3"/><text x="195" y="70" text-anchor="middle">B</text>
+  <path d="M94 65 H156" class="ln" marker-start="url(#ar9)" marker-end="url(#ar9)"/>
+  <path d="M55 90 V130 H195 V90" class="ln"/>
+  <path d="M113 130 V140 M101 140 H125 M105 145 H121 M109 150 H117" class="ln"/>
+  <text x="125" y="172" text-anchor="middle" class="t2">společná zem GND</text>
+
+  <text x="380" y="22" text-anchor="middle">b) porucha: vysoké napětí v A</text>
+  <rect x="275" y="40" width="70" height="50" rx="6" class="node fl2"/><text x="310" y="70" text-anchor="middle">A</text>
+  <rect x="415" y="40" width="70" height="50" rx="6" class="node fl3"/><text x="450" y="70" text-anchor="middle">B</text>
+  <path d="M349 65 H411" class="ln s2" style="stroke-width:3" marker-end="url(#ar9)"/>
+  <text x="380" y="56" text-anchor="middle" class="t2">!</text>
+  <path d="M310 90 V130 H450 V90" class="ln s2" style="stroke-width:3"/>
+  <path d="M368 130 V140 M356 140 H380 M360 145 H376 M364 150 H372" class="ln"/>
+  <text x="380" y="172" text-anchor="middle" class="t2">nebezpečný proud (DC i AC)</text>
+  <text x="380" y="190" text-anchor="middle" class="t2">teče do B propojením i zemí</text>
+
+  <text x="635" y="22" text-anchor="middle">c) galvanické oddělení</text>
+  <rect x="530" y="40" width="70" height="50" rx="6" class="node fl2"/><text x="565" y="70" text-anchor="middle">A</text>
+  <rect x="670" y="40" width="70" height="50" rx="6" class="node fl3"/><text x="705" y="70" text-anchor="middle">B</text>
+  <path d="M604 65 H624" class="ln"/>
+  <path d="M646 65 H666" class="ln" marker-end="url(#ar9)"/>
+  <rect x="624" y="53" width="22" height="24" rx="3" class="node fl1"/>
+  <path d="M635 34 V160" class="ln dash"/>
+  <path d="M565 90 V130 M553 130 H577 M557 135 H573 M561 140 H569" class="ln"/>
+  <path d="M705 90 V130 M693 130 H717 L705 142 Z" class="ln"/>
+  <text x="565" y="162" text-anchor="middle" class="t2">GND1</text>
+  <text x="705" y="162" text-anchor="middle" class="t2">GND2</text>
+  <text x="635" y="185" text-anchor="middle" class="t2">bariéra: signál projde, proud ne</text>
+  <text x="380" y="235" text-anchor="middle" class="t2">oddělit je třeba signálovou i napájecí část a také země obou obvodů</text>
+</svg></div>
+<p class="muted">Schéma: tři situace ze slidů „Co je galvanické oddělení?“ – běžný stav, porucha a oddělení obvodů izolační bariérou.</p>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>V běžném stavu je společná zem v pořádku – teče jí jen „správný“ proud signálu a napájení.</li>
+<li>Při poruše je společná zem i signálový vodič <b>cestou pro nebezpečný proud</b>: vysoké napětí z A se dostane do B.</li>
+<li>Po oddělení nevede mezi A a B <b>žádná vodivá cesta</b> – ani signálová, ani napájecí, ani zemní. Každý obvod má vlastní zem (GND1, GND2).</li>
+</ul></div>
+
+<p>Galvanické oddělení je tak podle slidu <b>prostředek zajišťující prevenci toku nežádoucích proudů mezi dvěma částmi obvodu</b>. Jeho smyslem je:</p>
+<ul>
+<li>ochrana drahých či citlivých obvodů,</li>
+<li>prevence úrazu elektrickým proudem (u zdravotnických přístrojů ochrana pacienta),</li>
+<li>přerušení zemní smyčky, např. u komunikačních sítí.</li>
+</ul>
+<div class="box definice" id="def-zemni-smycka"><div class="box-t">Definice: zemní smyčka</div>
+<p><b>Zemní smyčka</b> je uzavřená vodivá smyčka, která vznikne, když jsou dvě zařízení propojena signálovou zemí a zároveň každé z nich uzemněno jinde; rozdíl potenciálů mezi místy uzemnění pak smyčkou žene nežádoucí proud.</p>
+<p class="jinak">dvě „země“ nejsou nikdy přesně na stejném napětí. Když je spojí stínění kabelu, teče jím proud, který se přičte k měřenému signálu jako rušení (typicky brum 50 Hz). Galvanické oddělení smyčku rozpojí.</p></div>
+
+<div class="box pozor"><div class="box-t">Oddělit je třeba všechno, nejen signál</div>
+<p>U galvanického oddělení je třeba izolovat nejen <b>signálovou</b> a <b>napájecí</b> část, ale také <b>oddělit země</b> obou obvodů. Když se signál přenese opticky, ale obě strany se napájejí ze stejného zdroje se společnou zemí, vodivá cesta mezi nimi pořád existuje a oddělení nefunguje. Proto se v kapitole objevují dva typy úloh: <a href="#signal">oddělení signálových obvodů</a> a <a href="#napajeni">oddělení napájecích obvodů</a>.</p></div>
+
+<h3 id="prehled">Tři způsoby, jak přenést přes bariéru</h3>
+<p>Přes izolační bariéru nemůže projít proud, něco jiného ale ano. Podle toho, co nese energii nebo informaci, se rozlišují tři vazby:</p>
+<ul>
+<li><b>transformátorová vazba</b> – přenos <b>magnetickým polem</b>,</li>
+<li><b>kapacitní vazba</b> – přenos <b>elektrickým polem</b> přes dielektrikum kondenzátoru,</li>
+<li><b>optická vazba</b> – přenos <b>světlem</b> (elektromagnetickým zářením, fotony).</li>
+</ul>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Galvanické oddělení brání toku nežádoucích proudů mezi dvěma částmi obvodu: chrání obvody i člověka a přerušuje zemní smyčky. Oddělit se musí signál, napájení i země. Přes bariéru se přenáší magnetickým polem, elektrickým polem nebo světlem.</p></div>
+
+<h2 id="trafo">Izolace transformátorovou vazbou</h2>
+<div class="box definice" id="def-transformatorova-vazba"><div class="box-t">Definice: transformátorová vazba</div>
+<p><b>Transformátorová vazba</b> je galvanické oddělení na principu <b>elektromagnetické indukce</b>: proměnný proud v primárním vinutí vytvoří v jádře proměnný magnetický tok, který indukuje napětí v sekundárním vinutí; vinutí spolu nejsou vodivě spojena.</p>
+<p class="jinak">energie „přeskočí“ z jednoho vinutí do druhého přes magnetické pole v jádře. Izolací je tu magnetické pole: drátem z primáru do sekundáru nic neteče.</p></div>
+
+<figure><div class="paper"><img src="../figures/fig19_trafo.png" alt="Schéma: střídavý zdroj u1 připojený na primární vinutí transformátoru s jádrem, sekundární vinutí napájí zátěž RZ; svislá čárkovaná čára přes jádro označuje izolační bariéru, primár má zem GND1 a sekundár jinou zem GND2" loading="lazy"></div>
+<figcaption><b>Obr. P9.1</b> Transformátorová vazba: obě strany jsou spojené jen magnetickým polem v jádře a každá má vlastní zem.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Mezi primárním a sekundárním obvodem nevede žádný vodič – bariéra prochází jádrem.</li>
+<li>Napětí v sekundáru vzniká jen při <b>změně</b> magnetického toku. Proto musí být na primáru střídavý nebo impulzní proud.</li>
+<li>Zem GND1 a GND2 se nespojují – jinak by oddělení ztratilo smysl.</li>
+</ul></div>
+
+<p>Podle slidu je to <b>nejjednodušší forma galvanického oddělení</b> (i konstrukčně). Vlastnosti:</p>
+<ul>
+<li>využitelné pro <b>AC nebo impulzní</b> proudy (stejnosměrný proud magnetický tok nemění, a tak nic neindukuje),</li>
+<li>standardně využívány pro rozvody 230 / 400 V <b>současně s transformací U/I</b> (oddělí a zároveň změní napětí a proud),</li>
+<li>možné též oddělení obvodů vysokého napětí (VN).</li>
+</ul>
+<p><b>Nevýhody:</b> závislost převodu na frekvenci, impedanci a výkonu; transformátor má <b>definovaný rozsah pracovní frekvence</b>.</p>
+
+<figure><div class="paper"><img src="../figures/fig19_trafo_frekvence.png" alt="Graf převodu transformátoru v decibelech na logaritmické ose frekvence: od nízkých frekvencí převod stoupá, v pracovním pásmu zhruba od 40 Hz do 13 kHz je přibližně 0 dB, nad ním strmě klesá; poznámky: k nule převod klesá, protože konstantní proud neindukuje napětí; na vysokých frekvencích vadí rozptyl a kapacity vinutí" loading="lazy"></div>
+<figcaption><b>Obr. P9.2</b> Proč je transformátor „frekvenčně závislý“: převod je stálý jen v pracovním pásmu (ilustrační model, konkrétní meze závisí na transformátoru).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Stejnosměrnou složku a velmi pomalé změny transformátor <b>nepřenese</b> – převod k nule klesá.</li>
+<li>Na vysokých frekvencích převod klesá také (rozptylová indukčnost a kapacity vinutí).</li>
+<li>Přenesený signál by tak byl zkreslený: různé frekvence by se přenesly různě. Pro biosignál s pomalými složkami (EKG od desetin Hz) je to nevhodné.</li>
+</ul></div>
+
+<p>Podle použití se na slidu rozlišují:</p>
+<ul>
+<li><b>výkonové transformátory</b> – napájení laboratoří, přístrojů ve zdravotnictví…,</li>
+<li><b>měřicí transformátory</b> – oddělení měřidla od měřené soustavy (příkladem je <a href="11_signal.html#def-proudovy-transformator">proudový transformátor</a> z P1),</li>
+<li><b>oddělovací transformátory</b> – impulzní transformátory pro digitální obvody a telekomunikaci.</li>
+</ul>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Transformátorová vazba je nejjednodušší galvanické oddělení na principu elektromagnetické indukce – izolací je magnetické pole. Přenese jen AC nebo impulzní proudy. Hodí se na napájecí cestu, nikoliv na signálovou: transformátor je hodně frekvenčně závislý, převod závisí na frekvenci, impedanci a výkonu a má definovaný rozsah pracovní frekvence.“</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Transformátor: indukce přes magnetické pole, jen AC a impulzy, zároveň transformuje U/I. Kvůli frekvenční závislosti spíš pro napájení než pro signál.</p></div>
+
+<h2 id="kapacitni">Izolace kapacitní vazbou</h2>
+<div class="box definice" id="def-kapacitni-vazba"><div class="box-t">Definice: kapacitní vazba</div>
+<p><b>Kapacitní vazba</b> je galvanické oddělení, při kterém se energie nebo signál přenáší přes <b>kondenzátory</b>: izolací je dielektrikum mezi elektrodami, které nepropustí stejnosměrný proud, zatímco střídavá složka projde přes impedanci kondenzátoru.</p>
+<p class="jinak">mezi obě strany se vloží kondenzátor. Izolant v něm (dielektrikum, např. teflon) nepustí stejnosměrný proud, ale rychle se měnící napětí „přejde“ elektrickým polem na druhou stranu.</p></div>
+<p>Kondenzátorem neprochází stejnosměrný proud a jeho <a href="15_aktivni_filtry.html#def-reaktance">reaktance</a> \(X_C\) s rostoucí frekvencí klesá. Proto se přes kapacitní bariéru přenáší <b>střídavý</b> průběh – stejnosměrné napětí se musí nejdřív „rozsekat“.</p>
+<p>Na slidu je kapacitní vazba ukázaná na DC/DC obvodu MAX256:</p>
+<ul>
+<li>používá se <b>zřídka</b>, u DC/DC obvodů s <b>malými výkony</b> (do 3 W),</li>
+<li>spínací obvod je pouze <b>driver</b> pro řízení výstupního diodového „H-můstku“,</li>
+<li>nastavitelná frekvence oscilátoru \(f_{OSC}\) = 100 kHz až 1 MHz umožňuje využití <b>malých kapacit</b>, tj. současně i malých rozměrů kondenzátoru.</li>
+</ul>
+
+<div class="schema">
+<svg viewBox="0 0 760 170" role="img" aria-label="Blokové schéma kapacitně odděleného DC/DC: stejnosměrných 5 V, driver se dvěma protifázovými výstupy ST1 a ST2, dva kondenzátory 0,45 mikrofaradu tvoří izolační bariéru, diodový můstek usměrní, kondenzátor 0,22 mikrofaradu vyhladí, stejnosměrný výstup">
+  <defs><marker id="ar9b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="10" y="45" width="100" height="56" rx="8" class="node"/><text x="60" y="70" text-anchor="middle">+5 V</text><text x="60" y="89" text-anchor="middle" class="t2">stejnosměrně</text>
+  <rect x="140" y="45" width="120" height="56" rx="8" class="node fl1"/><text x="200" y="70" text-anchor="middle">driver</text><text x="200" y="89" text-anchor="middle" class="t2">ST1, ST2 v protifázi</text>
+  <rect x="290" y="45" width="120" height="56" rx="8" class="node fl2"/><text x="350" y="70" text-anchor="middle">2 × C 0,45 µF</text><text x="350" y="89" text-anchor="middle" class="t2">izolační bariéra</text>
+  <rect x="440" y="45" width="120" height="56" rx="8" class="node fl3"/><text x="500" y="70" text-anchor="middle">diodový můstek</text><text x="500" y="89" text-anchor="middle" class="t2">usměrnění</text>
+  <rect x="590" y="45" width="160" height="56" rx="8" class="node fl3"/><text x="670" y="70" text-anchor="middle">C 0,22 µF → výstup</text><text x="670" y="89" text-anchor="middle" class="t2">filtrace, DC</text>
+  <path d="M110 73 H135" class="ln" marker-end="url(#ar9b)"/>
+  <path d="M260 73 H285" class="ln" marker-end="url(#ar9b)"/>
+  <path d="M410 73 H435" class="ln" marker-end="url(#ar9b)"/>
+  <path d="M560 73 H585" class="ln" marker-end="url(#ar9b)"/>
+  <path d="M350 20 V43 M350 103 V126" class="ln dash"/>
+  <text x="200" y="138" text-anchor="middle" class="t2">DC → obdélník 100 kHz – 1 MHz</text>
+  <text x="575" y="138" text-anchor="middle" class="t2">obdélník → zpět DC</text>
+  <text x="350" y="158" text-anchor="middle" class="t2">bariérou projde jen střídavá složka</text>
+</svg></div>
+<p class="muted">Schéma: princip kapacitně odděleného DC/DC podle zapojení s MAX256 na slidu (hodnoty kondenzátorů ze slidu).</p>
+
+<figure><div class="paper"><img src="../figures/fig19_kapacitni_prubeh.png" alt="Nahoře dva obdélníkové průběhy ST1 a ST2 mezi 0 a 5 V v protifázi s periodou 10 mikrosekund, střední hodnota 2,5 V; dole napětí za kondenzátory střídá plus a minus 5 V a po usměrnění můstkem je stálých 5 V" loading="lazy"></div>
+<figcaption><b>Obr. P9.3</b> Průběhy v kapacitně odděleném DC/DC při \(f_{OSC} = 100\ \text{kHz}\) (ideální diody a velké kondenzátory, bez úbytků).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Driver udělá ze stejnosměrného napájení dva obdélníky v protifázi. Každý má stejnosměrnou složku 2,5 V – ta přes kondenzátory <b>neprojde</b>.</li>
+<li>Za kondenzátory zbude jen střídavý obdélník ±5 V a diodový můstek ho usměrní zpět na stejnosměrné napětí.</li>
+<li>Energie tak přešla přes bariéru, kterou stejnosměrný proud projít nemůže.</li>
+</ul></div>
+
+<div class="box priklad"><div class="box-t">Příklad: proč vysoká frekvence a malé kondenzátory (hodnoty ze slidu)</div>
+<p>Vazební kondenzátor má \(C = 0{,}45\ \mu\text{F}\). Jeho reaktance je:</p>
+\[ X_C = \frac{1}{2\pi f C} \]
+<p>1. Při \(f_{OSC} = 100\ \text{kHz}\):</p>
+\[ X_C = \frac{1}{2\pi \cdot 10^5 \cdot 0{,}45 \cdot 10^{-6}} \approx 3{,}54\ \Omega \]
+<p>2. Při \(f_{OSC} = 1\ \text{MHz}\):</p>
+\[ X_C \approx 0{,}354\ \Omega \]
+<p>Energie projde s malými ztrátami i přes malý kondenzátor. Při nižší frekvenci by stejné \(X_C\) vyžadovalo úměrně větší kapacitu, a tedy větší kondenzátor.</p>
+<p>3. Pro srovnání při síťové frekvenci \(f = 50\ \text{Hz}\):</p>
+\[ X_C = \frac{1}{2\pi \cdot 50 \cdot 0{,}45 \cdot 10^{-6}} \approx 7{,}07\ \text{k}\Omega \]
+<p>Kdyby mezi oběma stranami bylo síťové napětí 230 V, tekl by bariérou proud:</p>
+\[ I = \frac{230\ \text{V}}{7{,}07\ \text{k}\Omega} \approx 32{,}5\ \text{mA} \]
+<p>Pro střídavé napětí tedy taková bariéra izolací <b>není</b>.</p></div>
+<div class="box pozor"><div class="box-t">Kondenzátor izoluje jen stejnosměrné napětí</div>
+<p>Pro izolaci je využito vnitřní impedance kondenzátoru, ta však podle slidu představuje izolaci <b>pouze pro stejnosměrné napětí, nikoliv pro střídavé</b>. Čím vyšší frekvence, tím menší \(X_C\) a tím snáz střídavý proud bariérou projde – právě to se v DC/DC měniči využívá, ale proti střídavému rušení nebo síťovému napětí kapacitní vazba nechrání.</p></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„U kapacitní vazby je izolací dielektrikum (např. teflon). Používá se zřídka, do malých výkonů (do 3 W) lze přenášet napájecí oddělení, signál spíš ne. Driver rozseká stejnosměrné napětí na obdélník o frekvenci 100 kHz až 1 MHz, ten projde malými kondenzátory a diodový můstek ho zase usměrní. Kondenzátor ale izoluje jen stejnosměrné napětí, střídavé ne.“</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Kapacitní vazba: izolací je dielektrikum, projde jen střídavá složka. Pro DC/DC do 3 W se napětí rozseká na 100 kHz – 1 MHz (malé kondenzátory) a za bariérou usměrní. Izoluje jen DC, ne AC.</p></div>
+
+<h2 id="opticka">Izolace optickou vazbou</h2>
+<div class="box definice" id="def-opticka-vazba"><div class="box-t">Definice: optická vazba</div>
+<p><b>Optická vazba</b> je galvanické oddělení využívající transformaci <b>elektronika → optika → elektronika</b>: vysílač (LED, IR nebo laserová dioda) převede elektrický signál na světlo a fotodetektor (fotodioda, fotoodpor nebo fototranzistor) ho převede zpět na elektrický signál; galvanickým oddělením je optická cesta.</p>
+<p class="jinak">signál se „předá světlem“. Mezi vysílačem a přijímačem je jen průhledný izolant nebo vzduch, informaci nese elektromagnetické záření – fotony, ne elektrony.</p></div>
+<div class="box definice" id="def-optoclen"><div class="box-t">Definice: optočlen</div>
+<p><b>Optočlen</b> je součástka, ve které jsou vysílač světla a fotodetektor optické vazby zapouzdřeny do <b>jednoho integrovaného pouzdra</b>, takže tvoří hotový galvanicky oddělující prvek.</p>
+<p class="jinak">LED a fotodetektor „naproti sobě“ v jednom malém černém pouzdru. Na jedné straně se pouzdro připojí ke vstupnímu obvodu, na druhé k výstupnímu, a uvnitř je mezi nimi jen světlo.</p></div>
+<p>Vlastnosti optické vazby podle slidů:</p>
+<ul>
+<li>slouží k oddělení <b>signálových cest</b>,</li>
+<li>optický přenos (dioda / fotodetektor) je díky VA charakteristice diody, případně charakteristice polovodičového detektoru, <b>značně nelineární</b>,</li>
+<li>běžně je proto možný přenos <b>digitálních</b> signálů; omezeně, resp. s nutným rozšířením lze přenášet i <b>analogový</b> signál,</li>
+<li>některé optočleny svojí (složitou) topologií umožňují přenos AC i DC signálů,</li>
+<li>optická vazba může být <b>libovolně dlouhá</b> – od integrace v SMD pouzdře až po stovky metrů (optické vlákno, viz <a href="18_multiplexace.html#def-wdm">WDM</a> v P8).</li>
+</ul>
+
+<figure><div class="paper"><img src="../figures/fig19_opto_nelinearita.png" alt="Vlevo zakřivená převodní charakteristika proudu fotodetektoru na proudu LED proti tečkované přímce; vpravo sinusový vstup a jeho zkreslený výstup s oploštělými vrcholy a pod ním obdélníkový digitální vstup a výstup, který zůstal obdélníkem" loading="lazy"></div>
+<figcaption><b>Obr. P9.4</b> Nelinearita přímé optické vazby (ilustrační tvar charakteristiky): analogový signál se zkreslí, digitální projde.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Proud fotodetektoru není úměrný proudu LED – charakteristika je zakřivená (a navíc se mění s teplotou a stárnutím LED).</li>
+<li>Sinus po průchodu má „zploštělé“ vrcholy – <b>tvar analogového signálu se zkreslí</b>.</li>
+<li>U digitálního signálu stačí poznat dvě úrovně (svítí / nesvítí). Nelinearita mu nevadí, proto je optická vazba pro digitální přenos běžná.</li>
+</ul></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„U optické vazby je izolantem elektromagnetické záření, přenos probíhá fotonem: elektronika → optika → elektronika, vysílá LED, přijímá fotodioda nebo fototranzistor, v jednom pouzdře je to optočlen. Je vhodná pro přenos signálu, ale přenos je kvůli VA charakteristice diody a detektoru značně nelineární, takže běžně jde digitální signál a analogový jen s rozšířením – s linearizovanou vazbou nebo s modulací.“</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Optická vazba: elektronika → světlo → elektronika, libovolně dlouhá, vhodná pro signál. Je nelineární, proto přímo jen digitální signál; analogový potřebuje linearizaci nebo modulaci.</p></div>
+
+<h2 id="signal">Oddělení signálových obvodů: izolační zesilovače</h2>
+<p>Analogový biosignál potřebujeme přenést přes optickou bariéru <b>bez zkreslení</b>. Přednáška ukazuje dvě cesty, jak obejít nelinearitu optické vazby:</p>
+<ol>
+<li><b>linearizovaná vazba</b> – nelinearitu LED vyrovná zpětná vazba přes druhou fotodiodu,</li>
+<li><b>modulace</b> – signál se převede na tvar, kterému nelinearita nevadí (PWM).</li>
+</ol>
+<div class="box definice" id="def-izolacni-zesilovac"><div class="box-t">Definice: izolační zesilovač</div>
+<p><b>Izolační zesilovač</b> je zesilovač, jehož vstupní a výstupní část jsou od sebe galvanicky odděleny (např. optickou vazbou) a mají oddělené země i napájení, takže přenáší analogový signál přes izolační bariéru.</p>
+<p class="jinak">zesilovač „rozříznutý“ izolační bariérou: na straně pacienta je vstupní část, na straně počítače výstupní část, a mezi nimi vede jen světlo.</p></div>
+
+<h3 id="linearizovana">Izolační zesilovač s linearizovanou vazbou</h3>
+<div class="box definice" id="def-linearizovana-vazba"><div class="box-t">Definice: izolační zesilovač s linearizovanou vazbou</div>
+<p><b>Izolační zesilovač s linearizovanou vazbou</b> je optický izolační zesilovač, v němž jedna LED osvětluje dvě shodné fotodiody: <b>PD1</b> na vstupní straně v přímé optické vazbě s LED a ve zpětné vazbě vstupního zesilovače, čímž je kompenzována nelinearita LED, a <b>PD2</b> na výstupní straně za izolační bariérou, jejíž proud převádí výstupní zesilovač na napětí.</p>
+<p class="jinak">LED „svítí pro dva“. Vstupní zesilovač hlídá svou fotodiodu PD1 a nastaví LED přesně tak, aby PD1 dávala proud úměrný vstupu. Protože PD2 dostává stejné světlo, dává stejný (úměrný) proud – a ten se za bariérou převede na výstupní napětí.</p></div>
+
+<figure><div class="paper"><img src="../figures/fig19_lin_zesilovac.png" alt="Schéma: vstup UIN přes R1 do uzlu s fotodiodou PD1 k zemi a neinvertujícím vstupem A1, invertující vstup A1 uzemněn, výstup A1 budí LED k zemi; za čárkovanou izolační bariérou fotodioda PD2 z invertujícího vstupu A2 na jinou zem, A2 má ve zpětné vazbě R2 a výstup UOUT; popisky vysílací část GND1, přijímací část GND2, IPD1 = K1 IF a IPD2 = K2 IF" loading="lazy"></div>
+<figcaption><b>Obr. P9.5</b> Izolační zesilovač s linearizovanou vazbou (podle slidu, zapojení z katalogového listu optočlenu se dvěma fotodiodami). \(K_1\), \(K_2\) jsou přenosy z LED na PD1 a PD2.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>Vysílací část</b> = A1, PD1 a LED (zem GND1); <b>přijímací část</b> = PD2 a A2 (zem GND2). Mezi nimi je jen světlo.</li>
+<li>PD1 je <b>fotodetektor ve zpětné vazbě</b> A1: A1 neřídí přímo proud LED, ale to, co PD1 skutečně „vidí“.</li>
+<li>PD2 je zapojená jako převodník proudu na napětí (A2 s \(R_2\)): proud fotodiody teče přes \(R_2\) na výstup.</li>
+</ul></div>
+
+<div class="box postup"><div class="box-t">Jak linearizovaná vazba funguje</div>
+<ol>
+<li><b>Vstup → proud:</b> A1 drží svůj vstup na nule (<a href="11_signal.html#def-virtualni-zkrat">virtuální zkrat</a>), takže rezistorem \(R_1\) teče proud \(U_{IN}/R_1\). Do vstupu OZ neteče nic, celý proud musí odvést fotodioda PD1.</li>
+<li><b>Zpětná vazba přes světlo:</b> A1 zvětšuje proud LED tak dlouho, dokud fotoproud PD1 nebude přesně \(I_{PD1} = U_{IN}/R_1\). Pokud LED svítí málo, uzel se posune nahoru a A1 přidá; pokud moc, ubere.</li>
+<li><b>Nelinearita LED nevadí:</b> A1 si sám najde potřebný proud \(I_F\), ať je charakteristika LED jakkoliv zakřivená. Řídí se <b>světlem</b>, ne proudem.</li>
+<li><b>Přenos za bariéru:</b> PD2 je osvětlena stejnou LED, takže její proud je k \(I_{PD1}\) ve stálém poměru: \(I_{PD2} = \frac{K_2}{K_1} I_{PD1}\).</li>
+<li><b>Proud → výstup:</b> A2 převede proud PD2 na napětí: \(U_{OUT} = I_{PD2} R_2\).</li>
+</ol></div>
+<div class="box vzorec"><div class="box-t">Přenos izolačního zesilovače s linearizovanou vazbou</div>
+<p>Dosazením kroků 2, 4 a 5 dostaneme:</p>
+\[ U_{OUT} = \frac{K_2}{K_1} \cdot \frac{R_2}{R_1} \cdot U_{IN} \]
+<table class="vars">
+<tr><td>\(U_{IN}\), \(U_{OUT}\)</td><td>vstupní a výstupní napětí (každé vůči své zemi)</td></tr>
+<tr><td>\(R_1\)</td><td>vstupní rezistor, převádí \(U_{IN}\) na proud</td></tr>
+<tr><td>\(R_2\)</td><td>rezistor ve zpětné vazbě A2, převádí proud PD2 na napětí</td></tr>
+<tr><td>\(K_1\), \(K_2\)</td><td>přenos z LED na PD1 a na PD2 (\(I_{PD} = K\,I_F\))</td></tr>
+<tr><td>\(K_2/K_1\)</td><td>poměr přenosů; fotodiody jsou shodné a ve stejném pouzdře, proto je \(\approx 1\) a stálý</td></tr>
+</table>
+<p>Ve vzorci není proud LED \(I_F\) ani její charakteristika – proto nelinearita, teplota ani stárnutí LED výsledek neovlivní. Zbývá jen poměr dvou shodných fotodiod a poměr rezistorů. (Odvození podle katalogového listu optočlenu, na slidu jen „tím je kompenzována nelinearita LED“.)</p></div>
+<div class="box priklad"><div class="box-t">Příklad: přenos izolačního zesilovače (vlastní čísla)</div>
+<p>Zadáno:</p>
+<ul>
+<li>vstupní napětí \(U_{IN} = 1\ \text{V}\),</li>
+<li>rezistory \(R_1 = 100\ \text{k}\Omega\) a \(R_2 = 200\ \text{k}\Omega\),</li>
+<li>shodné fotodiody, \(K_2/K_1 = 1\).</li>
+</ul>
+<p>1. Proud PD1, který si A1 vynutí:</p>
+\[ I_{PD1} = \frac{U_{IN}}{R_1} = \frac{1\ \text{V}}{100\ \text{k}\Omega} = 10\ \mu\text{A} \]
+<p>2. Proud PD2 za bariérou:</p>
+\[ I_{PD2} = \frac{K_2}{K_1}\, I_{PD1} = 10\ \mu\text{A} \]
+<p>3. Výstupní napětí:</p>
+\[ U_{OUT} = I_{PD2}\, R_2 = 10\ \mu\text{A} \cdot 200\ \text{k}\Omega = 2\ \text{V} \]
+<p>Zesílení je \(R_2/R_1 = 2\). Jaký proud přitom teče LED, se počítat nemusí – nastaví ho A1.</p></div>
+
+<figure><div class="paper"><img src="../figures/fig19_linearizace.png" alt="Vlevo proud LED nastavený zesilovačem A1 v závislosti na vstupním napětí – prohnutá křivka pod přímkou, která na konci prudce stoupá; vpravo výstupní napětí: přímá vazba dává zakřivenou křivku, linearizovaná vazba přímku" loading="lazy"></div>
+<figcaption><b>Obr. P9.6</b> Co dělá zpětná vazba přes PD1 (ilustrační tvar charakteristiky LED, \(K_2/K_1 = 1\), \(R_2 = R_1\), normované hodnoty).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>A1 dodává LED „předkřivený“ proud – přesně takový, aby se zakřivení LED vyrovnalo (vlevo).</li>
+<li>Výsledný přenos \(U_{OUT}(U_{IN})\) je díky tomu <b>přímka</b>, zatímco přímá vazba by byla zakřivená (vpravo).</li>
+</ul></div>
+
+<p><b>Praktické zapojení</b> (další slide) se používá s <b>frekvenční korekcí ve zpětné vazbě obou OZ</b>: kondenzátor \(C_1\) ve zpětné vazbě A1 a \(C_2\) paralelně k \(R_2\) u A2. Smyčka A1 → LED → světlo → PD1 → A1 má vlastní zpoždění a bez korekce by mohla kmitat; \(C_2\) navíc omezí šířku pásma výstupu a tím i šum. LED je v praktickém zapojení připojena z \(V_{CC}\) přes \(R_3\) do výstupu A1, proto je uzel s PD1 na invertujícím vstupu – smysl zpětné vazby zůstává záporný.</p>
+<div class="box intuice"><div class="box-t">Proč jen jedna polarita</div>
+<ul>
+<li>LED umí světlo jen přidávat – „záporné světlo“ neexistuje. Proud LED i fotoproud teče jen <b>jedním směrem</b>.</li>
+<li>Základní zapojení proto přenese jen <b>kladný</b> vstup (nebo jen záporný). Slide ukazuje čtyři varianty – kladný a záporný vstup, kladný a záporný výstup: liší se tím, jak je otočena fotodioda a kam je připojena LED.</li>
+<li>Pro přenos <b>obou polarit</b> se buď signál posune (offset), nebo se použijí dva kanály – bipolární zapojení.</li>
+</ul></div>
+
+<h3 id="bipolarni">Bipolární izolační zesilovač</h3>
+<p>Bipolární izolační zesilovač s linearizovanou vazbou přenáší <b>obě polarity</b> tak, že každá má <b>vlastní kanál</b> – vlastní optočlen (nebo vlákno):</p>
+<div class="schema">
+<svg viewBox="0 0 760 220" role="img" aria-label="Bipolární izolační zesilovač: vstup UIN přes potenciometr vyvážení do dvou kanálů; horní kanál se zesilovačem a optočlenem OC1 pro kladnou polaritu, dolní s OC2 pro zápornou; za izolační bariérou jsou fotodiody PD2 obou optočlenů zapojené proti sobě do jednoho uzlu výstupního zesilovače s nastavením zesílení, výstup VMAG">
+  <defs><marker id="ar9c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="10" y="82" width="110" height="56" rx="8" class="node"/><text x="65" y="104" text-anchor="middle">U<tspan baseline-shift="sub" font-size="10">IN</tspan></text><text x="65" y="128" text-anchor="middle" class="t2">R1 BALANCE</text>
+  <rect x="160" y="20" width="200" height="60" rx="8" class="node fl2"/><text x="260" y="45" text-anchor="middle">A + PD1 + LED (OC1)</text><text x="260" y="65" text-anchor="middle" class="t2">kladná polarita</text>
+  <rect x="160" y="140" width="200" height="60" rx="8" class="node fl1"/><text x="260" y="165" text-anchor="middle">A + PD1 + LED (OC2)</text><text x="260" y="185" text-anchor="middle" class="t2">záporná polarita</text>
+  <path d="M120 100 L155 55" class="ln" marker-end="url(#ar9c)"/>
+  <path d="M120 120 L155 165" class="ln" marker-end="url(#ar9c)"/>
+  <path d="M400 10 V210" class="ln dash"/>
+  <text x="400" y="216" text-anchor="middle" class="t2">bariéra</text>
+  <path d="M360 50 H430" class="ln s2" marker-end="url(#ar9c)"/>
+  <path d="M360 170 H430" class="ln s1" marker-end="url(#ar9c)"/>
+  <text x="380" y="42" text-anchor="middle" class="t2">světlo</text>
+  <rect x="435" y="20" width="110" height="60" rx="8" class="node fl2"/><text x="490" y="55" text-anchor="middle">PD2 (OC1)</text>
+  <rect x="435" y="140" width="110" height="60" rx="8" class="node fl1"/><text x="490" y="175" text-anchor="middle">PD2 (OC2)</text>
+  <path d="M545 50 H580 V100" class="ln" marker-end="url(#ar9c)"/>
+  <path d="M545 170 H580 V120" class="ln" marker-end="url(#ar9c)"/>
+  <rect x="595" y="82" width="155" height="56" rx="8" class="node fl3"/><text x="672" y="106" text-anchor="middle">A3 + GAIN → V<tspan baseline-shift="sub" font-size="10">MAG</tspan></text><text x="672" y="125" text-anchor="middle" class="t2">proudy proti sobě</text>
+  <path d="M580 110 H590" class="ln" marker-end="url(#ar9c)"/>
+</svg></div>
+<p class="muted">Schéma: princip bipolárního izolačního zesilovače podle slidu (dva optočleny OC1, OC2, výstupní zesilovač s nastavením zesílení GAIN).</p>
+<div class="box postup"><div class="box-t">Jak bipolární zapojení přenáší obě polarity</div>
+<ol>
+<li>Vstup \(U_{IN}\) jde přes potenciometr R1 (BALANCE) do <b>dvou kanálů</b>. Horní (OC1) zpracuje kladnou polaritu, dolní (OC2) zápornou – LED a fotodiody jsou v nich otočené opačně.</li>
+<li>Každý kanál je linearizovaná vazba jako výše: zesilovač s PD1 ve zpětné vazbě řídí svou LED. Diody D1, D2 ve zpětné vazbě udrží zesilovač právě nevyužité polarity ve zpětné vazbě (nevyjede do saturace), takže přechod přes nulu je plynulý.</li>
+<li>Za bariérou jsou fotodiody PD2 obou optočlenů zapojené <b>proti sobě</b> do jednoho uzlu výstupního zesilovače: proud z OC1 dává kladný výstup, proud z OC2 záporný.</li>
+<li>Potenciometrem BALANCE se vyrovnají obě poloviny (aby kladná i záporná měla stejný přenos), trimrem R7 (GAIN) se nastaví celkové zesílení. Kondenzátory 10 pF jsou frekvenční korekce.</li>
+</ol></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Na vstupu diferenciálního zesilovače je fotodetektor PD1 v přímé optické vazbě s LED, tím je kompenzována nelinearita LED: zesilovač nastaví LED tak, aby proud PD1 byl \(U_{IN}/R_1\). Stejná LED svítí na PD2 v přijímací části, A2 převede její proud na napětí, takže \(U_{OUT} = (K_2/K_1)(R_2/R_1)\,U_{IN}\) a charakteristika LED ve vzorci vůbec není. Základní zapojení přenese jen jednu polaritu; pro přenos obou polarit má každý kanál svůj optočlen nebo vlákno a výstupy se sečtou proti sobě.“</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Linearizovaná vazba: jedna LED, dvě shodné fotodiody; PD1 ve zpětné vazbě vstupního OZ vyrovná nelinearitu LED, PD2 za bariérou dá stejný proud. \(U_{OUT} = (K_2/K_1)(R_2/R_1)\,U_{IN}\). Obě polarity = dva kanály.</p></div>
+
+<h3 id="modulace">Izolační zesilovač s modulovaným vstupním signálem</h3>
+<p>Druhá cesta je převést analogový signál na tvar, kterému nelinearita optické vazby nevadí. Podle slidu:</p>
+<ul>
+<li>přenos analogových signálů optickou izolační vazbou obvykle vyžaduje <b>složitější topologii</b> obvodů,</li>
+<li>analogový signál je třeba pro přenos optickou vazbou zpravidla <b>vzorkovat a modulovat</b>,</li>
+<li>spolu s obvody zajišťujícími optickou vazbu tak bývá optočlen rozšířen o část zajišťující <b>modulaci</b> vstupního signálu,</li>
+<li>nejčastěji využívanou modulací je <b>PWM</b>.</li>
+</ul>
+<div class="box intuice"><div class="box-t">Proč modulace obejde nelinearitu</div>
+<ul>
+<li>Přímá optická vazba zkreslí <b>amplitudu</b> (kolik světla), ale spolehlivě přenese <b>dvě úrovně</b> – svítí / nesvítí – a <b>okamžiky</b>, kdy se přepínají.</li>
+<li>PWM nese informaci právě v čase: hodnota signálu je zakódovaná do <b>šířky pulzu</b>, ne do jeho výšky.</li>
+<li>Optočlen tak přenáší vlastně digitální signál a za bariérou se z šířky pulzů hodnota zase obnoví.</li>
+</ul></div>
+
+<h2 id="pwm">PWM – pulzně šířková modulace</h2>
+<div class="box definice" id="def-pwm"><div class="box-t">Definice: pulzně šířková modulace (PWM)</div>
+<p><b>Pulzně šířková modulace</b> (Pulse Width Modulation, PWM) je modulace, při které obdélníkový signál nabývá jen dvou hodnot amplitudy, 0 (L) nebo \(U_{MAX}\) (H), jeho perioda opakování je <b>neměnná</b> a informace je zakódována ve <b>střídě</b>, tedy v šířce pulzu v rámci periody.</p>
+<p class="jinak">výška ani rytmus pulzů se nemění, mění se jen to, jak dlouho je v každé periodě signál „nahoře“. Širší pulz = větší hodnota.</p></div>
+<div class="box definice" id="def-strida"><div class="box-t">Definice: střída</div>
+<p><b>Střída</b> (činitel plnění, angl. <i>duty cycle</i>, DC) je poměr doby, po kterou je signál v úrovni H, k celé periodě opakování: \[ D = \frac{t_H}{T} \] Nabývá hodnot 0 % až 100 %.</p>
+<p class="jinak">jak velká část periody je „zaplněná“. Střída 50 % = půl periody nahoře, půl dole; 75 % = tři čtvrtiny nahoře; 0 % = pořád dole, 100 % = pořád nahoře.</p></div>
+<div class="box vzorec"><div class="box-t">Střední hodnota PWM</div>
+\[ \bar u = \frac{t_H}{T}\,U_{MAX} = D \cdot U_{MAX} \]
+<table class="vars">
+<tr><td>\(\bar u\)</td><td>střední (průměrná) hodnota PWM za periodu</td></tr>
+<tr><td>\(t_H\)</td><td>doba úrovně H v jedné periodě (šířka pulzu)</td></tr>
+<tr><td>\(T\)</td><td>perioda opakování (neměnná)</td></tr>
+<tr><td>\(D\)</td><td>střída (0 až 1, tj. 0 % až 100 %)</td></tr>
+<tr><td>\(U_{MAX}\)</td><td>amplituda úrovně H</td></tr>
+</table>
+<p>Střední hodnota je přímo úměrná střídě. Proto se PWM demoduluje jednoduše: <a href="15_aktivni_filtry.html#def-dp">dolní propust</a> z ní „vyhladí“ střední hodnotu.</p></div>
+
+<p><b>Modulace záporných napětí:</b> PWM má jen úrovně 0 a \(U_{MAX}\), přesto jí lze modulovat i signály v záporné oblasti vstupního napětí. Pokud pro \(U_{in} = 0\ \text{V}\) bude střída 50 %, potom:</p>
+<ul>
+<li>střída \(\langle 0;\ 49 \rangle\ \%\) moduluje <b>záporné</b> napětí,</li>
+<li>střída \(\langle 51;\ 100 \rangle\ \%\) moduluje <b>kladné</b> napětí.</li>
+</ul>
+<div class="box priklad"><div class="box-t">Příklad: PWM bipolárního signálu (vlastní čísla)</div>
+<p>Vstupní rozsah je \(\pm 10\ \text{V}\), pro \(U_{in} = 0\ \text{V}\) je střída 50 %, pro \(+10\ \text{V}\) 100 % a pro \(-10\ \text{V}\) 0 %. Převod je lineární:</p>
+\[ D = 50\ \% + \frac{U_{in}}{20\ \text{V}} \cdot 100\ \% \]
+<p>1. Pro \(U_{in} = +5\ \text{V}\):</p>
+\[ D = 50\ \% + \frac{5}{20} \cdot 100\ \% = 75\ \% \]
+<p>2. Pro \(U_{in} = -5\ \text{V}\):</p>
+\[ D = 50\ \% - \frac{5}{20} \cdot 100\ \% = 25\ \% \]
+<p>3. Demodulace pro \(D = 75\ \%\) a \(U_{MAX} = 5\ \text{V}\) – střední hodnota:</p>
+\[ \bar u = 0{,}75 \cdot 5\ \text{V} = 3{,}75\ \text{V} \]
+<p>4. Odečteme střední hodnotu pro nulu (\(0{,}5 \cdot 5\ \text{V} = 2{,}5\ \text{V}\)) a přepočteme na vstupní rozsah:</p>
+\[ U_{in} = (3{,}75 - 2{,}5)\ \text{V} \cdot \frac{20\ \text{V}}{5\ \text{V}} = 5\ \text{V} \]
+<p>Střídy 50 %, 75 % a 25 % jsou právě ty z obrázku na slidu.</p></div>
+
+<figure><div class="paper"><img src="../figures/fig19_pwm.png" alt="Tři grafy pod sebou: vstupní signál mezi minus 7 a plus 7 volty se vzorky na začátku každé periody; PWM mezi 0 a 5 V se širokými pulzy při kladném a úzkými při záporném napětí; dole původní signál a schodovitá křivka obnovená ze střední hodnoty PWM, která ho sleduje" loading="lazy"></div>
+<figcaption><b>Obr. P9.7</b> PWM bipolárního signálu (vlastní signál, rozsah ±10 V, \(U_{MAX} = 5\ \text{V}\)): modulace a demodulace střední hodnotou (podle obrázku na slidu).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Signál se v každé periodě <b>navzorkuje</b> a hodnota vzorku určí šířku pulzu – kladné napětí široký pulz, záporné úzký, nula 50 %.</li>
+<li>Výška pulzů je pořád stejná (0 nebo 5 V): optočlen přenáší jen „svítí / nesvítí“.</li>
+<li>Střední hodnota za každou periodu vrátí vzorek; signál je obnovený po schodech a s malým zpožděním. Čím kratší perioda PWM, tím jemnější schody.</li>
+</ul></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>PWM: amplituda jen 0 / \(U_{MAX}\), perioda stálá, informace ve střídě (0–100 %). Střední hodnota \(D \cdot U_{MAX}\); s nulou na 50 % jde kódovat i záporné napětí. Optické vazbě nelinearita nevadí.</p></div>
+
+<h3 id="pwm-napeti">Obecný princip využití PWM pro přenos napětí</h3>
+<p>PWM neslouží jen pro přenos signálu, ale i pro přenos <b>energie</b>. Řízení <b>spínacího prvku</b> pomocí PWM umožňuje přenos vstupního napětí na výstup <b>impulzním spínáním</b>.</p>
+<figure><div class="paper"><img src="../figures/fig19_pwm_menic.png" alt="Schéma: vstupní napětí US přes spínač řízený PWM do uzlu, z uzlu dioda D k zemi (katodou nahoru) a cívka L do zátěže R k zemi; výstupní napětí UO na zátěži" loading="lazy"></div>
+<figcaption><b>Obr. P9.8</b> Obecný princip přenosu napětí pomocí PWM (podle slidu): spínač, dioda, cívka jako akumulace a filtr (Storage/Filter), zátěž.</figcaption></figure>
+<div class="box postup"><div class="box-t">Jak spínání přenese napětí</div>
+<ol>
+<li><b>Spínač sepnut</b> (úroveň H): ze zdroje \(U_S\) teče proud přes cívku do zátěže a cívka si ukládá energii do magnetického pole.</li>
+<li><b>Spínač rozepnut</b> (úroveň L): cívka „nechce“ změnit proud, a tak ho dál žene do zátěže přes diodu \(D\) (nulová dioda uzavře obvod).</li>
+<li>Cívka funguje jako <b>akumulace i filtr</b>: vyhladí obdélník na uzlu za spínačem na téměř stálé napětí.</li>
+<li>Výstup je tak přibližně <b>střední hodnota</b> spínaného napětí: \(U_O \approx D \cdot U_S\).</li>
+</ol></div>
+<figure><div class="paper"><img src="../figures/fig19_pwm_zvlneni.png" alt="Dva grafy výstupního napětí v čase: vlevo při střídě 50 procent a periodě 2 tau velké zvlnění mezi asi 3 a 9 V, při periodě 0,2 tau malé zvlnění kolem 6 V; vpravo pro střídy 25, 50 a 75 procent ustálené napětí 3, 6 a 9 V" loading="lazy"></div>
+<figcaption><b>Obr. P9.9</b> Výstup zapojení z obr. P9.8 pro \(U_S = 12\ \text{V}\) (vlastní čísla, \(\tau = L/R\)): velikost určuje střída, zvlnění perioda.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>Velikost</b> výstupního napětí závisí na <b>střídě</b>: 25 % z 12 V dá 3 V, 50 % dá 6 V, 75 % dá 9 V.</li>
+<li><b>Kvalita</b> (zvlnění) závisí na <b>periodě</b>: když je perioda krátká proti časové konstantě \(L/R\), cívka nestihne proud výrazně změnit a zvlnění je malé.</li>
+<li>Proto spínané měniče pracují na vysokých frekvencích (desítky kHz až MHz).</li>
+</ul></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Spínač řízený PWM + dioda + cívka přenese na výstup střední hodnotu \(D \cdot U_S\). Velikost určuje střída, zvlnění perioda.</p></div>
+
+<h2 id="napajeni">Oddělení napájecích obvodů: izolační DC/DC měnič</h2>
+<div class="box definice" id="def-dc-dc-izolacni-menic"><div class="box-t">Definice: izolační DC/DC měnič</div>
+<p><b>Izolační DC/DC měnič</b> je zdroj, který ze stejnosměrného vstupního napětí vytvoří galvanicky oddělené stejnosměrné výstupní napětí: vstupní napětí se pomocí PWM spíná do <b>impulzního transformátoru</b>, za ním se usměrní a vyfiltruje; výstupní napětí se reguluje zpětnou vazbou přes optickou vazbu.</p>
+<p class="jinak">„baterie za bariérou“. Izolovaná část přístroje (např. vstupní část izolačního zesilovače u pacienta) potřebuje vlastní napájení, které nemá vodivé spojení se zbytkem – dodá ho právě DC/DC měnič.</p></div>
+<p>Pro oddělení napájecích cest se podle slidu používají DC/DC izolační měniče. Ve skutečnosti v nich probíhá <b>transformace přes impulzní transformátor řízená PWM, usměrnění a filtrace</b>. Pomocí <b>zpětné vazby optickou vazbou</b> se detekuje výstupní napětí a upravuje režim PWM.</p>
+<div class="schema">
+<svg viewBox="0 0 760 250" role="img" aria-label="Izolační DC/DC měnič: vstup, PWM řadič, spínací tranzistor, impulzní transformátor přes izolační bariéru, usměrnění diodou a filtrace LC, výstup. Zpětná vazba: výstup přes dělič na OZ, který ho porovná s referencí a řídí LED optočlenu; fototranzistor na primární straně předá informaci PWM řadiči přes bariéru">
+  <defs><marker id="ar9d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="10" y="30" width="90" height="56" rx="8" class="node"/><text x="55" y="55" text-anchor="middle">+In</text><text x="55" y="74" text-anchor="middle" class="t2">DC vstup</text>
+  <rect x="125" y="30" width="110" height="56" rx="8" class="node fl1"/><text x="180" y="55" text-anchor="middle">spínač</text><text x="180" y="74" text-anchor="middle" class="t2">MOSFET</text>
+  <rect x="260" y="30" width="150" height="56" rx="8" class="node fl2"/><text x="335" y="55" text-anchor="middle">impulzní</text><text x="335" y="74" text-anchor="middle">transformátor</text>
+  <rect x="435" y="30" width="150" height="56" rx="8" class="node fl3"/><text x="510" y="55" text-anchor="middle">usměrnění</text><text x="510" y="74" text-anchor="middle" class="t2">dioda + LC filtr</text>
+  <rect x="610" y="30" width="140" height="56" rx="8" class="node"/><text x="680" y="55" text-anchor="middle">+Out</text><text x="680" y="74" text-anchor="middle" class="t2">oddělený DC výstup</text>
+  <path d="M100 58 H120" class="ln" marker-end="url(#ar9d)"/>
+  <path d="M235 58 H255" class="ln" marker-end="url(#ar9d)"/>
+  <path d="M410 58 H430" class="ln" marker-end="url(#ar9d)"/>
+  <path d="M585 58 H605" class="ln" marker-end="url(#ar9d)"/>
+  <rect x="125" y="160" width="110" height="56" rx="8" class="node fl1"/><text x="180" y="185" text-anchor="middle">PWM řadič</text><text x="180" y="204" text-anchor="middle" class="t2">mění střídu</text>
+  <rect x="260" y="160" width="150" height="56" rx="8" class="node fl2"/><text x="335" y="185" text-anchor="middle">optočlen</text><text x="335" y="204" text-anchor="middle" class="t2">LED → fototranzistor</text>
+  <rect x="435" y="160" width="150" height="56" rx="8" class="node fl3"/><text x="510" y="185" text-anchor="middle">OZ + Ref</text><text x="510" y="204" text-anchor="middle" class="t2">porovná výstup</text>
+  <path d="M180 160 V91" class="ln" marker-end="url(#ar9d)"/>
+  <path d="M260 188 H240" class="ln" marker-end="url(#ar9d)"/>
+  <path d="M435 188 H415" class="ln" marker-end="url(#ar9d)"/>
+  <path d="M680 86 V188 H590" class="ln" marker-end="url(#ar9d)"/>
+  <text x="690" y="140" class="t2">dělič</text>
+  <path d="M335 14 V28 M335 88 V158 M335 218 V236" class="ln dash"/>
+  <text x="335" y="248" text-anchor="middle" class="t2">izolační bariéra (dvakrát: transformátor a optočlen)</text>
+  <text x="90" y="130" class="t2">primární strana</text>
+  <text x="440" y="130" class="t2">sekundární strana</text>
+</svg></div>
+<p class="muted">Schéma: princip izolačního DC/DC měniče podle slidu – energie jde přes impulzní transformátor (nahoře), informace o výstupním napětí zpět přes optočlen (dole).</p>
+<div class="box postup"><div class="box-t">Jak izolační DC/DC měnič funguje</div>
+<ol>
+<li><b>Rozsekání:</b> PWM řadič spíná tranzistor (MOSFET), takže primárním vinutím impulzního transformátoru tečou impulzy. Stejnosměrné napětí by transformátorem neprošlo.</li>
+<li><b>Transformace:</b> impulzní transformátor přenese energii přes izolační bariéru magnetickým polem (a případně změní velikost napětí).</li>
+<li><b>Usměrnění a filtrace:</b> dioda za transformátorem impulzy usměrní, cívka a kondenzátor vyhladí výsledek na stejnosměrné napětí.</li>
+<li><b>Zpětná vazba:</b> OZ porovná výstupní napětí (z děliče) s referencí <i>Ref</i> a podle rozdílu řídí LED optočlenu. Fototranzistor na primární straně předá informaci PWM řadiči.</li>
+<li><b>Regulace:</b> když je výstup nízký, řadič zvětší střídu; když vysoký, zmenší ji. Výstup tak drží stálé napětí při změnách zátěže i vstupu.</li>
+</ol></div>
+<div class="box intuice"><div class="box-t">Proč dvě různé vazby</div>
+<ul>
+<li><b>Energii</b> přenáší transformátor – pro napájecí cestu je ideální (přenese výkon, frekvence spínání je pevná, takže frekvenční závislost nevadí).</li>
+<li><b>Informaci</b> o výstupním napětí (signál) přenáší optočlen – pro signál je vhodnější; stačí mu nepatrný výkon.</li>
+<li>Obě vazby přecházejí přes stejnou bariéru, takže primární a sekundární strana nemají žádné vodivé spojení.</li>
+</ul></div>
+
+<h3 id="parametry">Dosahované parametry galvanického oddělení</h3>
+<div class="box definice" id="def-izolacni-napeti"><div class="box-t">Definice: izolační napětí</div>
+<p><b>Izolační napětí</b> je nejvyšší napětí mezi oběma galvanicky oddělenými stranami, které izolační bariéra vydrží bez průrazu (obvykle se udává pro stanovenou dobu zkoušky, např. 1 minutu).</p>
+<p class="jinak">„jak vysoké napětí bariéra unese“. Udává, před jak velkým napětím oddělení ještě chrání.</p></div>
+<div class="tablewrap"><table>
+<thead><tr><th>parametr</th><th>typické hodnoty (slide)</th></tr></thead>
+<tbody>
+<tr><td>izolační napětí</td><td>typicky 600 V, 2 000 V, u některých aplikací až 5 000 V</td></tr>
+<tr><td>účinnost DC/DC měničů</td><td>až 97 % při výkonu jednotek W</td></tr>
+<tr><td>rozsah vstupního napětí</td><td>obvykle velký: 5–36 V (i 60 V)</td></tr>
+<tr><td>výstupní napětí</td><td>obvykle lze i více výstupů, např. +5 V → +5 V / ±12 V</td></tr>
+<tr><td>„military“ DC/DC měniče</td><td>\(U_{IN}\) = 9–425 V při \(\eta \approx 95\ \%\), výkon až 800 W</td></tr>
+</tbody></table></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Pro oddělení napájecích cest se používají DC/DC izolační měniče. Ve skutečnosti probíhá transformace přes impulzní transformátor řízená PWM, usměrnění a filtrace. Výstupní napětí se pomocí zpětné vazby optickou vazbou detekuje a podle něj se upravuje střída PWM. Energie tedy jde magnetickým polem, informace o výstupu světlem. Izolační napětí bývá 600 V až 5 kV, účinnost až 97 %.“</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Izolační DC/DC měnič: PWM → impulzní transformátor → usměrnění a filtrace; regulace zpětnou vazbou přes optočlen. Napájení a signál jsou tak oddělené oba.</p></div>
+
+<h2 id="srovnani">Srovnání vazeb</h2>
+<div class="tablewrap"><table class="compact">
+<thead><tr><th></th><th>transformátorová</th><th>kapacitní</th><th>optická</th></tr></thead>
+<tbody>
+<tr><td>co tvoří izolaci</td><td>magnetické pole (jádro)</td><td>dielektrikum (např. teflon)</td><td>optická cesta (světlo, fotony)</td></tr>
+<tr><td>co přenese</td><td>AC a impulzy</td><td>jen střídavou složku</td><td>digitální signál; analogový s linearizací nebo modulací</td></tr>
+<tr><td>DC</td><td>ne – nejdřív rozsekat (PWM)</td><td>ne – nejdřív rozsekat (driver)</td><td>některé optočleny AC i DC</td></tr>
+<tr><td>hlavní slabina</td><td>frekvenční závislost převodu</td><td>izoluje jen DC, ne AC</td><td>nelinearita LED a detektoru</td></tr>
+<tr><td>typické použití</td><td>napájení (230 / 400 V, DC/DC), VN</td><td>DC/DC malých výkonů (do 3 W)</td><td>signál; zpětná vazba DC/DC</td></tr>
+</tbody></table></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Transformátor odděluje magnetickým polem, přenese AC a impulzy a hodí se na napájení, ne na signál, protože je frekvenčně závislý. Kondenzátor odděluje dielektrikem, přenese jen střídavou složku a izoluje jen DC – používá se zřídka u DC/DC do 3 W. Optická vazba přenáší světlem a je vhodná pro signál; je nelineární, proto analogový signál potřebuje linearizovanou vazbu nebo modulaci PWM.“</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2>Shrnutí</h2>
+<p><b>Galvanické oddělení</b> je prostředek zajišťující prevenci toku nežádoucích proudů mezi dvěma částmi obvodu. V běžném stavu mají obvody společnou zem a teče mezi nimi jen „správný“ proud; když jeden obvod zasáhne vysoké napětí, mohou společnou cestou téct nebezpečné proudy (DC i AC). Oddělení chrání drahé a citlivé obvody, brání úrazu a přerušuje zemní smyčky. Izolovat se musí signálová i napájecí část a oddělit se musí i země.</p>
+<p><b>Transformátorová vazba</b> je nejjednodušší, pracuje na principu elektromagnetické indukce a přenese jen AC nebo impulzní proudy; kvůli závislosti převodu na frekvenci, impedanci a výkonu je vhodná pro napájení, ne pro signál. <b>Kapacitní vazba</b> má jako izolant dielektrikum a používá se zřídka u DC/DC do 3 W: driver rozseká napětí na 100 kHz – 1 MHz (malé kondenzátory), za bariérou ho diodový můstek usměrní; izoluje jen DC, ne AC. <b>Optická vazba</b> převádí elektroniku na světlo a zpět, v jednom pouzdře jako optočlen, a hodí se pro signál; je však značně nelineární, proto běžně přenáší digitální signály.</p>
+<p>Analogový signál přenese <b>izolační zesilovač s linearizovanou vazbou</b>: jedna LED svítí na dvě shodné fotodiody, PD1 ve zpětné vazbě vstupního OZ kompenzuje nelinearitu LED a za bariérou platí \(U_{OUT} = (K_2/K_1)(R_2/R_1)\,U_{IN}\); obě polarity vyžadují dva kanály. Druhou cestou je <b>modulace</b>, nejčastěji <b>PWM</b>: amplituda jen 0 / \(U_{MAX}\), stálá perioda, informace ve střídě (0–100 %, s nulou na 50 % i pro záporné napětí). PWM řízený spínač s cívkou a diodou přenese i napětí (\(U_O \approx D\,U_S\), zvlnění dle periody). <b>Izolační DC/DC měnič</b> přenáší energii impulzním transformátorem řízeným PWM, usměrní a vyfiltruje ji a reguluje výstup zpětnou vazbou přes optočlen.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Galvanické oddělení brání toku nežádoucích proudů; oddělit se musí signál, napájení i země.</li>
+<li>Tři vazby: magnetické pole (transformátor), dielektrikum (kondenzátor), světlo (optická).</li>
+<li>Transformátor a kondenzátor nepřenesou DC – stejnosměrné napětí se musí nejdřív rozsekat.</li>
+<li>Transformátor je frekvenčně závislý → napájení, ne signál; kondenzátor izoluje jen DC.</li>
+<li>Optická vazba je vhodná pro signál, ale nelineární → přímo jen digitální signál.</li>
+<li>Linearizovaná vazba: PD1 ve zpětné vazbě vyrovná LED, \(U_{OUT} = (K_2/K_1)(R_2/R_1)\,U_{IN}\).</li>
+<li>PWM: informace ve střídě, střední hodnota \(D \cdot U_{MAX}\); nelinearita optočlenu jí nevadí.</li>
+<li>Izolační DC/DC: PWM → impulzní transformátor → usměrnění a filtrace, regulace přes optočlen.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Co je galvanické oddělení, proč je potřeba a co všechno se musí oddělit?</summary><div>
+<p>Galvanické oddělení je prostředek zajišťující prevenci toku nežádoucích proudů mezi dvěma částmi obvodu – signál nebo energie se přenese přes izolační bariéru bez vodivého spojení.</p>
+<p>V běžném stavu mají obvody společnou zem a tečou mezi nimi jen „správné“ proudy. Když jeden obvod zasáhne vysoké napětí, potenciály se liší a mezi obvody mohou téct nebezpečné proudy (DC i AC): v lepším případě chyby, v horším nebezpečné provozní podmínky.</p>
+<p>Smysl: ochrana drahých a citlivých obvodů, prevence úrazu elektrickým proudem, přerušení zemní smyčky. Izolovat je třeba signálovou i napájecí část a oddělit i země obou obvodů.</p></div></details>
+<details class="q"><summary>Vysvětlete princip transformátorové vazby. Jaké má vlastnosti a nevýhody a na co se hodí?</summary><div>
+<p>Transformátorová vazba je nejjednodušší galvanické oddělení na principu elektromagnetické indukce: proměnný proud v primáru vytvoří proměnný magnetický tok, který v sekundáru indukuje napětí. Vinutí nejsou vodivě spojena, izolací je magnetické pole.</p>
+<ul>
+<li>Přenese jen AC nebo impulzní proudy (DC tok nemění, nic neindukuje).</li>
+<li>Standardně pro rozvody 230 / 400 V současně s transformací U/I, i pro oddělení VN.</li>
+<li>Nevýhody: závislost převodu na frekvenci, impedanci a výkonu, definovaný rozsah pracovní frekvence.</li>
+</ul>
+<p>Proto se hodí na napájecí cestu, ne na signálovou. Druhy: výkonové, měřicí (oddělení měřidla od soustavy) a oddělovací (impulzní) transformátory.</p></div></details>
+<details class="q"><summary>Jak funguje izolace kapacitní vazbou v DC/DC obvodu? Proč vysoká frekvence a proč kondenzátor neizoluje střídavé napětí?</summary><div>
+<p>Izolací je dielektrikum kondenzátoru (např. teflon), které nepropustí stejnosměrný proud. Driver rozseká stejnosměrné napájení na dva obdélníky v protifázi s frekvencí \(f_{OSC}\) = 100 kHz až 1 MHz. Přes vazební kondenzátory projde jen střídavá složka a výstupní diodový „H-můstek“ ji usměrní, kondenzátor vyfiltruje.</p>
+<p>Vysoká frekvence dává malou reaktanci i malým kondenzátorům: pro 0,45 µF je</p>
+\[ \begin{aligned} f = 100\ \text{kHz}: &\quad X_C \approx 3{,}5\ \Omega \\ f = 50\ \text{Hz}: &\quad X_C \approx 7{,}1\ \text{k}\Omega \end{aligned} \]
+<p>Vnitřní impedance kondenzátoru izoluje jen stejnosměrné napětí – střídavé projde, a čím vyšší frekvence, tím snáz. Používá se zřídka, do malých výkonů (do 3 W) pro napájení, pro signál spíš ne.</p></div></details>
+<details class="q"><summary>Popište optickou vazbu a optočlen. Proč se přes ni běžně přenáší digitální signál a analogový jen omezeně?</summary><div>
+<p>Optická vazba využívá transformaci elektronika → optika → elektronika: vysílá LED, IR nebo laserová dioda, přijímá fotodioda, fotoodpor nebo fototranzistor. Galvanickým oddělením je optická cesta, izolantem je elektromagnetické záření (přenos fotonem). Zapouzdřená do jednoho pouzdra tvoří optočlen; může být i libovolně dlouhá (až stovky metrů vláknem).</p>
+<p>Přenos je díky VA charakteristice diody a charakteristice detektoru značně nelineární. Digitálnímu signálu to nevadí (stačí rozlišit svítí / nesvítí), analogový by se zkreslil – potřebuje rozšíření: linearizovanou vazbu nebo modulaci (PWM).</p></div></details>
+<details class="q"><summary>Jak izolační zesilovač s linearizovanou vazbou kompenzuje nelinearitu LED? Odvoďte jeho přenos.</summary><div>
+<p>Jedna LED osvětluje dvě shodné fotodiody. Vysílací část: na vstupu zesilovače A1 je fotodetektor PD1 v přímé optické vazbě s LED. A1 drží vstup na virtuální nule, takže proud \(U_{IN}/R_1\) musí odvést PD1. A1 nastaví proud LED tak, aby:</p>
+\[ I_{PD1} = \frac{U_{IN}}{R_1} \]
+<p>Přijímací část: PD2 za bariérou dostává stejné světlo, \(I_{PD2} = (K_2/K_1)\,I_{PD1}\), a A2 ho převede na napětí \(U_{OUT} = I_{PD2} R_2\). Celkem:</p>
+\[ U_{OUT} = \frac{K_2}{K_1} \cdot \frac{R_2}{R_1} \cdot U_{IN} \]
+<p>Charakteristika LED ve vzorci není – A1 se řídí světlem, ne proudem, a nelinearitu LED tím kompenzuje. \(K_2/K_1 \approx 1\) je stálé, protože fotodiody jsou shodné. V praxi se přidává frekvenční korekce (kondenzátory) ve zpětné vazbě obou OZ.</p></div></details>
+<details class="q"><summary>Proč základní izolační zesilovač s linearizovanou vazbou přenese jen jednu polaritu a jak se přenášejí obě?</summary><div>
+<p>LED umí světlo jen přidávat, proud LED i fotoproud tečou jen jedním směrem. Zapojení proto přenese buď kladný, nebo záporný vstup – podle toho, jak je otočena fotodioda a kam je připojena LED (varianty kladný / záporný vstup a výstup).</p>
+<p>Bipolární zapojení má pro každou polaritu vlastní kanál – vlastní optočlen (nebo vlákno). Horní kanál (OC1) zpracuje kladnou, dolní (OC2) zápornou polaritu; diody ve zpětné vazbě drží nevyužitý zesilovač mimo saturaci. Za bariérou jsou fotodiody PD2 zapojené proti sobě do uzlu výstupního zesilovače, takže výstup má obě polarity. Potenciometr BALANCE vyrovná obě poloviny, GAIN nastaví zesílení.</p></div></details>
+<details class="q"><summary>Co je PWM a střída? Jak se modulují záporná napětí a proč se PWM hodí pro optickou izolační vazbu?</summary><div>
+<p>PWM je modulace, při které amplituda nabývá jen hodnot 0 (L) nebo \(U_{MAX}\) (H), perioda opakování je neměnná a informace je ve střídě. Střída (činitel plnění, duty cycle) je podíl doby úrovně H a periody:</p>
+\[ D = \frac{t_H}{T} \]
+<p>nabývá 0 až 100 %; střední hodnota PWM je \(D \cdot U_{MAX}\), demoduluje se dolní propustí.</p>
+<p>Záporná napětí: pro \(U_{in} = 0\ \text{V}\) se zvolí střída 50 %; střída 0–49 % pak moduluje záporné, 51–100 % kladné napětí.</p>
+<p>Optická vazba je nelineární v amplitudě, ale spolehlivě přenese dvě úrovně a okamžiky přepnutí. PWM má informaci v šířce pulzu, ne ve výšce, takže nelinearita jí nevadí. Analogový signál se proto vzorkuje a moduluje – optočlen bývá rozšířen o modulační část.</p></div></details>
+<details class="q"><summary>Vysvětlete princip izolačního DC/DC měniče. Jak se reguluje výstupní napětí?</summary><div>
+<p>DC/DC izolační měnič slouží k oddělení napájecích cest. Stejnosměrné napětí by transformátorem neprošlo, proto ho PWM řadič spíná tranzistorem do <b>impulzního transformátoru</b>; ten přenese energii přes bariéru. Za ním se impulzy <b>usměrní</b> (dioda) a <b>vyfiltrují</b> (LC).</p>
+<p>Regulace: OZ na výstupní straně porovná výstupní napětí (z děliče) s referencí a řídí LED optočlenu. Fototranzistor na vstupní straně předá informaci PWM řadiči, který podle ní mění střídu (obecně \(U_O \approx D\,U_S\)). Energie jde magnetickým polem, informace o výstupu světlem – obě strany zůstanou galvanicky oddělené.</p>
+<p>Typicky: izolační napětí 600 V až 5 kV, účinnost až 97 % při jednotkách W, vstup 5–36 V.</p></div></details>
+
+<nav class="pager"><a class="prev" href="18_multiplexace.html"><small>← předchozí</small>Multiplexace signálů</a><a class="next" href="29_tahak.html"><small>další →</small>Tahák ke zkoušce</a></nav>
+</main>
+</div>
+</body>
+</html>

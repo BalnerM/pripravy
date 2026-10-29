@@ -16,7 +16,7 @@
 <header class="topbar">
   <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
   <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
-  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P8 se základy</small></a>
+  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P9 se základy</small></a>
   <span class="spacer"></span>
   <a class="iconbtn back" href="../../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
   
@@ -41,6 +41,7 @@
     <li><a href="16_komparator.html"><span class="n">P6</span><span>Komparátor, omezovač a úvod do A/D převodu</span></a></li>
     <li><a href="17_prevodniky.html"><span class="n">P7</span><span>A/D a D/A převodníky</span></a></li>
     <li><a href="18_multiplexace.html"><span class="n">P8</span><span>Multiplexace signálů</span></a></li>
+    <li><a href="19_galvanicke_oddeleni.html"><span class="n">P9</span><span>Galvanické oddělení signálu</span></a></li>
     <li><a href="29_tahak.html"><span class="n">★</span><span>Tahák ke zkoušce</span></a></li>
     <li><a href="99_slovnik.html" class="active"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
   </ol>
@@ -54,6 +55,7 @@
     <li><a href="#kP6">P6 · Komparátor, omezovač a úvod do A/D převodu</a></li>
     <li><a href="#kP7">P7 · A/D a D/A převodníky</a></li>
     <li><a href="#kP8">P8 · Multiplexace signálů</a></li>
+    <li><a href="#kP9">P9 · Galvanické oddělení signálu</a></li>
   </ul>
 </nav>
 <main>
@@ -544,6 +546,40 @@
 <div class="box definice" id="s-seriove-paralelni-spinac"><div class="box-t">sériově-paralelní spínač</div>
 <p><b>Sériově-paralelní spínač</b> je dvojice spínačů řízených společným signálem \(X_k\): spínač <b>a</b> zapojený v sérii se signálovým vstupem a spínač <b>b</b> zapojený paralelně, ze vstupu sledovače na zem, přičemž je vždy sepnut právě jeden z nich.</p>
 <p class="jinak">signál se nejdřív odpojí (a) a pak se vstup pro jistotu ještě uzemní (b). Nevybraný kanál tak není „skoro nula“ přes dělič, ale opravdu nula.</p><p class="slovnik-odkaz"><a href="18_multiplexace.html#def-seriove-paralelni-spinac">výklad v kapitole P8 →</a></p></div>
+<h2 id="kP9" class="slovnik-kap">P9 · Galvanické oddělení signálu</h2>
+<div class="box definice" id="s-zemni-smycka"><div class="box-t">zemní smyčka</div>
+<p><b>Zemní smyčka</b> je uzavřená vodivá smyčka, která vznikne, když jsou dvě zařízení propojena signálovou zemí a zároveň každé z nich uzemněno jinde; rozdíl potenciálů mezi místy uzemnění pak smyčkou žene nežádoucí proud.</p>
+<p class="jinak">dvě „země“ nejsou nikdy přesně na stejném napětí. Když je spojí stínění kabelu, teče jím proud, který se přičte k měřenému signálu jako rušení (typicky brum 50 Hz). Galvanické oddělení smyčku rozpojí.</p><p class="slovnik-odkaz"><a href="19_galvanicke_oddeleni.html#def-zemni-smycka">výklad v kapitole P9 →</a></p></div>
+<div class="box definice" id="s-transformatorova-vazba"><div class="box-t">transformátorová vazba</div>
+<p><b>Transformátorová vazba</b> je galvanické oddělení na principu <b>elektromagnetické indukce</b>: proměnný proud v primárním vinutí vytvoří v jádře proměnný magnetický tok, který indukuje napětí v sekundárním vinutí; vinutí spolu nejsou vodivě spojena.</p>
+<p class="jinak">energie „přeskočí“ z jednoho vinutí do druhého přes magnetické pole v jádře. Izolací je tu magnetické pole: drátem z primáru do sekundáru nic neteče.</p><p class="slovnik-odkaz"><a href="19_galvanicke_oddeleni.html#def-transformatorova-vazba">výklad v kapitole P9 →</a></p></div>
+<div class="box definice" id="s-kapacitni-vazba"><div class="box-t">kapacitní vazba</div>
+<p><b>Kapacitní vazba</b> je galvanické oddělení, při kterém se energie nebo signál přenáší přes <b>kondenzátory</b>: izolací je dielektrikum mezi elektrodami, které nepropustí stejnosměrný proud, zatímco střídavá složka projde přes impedanci kondenzátoru.</p>
+<p class="jinak">mezi obě strany se vloží kondenzátor. Izolant v něm (dielektrikum, např. teflon) nepustí stejnosměrný proud, ale rychle se měnící napětí „přejde“ elektrickým polem na druhou stranu.</p><p class="slovnik-odkaz"><a href="19_galvanicke_oddeleni.html#def-kapacitni-vazba">výklad v kapitole P9 →</a></p></div>
+<div class="box definice" id="s-opticka-vazba"><div class="box-t">optická vazba</div>
+<p><b>Optická vazba</b> je galvanické oddělení využívající transformaci <b>elektronika → optika → elektronika</b>: vysílač (LED, IR nebo laserová dioda) převede elektrický signál na světlo a fotodetektor (fotodioda, fotoodpor nebo fototranzistor) ho převede zpět na elektrický signál; galvanickým oddělením je optická cesta.</p>
+<p class="jinak">signál se „předá světlem“. Mezi vysílačem a přijímačem je jen průhledný izolant nebo vzduch, informaci nese elektromagnetické záření – fotony, ne elektrony.</p><p class="slovnik-odkaz"><a href="19_galvanicke_oddeleni.html#def-opticka-vazba">výklad v kapitole P9 →</a></p></div>
+<div class="box definice" id="s-optoclen"><div class="box-t">optočlen</div>
+<p><b>Optočlen</b> je součástka, ve které jsou vysílač světla a fotodetektor optické vazby zapouzdřeny do <b>jednoho integrovaného pouzdra</b>, takže tvoří hotový galvanicky oddělující prvek.</p>
+<p class="jinak">LED a fotodetektor „naproti sobě“ v jednom malém černém pouzdru. Na jedné straně se pouzdro připojí ke vstupnímu obvodu, na druhé k výstupnímu, a uvnitř je mezi nimi jen světlo.</p><p class="slovnik-odkaz"><a href="19_galvanicke_oddeleni.html#def-optoclen">výklad v kapitole P9 →</a></p></div>
+<div class="box definice" id="s-izolacni-zesilovac"><div class="box-t">izolační zesilovač</div>
+<p><b>Izolační zesilovač</b> je zesilovač, jehož vstupní a výstupní část jsou od sebe galvanicky odděleny (např. optickou vazbou) a mají oddělené země i napájení, takže přenáší analogový signál přes izolační bariéru.</p>
+<p class="jinak">zesilovač „rozříznutý“ izolační bariérou: na straně pacienta je vstupní část, na straně počítače výstupní část, a mezi nimi vede jen světlo.</p><p class="slovnik-odkaz"><a href="19_galvanicke_oddeleni.html#def-izolacni-zesilovac">výklad v kapitole P9 →</a></p></div>
+<div class="box definice" id="s-linearizovana-vazba"><div class="box-t">izolační zesilovač s linearizovanou vazbou</div>
+<p><b>Izolační zesilovač s linearizovanou vazbou</b> je optický izolační zesilovač, v němž jedna LED osvětluje dvě shodné fotodiody: <b>PD1</b> na vstupní straně v přímé optické vazbě s LED a ve zpětné vazbě vstupního zesilovače, čímž je kompenzována nelinearita LED, a <b>PD2</b> na výstupní straně za izolační bariérou, jejíž proud převádí výstupní zesilovač na napětí.</p>
+<p class="jinak">LED „svítí pro dva“. Vstupní zesilovač hlídá svou fotodiodu PD1 a nastaví LED přesně tak, aby PD1 dávala proud úměrný vstupu. Protože PD2 dostává stejné světlo, dává stejný (úměrný) proud – a ten se za bariérou převede na výstupní napětí.</p><p class="slovnik-odkaz"><a href="19_galvanicke_oddeleni.html#def-linearizovana-vazba">výklad v kapitole P9 →</a></p></div>
+<div class="box definice" id="s-pwm"><div class="box-t">pulzně šířková modulace (PWM)</div>
+<p><b>Pulzně šířková modulace</b> (Pulse Width Modulation, PWM) je modulace, při které obdélníkový signál nabývá jen dvou hodnot amplitudy, 0 (L) nebo \(U_{MAX}\) (H), jeho perioda opakování je <b>neměnná</b> a informace je zakódována ve <b>střídě</b>, tedy v šířce pulzu v rámci periody.</p>
+<p class="jinak">výška ani rytmus pulzů se nemění, mění se jen to, jak dlouho je v každé periodě signál „nahoře“. Širší pulz = větší hodnota.</p><p class="slovnik-odkaz"><a href="19_galvanicke_oddeleni.html#def-pwm">výklad v kapitole P9 →</a></p></div>
+<div class="box definice" id="s-strida"><div class="box-t">střída</div>
+<p><b>Střída</b> (činitel plnění, angl. <i>duty cycle</i>, DC) je poměr doby, po kterou je signál v úrovni H, k celé periodě opakování: \[ D = \frac{t_H}{T} \] Nabývá hodnot 0 % až 100 %.</p>
+<p class="jinak">jak velká část periody je „zaplněná“. Střída 50 % = půl periody nahoře, půl dole; 75 % = tři čtvrtiny nahoře; 0 % = pořád dole, 100 % = pořád nahoře.</p><p class="slovnik-odkaz"><a href="19_galvanicke_oddeleni.html#def-strida">výklad v kapitole P9 →</a></p></div>
+<div class="box definice" id="s-dc-dc-izolacni-menic"><div class="box-t">izolační DC/DC měnič</div>
+<p><b>Izolační DC/DC měnič</b> je zdroj, který ze stejnosměrného vstupního napětí vytvoří galvanicky oddělené stejnosměrné výstupní napětí: vstupní napětí se pomocí PWM spíná do <b>impulzního transformátoru</b>, za ním se usměrní a vyfiltruje; výstupní napětí se reguluje zpětnou vazbou přes optickou vazbu.</p>
+<p class="jinak">„baterie za bariérou“. Izolovaná část přístroje (např. vstupní část izolačního zesilovače u pacienta) potřebuje vlastní napájení, které nemá vodivé spojení se zbytkem – dodá ho právě DC/DC měnič.</p><p class="slovnik-odkaz"><a href="19_galvanicke_oddeleni.html#def-dc-dc-izolacni-menic">výklad v kapitole P9 →</a></p></div>
+<div class="box definice" id="s-izolacni-napeti"><div class="box-t">izolační napětí</div>
+<p><b>Izolační napětí</b> je nejvyšší napětí mezi oběma galvanicky oddělenými stranami, které izolační bariéra vydrží bez průrazu (obvykle se udává pro stanovenou dobu zkoušky, např. 1 minutu).</p>
+<p class="jinak">„jak vysoké napětí bariéra unese“. Udává, před jak velkým napětím oddělení ještě chrání.</p><p class="slovnik-odkaz"><a href="19_galvanicke_oddeleni.html#def-izolacni-napeti">výklad v kapitole P9 →</a></p></div>
 
 <nav class="pager"><a class="prev" href="29_tahak.html"><small>← předchozí</small>Tahák ke zkoušce</a></nav>
 </main>

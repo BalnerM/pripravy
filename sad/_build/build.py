@@ -20,7 +20,7 @@ GLOSSARY = "99_slovnik"                       # stránka slovníku generovaná z
 #   sad/          půlsemestrální test: jen základy Z1–Z4 (obsah/01–05, vznikly bez přednášek), tahák, slovník;
 #   sad/zkouska/  závěrečná zkouška (EDITIONS níže, fragmenty v obsah_zkouska/): přednášky P1–P10 = MPC_SAD_01–10,
 #                 soubory 11_…–20_… (P4 = 14_oz_zapojeni, P5 = 15_aktivni_filtry, P6 = 16_komparator, P7 = 17_prevodniky,
-#                 P8 = 18_multiplexace), tahák
+#                 P8 = 18_multiplexace, P9 = 19_galvanicke_oddeleni), tahák
 #                 29_tahak, slovník. Čte se jako celek bez přeskakování: látka základů je v přednáškách vložená
 #                 jako „Připomenutí ze základů“ (<div class="zaklad">) v místě, kde je poprvé potřeba, včetně
 #                 rámečků definic se stejnými id jako v Z1–Z4 (def-delic, def-invertujici…); později se na ně
@@ -40,7 +40,7 @@ PAGES = [
 
 # Další samostatná skripta téhož předmětu ve vlastní podsložce (sdílí assets/ a figures/, mají vlastní slovník,
 # skripta_vse.html a pdf/). Fragmenty v _build/obsah_<DIR>/.
-EDITIONS = [dict(DIR="zkouska", BRAND="SAD – závěrečná zkouška", BRAND_SUB="přednášky P1–P8 se základy", PAGES=[
+EDITIONS = [dict(DIR="zkouska", BRAND="SAD – závěrečná zkouška", BRAND_SUB="přednášky P1–P9 se základy", PAGES=[
     ("index", "", "Mapa kurzu", "Jak skripta ke zkoušce používat a kde je která přednáška."),
     ("11_signal", "P1", "Úvod: signál a jeho převod na napětí",
      "Akviziční cesta, druhy signálů, měkký zdroj; převod proudu, frekvence a odporu na napětí; Wheatstoneův můstek."),
@@ -58,6 +58,8 @@ EDITIONS = [dict(DIR="zkouska", BRAND="SAD – závěrečná zkouška", BRAND_SU
      "DAC s váhovými rezistory a R–2R; half-flash ADC; integrační převodníky single a dual slope; kompenzační převodníky counter, tracking a s postupnou aproximací (SAR); čas konverze."),
     ("18_multiplexace", "P8", "Multiplexace signálů",
      "Multiplexor a demultiplexor, digitální a analogový MUX; časový (TDM), frekvenční (FDM) a vlnový (WDM) multiplex; analogový MPX s OZ, chyba sepnutého tranzistoru, sériově-paralelní spínač."),
+    ("19_galvanicke_oddeleni", "P9", "Galvanické oddělení signálu",
+     "Proč oddělovat; transformátorová, kapacitní a optická vazba; optočlen; izolační zesilovač s linearizovanou vazbou (i bipolární); PWM a střída; přenos napětí pomocí PWM; izolační DC/DC měnič."),
     ("29_tahak", "★", "Tahák ke zkoušce", "Vzorce, schémata a chytáky z přednášek i základů na jedné stránce."),
     ("99_slovnik", "Aa", "Slovník pojmů (definice)", "Všechny definice ze skript ke zkoušce na jednom místě."),
 ])]

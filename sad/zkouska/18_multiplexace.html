@@ -16,7 +16,7 @@
 <header class="topbar">
   <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
   <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
-  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P8 se základy</small></a>
+  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P9 se základy</small></a>
   <span class="spacer"></span>
   <a class="iconbtn back" href="../../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
   
@@ -41,6 +41,7 @@
     <li><a href="16_komparator.html"><span class="n">P6</span><span>Komparátor, omezovač a úvod do A/D převodu</span></a></li>
     <li><a href="17_prevodniky.html"><span class="n">P7</span><span>A/D a D/A převodníky</span></a></li>
     <li><a href="18_multiplexace.html" class="active"><span class="n">P8</span><span>Multiplexace signálů</span></a></li>
+    <li><a href="19_galvanicke_oddeleni.html"><span class="n">P9</span><span>Galvanické oddělení signálu</span></a></li>
     <li><a href="29_tahak.html"><span class="n">★</span><span>Tahák ke zkoušce</span></a></li>
     <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
   </ol>
@@ -58,7 +59,7 @@
 <h1>Multiplexace signálů</h1>
 <p class="lead">Biosignálů bývá víc (svody EKG, kanály EEG, teplota, tlak…), ale převodník, vodič nebo přenosová cesta je jen jedna. <b>Multiplexace</b> je způsob, jak po jedné cestě poslat víc signálů a na druhé straně je zase oddělit. Kapitola vysvětluje <b>princip</b> tří základních technik – časové (TDM), frekvenční (FDM) a vlnové (WDM) multiplexace – a pak ukazuje, jak se analogové signály přepínají v praxi: multiplexor se spínači a operačními zesilovači.</p>
 
-<p>V měřicím řetězci (slide „Multiplex“) leží multiplexace mezi úpravou signálu a <a href="11_signal.html#def-galvanicke-oddeleni">galvanickým oddělením</a> (přednáška P9). Pojem <a href="11_signal.html#def-multiplexace">multiplexace</a> už známe z P1. Tam šlo o postupné přepínání vstupů na jeden převodník – to je jen jedna z technik, časový multiplex. Tato kapitola ukáže i další.</p>
+<p>V měřicím řetězci (slide „Multiplex“) leží multiplexace mezi úpravou signálu a <a href="11_signal.html#def-galvanicke-oddeleni">galvanickým oddělením</a> (<a href="19_galvanicke_oddeleni.html">přednáška P9</a>). Pojem <a href="11_signal.html#def-multiplexace">multiplexace</a> už známe z P1. Tam šlo o postupné přepínání vstupů na jeden převodník – to je jen jedna z technik, časový multiplex. Tato kapitola ukáže i další.</p>
 
 <h2 id="mux-demux">Multiplexování a demultiplexování</h2>
 <p>Podle slidu je <b>multiplexování</b> proces využívaný v elektronice, telekomunikacích a počítačových sítích, který kombinuje více analogových signálů nebo více digitálních datových toků <b>do jednoho signálu</b>. Smyslem je <b>efektivní využití přenosového média</b> – místo deseti vodičů stačí jeden. <b>Demultiplexování</b> je opačný proces: jeden tok signálu rozdělí zpět do více signálů. Smyslem je <b>obnovení původních signálů</b> z přenosového média.</p>
@@ -259,7 +260,7 @@
 <li>Kanály se rozlišují <b>vlnovou délkou</b>, tedy vlastně frekvencí světla (\(\lambda = c/f\)). Proto je WDM technika multiplexace <b>příbuzná FDM</b>, jen v optické oblasti.</li>
 <li>Mezi vysílačem a přijímačem vede jen sklo nebo plast vlákna, žádný vodič.</li>
 </ul></div>
-<p>Podle slidu se WDM využívá pro přenos <b>opticky modulovaných</b> signálů. Díky optickému vláknu (tedy neelektrickému vedení) je technika WDM současně <a href="11_signal.html#def-galvanicke-oddeleni"><b>galvanickým oddělením</b></a> signálové cesty – mezi oběma stranami nemůže protékat proud. Tím kapitola navazuje na další přednášku o galvanickém oddělení.</p>
+<p>Podle slidu se WDM využívá pro přenos <b>opticky modulovaných</b> signálů. Díky optickému vláknu (tedy neelektrickému vedení) je technika WDM současně <a href="11_signal.html#def-galvanicke-oddeleni"><b>galvanickým oddělením</b></a> signálové cesty – mezi oběma stranami nemůže protékat proud. Tím kapitola navazuje na další přednášku o <a href="19_galvanicke_oddeleni.html">galvanickém oddělení</a>.</p>
 <div class="box kostka"><div class="box-t">V kostce</div>
 <p>WDM: každý signál moduluje světlo jiné vlnové délky, hranol barvy složí do jednoho vlákna a na konci je zase rozloží. Je to „FDM se světlem“, přenos je spojitý v čase a vlákno zároveň galvanicky odděluje.</p></div>
 
@@ -431,7 +432,7 @@
 <p><b>Digitální multiplexor</b> je složen z logických hradel a na výstup přenáší jen logickou úroveň (0/1) vybraného vstupu. <b>Analogový multiplexor</b> propojí vybraný vstup s výstupem analogovým spínačem (tranzistorem), takže přenese spojitou hodnotu napětí.</p>
 <p>Analogový multiplexor je proto automaticky použitelný i pro digitální signál (logická úroveň je jen zvláštní případ napětí), ale digitální nemůže přenést analogový signál. Digitální přenáší logiku, analogový přenáší spojitou hodnotu.</p></div></details>
 
-<nav class="pager"><a class="prev" href="17_prevodniky.html"><small>← předchozí</small>A/D a D/A převodníky</a><a class="next" href="29_tahak.html"><small>další →</small>Tahák ke zkoušce</a></nav>
+<nav class="pager"><a class="prev" href="17_prevodniky.html"><small>← předchozí</small>A/D a D/A převodníky</a><a class="next" href="19_galvanicke_oddeleni.html"><small>další →</small>Galvanické oddělení signálu</a></nav>
 </main>
 </div>
 </body>

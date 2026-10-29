@@ -16,7 +16,7 @@
 <header class="topbar">
   <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
   <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
-  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P8 se základy</small></a>
+  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P9 se základy</small></a>
   <span class="spacer"></span>
   <a class="iconbtn back" href="../../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
   
@@ -41,6 +41,7 @@
     <li><a href="16_komparator.html"><span class="n">P6</span><span>Komparátor, omezovač a úvod do A/D převodu</span></a></li>
     <li><a href="17_prevodniky.html"><span class="n">P7</span><span>A/D a D/A převodníky</span></a></li>
     <li><a href="18_multiplexace.html"><span class="n">P8</span><span>Multiplexace signálů</span></a></li>
+    <li><a href="19_galvanicke_oddeleni.html"><span class="n">P9</span><span>Galvanické oddělení signálu</span></a></li>
     <li><a href="29_tahak.html" class="active"><span class="n">★</span><span>Tahák ke zkoušce</span></a></li>
     <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
   </ol>
@@ -55,6 +56,7 @@
     <li><a href="#p6">P6 · Komparátor, omezovač, A/D převod (kapitola)</a></li>
     <li><a href="#p7">P7 · A/D a D/A převodníky (kapitola)</a></li>
     <li><a href="#p8">P8 · Multiplexace signálů (kapitola)</a></li>
+    <li><a href="#p9">P9 · Galvanické oddělení (kapitola)</a></li>
     <li><a href="#chytaky">Nejčastější chytáky</a></li>
   </ul>
 </nav>
@@ -201,6 +203,19 @@
 <tr><td>chyba „nuly“</td><td>\(u_{o(0)} \cong u_i\,\frac{R_{X_1}}{R_1}\)</td><td>100 Ω / 10 kΩ → 1 %; odstraní sériově-paralelní spínač</td></tr>
 </table></div>
 
+<h2 id="p9">P9 · Galvanické oddělení (<a href="19_galvanicke_oddeleni.html">kapitola</a>)</h2>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec / princip</th><th>poznámka</th></tr>
+<tr><td>galvanické oddělení</td><td>prevence toku nežádoucích proudů</td><td>oddělit signál, napájení i země</td></tr>
+<tr><td>transformátorová vazba</td><td>indukce, izolace = magnetické pole</td><td>jen AC a impulzy; frekvenčně závislá → napájení</td></tr>
+<tr><td>kapacitní vazba</td><td>izolace = dielektrikum; \(X_C = \frac{1}{2\pi f C}\)</td><td>DC/DC do 3 W, 100 kHz – 1 MHz; izoluje jen DC</td></tr>
+<tr><td>optická vazba</td><td>elektronika → světlo → elektronika</td><td>nelineární → přímo jen digitální; optočlen</td></tr>
+<tr><td>linearizovaná vazba</td><td>\(U_{OUT} = \frac{K_2}{K_1}\,\frac{R_2}{R_1}\,U_{IN}\)</td><td>PD1 ve ZV kompenzuje LED; obě polarity = 2 kanály</td></tr>
+<tr><td>PWM, střída</td><td>\(D = \frac{t_H}{T}\), \(\bar u = D\,U_{MAX}\)</td><td>0 V ↔ 50 %; pod 50 % záporné, nad 50 % kladné</td></tr>
+<tr><td>přenos napětí PWM</td><td>\(U_O \approx D\,U_S\)</td><td>velikost = střída, zvlnění = perioda</td></tr>
+<tr><td>izolační DC/DC</td><td>PWM → impulzní trafo → usměrnění, filtrace</td><td>regulace zpětnou vazbou přes optočlen</td></tr>
+</table></div>
+
 <h2 id="chytaky">Nejčastější chytáky</h2>
 <div class="box pozor"><div class="box-t">Na co si dát pozor u zkoušky</div>
 <ul>
@@ -217,9 +232,11 @@
 <li><b>Dlouhodobá stabilita</b> roste s \(\sqrt{t}\), ne lineárně.</li>
 <li><b>Analogový MPX:</b> tranzistor je k zemi a kanál se vybere jeho <b>rozepnutím</b>, ne sepnutím; analogový MUX přenese i logiku, digitální ne.</li>
 <li><b>TDM vs. FDM:</b> TDM má celé pásmo a minimální přeslech, FDM současný přenos, ale omezené pásmo a přeslechy.</li>
+<li><b>Kondenzátor jako bariéra</b> izoluje jen DC, ne AC; transformátor ani kondenzátor stejnosměrné napětí nepřenesou – musí se rozsekat.</li>
+<li><b>Linearizovaná vazba:</b> nelinearitu LED kompenzuje PD1 ve zpětné vazbě vstupního OZ; v přenosu je jen \(K_2/K_1\) a \(R_2/R_1\), ne charakteristika LED.</li>
 </ul></div>
 
-<nav class="pager"><a class="prev" href="18_multiplexace.html"><small>← předchozí</small>Multiplexace signálů</a><a class="next" href="99_slovnik.html"><small>další →</small>Slovník pojmů (definice)</a></nav>
+<nav class="pager"><a class="prev" href="19_galvanicke_oddeleni.html"><small>← předchozí</small>Galvanické oddělení signálu</a><a class="next" href="99_slovnik.html"><small>další →</small>Slovník pojmů (definice)</a></nav>
 </main>
 </div>
 </body>

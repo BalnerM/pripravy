@@ -1,7 +1,7 @@
 <h1>Multiplexace signálů</h1>
 <p class="lead">Biosignálů bývá víc (svody EKG, kanály EEG, teplota, tlak…), ale převodník, vodič nebo přenosová cesta je jen jedna. <b>Multiplexace</b> je způsob, jak po jedné cestě poslat víc signálů a na druhé straně je zase oddělit. Kapitola vysvětluje <b>princip</b> tří základních technik – časové (TDM), frekvenční (FDM) a vlnové (WDM) multiplexace – a pak ukazuje, jak se analogové signály přepínají v praxi: multiplexor se spínači a operačními zesilovači.</p>
 
-<p>V měřicím řetězci (slide „Multiplex“) leží multiplexace mezi úpravou signálu a <a href="11_signal.html#def-galvanicke-oddeleni">galvanickým oddělením</a> (přednáška P9). Pojem <a href="11_signal.html#def-multiplexace">multiplexace</a> už známe z P1. Tam šlo o postupné přepínání vstupů na jeden převodník – to je jen jedna z technik, časový multiplex. Tato kapitola ukáže i další.</p>
+<p>V měřicím řetězci (slide „Multiplex“) leží multiplexace mezi úpravou signálu a <a href="11_signal.html#def-galvanicke-oddeleni">galvanickým oddělením</a> (<a href="19_galvanicke_oddeleni.html">přednáška P9</a>). Pojem <a href="11_signal.html#def-multiplexace">multiplexace</a> už známe z P1. Tam šlo o postupné přepínání vstupů na jeden převodník – to je jen jedna z technik, časový multiplex. Tato kapitola ukáže i další.</p>
 
 <h2 id="mux-demux">Multiplexování a demultiplexování</h2>
 <p>Podle slidu je <b>multiplexování</b> proces využívaný v elektronice, telekomunikacích a počítačových sítích, který kombinuje více analogových signálů nebo více digitálních datových toků <b>do jednoho signálu</b>. Smyslem je <b>efektivní využití přenosového média</b> – místo deseti vodičů stačí jeden. <b>Demultiplexování</b> je opačný proces: jeden tok signálu rozdělí zpět do více signálů. Smyslem je <b>obnovení původních signálů</b> z přenosového média.</p>
@@ -202,7 +202,7 @@
 <li>Kanály se rozlišují <b>vlnovou délkou</b>, tedy vlastně frekvencí světla (\(\lambda = c/f\)). Proto je WDM technika multiplexace <b>příbuzná FDM</b>, jen v optické oblasti.</li>
 <li>Mezi vysílačem a přijímačem vede jen sklo nebo plast vlákna, žádný vodič.</li>
 </ul></div>
-<p>Podle slidu se WDM využívá pro přenos <b>opticky modulovaných</b> signálů. Díky optickému vláknu (tedy neelektrickému vedení) je technika WDM současně <a href="11_signal.html#def-galvanicke-oddeleni"><b>galvanickým oddělením</b></a> signálové cesty – mezi oběma stranami nemůže protékat proud. Tím kapitola navazuje na další přednášku o galvanickém oddělení.</p>
+<p>Podle slidu se WDM využívá pro přenos <b>opticky modulovaných</b> signálů. Díky optickému vláknu (tedy neelektrickému vedení) je technika WDM současně <a href="11_signal.html#def-galvanicke-oddeleni"><b>galvanickým oddělením</b></a> signálové cesty – mezi oběma stranami nemůže protékat proud. Tím kapitola navazuje na další přednášku o <a href="19_galvanicke_oddeleni.html">galvanickém oddělení</a>.</p>
 <div class="box kostka"><div class="box-t">V kostce</div>
 <p>WDM: každý signál moduluje světlo jiné vlnové délky, hranol barvy složí do jednoho vlákna a na konci je zase rozloží. Je to „FDM se světlem“, přenos je spojitý v čase a vlákno zároveň galvanicky odděluje.</p></div>
 
