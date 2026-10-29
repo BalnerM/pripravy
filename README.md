@@ -17,6 +17,10 @@ Studijní materiály k jednotlivým předmětům, zveřejněné přes GitHub Pag
 - Po každém pushi do větve `main` workflow `.github/workflows/pages.yml` spustí všechny `*/_build/build.py`
   a `*/_build/make_pdf.py` (PDF ke každé stránce + celá skripta, tlačítko **PDF** na webu) a nasadí web.
   Průběh je vidět v záložce **Actions**.
+- **Ovládání v liště stránky:** `A−` / `A+` mění velikost písma (85–150 %, klik na procenta = původní velikost; platí pro všechny
+  předměty i rozcestník, ukládá se v prohlížeči), `◧ Panel` skryje/zobrazí postranní panel (na širokém displeji; na úzkém je `☰ Obsah`).
+  Při jiné než výchozí velikosti písma tlačítko **PDF** otevře tisk stránky (Uložit jako PDF) ve zvolené velikosti; při výchozí
+  velikosti stáhne hotové PDF z webu.
 
 ## Úpravy a verze
 - **Na GitHubu:** otevři zdrojový soubor (např. `vmm/_build/obsah/03_predzpracovani.html`), tužka → uprav →

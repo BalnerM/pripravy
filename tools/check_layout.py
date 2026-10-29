@@ -3,6 +3,7 @@
 Spuštění (z kořene repozitáře pripravy):
     uv run python tools/check_layout.py                    # všechny předměty, lokální soubory
     uv run python tools/check_layout.py --only vmm,mlr     # jen vybrané předměty
+    uv run python tools/check_layout.py --only vmm --fs 1.5  # s největší velikostí písma z lišty
     uv run python tools/check_layout.py --base https://balnerm.github.io/pripravy/   # živý web
 
 Používá nainstalovaný Chrome (Playwright, channel="chrome") – nic se nestahuje. Otázky <details> se před
@@ -88,6 +89,7 @@ def main():
     ap.add_argument("--base", help="URL webu místo lokálních souborů, např. https://balnerm.github.io/pripravy/")
     ap.add_argument("--pages", default="", help="jen stránky, jejichž cesta obsahuje některý z textů (oddělené čárkou)")
     ap.add_argument("--widths", default=",".join(map(str, WIDTHS)))
+    ap.add_argument("--fs", help="velikost písma jako v liště (např. 1.5): předvyplní localStorage vmm-fs")
     ap.add_argument("--skip", default="posuvník",
                     help="druhy problémů, které nehlásit (výchozí: posuvník = záměrně posuvná tabulka/schéma na mobilu)")
     a = ap.parse_args()
@@ -100,6 +102,8 @@ def main():
         browser = pw.chromium.launch(channel="chrome")
         for w in widths:
             page = browser.new_page(viewport={"width": w, "height": 900})
+            if a.fs:
+                page.add_init_script(f'try{{localStorage.setItem("vmm-fs","{a.fs}")}}catch(e){{}}')
             for rel in pages(subjects):
                 if a.pages and not any(x in rel for x in a.pages.split(",")):
                     continue

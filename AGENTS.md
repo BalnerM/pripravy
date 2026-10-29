@@ -15,6 +15,7 @@ README.md                     přehled předmětů a návod pro uživatele
 AGENTS.md / CLAUDE.md         tato pravidla
 pyproject.toml, uv.lock       Python prostředí pro grafy (uv); dev skupina: playwright pro tools/check_layout.py
 tools/check_layout.py         kontrola vykreslených stránek v Chromu: přetékání, rozbité obrázky, chyby KaTeX, husté odstavce
+                              (`--fs 1.5` = s největším písmem z lišty)
 .github/workflows/pages.yml   při pushi do main: všechny */_build/build.py → */_build/make_pdf.py → GitHub Pages
 _sablona/                     kostra nového předmětu (nesestavuje se, nenasazuje se)
 vmm/                          hotová skripta VMM – referenční příklad kvality a stylu
@@ -102,6 +103,20 @@ Elektrická schémata (R, C, OZ…) kresli knihovnou `schemdraw` v `make_figures
 8. Ověř (níže), zapiš do `RUNS.md`, a po souhlasu uživatele `git add -A`, `git commit`, `git push`;
    pak `gh run watch` a zkontroluj web a PDF (`curl -sI https://balnerm.github.io/pripravy/<zkratka>/`).
 
+
+## Ovládání v liště (assets/app.js, style.css, TEMPLATE v build.py – ve všech předmětech stejně)
+
+Velikost písma = CSS `zoom` na `main` přes `--fs` (kroky 0,85–1,5), klíč `localStorage["vmm-fs"]`; skrytý panel = třída
+`side-hidden` na `<html>`, klíč `vmm-side`. Základ nastavuje inline skript v `<head>` (bez bliknutí); stejné klíče má `index.html`.
+Tlačítko PDF při `--fs ≠ 1` volá `window.print()` (hotová PDF z Actions jsou jen ve výchozí velikosti, `?pdf` vynutí `--fs: 1`).
+Při úpravě ovládání uprav všechny předměty (`_sablona`, `vmm`, `sad`, `mlr`) i `index.html`.
+
+## Úpravy kapitol podle přednášek
+
+Použij skill `/kapitola-nova` (celá kapitola od nuly) nebo `/kapitola-doladit` (doplnění existující kapitoly).
+Platí vždy: stabilní `id` (def-…, kotvy, odkazy) se nemění ani neruší; u předmětů s `ALT` se upravuje
+`obsah/` i `obsah_en/` se stejnými id; vykreslené stránky PDF, rozdílové obrázky a přepisy poznámek patří
+jen do scratchpadu MIMO repo; nic se necommituje ani nepushuje bez souhlasu uživatele.
 
 ## Ověření
 

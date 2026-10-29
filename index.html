@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Přípravy na zkoušky</title>
 <meta name="description" content="Rozcestník studijních příprav na zkoušky.">
-<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f)}catch(e){}</script>
 <style>
 :root {
   color-scheme: light;
@@ -40,7 +40,9 @@ button {
   border-radius: 8px; height: 34px; padding: 0 10px; font: inherit; font-size: 14px; cursor: pointer;
 }
 button:hover { border-color: var(--line-strong); }
-main { max-width: 860px; margin: 0 auto; padding: 40px 16px 64px; }
+main { max-width: 860px; margin: 0 auto; padding: 40px 16px 64px; zoom: var(--fs, 1); }
+.fsgroup { display: inline-flex; gap: 4px; }
+button:disabled { opacity: .4; cursor: default; }
 h1 { font-size: 32px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -.01em; }
 .lead { color: var(--ink-2); font-size: 18px; margin: 0 0 32px; }
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
@@ -71,6 +73,11 @@ footer a { color: var(--accent-ink); }
 <header>
   <b>Přípravy na zkoušky</b>
   <span class="spacer"></span>
+  <span class="fsgroup">
+    <button id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
   <button id="themeBtn" type="button">Tmavý režim</button>
 </header>
 <main>
@@ -96,6 +103,25 @@ footer a { color: var(--accent-ink); }
     label();
   });
   label();
+
+  var STEPS = [0.85, 1, 1.15, 1.3, 1.5], down = document.getElementById("fsDown"),
+      up = document.getElementById("fsUp"), val = document.getElementById("fsVal");
+  function idx() {
+    var f = parseFloat(r.style.getPropertyValue("--fs")) || 1, best = 1;
+    STEPS.forEach(function (s, i) { if (Math.abs(s - f) < Math.abs(STEPS[best] - f)) best = i; });
+    return best;
+  }
+  function setFs(i) {
+    i = Math.max(0, Math.min(STEPS.length - 1, i));
+    r.style.setProperty("--fs", STEPS[i]);
+    try { localStorage.setItem("vmm-fs", STEPS[i]); } catch (e) {}
+    val.textContent = Math.round(STEPS[i] * 100) + " %";
+    down.disabled = i === 0; up.disabled = i === STEPS.length - 1;
+  }
+  down.addEventListener("click", function () { setFs(idx() - 1); });
+  up.addEventListener("click", function () { setFs(idx() + 1); });
+  val.addEventListener("click", function () { setFs(1); });
+  setFs(idx());
 })();
 </script>
 </body>

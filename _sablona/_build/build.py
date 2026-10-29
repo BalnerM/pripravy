@@ -50,6 +50,9 @@ TEXTS = {
         menu="☰ Obsah", menu_aria="Obsah", nav_aria="Navigace", back="Všechny přípravy", theme="Tmavý režim",
         chapters="Kapitoly", on_page="Na této stránce", prev="← předchozí", next="další →", lecture="Přednáška",
         pdf_page="Stáhnout tuto stránku jako PDF", pdf_all="Celá skripta v jednom PDF",
+        pdf_print="Vytisknout / uložit jako PDF s nastavenou velikostí písma",
+        fs_down="Zmenšit písmo", fs_up="Zvětšit písmo", fs_reset="Původní velikost písma",
+        side_label="◧ Panel", side_hide="Skrýt postranní panel", side_show="Zobrazit postranní panel",
         all_title="Celá skripta", all_desc="Všechny kapitoly na jedné stránce (tisková verze).",
         gl_title="Slovník pojmů",
         gl_lead="Všechny definice ze skript na jednom místě, seřazené podle kapitol. Hodí se na rychlé opakování: "
@@ -61,6 +64,9 @@ TEXTS = {
         menu="☰ Contents", menu_aria="Contents", nav_aria="Navigation", back="All study notes", theme="Dark mode",
         chapters="Chapters", on_page="On this page", prev="← previous", next="next →", lecture="Lecture",
         pdf_page="Download this page as PDF", pdf_all="All notes in one PDF",
+        pdf_print="Print / save as PDF with the chosen font size",
+        fs_down="Smaller text", fs_up="Larger text", fs_reset="Default text size",
+        side_label="◧ Sidebar", side_hide="Hide the sidebar", side_show="Show the sidebar",
         all_title="All notes", all_desc="All chapters on one page (print version).",
         gl_title="Glossary",
         gl_lead="All definitions from the notes in one place, ordered by chapter. Good for quick revision: cover the "
@@ -127,7 +133,7 @@ TEMPLATE = """<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{desc}">
-{alternate}<script>try{{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}}catch(e){{}}</script>
+{alternate}<script>try{{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}}catch(e){{}}</script>
 <link rel="stylesheet" href="{katex}/katex.min.css">
 <link rel="stylesheet" href="{up}assets/style.css">
 <script defer src="{katex}/katex.min.js"></script>
@@ -137,10 +143,16 @@ TEMPLATE = """<!doctype html>
 <body>
 <header class="topbar">
   <button class="iconbtn" id="menuBtn" aria-label="{t[menu_aria]}">{t[menu]}</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="{t[side_hide]}" data-show="{t[side_show]}" title="{t[side_hide]}">{t[side_label]}</button>
   <a class="brand" href="index.html">{brand}<small>{brand_sub}</small></a>
   <span class="spacer"></span>
   <a class="iconbtn back" href="{up}../index.html#{short}" title="{t[back]}">←<span> {t[back]}</span></a>
   {langbtn}
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="{t[fs_down]}" aria-label="{t[fs_down]}">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="{t[fs_reset]}">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="{t[fs_up]}" aria-label="{t[fs_up]}">A+</button>
+  </span>
   {pdfbtn}
   <button class="iconbtn" id="themeBtn" type="button">{t[theme]}</button>
 </header>
@@ -187,7 +199,8 @@ def chrome(s, slug, page_title):
         pdf, tip = ALL, T["pdf_all"]
     else:
         pdf, tip = slug, T["pdf_page"]
-    pdfbtn = f'<a class="iconbtn" href="pdf/{pdf}.pdf" download title="{tip}">PDF</a>'
+    pdfbtn = (f'<a class="iconbtn" id="pdfBtn" href="pdf/{pdf}.pdf" download title="{tip}" data-dl="{tip}" '
+              f'data-print="{T["pdf_print"]}">PDF</a>')
     printhead = f'<p class="printhead">{s["brand"]} · {html.escape(page_title)} · {s["site"]}{slug}.html</p>'
     return pdfbtn, printhead
 

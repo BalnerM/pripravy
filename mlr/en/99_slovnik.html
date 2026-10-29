@@ -6,7 +6,7 @@
 <title>Glossary (definitions) – MLR</title>
 <meta name="description" content="All definitions from the notes in one place.">
 <link rel="alternate" hreflang="cs" href="../99_slovnik.html">
-<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <link rel="stylesheet" href="../assets/style.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
@@ -16,11 +16,17 @@
 <body>
 <header class="topbar">
   <button class="iconbtn" id="menuBtn" aria-label="Contents">☰ Contents</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Hide the sidebar" data-show="Show the sidebar" title="Hide the sidebar">◧ Sidebar</button>
   <a class="brand" href="index.html">MLR – exam notes<small>machine learning: principles, models and their parameters</small></a>
   <span class="spacer"></span>
   <a class="iconbtn back" href="../../index.html#mlr" title="All study notes">←<span> All study notes</span></a>
   <a class="iconbtn langbtn" href="../99_slovnik.html" hreflang="cs" lang="cs" title="Česká verze">CZ</a>
-  <a class="iconbtn" href="pdf/99_slovnik.pdf" download title="Download this page as PDF">PDF</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Smaller text" aria-label="Smaller text">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Default text size">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Larger text" aria-label="Larger text">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/99_slovnik.pdf" download title="Download this page as PDF" data-dl="Download this page as PDF" data-print="Print / save as PDF with the chosen font size">PDF</a>
   <button class="iconbtn" id="themeBtn" type="button">Dark mode</button>
 </header>
 <div class="layout">

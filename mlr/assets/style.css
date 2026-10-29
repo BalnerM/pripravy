@@ -335,6 +335,7 @@ details.q > div > :last-child { margin-bottom: 0; }
 @media (max-width: 900px) {
   .layout { grid-template-columns: minmax(0, 1fr); }
   #menuBtn { display: inline-block; }
+  #sideBtn, #fsVal { display: none; }
   .sidebar {
     display: none; position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 15;
     height: auto; background: var(--bg); border-right: 0;
@@ -385,4 +386,16 @@ details.q > div > :last-child { margin-bottom: 0; }
 .tablewrap, .schema, .katex-display, table.vars { position: relative; }   /* skrytá MathML kopie vzorce nesmí utéct z posuvného boxu */
 table.vars { display: block; overflow-x: auto; }
 main { overflow-wrap: break-word; }
+
+/* ---------- velikost písma a skrytí panelu (nastavení v liště, ukládá app.js; zoom platí i v tisku) ---------- */
+:root { --fs: 1; }
+main { zoom: var(--fs); }
+.fsgroup { display: inline-flex; gap: 4px; flex-shrink: 0; }
+.iconbtn:disabled { opacity: .4; cursor: default; }
+.iconbtn:disabled:hover { border-color: var(--line); }
+@media (min-width: 901px) {
+  html.side-hidden .layout { grid-template-columns: minmax(0, 1fr); }
+  html.side-hidden .sidebar { display: none; }
+  html.side-hidden main { margin: 0 auto; }
+}
 .demo svg.sq { max-width: 470px; }

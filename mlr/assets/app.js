@@ -11,6 +11,16 @@
   const stored = getStored();
   if (stored === "light" || stored === "dark") root.setAttribute("data-theme", stored);
 
+  // ---------- velikost písma a postranní panel (klíče sdílené mezi předměty; základ nastavuje skript v <head>) ----------
+  const FS_STEPS = [0.85, 1, 1.15, 1.3, 1.5];
+  function setKey(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* bez úložiště */ } }
+  function fsIndex() {
+    const f = parseFloat(root.style.getPropertyValue("--fs")) || 1;
+    let best = 1;
+    FS_STEPS.forEach((s, i) => { if (Math.abs(s - f) < Math.abs(FS_STEPS[best] - f)) best = i; });
+    return best;
+  }
+
   // ---------- tisk / PDF ----------
   // ?pdf (generování PDF skriptem make_pdf.py) i ruční tisk: světlý režim, rozbalené odpovědi, načtené obrázky
   let themeBeforePrint = null;
@@ -27,6 +37,7 @@
   });
   if (/[?&]pdf\b/.test(location.search)) {
     root.setAttribute("data-theme", "light");
+    root.style.setProperty("--fs", "1");   // PDF z Actions má vždy výchozí velikost
     document.addEventListener("DOMContentLoaded", preparePrint);
   }
 
@@ -51,6 +62,42 @@
     // přepínač jazyka: obě verze mají stejná id, takže se zachová místo na stránce
     document.querySelectorAll("a.langbtn").forEach(a =>
       a.addEventListener("click", () => { a.href = a.href.split("#")[0] + location.hash; }));
+    const fsDown = document.getElementById("fsDown"), fsUp = document.getElementById("fsUp"),
+          fsVal = document.getElementById("fsVal"), pdfBtn = document.getElementById("pdfBtn");
+    function applyFs(i) {
+      i = Math.max(0, Math.min(FS_STEPS.length - 1, i));
+      const v = FS_STEPS[i];
+      root.style.setProperty("--fs", v);
+      setKey("vmm-fs", v);
+      if (fsVal) fsVal.textContent = Math.round(v * 100) + " %";
+      if (fsDown) fsDown.disabled = i === 0;
+      if (fsUp) fsUp.disabled = i === FS_STEPS.length - 1;
+      if (pdfBtn) pdfBtn.title = v === 1 ? pdfBtn.dataset.dl : pdfBtn.dataset.print;
+    }
+    if (fsDown) {
+      applyFs(fsIndex());
+      fsDown.addEventListener("click", () => applyFs(fsIndex() - 1));
+      fsUp.addEventListener("click", () => applyFs(fsIndex() + 1));
+      fsVal.addEventListener("click", () => applyFs(1));
+    }
+    // jiná než výchozí velikost: tlačítko PDF otevře tisk stránky (hotová PDF mají jen výchozí velikost)
+    if (pdfBtn) pdfBtn.addEventListener("click", e => {
+      if (FS_STEPS[fsIndex()] !== 1) { e.preventDefault(); window.print(); }
+    });
+    const sb = document.getElementById("sideBtn");
+    if (sb) {
+      const syncSide = () => {
+        const hidden = root.classList.contains("side-hidden");
+        sb.setAttribute("aria-pressed", hidden ? "true" : "false");
+        sb.title = hidden ? sb.dataset.show : sb.dataset.hide;
+      };
+      syncSide();
+      sb.addEventListener("click", () => {
+        root.classList.toggle("side-hidden");
+        setKey("vmm-side", root.classList.contains("side-hidden") ? "0" : "1");
+        syncSide();
+      });
+    }
     const mb = document.getElementById("menuBtn");
     if (mb) mb.addEventListener("click", () => document.body.classList.toggle("menu-open"));
     document.querySelectorAll(".sidebar a").forEach(a =>
