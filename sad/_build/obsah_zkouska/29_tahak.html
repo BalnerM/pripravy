@@ -116,6 +116,17 @@
 <tr><td>flash ADC</td><td>\(2^n - 1\) komparátorů</td><td>termometrický kód → kodér; nejrychlejší</td></tr>
 </table></div>
 
+<h2 id="p7">P7 · A/D a D/A převodníky (<a href="17_prevodniky.html">kapitola</a>)</h2>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec</th><th>poznámka</th></tr>
+<tr><td>DAC R–2R</td><td>\(U_o = -\frac{U_\mathrm{REF} R_f}{R}\sum \frac{B_i}{2^{n-i}}\)</td><td>jen \(R\) a \(2R\); váhový DAC: \(R, 2R, 4R, \dots\)</td></tr>
+<tr><td>half-flash</td><td>\(2(2^{n/2} - 1)\) komparátorů</td><td>flash MSB → DAC → odečíst → flash LSB; 8 bitů: 30 místo 255</td></tr>
+<tr><td>single slope</td><td>\(T = RC\,\frac{U_\mathrm{IN}}{U_\mathrm{REF}}\)</td><td>pila + komparátor + AND + čítač; závisí na \(RC\)</td></tr>
+<tr><td>dual slope</td><td>\(T_2 = T_1\,\frac{U_\mathrm{IN}}{U_\mathrm{REF}}\)</td><td>\(R\), \(C\) se vykrátí; \(|U_\mathrm{REF}| > |U_\mathrm{IN}|\)</td></tr>
+<tr><td>counter, tracking, single slope</td><td>\(T_{C(\mathrm{MAX})} = (2^n - 1)T_\mathrm{CLK}\)</td><td>čas závisí na \(U_\mathrm{IN}\); tracking: náběh, ±1 LSB</td></tr>
+<tr><td>postupná aproximace</td><td>\(T_C = n\,T_\mathrm{CLK}\)</td><td>půlení intervalů, bit za takt od MSB</td></tr>
+</table></div>
+
 <h2 id="chytaky">Nejčastější chytáky</h2>
 <div class="box pozor"><div class="box-t">Na co si dát pozor u zkoušky</div>
 <ul>

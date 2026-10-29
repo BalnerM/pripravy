@@ -19,7 +19,7 @@ GLOSSARY = "99_slovnik"                       # stránka slovníku generovaná z
 # SAD má dvoje samostatná skripta (PARTS = písmeno štítku → nadpis v záhlaví kapitoly):
 #   sad/          půlsemestrální test: jen základy Z1–Z4 (obsah/01–05, vznikly bez přednášek), tahák, slovník;
 #   sad/zkouska/  závěrečná zkouška (EDITIONS níže, fragmenty v obsah_zkouska/): přednášky P1–P10 = MPC_SAD_01–10,
-#                 soubory 11_…–20_… (P4 = 14_oz_zapojeni, P5 = 15_aktivni_filtry, P6 = 16_komparator), tahák
+#                 soubory 11_…–20_… (P4 = 14_oz_zapojeni, P5 = 15_aktivni_filtry, P6 = 16_komparator, P7 = 17_prevodniky), tahák
 #                 29_tahak, slovník. Čte se jako celek bez přeskakování: látka základů je v přednáškách vložená
 #                 jako „Připomenutí ze základů“ (<div class="zaklad">) v místě, kde je poprvé potřeba, včetně
 #                 rámečků definic se stejnými id jako v Z1–Z4 (def-delic, def-invertujici…); později se na ně
@@ -39,7 +39,7 @@ PAGES = [
 
 # Další samostatná skripta téhož předmětu ve vlastní podsložce (sdílí assets/ a figures/, mají vlastní slovník,
 # skripta_vse.html a pdf/). Fragmenty v _build/obsah_<DIR>/.
-EDITIONS = [dict(DIR="zkouska", BRAND="SAD – závěrečná zkouška", BRAND_SUB="přednášky P1–P6 se základy", PAGES=[
+EDITIONS = [dict(DIR="zkouska", BRAND="SAD – závěrečná zkouška", BRAND_SUB="přednášky P1–P7 se základy", PAGES=[
     ("index", "", "Mapa kurzu", "Jak skripta ke zkoušce používat a kde je která přednáška."),
     ("11_signal", "P1", "Úvod: signál a jeho převod na napětí",
      "Akviziční cesta, druhy signálů, měkký zdroj; převod proudu, frekvence a odporu na napětí; Wheatstoneův můstek."),
@@ -53,6 +53,8 @@ EDITIONS = [dict(DIR="zkouska", BRAND="SAD – závěrečná zkouška", BRAND_SU
      "Přenosová funkce, ideální a reálný filtr, strmost dB/okt a dB/dek; DP, HP, PP a PZ v zapojení Sallen-Key a MFB, dvojitý T, Wienův-Robinsonův můstek; Butterworth, Čebyšev, Bessel."),
     ("16_komparator", "P6", "Komparátor, omezovač a úvod do A/D převodu",
      "Precizní a oboustranný omezovač (Zenerovy diody, můstek); komparátor, chyba přeběhu, rušení; Schmittův klopný obvod a hystereze; amplitudový selektor; kvantování, vzorkování; paralelní (flash) ADC."),
+    ("17_prevodniky", "P7", "A/D a D/A převodníky",
+     "DAC s váhovými rezistory a R–2R; half-flash ADC; integrační převodníky single a dual slope; kompenzační převodníky counter, tracking a s postupnou aproximací (SAR); čas konverze."),
     ("29_tahak", "★", "Tahák ke zkoušce", "Vzorce, schémata a chytáky z přednášek i základů na jedné stránce."),
     ("99_slovnik", "Aa", "Slovník pojmů (definice)", "Všechny definice ze skript ke zkoušce na jednom místě."),
 ])]

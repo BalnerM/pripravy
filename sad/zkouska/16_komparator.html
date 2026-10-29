@@ -16,7 +16,7 @@
 <header class="topbar">
   <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
   <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
-  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P6 se základy</small></a>
+  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P7 se základy</small></a>
   <span class="spacer"></span>
   <a class="iconbtn back" href="../../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
   
@@ -39,6 +39,7 @@
     <li><a href="14_oz_zapojeni.html"><span class="n">P4</span><span>Aplikace OZ: integrátor, derivátor, usměrňovač</span></a></li>
     <li><a href="15_aktivni_filtry.html"><span class="n">P5</span><span>Aplikace OZ II: aktivní filtry</span></a></li>
     <li><a href="16_komparator.html" class="active"><span class="n">P6</span><span>Komparátor, omezovač a úvod do A/D převodu</span></a></li>
+    <li><a href="17_prevodniky.html"><span class="n">P7</span><span>A/D a D/A převodníky</span></a></li>
     <li><a href="29_tahak.html"><span class="n">★</span><span>Tahák ke zkoušce</span></a></li>
     <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
   </ol>
@@ -324,7 +325,7 @@
 </ul></div>
 
 <h2 id="adc">Úvod do A/D převodu</h2>
-<p>Komparátor je jednobitový A/D převodník: dává jednu informaci, zda je vstup nad prahem. Plný <b>A/D převodník</b> jich dává víc najednou. Jeho základní pojmy ukazuje tento oddíl; podrobnosti (typy převodníků, chyby) přináší další přednáška.</p>
+<p>Komparátor je jednobitový A/D převodník: dává jednu informaci, zda je vstup nad prahem. Plný <b>A/D převodník</b> jich dává víc najednou. Jeho základní pojmy ukazuje tento oddíl; podrobnosti (typy převodníků, chyby) přináší <a href="17_prevodniky.html">další přednáška</a>.</p>
 <div class="box definice" id="def-adc"><div class="box-t">Definice: analogově-digitální převodník</div>
 <p><b>Analogově-digitální (A/D) převodník</b> slouží k převodu <b>analogového (spojitého)</b> signálu na <b>digitální (diskrétní)</b> signál.</p>
 <p class="jinak">obvod, který změří napětí a řekne ho číslem. Z plynulé hodnoty (například 3,8 V) udělá kód, se kterým počítá procesor.</p></div>
@@ -523,7 +524,7 @@
 <p>Pro \(V_\mathrm{IN} = 3{,}8\) V jsou pod ním prahy \(0{,}5\); \(1{,}5\); \(2{,}5\); \(3{,}5\) V, čtyři komparátory jsou ve stavu 1: kód komparátorů \(0001111\). Kodér z něj udělá \((100)_2 = 4\) (interval \(3{,}5 \le V_\mathrm{IN} &lt; 4{,}5\) V).</p>
 <p>Flash ADC je nejrychlejší, protože se všechny prahy vyhodnotí současně (rychlost daná přeběhem komparátoru, ns až µs). Pro \(n\) bitů ale potřebuje \(2^n - 1\) komparátorů: pro 16 bitů \(2^{16} - 1 = 65535\). K tomu musí být rezistory v síti precizní (integrovaná R-síť), jinak se posunou kvantizační úrovně.</p></div></details>
 
-<nav class="pager"><a class="prev" href="15_aktivni_filtry.html"><small>← předchozí</small>Aplikace OZ II: aktivní filtry</a><a class="next" href="29_tahak.html"><small>další →</small>Tahák ke zkoušce</a></nav>
+<nav class="pager"><a class="prev" href="15_aktivni_filtry.html"><small>← předchozí</small>Aplikace OZ II: aktivní filtry</a><a class="next" href="17_prevodniky.html"><small>další →</small>A/D a D/A převodníky</a></nav>
 </main>
 </div>
 </body>

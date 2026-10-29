@@ -3064,6 +3064,320 @@ def fig16_adc_char():
     save(fig, "fig16_adc_char")
 
 
+# =====================================================================  přednáška 7: A/D a D/A převodníky
+KOD17 = "101100"                                                   # B5…B0 v příkladech DAC (D = 44)
+
+
+def _box(d, x0, y0, w, h, text, fontsize=12):
+    """Obdélníkový blok (čítač, registr) z čar, text uprostřed."""
+    for a, b in (((x0, y0), (x0 + w, y0)), ((x0 + w, y0), (x0 + w, y0 - h)),
+                 ((x0 + w, y0 - h), (x0, y0 - h)), ((x0, y0 - h), (x0, y0))):
+        elm.Line().at(a).to(b)
+    elm.Label().at((x0 + w / 2, y0 - h / 2)).label(text, fontsize=fontsize)
+
+
+def fig17_dac_vahovy():
+    """DAC s váhovými rezistory R, 2R … 32R a invertujícím sčítacím OZ (slide „DAC typu R – 2R – 4R …“)."""
+    with schema("fig17_dac_vahovy", unit=2.0) as d:
+        p, xs, xn = 1.25, 1.6, 6.2
+        nazvy = ["R", "2R", "4R", "8R", "16R", "32R"]
+        ytop, ybot = 0.0, -5 * p
+        elm.Line().at((0, ytop + 0.9)).down().toy(ybot)
+        elm.Dot(open=True).at((0, ytop + 0.9)).label("$U_\\mathrm{REF}$", loc="top")
+        for k in range(6):
+            y = -k * p
+            bit = KOD17[k]
+            col = C3 if bit == "1" else MUTED
+            elm.Dot().at((0, y))
+            elm.Line().at((0, y)).right(0.4)
+            elm.Switch(nc=(bit == "1")).right().to((xs, y)).color(col)
+            elm.Label().at((0.95, y + 0.55)).label(f"$B_{5 - k}$ = {bit}", fontsize=10, color=col)
+            elm.Resistor().at((xs, y)).right().to((xn, y)).label(nazvy[k], fontsize=11)
+            elm.Dot().at((xn, y))
+        elm.Line().at((xn, ytop)).down().toy(ybot)
+        elm.Label().at((-1.0, ytop)).label("MSB", fontsize=11, color=C2)
+        elm.Label().at((-1.0, ybot)).label("LSB", fontsize=11, color=C2)
+        ym = -2.5 * p
+        op = elm.Opamp(leads=True).right().at((xn + 0.9, ym)).anchor("in1")
+        elm.Line().at((xn, ym)).to(op.in1)
+        elm.Dot().at((xn, ym))
+        elm.Line().at(op.in2).left(0.4)
+        elm.Ground()
+        elm.Line().at((xn, ytop)).up(0.9)
+        elm.Resistor().right().tox(op.out[0] + 0.5).label("$R_f$")
+        elm.Line().down().toy(op.out[1])
+        elm.Line().at(op.out).right(0.5).dot()
+        elm.Line().right(0.6)
+        elm.Dot(open=True).label("$U_o$", loc="right")
+        elm.Label().at((xn + 0.5, ym + 0.35)).label("$\\Sigma I$", fontsize=11, color=C1)
+
+
+def fig17_dac_r2r():
+    """Příčková síť R–2R s přepínači mezi U_REF a zemí a invertujícím OZ (slide „DAC typu R – 2R“)."""
+    with schema("fig17_dac_r2r", unit=2.0) as d:
+        s, yl = 2.3, 0.0
+        ysw, ybus = -3.2, -5.2
+        xs = [1.6 + k * s for k in range(6)]                      # uzly B0 … B5
+        elm.Line().at((0, yl)).down(0.4)
+        elm.Ground()
+        elm.Resistor().at((0, yl)).right().to((xs[0], yl)).label("2R", fontsize=11)
+        xr = []
+        for k, x in enumerate(xs):
+            bit = KOD17[5 - k]
+            col = C3 if bit == "1" else MUTED
+            elm.Dot().at((x, yl))
+            if k < 5:
+                elm.Resistor().at((x, yl)).right().to((xs[k + 1], yl)).label("R", fontsize=11)
+            elm.Resistor().at((x, yl)).down().to((x, ysw)).label("2R", loc="bottom", fontsize=11)
+            # pravý kontakt = sběrnice U_REF, levý = zem; páka (kontakt b) míří podle bitu
+            sw = elm.SwitchSpdt2(action=None)
+            if bit == "0":
+                sw = sw.flip()
+            sw = sw.at((x, ysw)).down().anchor("a").color(col)
+            k_ref, k_zem = (sw.b, sw.c) if bit == "1" else (sw.c, sw.b)
+            elm.Line().at(k_ref).down().toy(ybus)
+            elm.Dot().at((k_ref[0], ybus))
+            xr.append(k_ref[0])
+            elm.Line().at(k_zem).down(0.25)
+            elm.Ground()
+            elm.Label().at((x + 0.95, ysw - 0.15)).label(f"$B_{k}$ = {bit}", fontsize=10, color=col)
+        elm.Line().at((xs[0] - 1.6, ybus)).right().tox(max(xr))
+        elm.Dot(open=True).at((xs[0] - 1.6, ybus)).label("$U_\\mathrm{REF}$", loc="left")
+        elm.Label().at((xs[0], ybus - 0.6)).label("LSB", fontsize=11, color=C2)
+        elm.Label().at((xs[5], ybus - 0.6)).label("MSB", fontsize=11, color=C2)
+        op = elm.Opamp(leads=True).right().at((xs[5] + 2.0, yl)).anchor("in1")
+        elm.Line().at((xs[5], yl)).to(op.in1)
+        elm.Line().at(op.in2).left(0.4)
+        elm.Ground()
+        elm.Line().at((xs[5] + 0.7, yl)).up(1.4)
+        elm.Resistor().right().tox(op.out[0] + 0.5).label("$R_f$")
+        elm.Line().down().toy(op.out[1])
+        elm.Line().at(op.out).right(0.5).dot()
+        elm.Line().right(0.6)
+        elm.Dot(open=True).label("$U_o$", loc="right")
+        elm.Dot().at((xs[5] + 0.7, yl))
+
+
+def _integrator17(d, vybiti):
+    """Integrátor P7: OZ s C ve zpětné vazbě a spínačem pro vybití C; vrací (OZ, uzel invertujícího vstupu)."""
+    u = d.unit
+    op = elm.Opamp(leads=True)                                   # − (in1) nahoře, + (in2) dole
+    elm.Line().at(op.in2).left(0.4)
+    elm.Ground()
+    elm.Line().at(op.in1).left(u * 0.25)
+    n = elm.Dot()
+    elm.Line().at(n.center).up(u * 0.6)
+    m = elm.Dot()
+    elm.Capacitor().right().tox(op.out[0] + 0.4).label("$C$")
+    k = elm.Dot()
+    elm.Line().down().toy(op.out[1])
+    elm.Line().left().tox(op.out[0])
+    elm.Line().at(m.center).up(u * 0.5)
+    elm.Switch().right().tox(op.out[0] + 0.4).label(vybiti, color=C2, fontsize=11).color(C2)
+    elm.Line().down().toy(k.center).color(C2)
+    return op, n
+
+
+def fig17_single_slope():
+    """Single slope ADC: integrátor −U_REF, komparátor s U_IN, hradlo AND s hodinami a čítač (slidy „Single Slope ADC“)."""
+    import schemdraw.logic as logic
+    with schema("fig17_single_slope", unit=2.0) as d:
+        op1, n = _integrator17(d, "vybití C")
+        elm.Resistor().at(n.center).left().label("$R$")
+        elm.Dot(open=True).label("$-U_\\mathrm{REF}$", loc="left")
+        xo = op1.out[0] + 0.4
+        op2 = elm.Opamp(leads=True).right().at((xo + 1.0, op1.out[1])).anchor("in1")
+        elm.Line().at(op1.out).to(op2.in1)
+        elm.Dot().at((xo, op1.out[1]))
+        elm.Line().at(op2.in2).left(1.0)
+        elm.Dot(open=True).label("$U_\\mathrm{IN}$", loc="left")
+        elm.Label().at((op1.out[0] - 1.4, op1.out[1] - 1.9)).label("integrátor", fontsize=11, color=INK2)
+        elm.Label().at((op2.out[0] - 1.4, op2.out[1] - 1.9)).label("komparátor", fontsize=11, color=INK2)
+        elm.Line().at(op2.out).right(0.6)
+        g = logic.And().right().anchor("in2")
+        elm.Line().at(g.in1).left(0.6)
+        elm.Line().up(0.8)
+        elm.Dot(open=True).label("CLK", loc="top")
+        elm.Line().at(g.out).right(0.6)
+        x0, y0 = g.out[0] + 0.6, g.out[1] + 1.2
+        _box(d, x0, y0, 2.2, 2.4, "čítač\n(Counter)", fontsize=11)
+        for j in range(4):
+            y = y0 - 0.5 - j * 0.47
+            elm.Line().at((x0 + 2.2, y)).right(0.6)
+        elm.Label().at((x0 + 3.6, y0 - 1.2)).label("binární\nvýstup", fontsize=11)
+
+
+def fig17_dual_slope():
+    """Dual slope ADC: integrátor s přepínačem U_IN / −U_REF na vstupu a spínačem paralelně k C (slidy „Dual Slope ADC“)."""
+    with schema("fig17_dual_slope", unit=2.0) as d:
+        op, n = _integrator17(d, "vybití C")
+        elm.Resistor().at(n.center).left().label("$R$")
+        sw = elm.SwitchSpdt2(action=None).left().anchor("a")
+        elm.Line().at(sw.b).left(0.5)
+        elm.Dot(open=True).label("$U_\\mathrm{IN}$", loc="left")
+        elm.Line().at(sw.c).left(0.5)
+        elm.Dot(open=True).label("$-U_\\mathrm{REF}$", loc="left")
+        elm.Line().at(op.out).right(0.9)
+        elm.Dot(open=True).label("$U_o$", loc="right")
+        elm.Label().at((sw.a[0] - 0.6, sw.a[1] - 1.5)).label("1. fáze: $U_\\mathrm{IN}$ po dobu $T_1$\n2. fáze: $-U_\\mathrm{REF}$ po dobu $T_2$",
+                                                       fontsize=10, color=INK2)
+
+
+def fig17_single_prubeh():
+    """Single slope: rampy se stejnou strmostí U_REF/RC, doba převodu roste s U_IN; čítané impulzy (vlastní čísla)."""
+    k, tclk, mezera = 2.0, 0.05, 0.2                          # V/ms (U_REF = 2 V, RC = 1 ms), T_CLK = 50 µs
+    fig, axs = plt.subplots(2, 1, figsize=(8.4, 5.0), sharex=True, gridspec_kw=dict(height_ratios=[2.3, 1]))
+    t0 = 0.0
+    for v in (1.0, 0.5, 1.5):
+        T = v / k
+        tt = np.linspace(0, T, 50)
+        axs[0].plot(t0 + tt, k * tt, color=C1)
+        axs[0].plot([t0 + T, t0 + T], [v, 0], color=C1, lw=1.2, ls=":")
+        axs[0].hlines(v, t0, t0 + T, color=C2, ls="--", lw=1.4)
+        axs[0].plot([t0 + T], [v], "o", color=C2, ms=6)
+        axs[0].text(t0 + 0.02, v + 0.09, f"$U_\\mathrm{{IN}}$ = {cz(v, 1)} V", fontsize=9.5, color=C2)
+        axs[0].annotate("", (t0, -0.18), (t0 + T, -0.18), arrowprops=dict(arrowstyle="<->", color=INK2, lw=1))
+        axs[0].text(t0 + T / 2, -0.38, f"T = {cz(T, 2)} ms", ha="center", fontsize=9.5, color=INK2)
+        N = int(round(T / tclk))
+        for j in range(N):
+            axs[1].add_patch(plt.Rectangle((t0 + j * tclk, 0), tclk / 2, 1, color=C3, lw=0))
+        axs[1].text(t0 + T / 2, 1.2, f"{N} impulzů", ha="center", fontsize=9.5, color=INK2)
+        t0 += T + mezera
+    axs[0].text(0.06, 1.75, "strmost $U_\\mathrm{REF}/RC$ = 2 V/ms (stejná pro všechny)", fontsize=9.5, color=C1)
+    axs[0].set_ylim(-0.55, 2.0)
+    axs[0].set_ylabel("výstup integrátoru [V]")
+    axs[0].set_title("pila integrátoru a měřené napětí", loc="left")
+    axs[1].set_ylim(0, 1.55)
+    axs[1].set_yticks([])
+    axs[1].set_title("impulzy hodin, které projdou hradlem AND (čítač je počítá)", loc="left")
+    axs[1].set_xlabel("čas t [ms]   ($T_\\mathrm{CLK}$ = 50 µs)")
+    axs[1].set_xlim(-0.03, t0)
+    save(fig, "fig17_single_prubeh")
+
+
+def fig17_dual_prubeh():
+    """Dual slope: T1 pevné, T2 = T1·U_IN/U_REF; vlevo různé U_IN, vpravo různé RC (vlastní čísla)."""
+    uref, T1 = 2.0, 10.0                                          # V, ms
+    fig, axs = plt.subplots(1, 2, figsize=(9.6, 4.2), sharey=True)
+    pripady = (((1.5, 10.0), (0.75, 10.0)), ((1.5, 10.0), (1.5, 20.0)))
+    titulky = ("různé $U_\\mathrm{IN}$, stejné RC = 10 ms", "stejné $U_\\mathrm{IN}$ = 1,5 V, různé RC")
+    for ax, pp, tit in zip(axs, pripady, titulky):
+        ax.axhline(0, color=AXIS, lw=1)
+        ax.axvline(T1, color=MUTED, lw=1, ls=":")
+        for j, ((uin, rc), c, mk) in enumerate(zip(pp, CAT, MARK)):
+            v1 = -T1 * uin / rc
+            T2 = -v1 * rc / uref
+            ax.plot([0, T1, T1 + T2], [0, v1, 0], color=c, marker=mk, ms=6, markevery=[1, 2])
+            pop = f"$U_\\mathrm{{IN}}$ = {cz(uin, 2)} V" if pp[0][1] == pp[1][1] else f"RC = {cz(rc, 0)} ms"
+            ax.text(12.6, -1.2 - 0.2 * j, f"{pop}: $T_2$ = {cz(T2, 2)} ms", fontsize=9, color=c)
+            ax.text(T1 - 0.3, v1, f"$V_1$ = {cz(v1, 2).replace('-', '−')} V", fontsize=9, color=c, ha="right", va="center")
+        ax.text(T1 / 2, 0.15, "$T_1$ = 10 ms (pevné)", ha="center", fontsize=9.5, color=INK2)
+        ax.set_title(tit, loc="left")
+        ax.set_xlabel("čas t [ms]")
+        ax.set_xlim(0, 24)
+    axs[0].set_ylabel("výstup integrátoru [V]")
+    axs[0].set_ylim(-1.8, 0.5)
+    save(fig, "fig17_dual_prubeh")
+
+
+def _signal17(t):
+    return 8.0 + 4.0 * np.sin(2 * np.pi * t / 70) + 1.0 * np.sin(2 * np.pi * t / 23)
+
+
+def fig17_counter_tracking():
+    """Counter type (každý převod od nuly) vs. tracking type (krok ±1 LSB za takt): 4 bity, krok 1 V (vlastní signál)."""
+    nt = 90
+    t = np.arange(nt + 1)
+    tj = np.linspace(0, nt, 900)
+    cnt, lat_t, lat_v, v = [], [], [], 0
+    for i in t:
+        cnt.append(v)
+        if v > _signal17(i):                                      # U_DAC > U_IN → konec převodu, zápis do registru
+            lat_t.append(i)
+            lat_v.append(v)
+            v = 0
+        else:
+            v = min(v + 1, 15)
+    trk, v = [], 0
+    for i in t:
+        trk.append(v)
+        v = int(np.clip(v + (1 if _signal17(i) > v else -1), 0, 15))
+    fig, axs = plt.subplots(2, 1, figsize=(8.6, 6.0), sharex=True)
+    for ax, y, tit in ((axs[0], cnt, "counter type: každý převod začíná od nuly"),
+                       (axs[1], trk, "tracking type: v každém taktu krok o 1 LSB nahoru nebo dolů")):
+        ax.plot(tj, _signal17(tj), color=C1, lw=1.8, label="vstupní napětí $U_\\mathrm{IN}$")
+        ax.step(t, y, where="post", color=C2, lw=1.6, label="$U_\\mathrm{DAC}$ (kód čítače)")
+        ax.set_title(tit, loc="left")
+        ax.set_ylabel("napětí [V] (1 krok = 1 V)")
+        ax.set_ylim(-0.5, 15.5)
+    axs[0].plot(lat_t, lat_v, "^", color=C3, ms=7, label="zapsaný výsledek (konec převodu)")
+    axs[0].legend(loc="upper center", ncol=3, fontsize=8.5, bbox_to_anchor=(0.5, 1.32))
+    i0 = next(i for i in t if trk[i] > _signal17(i))
+    axs[1].axvspan(0, i0, color=C2, alpha=0.1, lw=0)
+    axs[1].text(i0 / 2, 13.5, "náběh první\ndigitalizace", ha="center", fontsize=9.5, color=INK2)
+    axs[1].set_xlabel("čas [takty hodin $T_\\mathrm{CLK}$]")
+    save(fig, "fig17_counter_tracking")
+
+
+def fig17_sar_prubeh():
+    """SAR, 4 bity, U_REF = 16 V (krok 1 V), U_IN = 6,4 V: zkoušené kódy 1000, 0100, 0110, 0111 → 0110 (podle stromu ze slidu)."""
+    uin, kod, pokusy, intervaly = 6.4, 0, [], []
+    lo, hi = 0, 16
+    for b in (3, 2, 1, 0):
+        zk = kod | (1 << b)
+        vys = uin >= zk
+        pokusy.append((zk, vys))
+        if vys:
+            kod, lo = zk, zk
+        else:
+            hi = zk
+        intervaly.append((lo, hi))
+    fig, ax = plt.subplots(figsize=(7.8, 4.4))
+    for i, ((zk, vys), (a, b)) in enumerate(zip(pokusy, intervaly), start=1):
+        ax.add_patch(plt.Rectangle((i - 0.38, a), 0.76, b - a, color=C1, alpha=0.12, lw=0))
+        c, mk = (C3, "^") if vys else (C2, "v")
+        ax.plot([i - 0.38, i + 0.38], [zk, zk], color=c, lw=2.4)
+        ax.plot([i], [zk], mk, color=c, ms=8)
+        ax.text(i, zk - 0.6 if vys else zk + 0.6, f"zkouším {zk:04b} = {zk} V", fontsize=9, color=c, ha="center",
+                va="top" if vys else "bottom")
+        ax.text(i, -1.3, "$U_\\mathrm{IN} > U_\\mathrm{DAC}$\nbit = 1" if vys else "$U_\\mathrm{IN} < U_\\mathrm{DAC}$\nbit = 0",
+                ha="center", fontsize=8.5, color=c)
+    ax.axhline(uin, color=C1, lw=1.6, ls="--")
+    ax.text(0.45, uin + 0.3, "$U_\\mathrm{IN}$ = 6,4 V", color=C1, fontsize=9.5)
+    ax.plot([4.65, 5.45], [6, 6], color=INK, lw=2.4)
+    ax.text(5.05, 5.4, "výsledek\n0110 = 6 V", fontsize=10, color=INK, va="top", ha="center", weight="semibold")
+    ax.set_xticks([1, 2, 3, 4])
+    ax.set_xticklabels(["takt 1\n(MSB)", "takt 2", "takt 3", "takt 4\n(LSB)"])
+    ax.set_xlim(0.4, 5.6)
+    ax.set_ylim(-2.4, 16.5)
+    ax.set_yticks(range(0, 17, 2))
+    ax.set_ylabel("napětí [V]")
+    ax.set_title("modrý pruh = interval, ve kterém $U_\\mathrm{IN}$ po porovnání určitě leží", loc="left", fontsize=10)
+    save(fig, "fig17_sar_prubeh")
+
+
+def fig17_cas_konverze():
+    """Nejdelší čas konverze podle počtu bitů: (2^n − 1)·T_CLK vs. n·T_CLK, T_CLK = 100 ns (slidy „Příklady času konverze“)."""
+    n = np.arange(4, 17)
+    tclk = 0.1                                                    # µs
+    fig, ax = plt.subplots(figsize=(7.6, 4.3))
+    ax.semilogy(n, (2.0 ** n - 1) * tclk, "o-", color=C1, label="counter, tracking, single slope: $(2^n - 1)\\,T_\\mathrm{CLK}$")
+    ax.semilogy(n, n * tclk, "s-", color=C2, label="postupná aproximace: $n\\,T_\\mathrm{CLK}$")
+    for nb, txt1, txt2 in ((12, "409,5 µs", "1,2 µs"), (16, "6,55 ms", "1,6 µs")):
+        ax.annotate(txt1, (nb, (2 ** nb - 1) * tclk), (nb - 1.6, (2 ** nb - 1) * tclk * 2.2), fontsize=9.5, color=C1,
+                    arrowprops=dict(arrowstyle="->", color=C1))
+        ax.annotate(txt2, (nb, nb * tclk), (nb - 1.3, nb * tclk * 0.3), fontsize=9.5, color=C2,
+                    arrowprops=dict(arrowstyle="->", color=C2))
+    ax.set_xlabel("počet bitů n")
+    ax.set_ylabel("nejdelší čas konverze [µs]")
+    ax.set_xticks(n)
+    ax.set_ylim(0.1, 3e4)
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: cz(v, 1) if v < 1 else f"{v:.0f}"))
+    ax.legend(loc="upper left", fontsize=9)
+    ax.set_title("$T_\\mathrm{CLK}$ = 100 ns ($f_\\mathrm{CLK}$ = 10 MHz)", loc="left")
+    save(fig, "fig17_cas_konverze")
+
+
 ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig02_xc, fig02_dp_hp, fig02_bode_dp, fig02_bode_hp, fig02_postup, fig02_typy, fig02_pp_schema,
        fig02_bode_pp, fig02_pz_schema, fig02_bode_pz,
@@ -3082,7 +3396,9 @@ ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig15_dp1_neinv, fig15_dp1_inv, fig15_hp1_neinv, fig15_hp1_inv, fig15_sk_dp, fig15_sk_hp, fig15_mfb_dp,
        fig15_mfb_hp, fig15_mfb_pp, fig15_twint, fig15_wien, fig15_kaskada_schema, fig15_idealni_realny,
        fig15_strmost, fig15_sk_q, fig15_pp_mfb, fig15_pz_q, fig15_kaskada, fig15_butterworth, fig15_aproximace,
-       fig16_omezovac, fig16_oboustranny, fig16_zener_omezovac, fig16_zd_mustek, fig16_komp_omezeni, fig16_schmitt, fig16_schmitt_zd, fig16_selektor, fig16_flash, fig16_omezovac_char, fig16_oboustranny_char, fig16_zener_char, fig16_komparator_char, fig16_rusivy, fig16_komp_omezeni_prubeh, fig16_schmitt_char, fig16_selektor_prubeh, fig16_kvantovani, fig16_adc_char]
+       fig16_omezovac, fig16_oboustranny, fig16_zener_omezovac, fig16_zd_mustek, fig16_komp_omezeni, fig16_schmitt, fig16_schmitt_zd, fig16_selektor, fig16_flash, fig16_omezovac_char, fig16_oboustranny_char, fig16_zener_char, fig16_komparator_char, fig16_rusivy, fig16_komp_omezeni_prubeh, fig16_schmitt_char, fig16_selektor_prubeh, fig16_kvantovani, fig16_adc_char,
+       fig17_dac_vahovy, fig17_dac_r2r, fig17_single_slope, fig17_dual_slope, fig17_single_prubeh, fig17_dual_prubeh,
+       fig17_counter_tracking, fig17_sar_prubeh, fig17_cas_konverze]
 
 if __name__ == "__main__":
     vyber = sys.argv[1:]

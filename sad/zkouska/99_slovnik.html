@@ -16,7 +16,7 @@
 <header class="topbar">
   <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
   <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
-  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P6 se základy</small></a>
+  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P7 se základy</small></a>
   <span class="spacer"></span>
   <a class="iconbtn back" href="../../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
   
@@ -39,6 +39,7 @@
     <li><a href="14_oz_zapojeni.html"><span class="n">P4</span><span>Aplikace OZ: integrátor, derivátor, usměrňovač</span></a></li>
     <li><a href="15_aktivni_filtry.html"><span class="n">P5</span><span>Aplikace OZ II: aktivní filtry</span></a></li>
     <li><a href="16_komparator.html"><span class="n">P6</span><span>Komparátor, omezovač a úvod do A/D převodu</span></a></li>
+    <li><a href="17_prevodniky.html"><span class="n">P7</span><span>A/D a D/A převodníky</span></a></li>
     <li><a href="29_tahak.html"><span class="n">★</span><span>Tahák ke zkoušce</span></a></li>
     <li><a href="99_slovnik.html" class="active"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
   </ol>
@@ -50,6 +51,7 @@
     <li><a href="#kP4">P4 · Aplikace OZ: integrátor, derivátor, usměrňovač</a></li>
     <li><a href="#kP5">P5 · Aplikace OZ II: aktivní filtry</a></li>
     <li><a href="#kP6">P6 · Komparátor, omezovač a úvod do A/D převodu</a></li>
+    <li><a href="#kP7">P7 · A/D a D/A převodníky</a></li>
   </ul>
 </nav>
 <main>
@@ -469,6 +471,46 @@
 <div class="box definice" id="s-termometricky-kod"><div class="box-t">termometrický kód</div>
 <p><b>Termometrický kód</b> je zápis stavu komparátorů flash ADC, v němž je tolik jedniček (zdola), kolik prahů je pod měřeným napětím.</p>
 <p class="jinak">jako rtuť v teploměru: čím vyšší napětí, tím víc komparátorů „svítí“. Kodér ho převede na obyčejné binární číslo.</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-termometricky-kod">výklad v kapitole P6 →</a></p></div>
+<h2 id="kP7" class="slovnik-kap">P7 · A/D a D/A převodníky</h2>
+<div class="box definice" id="s-msb-lsb"><div class="box-t">MSB a LSB</div>
+<p><b>MSB</b> (most significant bit) je nejvýznamnější bit binárního čísla, tedy bit s největší váhou \(2^{n-1}\). <b>LSB</b> (least significant bit) je nejméně významný bit s váhou \(2^0 = 1\); jako napětí odpovídá LSB jednomu <a href="16_komparator.html#def-kvantizacni-uroven">kvantizačnímu kroku</a>.</p>
+<p class="jinak">v čísle 1100 je MSB první jednička zleva (váha 8), LSB poslední nula vpravo (váha 1). Změna MSB posune napětí o půlku rozsahu, změna LSB jen o jeden nejmenší krok.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-msb-lsb">výklad v kapitole P7 →</a></p></div>
+<div class="box definice" id="s-vahovy-dac"><div class="box-t">DAC s váhovými rezistory</div>
+<p><b>DAC s váhovými rezistory</b> (typu R–2R–4R …) má pro každý bit jeden rezistor s odporem odstupňovaným v poměru mocnin dvou (MSB má \(R\), každý další bit dvojnásobek, LSB \(2^{n-1}R\)). Přepínač řízený bitem připojí rezistor k referenčnímu napětí a invertující sčítací zesilovač s rezistorem \(R_f\) sečte proudy všech větví na výstupní napětí.</p>
+<p class="jinak">každý bit je „kohoutek“ s jinak širokou trubkou: MSB pustí největší proud, každý další bit poloviční. OZ proudy sečte a výstupní napětí je pak úměrné číslu na vstupu.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-vahovy-dac">výklad v kapitole P7 →</a></p></div>
+<div class="box definice" id="s-r2r"><div class="box-t">DAC s příčkovou sítí R–2R</div>
+<p><b>DAC typu R–2R</b> je D/A převodník s příčkovou (žebříkovou) odporovou sítí složenou jen ze dvou hodnot odporu, \(R\) v podélné větvi a \(2R\) v příčných větvích. Každá příčná větev je přepínačem řízeným bitem připojena k \(U_\mathrm{REF}\) nebo k zemi; konec sítě u MSB je připojen na invertující vstup OZ se zpětnou vazbou \(R_f\).</p>
+<p class="jinak">žebřík, ve kterém se proud v každém uzlu dělí přesně napůl. Bit blíž k OZ (MSB) proto přispívá dvakrát víc než jeho soused – a stačí k tomu jen dva druhy rezistorů.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-r2r">výklad v kapitole P7 →</a></p></div>
+<div class="box definice" id="s-half-flash"><div class="box-t">half-flash ADC</div>
+<p><b>Half-flash ADC</b> je varianta <a href="16_komparator.html#def-flash-adc">flash převodníku</a> s nižší potřebou komparátorů: první flash převodník určí horní polovinu bitů (MSB), DAC je převede zpět na napětí, rozdíl vstupního napětí a výstupu DAC (zbytek) převede druhý flash převodník na dolní polovinu bitů (LSB).</p>
+<p class="jinak">převod na dvakrát: nejdřív hrubě („kolik celých voltů?“), potom jemně jen ten zbytek („a kolik ještě navíc?“). Jako měření metrem: nejdřív celé centimetry, pak milimetry.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-half-flash">výklad v kapitole P7 →</a></p></div>
+<div class="box definice" id="s-sample-hold"><div class="box-t">vzorkovací obvod (Sample &amp; Hold)</div>
+<p><b>Vzorkovací obvod</b> (Sample &amp; Hold, S/H) v okamžiku vzorkování odebere hodnotu vstupního napětí a po dobu převodu ji na svém výstupu drží konstantní.</p>
+<p class="jinak">„vyfotí“ napětí a fotku drží, dokud převodník nedopočítá. Převodník, který pracuje ve více krocích, tak celou dobu převádí stejnou hodnotu, i když se vstup mezitím mění.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-sample-hold">výklad v kapitole P7 →</a></p></div>
+<div class="box definice" id="s-integracni-adc"><div class="box-t">integrační A/D převodník</div>
+<p><b>Integrační A/D převodník</b> převádí napětí na <b>čas</b> pomocí integrátoru: měří, jak dlouho trvá, než výstup integrátoru dosáhne určité úrovně, a tuto dobu změří čítáním impulzů hodinového signálu.</p>
+<p class="jinak">napětí se nepočítá přímo – převodník „stopuje“, jak dlouho trvá nabití kondenzátoru, a počet tiknutí hodin je výsledné číslo.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-integracni-adc">výklad v kapitole P7 →</a></p></div>
+<div class="box definice" id="s-single-slope"><div class="box-t">single slope ADC</div>
+<p><b>Single slope ADC</b> (převodník s jednou strmostí) integruje referenční napětí, takže na výstupu integrátoru vzniká lineárně rostoucí pila. Komparátor ji porovnává se vstupním napětím a po dobu, než pila dosáhne úrovně \(U_\mathrm{IN}\), propouští hradlo AND impulzy hodin do čítače. Stav čítače je výsledkem převodu.</p>
+<p class="jinak">„stopky“: pila startuje z nuly vždy stejnou rychlostí, a čím vyšší je měřené napětí, tím déle trvá, než ho dožene. Čítač počítá tiknutí hodin, dokud se to nestane.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-single-slope">výklad v kapitole P7 →</a></p></div>
+<div class="box definice" id="s-dual-slope"><div class="box-t">dual slope ADC</div>
+<p><b>Dual slope ADC</b> (převodník se dvojí strmostí) integruje nejprve po pevnou dobu \(T_1\) vstupní měřené napětí a potom referenční napětí opačné polarity, dokud se výstup integrátoru nevrátí na nulu. Výsledkem je doba \(T_2\) druhé fáze, která je úměrná vstupnímu napětí a nezávisí na hodnotách \(R\) a \(C\).</p>
+<p class="jinak">kbelík: pevnou dobu do něj teče voda proudem úměrným \(U_\mathrm{IN}\), pak se vypouští známým proudem úměrným \(U_\mathrm{REF}\). Z doby vypouštění se pozná, kolik vody nateklo – a velikost kbelíku (\(RC\)) na výsledku nezáleží.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-dual-slope">výklad v kapitole P7 →</a></p></div>
+<div class="box definice" id="s-kompenzacni-adc"><div class="box-t">kompenzační A/D převodník</div>
+<p><b>Kompenzační A/D převodník</b> má ve zpětné vazbě D/A převodník: komparátor porovnává vstupní napětí \(U_\mathrm{IN}\) s napětím \(U_\mathrm{DAC}\) z DAC a podle výsledku řídicí obvod mění číslo na vstupu DAC, dokud se \(U_\mathrm{DAC}\) nevyrovná (nekompenzuje) se vstupním napětím. Číslo na vstupu DAC je výsledkem převodu.</p>
+<p class="jinak">převodník „hádá“ číslo, DAC z něj vyrobí napětí a komparátor řekne „moc“ nebo „málo“. Tři typy se liší jen strategií hádání: po jedné od nuly (counter), o jednu nahoru či dolů (tracking), nebo půlením intervalu (postupná aproximace).</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-kompenzacni-adc">výklad v kapitole P7 →</a></p></div>
+<div class="box definice" id="s-counter-adc"><div class="box-t">counter type ADC</div>
+<p><b>Counter type ADC</b> (čítací převodník) má čítač, jehož výstup řídí DAC. Na začátku převodu se čítač vynuluje a dokud je \(U_\mathrm{IN} > U_\mathrm{DAC}\), propouští hradlo AND impulzy hodin a čítač zvyšuje kód o jeden krok. Když \(U_\mathrm{DAC}\) překročí \(U_\mathrm{IN}\), komparátor překlopí, čítač se zastaví a jeho stav se zapíše do registru (latch).</p>
+<p class="jinak">postupně čítá jednotlivé krůčky: \(U_\mathrm{DAC}\) stoupá po schodech od nuly, dokud nepřeleze vstupní napětí. Počet schodů je výsledek.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-counter-adc">výklad v kapitole P7 →</a></p></div>
+<div class="box definice" id="s-tracking-adc"><div class="box-t">tracking type ADC</div>
+<p><b>Tracking type ADC</b> (sledovací převodník) má vratný čítač (Up/Down), jehož směr čítání určuje přímo výstup komparátoru: při \(U_\mathrm{IN} > U_\mathrm{DAC}\) čítá s každým taktem hodin nahoru, při \(U_\mathrm{IN} &lt; U_\mathrm{DAC}\) dolů. Čítač se mezi převody nenuluje, takže \(U_\mathrm{DAC}\) průběžně sleduje vstupní napětí.</p>
+<p class="jinak">místo aby začínal pokaždé od nuly, převodník si pamatuje poslední hodnotu a v každém taktu jen dorovná o jeden krok nahoru nebo dolů.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-tracking-adc">výklad v kapitole P7 →</a></p></div>
+<div class="box definice" id="s-cas-konverze"><div class="box-t">čas konverze</div>
+<p><b>Čas konverze</b> \(T_C\) je doba, kterou převodník potřebuje na převod jedné hodnoty vstupního napětí na digitální kód.</p>
+<p class="jinak">jak dlouho trvá jedno „změření“. Nejdelší čas konverze určuje, jak často lze nejvýš vzorkovat.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-cas-konverze">výklad v kapitole P7 →</a></p></div>
+<div class="box definice" id="s-sar-adc"><div class="box-t">ADC s postupnou aproximací</div>
+<p><b>ADC s postupnou aproximací</b> (SAR, successive approximation register) určuje v každém taktu hodin jeden bit výsledku, od MSB směrem k LSB: registr postupné aproximace nastaví zkoušený bit na 1, DAC převede kód na napětí a komparátor rozhodne, zda bit zůstane 1 (\(U_\mathrm{IN} > U_\mathrm{DAC}\)), nebo se vrátí na 0 (\(U_\mathrm{IN} &lt; U_\mathrm{DAC}\)).</p>
+<p class="jinak">metoda půlení intervalů – jako hádání čísla od 0 do 15 otázkami „je to víc než …?“. Každá otázka vyloučí polovinu možností, takže na 4bitové číslo stačí vždy přesně 4 otázky.</p><p class="slovnik-odkaz"><a href="17_prevodniky.html#def-sar-adc">výklad v kapitole P7 →</a></p></div>
 
 <nav class="pager"><a class="prev" href="29_tahak.html"><small>← předchozí</small>Tahák ke zkoušce</a></nav>
 </main>
