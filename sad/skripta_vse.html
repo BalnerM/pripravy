@@ -3210,6 +3210,7 @@
 <p class="lead">Biosignál je vždy smíchaný s rušením jiných frekvencí: drift izolinie, síťový brum 50 Hz, šum svalů. Filtr propustí jen pásmo, které nás zajímá. RC články ze základů (<a href="#k02">Z2</a>) mají dvě slabiny: signál vždy zeslabí a strmost jejich charakteristiky je jen 20 dB na dekádu. <b>Aktivní filtr</b> přidá operační zesilovač – filtr pak může zesilovat, články se navzájem nezatěžují a ze dvou rezistorů a dvou kondenzátorů vznikne filtr 2. řádu se strmostí 40 dB na dekádu. Přednáška ukazuje, jak se filtr popisuje (přenosová funkce, řád, strmost, činitel jakosti), standardní zapojení Sallen-Key a MFB pro všechny čtyři typy filtrů a tři aproximace (Butterworth, Čebyšev, Bessel), mezi kterými se při návrhu vybírá.</p>
 
 <p>V <a href="#k11-def-akvizicni-cesta">akviziční cestě</a> patří filtry do bloku <b>úprava signálu</b>, před analogově-digitální převod. Slide „Úprava signálu“ jmenuje čtyři témata: pasivní filtry, aktivní filtry, antialiasingové filtry a filtry typu DP, HP, PP, PZ. Pojmy <a href="#k02-def-filtr">filtr</a>, <a href="#k02-def-prenos">přenos</a>, <a href="#k02-def-decibel">decibel</a>, <a href="#k02-def-mezni">mezní frekvence</a>, <a href="#k02-def-rad">řád filtru</a> a čtyři typy filtrů (<a href="#k02-def-dp">DP</a>, <a href="#k02-def-hp">HP</a>, <a href="#k02-def-pp">PP</a>, <a href="#k02-def-pz">PZ</a>) jsou vysvětlené v základech; tady se na ně navazuje.</p>
+<p>U základních dolních a horních propustí 1. řádu je přenos odvozený krok za krokem. U zapojení 2. řádu (Sallen-Key, MFB, pásmová propust, zádrže) je popsaný <b>princip</b> – proč zapojení filtruje – a <b>co se stane s výstupním signálem, když změním některou součástku</b>.</p>
 
 <h2 id="k15-filtry">Filtr a jeho přenosová funkce</h2>
 <p>Podle slidu je filtr obvod, který propouští signál v požadovaném frekvenčním pásmu, zatímco signály nežádoucích frekvencí jsou potlačovány. <b>Ideální</b> přenosové charakteristiky filtrů \(|\bar H(j\omega)|\) mají ostrý zlom amplitudové charakteristiky a maximální strmost poklesu na okraji propustného kmitočtového pásma (\(\omega_0\)) – na slidu jsou nakreslené jako „obdélníky“ pro DP, HP, PP a PZ (stejný tvar jako <a href="#k02-filtr">obr. 2.1</a>, jen se svislými hranami).</p>
@@ -3279,11 +3280,11 @@
 \[ |H| = \frac{0{,}25}{\sqrt{1{,}0625}} = 0{,}243 \;\Rightarrow\; -12{,}30\ \text{dB} \]
 <p>3. Dekáda a dvě dekády: 180 Hz → −20,04 dB, 18 Hz → −40,00 dB.</p></div>
 
-<div class="box pozor"><div class="box-t">Pozor: řád a čísla na slidech o strmosti</div>
+<div class="box pozor"><div class="box-t">Pozor: 3 dB a 6 dB nejsou totéž</div>
 <ul>
-<li>Slidy píší „Filtr <b>2. řádu</b> se strmostí 6 dB/okt.“ a „20 dB/dek.“ Strmost 6 dB/okt = 20 dB/dek má filtr <b>1. řádu</b> (jeden RC článek, <a href="#k02-def-rad">Z2</a>); sedí na ni i graf na slidu. Filtr 2. řádu má 12 dB/okt = 40 dB/dek.</li>
-<li>Řada „−3 dB na 1,8 kHz, −6 dB na 900 Hz, −9 dB na 450 Hz“ přidává jen 3 dB na oktávu. Skutečné hodnoty jsou −3,0 / −7,0 / −12,3 dB (příklad výše), asymptoticky 0 / −6 / −12 dB. Řada pro dekády (−3 / −20 / −40 dB) sedí.</li>
-<li>Slide „Charakteristika reálného filtru“: „pokles 3 dB/okt., 6 dB/okt. … dle řádu“. Na mezní frekvenci je pokles <b>3 dB</b> (to je definice mezní frekvence), strmost za ní je násobek <b>6 dB/okt</b>.</li>
+<li>Strmost 6 dB/okt = 20 dB/dek má filtr <b>1. řádu</b> (jeden RC článek, <a href="#k02-def-rad">Z2</a>). Filtr 2. řádu má 12 dB/okt = 40 dB/dek, 3. řádu 18 dB/okt = 60 dB/dek.</li>
+<li><b>3 dB</b> je pokles <b>v mezní frekvenci</b> (tím je mezní frekvence definovaná). <b>6 dB/okt</b> (krát řád) je <b>strmost</b> daleko za ní. Nepleť si je: o oktávu za mezní frekvencí není 1. řád na −6 dB, ale na −7,0 dB, o dvě oktávy na −12,3 dB (příklad výše).</li>
+<li>Asymptota (přímka 6 dB/okt) dává 0 / −6 / −12 dB, skutečná křivka −3,0 / −7,0 / −12,3 dB. Čím dál od mezní frekvence, tím víc se obě shodují (o dekádu −20,04 dB, o dvě dekády −40,00 dB).</li>
 </ul></div>
 
 <h3 id="k15-prepocet">Přepočet mezi dB/oktávu a dB/dekádu</h3>
@@ -3302,7 +3303,7 @@
 \[ A_\text{dek} = 3{,}3219 \cdot 6 = 19{,}93\ \text{dB/dek} \approx 20\ \text{dB/dek} \]
 <p>3. Přesně: „6 dB“ jsou ve skutečnosti \(20 \log_{10} 2 = 6{,}0206\) dB a „3 dB“ jsou \(20\log_{10}\sqrt 2 = 3{,}0103\) dB (slide: „3 dB nejsou 3, ale 3,010299…“). S nimi vychází přesně 20 dB/dek:</p>
 \[ 3{,}3219 \cdot 6{,}0206 = 20{,}00\ \text{dB/dek} \]
-<p>Slide uvádí 9,96 a <b>19,31</b> dB/dek; správně je 9,97 a <b>19,93</b> dB/dek (zaokrouhleno na 10 a 20 dB/dek, což slide také píše).</p></div>
+<p>V praxi se zaokrouhluje: 3 dB/okt ≈ 10 dB/dek, 6 dB/okt ≈ 20 dB/dek.</p></div>
 
 <h2 id="k15-pasivni-aktivni">Pasivní a aktivní, analogové a digitální filtry</h2>
 <div class="box definice" id="k15-def-pasivni-filtr"><div class="box-t">Definice: pasivní filtr</div>
@@ -3323,6 +3324,14 @@
 <tr><td>rozměry, strmost</td><td>cívky jsou velké a těžké</td><td>kompaktnější; umožňuje ostřejší strmost na krajích pásma</td></tr>
 </tbody></table></div>
 <p>Slidy ukazují oba typy jako dolní propust 2. řádu: pasivní <b>LC článek</b> (cívka \(L\) a rezistor \(R\) v sérii, kondenzátor \(C\) na zem) a aktivní zapojení <b>Sallen-Key</b> se dvěma rezistory, dvěma kondenzátory a OZ (<a href="#k15-sallen-key">níže</a>).</p>
+
+<div class="box intuice"><div class="box-t">Co přesně OZ filtru přinese</div>
+<ul>
+<li><b>Zisk:</b> OZ dodává energii z napájení, takže filtr může signál v propustném pásmu zesílit. Pasivní článek ho vždy jen zeslabí.</li>
+<li><b>Oddělení (impedanční):</b> OZ má velký vstupní a malý výstupní odpor. Filtr nezatěžuje zdroj signálu, další stupeň nezatěžuje filtr a přenos nezávisí na tom, co je připojeno za ním. Proto jdou články řadit za sebe a počítat každý zvlášť (<a href="#k15-kaskada">kaskáda</a>).</li>
+<li><b>Náhrada cívky:</b> dva RC články za sebou dají pasivně jen „líný“ filtr 2. řádu s \(Q &lt; 0{,}5\) (ohyb je pozvolný). Ostrý ohyb jako u LC článku (\(Q \ge 0{,}5\), rezonance) dá RC zapojení až se <b>zpětnou vazbou z výstupu OZ</b> – ta kolem mezní frekvence signál „podpoří“ a nahradí tím chování cívky.</li>
+<li><b>Cena:</b> potřebuje napájení a pracuje jen do frekvencí, které zvládne OZ (<a href="#k12-def-gbw">GBW</a>, <a href="#k12-def-slew-rate">slew rate</a>); výstup nepřekročí napájecí napětí.</li>
+</ul></div>
 
 <h3 id="k15-analog-digital">Analogové vs. digitální filtry</h3>
 <ul>
@@ -3390,6 +3399,22 @@
 <tr><td>\(R_1 C_1\), resp. \(R_2 C_1\)</td><td>časová konstanta, která určuje mezní frekvenci</td></tr>
 </table></div>
 
+<div class="box postup"><div class="box-t">Odvození přenosu DP 1. řádu</div>
+<p>Počítáme s operátorovou proměnnou \(p = j\omega\); impedance kondenzátoru je \(1/(pC)\). Na konci dosadíme \(p = s\,\omega_c\) (normovaný tvar).</p>
+<p><b>Neinvertující (obr. P5.3)</b> = dělič \(R_1 C_1\) a za ním neinvertující zesilovač.</p>
+<p>1. Napětí na neinvertujícím vstupu (do vstupu OZ neteče proud, dělič je nezatížený):</p>
+\[ U_+ = U_i \cdot \frac{\frac{1}{pC_1}}{R_1 + \frac{1}{pC_1}} = \frac{U_i}{1 + pR_1C_1} \]
+<p>2. Neinvertující zesilovač ho zesílí:</p>
+\[ U_o = \left(1 + \frac{R_2}{R_3}\right) U_+ \]
+<p>3. Přenos:</p>
+\[ A(p) = \frac{1 + R_2/R_3}{1 + pR_1C_1} = \frac{A_0}{1 + s\,\omega_c R_1 C_1} \]
+<p><b>Invertující (obr. P5.4)</b> = invertující zesilovač, jen místo \(R_2\) je ve zpětné vazbě \(R_2 \parallel C_1\).</p>
+<p>1. Impedance zpětné vazby:</p>
+\[ Z_2 = \frac{R_2 \cdot \frac{1}{pC_1}}{R_2 + \frac{1}{pC_1}} = \frac{R_2}{1 + pR_2C_1} \]
+<p>2. Zisk invertujícího zesilovače \(-Z_2/R_1\):</p>
+\[ A(p) = -\frac{R_2/R_1}{1 + pR_2C_1} = \frac{A_0}{1 + s\,\omega_c R_2 C_1} \]
+<p>Porovnáním se vzorem \(A_0/(1 + a_1 s)\) dostaneme \(A_0\) a \(a_1\) z rámečku výše.</p></div>
+
 <div class="box intuice"><div class="box-t">Proč invertující varianta filtruje</div>
 <p>V invertujícím zesilovači je zisk \(-Z_2/R_1\). Pro nízké frekvence je kondenzátor \(C_1\) rozpojený, ve zpětné vazbě je jen \(R_2\) a zisk je \(-R_2/R_1\). Pro vysoké frekvence kondenzátor zpětnou vazbu „zkratuje“, \(Z_2 \to 0\) a zisk klesá. Zlom nastane tam, kde \(X_C = R_2\), proto v \(a_1\) vystupuje \(R_2 C_1\).</p></div>
 
@@ -3408,17 +3433,20 @@
 <figure><div class="paper"><img src="figures/fig15_sk_dp.png" alt="Sallen-Key DP: vstup přes R1 a R2 v sérii na neinvertující vstup, z něj C1 na zem; z uzlu mezi R1 a R2 kondenzátor C2 na výstup; OZ je sledovač" loading="lazy"></div>
 <figcaption><b>Obr. P5.5</b> Dolní propust Sallen-Key se ziskem 1 (podle slidu).</figcaption></figure>
 
-<div class="box vzorec"><div class="box-t">DP Sallen-Key: \(A_i(s) = A_0 / (1 + a_i s + b_i s^2)\)</div>
-\[ A_0 = 1 \]
-\[ a_1 = \omega_c C_1 (R_1 + R_2) \]
-\[ b_1 = \omega_c^2 R_1 R_2 C_1 C_2 \]
-<table class="vars">
-<tr><td>\(A_0 = 1\)</td><td>zisk v propustném pásmu (OZ je sledovač)</td></tr>
-<tr><td>\(R_1\), \(R_2\)</td><td>rezistory v podélné větvi</td></tr>
-<tr><td>\(C_1\)</td><td>kondenzátor z neinvertujícího vstupu na zem</td></tr>
-<tr><td>\(C_2\)</td><td>kondenzátor z uzlu mezi \(R_1\), \(R_2\) na výstup (kladná zpětná vazba)</td></tr>
-<tr><td>\(a_1\), \(b_1\)</td><td>koeficienty podle zvolené aproximace (tabulka níže)</td></tr>
-</table></div>
+<div class="box intuice"><div class="box-t">Jak Sallen-Key funguje</div>
+<ul>
+<li><b>Nízké frekvence:</b> oba kondenzátory jsou „rozpojené“, signál projde přes \(R_1\), \(R_2\) na sledovač beze změny – zisk 1.</li>
+<li><b>Vysoké frekvence:</b> \(C_1\) zkratuje neinvertující vstup na zem – výstup je nulový. Dva RC články za sebou dávají 40 dB/dek.</li>
+<li><b>Kolem mezní frekvence:</b> kdyby \(C_2\) vedl na zem, odváděl by signál z uzlu mezi \(R_1\) a \(R_2\) a ohyb by byl pozvolný jako u dvou pasivních RC článků. \(C_2\) je ale připojen na výstup, který kopíruje napětí \(U_+\). Výstup tak přes \(C_2\) vrací signál zpět do uzlu, „drží“ jeho napětí nahoře a oddálí pokles. To je ta <b>kladná zpětná vazba</b>, která z pozvolného ohybu udělá ostrý.</li>
+</ul></div>
+
+<div class="box intuice"><div class="box-t">Co se stane s výstupem, když změním součástky</div>
+<ul>
+<li><b>Výstup</b> je v propustném pásmu stejně velký jako vstup a ve stejné fázi (zisk 1, neinvertující). Za mezní frekvencí klesá 40 dB/dek.</li>
+<li><b>Všechny R (nebo všechna C) větší:</b> mezní frekvence klesne (dvojnásobné hodnoty → poloviční \(f_c\)), tvar křivky zůstane stejný – celá charakteristika se jen posune po ose frekvence.</li>
+<li><b>Větší \(C_2\) proti \(C_1\):</b> silnější kladná zpětná vazba → ostřejší ohyb (větší \(Q\)); při velkém poměru se před zlomem objeví převýšení – výstup je kolem mezní frekvence větší než vstup. Menší poměr dá pozvolný ohyb. Butterworth (nejplošší průběh) vyjde pro \(C_2 = 2C_1\) a stejné rezistory.</li>
+<li><b>Varianta se ziskem</b> (OZ jako neinvertující zesilovač s \(R_3\), \(R_4\)): zvětšení zisku zesílí i kladnou zpětnou vazbu – výstup je větší, ohyb ostřejší a roste převýšení. Při zisku 3 a víc (se stejnými součástkami) se obvod rozkmitá a přestane filtrovat.</li>
+</ul></div>
 
 <p>Tabulka ze slidu dává koeficienty pro filtr 2. řádu podle tří aproximací:</p>
 <div class="tablewrap"><table>
@@ -3427,13 +3455,12 @@
 <tr><td>\(a_1\)</td><td class="num">1,3617</td><td class="num">1,4142</td><td class="num">1,065</td></tr>
 <tr><td>\(b_1\)</td><td class="num">0,618</td><td class="num">1</td><td class="num">1,9305</td></tr>
 <tr><td>\(Q\)</td><td class="num">0,58</td><td class="num">0,71</td><td class="num">1,3</td></tr>
-<tr><td>\(R_4/R_3\)</td><td class="num">0,268</td><td class="num">0,568 (správně 0,586)</td><td class="num">0,234 (správně 1,234)</td></tr>
+<tr><td>\(R_4/R_3\)</td><td class="num">0,268</td><td class="num">0,586</td><td class="num">1,234</td></tr>
 </tbody></table></div>
 
-<div class="box pozor"><div class="box-t">Pozor: řádek \(R_4/R_3\) v tabulce</div>
-<p>Řádek \(R_4/R_3\) patří k variantě Sallen-Key se <b>stejnými</b> součástkami (\(R_1 = R_2\), \(C_1 = C_2\)) a se ziskem nastaveným neinvertujícím zesilovačem \(1 + R_4/R_3\) (stejný dělič jako u HP na <a href="#k15-sk-hp">slidu „HP typu Sallen-Key“</a>). U ní platí \(Q = 1/(3 - A_0)\), takže</p>
-\[ \frac{R_4}{R_3} = 2 - \frac{1}{Q} \]
-<p>Z hodnot \(Q\) v tabulce to dává 0,268 / 0,586 / 1,234. Slide má u Butterwortha 0,568 a u Čebyševa 0,234 – zřejmě přehozené číslice a chybějící jednička. Zapojení se ziskem 1 (obr. P5.5) žádné \(R_3\), \(R_4\) nemá.</p></div>
+<div class="box pozor"><div class="box-t">Pozor: k čemu je řádek \(R_4/R_3\)</div>
+<p>Řádek \(R_4/R_3\) patří k variantě Sallen-Key se <b>stejnými</b> součástkami (\(R_1 = R_2\), \(C_1 = C_2\)), u které se tvar charakteristiky nastavuje jen ziskem neinvertujícího zesilovače (dělič \(R_3\), \(R_4\) jako u <a href="#k15-sk-hp">HP Sallen-Key</a>). Čím větší požadované \(Q\), tím větší poměr \(R_4/R_3\), tedy větší zisk: Bessel 0,268, Butterworth 0,586, Čebyšev 1,234.</p>
+<p>Zapojení se ziskem 1 (obr. P5.5) žádné \(R_3\), \(R_4\) nemá – tam se \(Q\) nastavuje poměrem kondenzátorů.</p></div>
 
 <figure><div class="paper"><img src="figures/fig15_sk_q.png" alt="Tři dolní propusti 2. řádu na normované frekvenci: Bessel s pozvolným ohybem, Butterworth plochý, Čebyšev s převýšením 3 dB před zlomem; všechny v Omega 1 na −3 dB" loading="lazy"></div>
 <figcaption><b>Obr. P5.6</b> Dolní propust 2. řádu s koeficienty \(a_1\), \(b_1\) z tabulky slidu (vypočteno z přenosu).</figcaption></figure>
@@ -3444,18 +3471,6 @@
 <li>Všechny tři mají v \(\Omega = 1\) pokles 3 dB a daleko za zlomem stejnou strmost 40 dB/dek (2. řád).</li>
 </ul></div>
 
-<div class="box priklad"><div class="box-t">Příklad: Butterworthova DP Sallen-Key na 1 kHz (vlastní čísla)</div>
-<p>Butterworth 2. řádu: \(a_1 = \sqrt2 = 1{,}4142\), \(b_1 = 1\). Zvolíme \(R_1 = R_2 = R\) a \(C_1\) = 10 nF.</p>
-<p>1. Ze vzorce pro \(a_1\):</p>
-\[ \omega_c C_1 \cdot 2R = \sqrt2 \;\Rightarrow\; \omega_c R C_1 = \frac{\sqrt2}{2} \]
-<p>2. Dosadíme do \(b_1\):</p>
-\[ b_1 = (\omega_c R C_1)^2 \cdot \frac{C_2}{C_1} = \frac{1}{2} \cdot \frac{C_2}{C_1} = 1 \]
-<p>Odtud:</p>
-\[ C_2 = 2C_1 = 20\ \text{nF} \]
-<p>3. Odpor:</p>
-\[ R = \frac{\sqrt2}{2\,\omega_c C_1} = \frac{0{,}7071}{2\pi \cdot 1000 \cdot 10^{-8}} = 11{,}25\ \text{k}\Omega \]
-<p>4. Kontrola z přenosu: na 1 kHz je zisk −3,01 dB, na 2 kHz −12,30 dB, na 10 kHz −40,0 dB (o dekádu dál 40 dB – 2. řád).</p></div>
-
 <h3 id="k15-mfb-dp">Dolní propust typu MFB</h3>
 <div class="box definice" id="k15-def-mfb"><div class="box-t">Definice: zapojení MFB (Multiple FeedBack)</div>
 <p><b>MFB</b> (Multiple FeedBack, vícenásobná zpětná vazba) je zapojení aktivního filtru 2. řádu s OZ v invertujícím zapojení, ve kterém vedou z výstupu <b>dvě</b> zpětné vazby: jedna na invertující vstup a druhá do uzlu mezi vstupními prvky.</p>
@@ -3464,18 +3479,32 @@
 <figure><div class="paper"><img src="figures/fig15_mfb_dp.png" alt="MFB DP: vstup přes R1 do uzlu, z něj C2 na zem, R3 na invertující vstup a R2 na výstup; mezi invertujícím vstupem a výstupem C1; neinvertující vstup na zemi" loading="lazy"></div>
 <figcaption><b>Obr. P5.7</b> Dolní propust MFB (podle slidu).</figcaption></figure>
 
-<div class="box vzorec"><div class="box-t">DP MFB: \(A(s) = A_0 / (1 + a_1 s + b_1 s^2)\)</div>
-\[ A_0 = -\frac{R_2}{R_1} \]
-\[ a_1 = \omega_c C_1 \left( R_2 + R_3 + \frac{R_2 R_3}{R_1} \right) \]
-\[ b_1 = \omega_c^2 C_1 C_2 R_2 R_3 \]
-<table class="vars">
-<tr><td>\(A_0\)</td><td>zisk v propustném pásmu – záporný (invertující), velikost jako u invertujícího zesilovače</td></tr>
-<tr><td>\(R_1\)</td><td>vstupní rezistor</td></tr>
-<tr><td>\(R_2\)</td><td>zpětná vazba z výstupu do uzlu za \(R_1\)</td></tr>
-<tr><td>\(R_3\)</td><td>rezistor z uzlu na invertující vstup</td></tr>
-<tr><td>\(C_1\)</td><td>kondenzátor mezi invertujícím vstupem a výstupem</td></tr>
-<tr><td>\(C_2\)</td><td>kondenzátor z uzlu na zem</td></tr>
-</table></div>
+<div class="box intuice"><div class="box-t">Jak MFB funguje</div>
+<ul>
+<li><b>Kostra je invertující zesilovač</b> \(R_1\) → \(R_2\): zisk je daný poměrem \(R_2\) a \(R_1\) a je záporný. Na nízkých frekvencích jsou kondenzátory rozpojené a zbude jen on.</li>
+<li><b>První filtrační článek:</b> \(R_1\) a \(C_2\) na zem tvoří RC dolní propust – na vysokých frekvencích \(C_2\) uzel uzemní.</li>
+<li><b>Druhý článek:</b> \(R_3\) s \(C_1\) ve zpětné vazbě je <a href="#k15-dp1">invertující integrátor / DP 1. řádu</a> – na vysokých frekvencích \(C_1\) zkratuje výstup na virtuální zem.</li>
+<li><b>Dvě zpětné vazby:</b> \(C_1\) (na invertující vstup) a \(R_2\) (z výstupu zpět do uzlu). Smyčka uzel → integrátor → \(R_2\) → uzel posouvá fázi tak, že kolem mezní frekvence vznikne mírná rezonance (jako u LC článku). Proto je ohyb ostrý a ne pozvolný jako u dvou pasivních RC článků.</li>
+</ul></div>
+
+<div class="box intuice"><div class="box-t">Co se stane s výstupem, když změním součástky</div>
+<ul>
+<li><b>Výstup</b> je v propustném pásmu <b>otočený o 180°</b> (invertovaný) a zesílený poměrem \(R_2/R_1\); za mezní frekvencí klesá 40 dB/dek.</li>
+<li><b>\(R_1\) menší</b> (nebo \(R_2\) větší): výstup je větší. Protože \(R_1\) a \(R_2\) jsou zároveň součástí filtru, posune se trochu i tvar ohybu.</li>
+<li><b>Větší \(C_2\) proti \(C_1\):</b> ostřejší ohyb (větší \(Q\)), případně převýšení před zlomem; menší poměr = pozvolnější ohyb.</li>
+<li><b>Všechny R nebo všechna C větší:</b> mezní frekvence klesne, tvar zůstane.</li>
+</ul></div>
+
+<div class="box intuice"><div class="box-t">Sallen-Key nebo MFB?</div>
+<div class="tablewrap"><table>
+<thead><tr><th></th><th>Sallen-Key</th><th>MFB</th></tr></thead>
+<tbody>
+<tr><td>OZ</td><td>neinvertující (sledovač)</td><td>invertující, neinvertující vstup na zemi</td></tr>
+<tr><td>zisk</td><td>kladný, nejsnáz 1</td><td>záporný, \(-R_2/R_1\) – zisk je „zadarmo“</td></tr>
+<tr><td>zpětná vazba</td><td>jedna, kladná</td><td>dvě (proto „multiple feedback“)</td></tr>
+<tr><td>citlivost na součástky</td><td>větší, hlavně při zisku blízko 3</td><td>menší, snese i vyšší \(Q\)</td></tr>
+<tr><td>vstupní odpor</td><td>velký (do OZ neteče proud)</td><td>daný \(R_1\) (virtuální zem)</td></tr>
+</tbody></table></div></div>
 
 <h2 id="k15-hp">Aktivní horní propust</h2>
 <div class="box intuice"><div class="box-t">Z dolní propusti horní: prohodit R a C</div>
@@ -3500,6 +3529,15 @@
 <tr><td>\(R_1 C_1\)</td><td>časová konstanta vstupního článku</td></tr>
 </table></div>
 
+<div class="box postup"><div class="box-t">Odvození přenosu HP 1. řádu</div>
+<p>Stejně jako u DP, jen si \(R_1\) a \(C_1\) vymění místa.</p>
+<p><b>Neinvertující (obr. P5.8):</b> dělič \(C_1\) – \(R_1\) a za ním zesilovač:</p>
+\[ U_+ = U_i \cdot \frac{R_1}{R_1 + \frac{1}{pC_1}} = \frac{U_i}{1 + \frac{1}{pR_1C_1}} \]
+\[ A(p) = \frac{1 + R_2/R_3}{1 + \frac{1}{pR_1C_1}} \]
+<p><b>Invertující (obr. P5.9):</b> na vstupu je místo \(R_1\) impedance \(Z_1 = R_1 + \frac{1}{pC_1}\):</p>
+\[ A(p) = -\frac{R_2}{Z_1} = -\frac{R_2/R_1}{1 + \frac{1}{pR_1C_1}} \]
+<p>Po dosazení \(p = s\,\omega_c\) je v obou případech \(\frac{1}{pR_1C_1} = \frac{1}{\omega_c R_1 C_1} \cdot \frac{1}{s}\), tedy \(a_1 = \frac{1}{\omega_c R_1 C_1}\).</p></div>
+
 <div class="box priklad"><div class="box-t">Příklad: HP pro odstranění driftu EKG se ziskem 10 (vlastní čísla)</div>
 <p>\(f_c\) = 0,5 Hz, \(C_1\) = 1 µF (stejně jako v <a href="#k02-mezni">Z2</a>):</p>
 \[ R_1 = \frac{1}{2\pi \cdot 0{,}5 \cdot 10^{-6}} = 318\ \text{k}\Omega \]
@@ -3511,49 +3549,40 @@
 <figure><div class="paper"><img src="figures/fig15_sk_hp.png" alt="Sallen-Key HP se ziskem 1: vstup přes dva kondenzátory C v sérii na neinvertující vstup, z něj R1 na zem; z uzlu mezi kondenzátory R2 na výstup; OZ je sledovač" loading="lazy"></div>
 <figcaption><b>Obr. P5.10</b> Horní propust Sallen-Key se ziskem 1 a stejnými kondenzátory \(C_1 = C_2 = C\) (podle slidu vpravo).</figcaption></figure>
 
-<div class="box vzorec"><div class="box-t">HP Sallen-Key: \(A(s) = A_\infty / (1 + a_1/s + b_1/s^2)\)</div>
-<p>Zisk 1 a \(C_1 = C_2 = C\) (obr. P5.10):</p>
-\[ A_\infty = 1 \]
-\[ a_1 = \frac{2}{\omega_c R_1 C} \]
-\[ b_1 = \frac{1}{\omega_c^2 R_1 R_2 C^2} \]
-<p>Obecná varianta (slide vlevo) má různé \(C_1\), \(C_2\) a zisk \(\alpha\) nastavený neinvertujícím zesilovačem:</p>
-\[ \alpha = 1 + \frac{R_4}{R_3} \]
-\[ a_1 = \frac{R_2 (C_1 + C_2) + R_1 C_2 (1 - \alpha)}{\omega_c R_1 R_2 C_1 C_2} \]
-\[ b_1 = \frac{1}{\omega_c^2 R_1 R_2 C_1 C_2} \]
-<table class="vars">
-<tr><td>\(C\)</td><td>dva stejné kondenzátory v podélné větvi</td></tr>
-<tr><td>\(R_1\)</td><td>rezistor z neinvertujícího vstupu na zem</td></tr>
-<tr><td>\(R_2\)</td><td>rezistor z uzlu mezi kondenzátory na výstup</td></tr>
-<tr><td>\(\alpha\)</td><td>zisk v propustném pásmu obecné varianty (\(R_3\) na zem, \(R_4\) na výstup)</td></tr>
-</table></div>
+<div class="box intuice"><div class="box-t">Jak HP Sallen-Key funguje</div>
+<p>HP na obr. P5.10 vznikne z DP na obr. P5.5 výměnou prvků:</p>
+<ul>
+<li>podélné \(R_1\), \(R_2\) (DP) → dva kondenzátory \(C\) (HP),</li>
+<li>\(C_1\) na zem (DP) → \(R_1\) na zem (HP),</li>
+<li>\(C_2\) na výstup (DP) → \(R_2\) na výstup (HP).</li>
+</ul>
+<p>Princip je zrcadlový. Na <b>vysokých frekvencích</b> jsou kondenzátory „zkrat“ a signál projde na sledovač beze změny. Na <b>nízkých</b> jsou rozpojené a signál neprojde. Kolem mezní frekvence vrací výstup přes \(R_2\) signál do uzlu mezi kondenzátory (kladná zpětná vazba) a ohyb se zostří.</p></div>
 
-<div class="box priklad"><div class="box-t">Příklad: Butterworthova HP Sallen-Key na 1 kHz (vlastní čísla)</div>
-<p>\(a_1 = \sqrt2\), \(b_1 = 1\), \(C\) = 10 nF.</p>
-<p>1. Z \(a_1\):</p>
-\[ R_1 = \frac{2}{\sqrt2\,\omega_c C} = \frac{1{,}4142}{2\pi \cdot 1000 \cdot 10^{-8}} = 22{,}5\ \text{k}\Omega \]
-<p>2. Z \(b_1\):</p>
-\[ R_2 = \frac{1}{\omega_c^2 R_1 C^2} = 11{,}25\ \text{k}\Omega \]
-<p>3. Kontrola: na 1 kHz −3,01 dB, na 500 Hz −12,30 dB, na 100 Hz −40,0 dB – zrcadlový obraz DP z předchozího příkladu.</p></div>
+<div class="box intuice"><div class="box-t">Co se stane s výstupem, když změním součástky</div>
+<ul>
+<li><b>Výstup</b> je ve vysokých frekvencích stejný jako vstup (zisk 1, ve fázi); pod mezní frekvencí klesá 40 dB/dek – nízké složky (např. drift izolinie) jsou potlačeny.</li>
+<li><b>Větší R nebo větší C:</b> mezní frekvence klesne, propustí se i nižší frekvence; tvar zůstane.</li>
+<li><b>Poměr rezistorů</b> určuje ostrost ohybu: větší \(R_1\) (na zem) proti \(R_2\) (na výstup) = silnější kladná zpětná vazba = ostřejší ohyb, případně převýšení (zrcadlově k poměru kondenzátorů u DP).</li>
+<li><b>Obecná varianta se ziskem</b> (slide vlevo, neinvertující zesilovač \(R_3\), \(R_4\), různé \(C_1\), \(C_2\)): větší zisk = větší výstup <b>a zároveň</b> silnější kladná zpětná vazba → ostřejší ohyb a převýšení u mezní frekvence. Mezní frekvenci zisk nemění. Při příliš velkém zisku (u stejných součástek 3 a víc) se filtr rozkmitá.</li>
+</ul></div>
 
 <h3 id="k15-mfb-hp">Horní propust typu MFB</h3>
 <figure><div class="paper"><img src="figures/fig15_mfb_hp.png" alt="MFB HP: vstup přes C1 = C do uzlu, z něj R2 na zem, C3 = C na invertující vstup a C2 na výstup; mezi invertujícím vstupem a výstupem R1; neinvertující vstup na zemi" loading="lazy"></div>
 <figcaption><b>Obr. P5.11</b> Horní propust MFB s \(C_1 = C_3 = C\) (podle slidu).</figcaption></figure>
 
-<div class="box vzorec"><div class="box-t">HP MFB: \(A(s) = A_\infty / (1 + a_1/s + b_1/s^2)\)</div>
-\[ A_\infty = -\frac{C}{C_2} \]
-\[ a_1 = \frac{2C + C_2}{\omega_c R_1 C C_2} \]
-\[ b_1 = \frac{1}{\omega_c^2 R_1 R_2 C C_2} \]
-<table class="vars">
-<tr><td>\(C\)</td><td>vstupní kondenzátor \(C_1\) a kondenzátor k invertujícímu vstupu \(C_3\) (stejné)</td></tr>
-<tr><td>\(C_2\)</td><td>kondenzátor z uzlu na výstup</td></tr>
-<tr><td>\(R_1\)</td><td>rezistor mezi invertujícím vstupem a výstupem</td></tr>
-<tr><td>\(R_2\)</td><td>rezistor z uzlu na zem</td></tr>
-</table></div>
-
-<div class="box pozor"><div class="box-t">Pozor: překlepy na slidu „HP typu MFB“</div>
+<div class="box intuice"><div class="box-t">Princip HP MFB</div>
+<p>Je to DP MFB (obr. P5.7) s prohozenými R a C: vstupní kondenzátor \(C\) do uzlu, z uzlu \(R_2\) na zem, \(C_2\) na výstup a druhý \(C\) na invertující vstup; \(R_1\) mezi invertujícím vstupem a výstupem.</p>
 <ul>
-<li>Pod přenosem je \(b_1 = \frac{2C + C_2}{\omega_c R_1 C C_2}\), tedy totéž co \(a_1\). Správně je \(b_1 = \frac{1}{\omega_c^2 R_1 R_2 C C_2}\) – tak je člen u \(1/s^2\) zapsán přímo v přenosu \(A(s)\) na stejném slidu.</li>
-<li>V přenosu \(A(s)\) je v čitateli členu u \(1/s\) napsáno \(2C_2 + C\), ve vzorci pro \(a_1\) pod ním \(2C + C_2\). Uzlová analýza zapojení dává \(2C + C_2\) (ověřeno výpočtem).</li>
+<li><b>Nízké frekvence:</b> kondenzátory jsou rozpojené, signál k OZ neprojde – výstup je nulový.</li>
+<li><b>Vysoké frekvence:</b> kondenzátory vedou a zapojení se chová jako invertující zesilovač, jen místo rezistorů v něm „rozhodují“ kondenzátory.</li>
+</ul></div>
+
+<div class="box intuice"><div class="box-t">Co se stane s výstupem, když změním součástky</div>
+<ul>
+<li><b>Výstup</b> je v propustném pásmu (vysoké frekvence) <b>invertovaný</b>; pod mezní frekvencí klesá 40 dB/dek.</li>
+<li><b>Zisk</b> neurčuje poměr odporů, ale <b>poměr kondenzátorů</b> – vstupního \(C\) proti zpětnovazebnímu \(C_2\). Menší \(C_2\) = větší výstup.</li>
+<li><b>Větší \(R_1\), \(R_2\) nebo větší kondenzátory:</b> mezní frekvence klesne.</li>
+<li><b>Poměr rezistorů</b> určuje ostrost ohybu: větší \(R_1\) (zpětná vazba) proti \(R_2\) (na zem) = ostřejší ohyb (zrcadlově k poměru kondenzátorů u DP MFB).</li>
 </ul></div>
 
 <h2 id="k15-pp">Pásmová propust</h2>
@@ -3575,58 +3604,41 @@
 <figure><div class="paper"><img src="figures/fig15_mfb_pp.png" alt="MFB pásmová propust: vstup přes R1 do uzlu, z něj R3 na zem, kondenzátor C na invertující vstup a druhý kondenzátor C na výstup; R2 mezi invertujícím vstupem a výstupem; neinvertující vstup na zemi" loading="lazy"></div>
 <figcaption><b>Obr. P5.12</b> Pásmová propust MFB se dvěma stejnými kondenzátory \(C\) (podle slidu).</figcaption></figure>
 
-<div class="box vzorec"><div class="box-t">Pásmová propust MFB (slide)</div>
-<p>Přenos v normovaném tvaru má v čitateli jen člen se \(s\):</p>
-\[ A(s) = \frac{-k\,s}{1 + a\,s + b\,s^2} \]
-<p>Koeficienty:</p>
-\[ \begin{aligned} k &= \frac{R_2 R_3}{R_1 + R_3}\, C \omega_m \\ a &= \frac{2 R_1 R_3}{R_1 + R_3}\, C \omega_m \\ b &= \frac{R_1 R_2 R_3}{R_1 + R_3}\, C^2 \omega_m^2 \end{aligned} \]
-<p>Návrhové vztahy:</p>
-\[ f_m = \frac{1}{2\pi C} \sqrt{\frac{R_1 + R_3}{R_1 R_2 R_3}} \]
-\[ -A_m = \frac{R_2}{2 R_1} \]
-\[ Q = \pi f_m R_2 C \]
-\[ B = \frac{1}{\pi R_2 C} \]
-<table class="vars">
-<tr><td>\(f_m\), \(\omega_m\)</td><td>střední frekvence (vrchol přenosu)</td></tr>
-<tr><td>\(A_m\)</td><td>zisk na střední frekvenci (záporný – invertující zapojení)</td></tr>
-<tr><td>\(Q\), \(B\)</td><td>činitel jakosti a šířka pásma; \(Q = f_m / B\)</td></tr>
-<tr><td>\(R_1\)</td><td>vstupní rezistor – spolu s \(R_2\) určuje zisk</td></tr>
-<tr><td>\(R_2\)</td><td>rezistor ve zpětné vazbě – určuje šířku pásma \(B\)</td></tr>
-<tr><td>\(R_3\)</td><td>rezistor na zem – doladí střední frekvenci, aniž by měnil \(A_m\) a \(B\)</td></tr>
-<tr><td>\(C\)</td><td>dva stejné kondenzátory</td></tr>
-</table></div>
+<div class="box intuice"><div class="box-t">Jak MFB pásmová propust funguje</div>
+<ul>
+<li><b>Nízké frekvence:</b> kondenzátor mezi uzlem a invertujícím vstupem je rozpojený – signál se k OZ vůbec nedostane, výstup je nulový (horní propust).</li>
+<li><b>Vysoké frekvence:</b> oba kondenzátory jsou „zkrat“. Uzel je spojený s výstupem i s virtuální zemí, takže výstup je přitažen k nule (dolní propust).</li>
+<li><b>Mezi nimi</b>, kolem \(f_m\), projde signál nejvíc – vrchol s výškou \(|A_m|\). Jeden OZ tak dělá horní i dolní propust zároveň.</li>
+</ul></div>
 
-<div class="box priklad"><div class="box-t">Příklad: pásmová propust 1 kHz, Q = 5, zisk 2 (vlastní čísla)</div>
-<p>\(f_m\) = 1 kHz, \(Q = 5\), \(|A_m| = 2\), \(C\) = 10 nF.</p>
-<p>1. Z \(Q = \pi f_m R_2 C\):</p>
-\[ R_2 = \frac{Q}{\pi f_m C} = \frac{5}{\pi \cdot 1000 \cdot 10^{-8}} = 159{,}2\ \text{k}\Omega \]
-<p>2. Ze zisku:</p>
-\[ R_1 = \frac{R_2}{2|A_m|} = \frac{159{,}2}{4} = 39{,}8\ \text{k}\Omega \]
-<p>3. Ze vzorce pro \(f_m\) vyjádříme \(R_3\):</p>
-\[ R_3 = \frac{R_1}{(2\pi f_m C)^2 R_1 R_2 - 1} = 1{,}66\ \text{k}\Omega \]
-<p>4. Šířka pásma:</p>
-\[ B = \frac{1}{\pi R_2 C} = \frac{f_m}{Q} = 200\ \text{Hz} \]
-<p>Kontrola z přenosu: vrchol 6,02 dB (zisk 2) na 1 kHz, pokles o 3 dB na 905 Hz a 1105 Hz (rozdíl 200 Hz). Kladné \(R_3\) vyjde jen pro \(|A_m| &lt; 2Q^2\).</p></div>
+<div class="box intuice"><div class="box-t">Co se stane s výstupem, když změním součástky</div>
+<ul>
+<li><b>Výstup</b> je největší na střední frekvenci \(f_m\) a je <b>invertovaný</b> (otočený o 180°); na obě strany od \(f_m\) klesá.</li>
+<li><b>\(R_2\)</b> (zpětná vazba) určuje <b>šířku pásma</b>: větší \(R_2\) = užší pásmo = větší \(Q\). Zároveň roste zisk.</li>
+<li><b>\(R_1\)</b> (vstup) určuje hlavně <b>zisk</b> – menší \(R_1\) = větší výstup na \(f_m\).</li>
+<li><b>\(R_3\)</b> (na zem) <b>doladí střední frekvenci</b> a nezmění zisk ani šířku pásma – vrchol se jen posune po ose frekvence. Menší \(R_3\) = vyšší \(f_m\).</li>
+<li><b>\(C\)</b> (oba stejné): větší kondenzátory posunou celou křivku k nižším frekvencím.</li>
+<li>Omezení: velký zisk a zároveň malé \(Q\) (široké pásmo) nejde nastavit – při příliš velkém zisku by pro \(R_3\) nevyšla žádná použitelná hodnota.</li>
+</ul></div>
 
 <figure><div class="paper"><img src="figures/fig15_pp_mfb.png" alt="Pásmová propust MFB se středem 1 kHz a vrcholem 6 dB: modře Q = 5 úzká, oranžově Q = 2 širší; body −3 dB na 905 a 1105 Hz" loading="lazy"></div>
-<figcaption><b>Obr. P5.13</b> Pásmová propust MFB z příkladu (\(Q = 5\)) a pro srovnání \(Q = 2\) (vypočteno z přenosu).</figcaption></figure>
+<figcaption><b>Obr. P5.13</b> Pásmová propust MFB se středem 1 kHz a ziskem 2 pro \(Q = 5\) a \(Q = 2\) – liší se jen \(R_2\) (a podle něj \(R_1\), \(R_3\)); vypočteno z přenosu.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <ul>
-<li>Vrchol je vždy na \(f_m\) a má výšku \(|A_m|\) – mění se jen šířka. \(Q = 5\): pásmo 200 Hz, \(Q = 2\): 500 Hz.</li>
+<li>Vrchol je vždy na \(f_m\) a má stejnou výšku (zisk 2 = 6 dB) – mění se jen šířka. \(Q = 5\): pásmo 200 Hz, \(Q = 2\): 500 Hz.</li>
 <li>Daleko od středu klesá přenos 20 dB/dek na obě strany – pásmová propust 2. řádu je jedna „půlka“ DP a jedna „půlka“ HP.</li>
 </ul></div>
 
 <h2 id="k15-pz">Pásmová zádrž</h2>
-<p>Pásmová zádrž vznikne podobnou transformací dolní propusti, jen se pásmo „vyřízne“: přenos má v čitateli člen \(1 + s^2\), který je na střední frekvenci (\(s = j\), \(\Omega = 1\)) roven nule.</p>
+<p>Pásmová zádrž vznikne podobnou transformací dolní propusti, jen se pásmo „vyřízne“: přenos má na střední frekvenci \(f_m\) <b>nulu</b>.</p>
 
-<div class="box vzorec"><div class="box-t">Pásmová zádrž 2. řádu (slide)</div>
-\[ A(s) = \frac{A_0 (1 + s^2)}{1 + \Delta\Omega \cdot s + s^2} = \frac{A_0 (1 + s^2)}{1 + \frac{1}{Q} s + s^2} \]
-\[ \Delta\Omega = \Omega_\text{max} - \Omega_\text{min}, \qquad Q = \frac{f_m}{B} = \frac{1}{\Delta\Omega} \]
-<table class="vars">
-<tr><td>\(A_0\)</td><td>zisk v propustném pásmu (daleko od \(f_m\))</td></tr>
-<tr><td>\(1 + s^2\)</td><td>nula přenosu: v \(\Omega = 1\) je \(1 + j^2 = 0\), tedy \(A = 0\)</td></tr>
-<tr><td>\(\Delta\Omega\)</td><td>normovaná šířka potlačeného pásma (mezi body −3 dB)</td></tr>
-<tr><td>\(Q\)</td><td>činitel jakosti – čím větší, tím užší zářez</td></tr>
-</table></div>
+<div class="box intuice"><div class="box-t">Co pásmová zádrž 2. řádu dělá s výstupem</div>
+<ul>
+<li><b>Daleko od \(f_m\)</b> (pod i nad) projde signál beze změny tvaru se ziskem propustného pásma.</li>
+<li><b>Přímo na \(f_m\)</b> je výstup teoreticky nulový – složka s touto frekvencí (např. brum 50 Hz) zmizí.</li>
+<li><b>Činitel jakosti \(Q\)</b> (střední frekvence / šířka potlačeného pásma) určuje jen <b>šířku</b> zářezu, ne jeho hloubku ani polohu: velké \(Q\) = úzký zářez, který vezme jen \(f_m\); malé \(Q\) = široký zářez, který ubere i sousední užitečné frekvence.</li>
+<li>Prakticky není zářez nekonečně hluboký – jeho hloubku omezuje přesnost součástek.</li>
+</ul></div>
 
 <figure><div class="paper"><img src="figures/fig15_pz_q.png" alt="Pásmová zádrž na 50 Hz pro Q = 0,25 (široký zářez), Q = 1 a Q = 10 (velmi úzký zářez)" loading="lazy"></div>
 <figcaption><b>Obr. P5.14</b> Pásmová zádrž pro \(Q\) = 0,25; 1 a 10 jako na slidu, zde naladěná na 50 Hz (vypočteno z přenosu).</figcaption></figure>
@@ -3658,15 +3670,21 @@
 <tr><td>\(Q\)</td><td>činitel jakosti; roste, když se \(G\) blíží 2</td></tr>
 </table></div>
 
-<div class="box priklad"><div class="box-t">Příklad: zádrž 50 Hz s Q = 5 (vlastní čísla, R a C ze Z2)</div>
-<p>\(C\) = 100 nF, \(R\) = 31,8 kΩ (\(f_m\) = 50 Hz), příčné prvky \(R/2\) = 15,9 kΩ a \(2C\) = 200 nF.</p>
-<p>1. Potřebný zisk pro \(Q = 5\):</p>
-\[ 2(2 - G) = \frac{1}{5} \;\Rightarrow\; G = 1{,}9 \]
-<p>2. Rezistory: \(R_2/R_1 = 0{,}9\), např. \(R_1\) = 10 kΩ, \(R_2\) = 9 kΩ.</p>
-<p>3. Šířka zářezu a body −3 dB:</p>
-\[ B = \frac{f_m}{Q} = \frac{50}{5} = 10\ \text{Hz} \]
-<p>Pokles o 3 dB je na 45,2 Hz a 55,2 Hz. Pro srovnání: se sledovačem (\(G = 1\)) je \(Q = 0{,}5\) a pásmo 20,7–120,7 Hz, pasivní článek (\(Q = 0{,}25\)) má 11,8–212 Hz.</p>
-<p>Pozor (nad rámec slidu): pro \(G \to 2\) jde \(Q \to \infty\) a při \(G \ge 2\) by se jmenovatel přenosu stal nestabilním – obvod by kmital. Velké \(Q\) proto vyžaduje přesné rezistory.</p></div>
+<div class="box intuice"><div class="box-t">Jak dvojitý T-článek vyřízne jednu frekvenci</div>
+<ul>
+<li>Vstupní signál jde ke vstupu OZ dvěma cestami: <b>R – R</b> (s \(2C\) dolů) je dolní propust, <b>C – C</b> (s \(R/2\) dolů) je horní propust.</li>
+<li>Na \(f_m = 1/(2\pi RC)\) mají obě cesty stejně velký výstup, ale v <b>opačné fázi</b> – v uzlu na vstupu OZ se odečtou na nulu. Jinde jedna z cest převáží a signál projde.</li>
+<li><b>Pasivně</b> je zářez široký (\(Q = 0{,}25\)): pokles začíná daleko od \(f_m\) a „ukousne“ i užitečné frekvence.</li>
+<li><b>Aktivně</b> se příčný rezistor \(R/2\) nepřipojí na zem, ale na výstup OZ. Mimo \(f_m\) výstup vrací do T-článku signál (kladná zpětná vazba) a ten „dorovná“ útlum, který by tam pasivní článek způsobil. Přímo na \(f_m\) je ale výstup nulový, \(R/2\) je tedy jako uzemněný a zářez zůstane. Útlum se tak soustředí jen do úzkého okolí \(f_m\).</li>
+</ul></div>
+
+<div class="box intuice"><div class="box-t">Co se změní, když změním součástky</div>
+<ul>
+<li><b>Zisk \(G\)</b> (poměr \(R_2/R_1\)) ovládá <b>jen šířku</b> zářezu: \(G = 1\) (sledovač) dá \(Q = 0{,}5\), \(G = 1{,}9\) dá \(Q = 5\). Střední frekvenci nemění.</li>
+<li><b>\(R\) a \(C\)</b> T-článku ovládají <b>jen střední frekvenci</b>. Obě veličiny se ladí nezávisle – to je hlavní výhoda zapojení.</li>
+<li>Pro \(G \to 2\) jde \(Q \to \infty\); při \(G \ge 2\) se obvod rozkmitá (kladná zpětná vazba převáží). Velké \(Q\) proto vyžaduje přesné rezistory.</li>
+<li><b>Hloubku</b> zářezu určuje přesnost T-článku: nedodrží-li se poměry \(R/2\) a \(2C\), obě cesty se přesně neodečtou a na \(f_m\) zbude nenulový přenos.</li>
+</ul></div>
 
 <h3 id="k15-wien">Wienův-Robinsonův můstek</h3>
 <div class="box definice" id="k15-def-wien-robinson"><div class="box-t">Definice: Wienův-Robinsonův můstek</div>
@@ -3676,28 +3694,23 @@
 <figure><div class="paper"><img src="figures/fig15_wien.png" alt="Wienův-Robinsonův můstek: ze vstupu levá větev R a C v sérii a pod ní R paralelně s C na zem; pravá větev 2R1 a R1 na zem; výstup mezi středy obou větví" loading="lazy"></div>
 <figcaption><b>Obr. P5.16</b> Pasivní Wienův-Robinsonův můstek (podle slidu vpravo).</figcaption></figure>
 
-<div class="box postup"><div class="box-t">Proč je na \(f_m\) výstup nulový (vlastní odvození)</div>
+<div class="box postup"><div class="box-t">Proč je na \(f_m\) výstup nulový</div>
 <ol>
-<li>Pravý dělič: \(U = U_\text{vst} \cdot \frac{R_1}{2R_1 + R_1} = \frac{1}{3} U_\text{vst}\) na každé frekvenci.</li>
-<li>Levý dělič na \(\omega = 1/(RC)\): reaktance kondenzátoru je rovna \(R\). Sériová kombinace má impedanci \(R(1 - j)\), paralelní \(\frac{R}{1 + j} = \frac{R(1 - j)}{2}\).</li>
-<li>Poměr dělení:
-\[ \frac{\frac{R(1-j)}{2}}{R(1-j) + \frac{R(1-j)}{2}} = \frac{1}{3} \]</li>
-<li>Oba středy jsou na \(\frac13 U_\text{vst}\) a ve stejné fázi, výstup (rozdíl) je nulový.</li>
+<li><b>Pravý (odporový) dělič</b> \(2R_1\) a \(R_1\) dává na každé frekvenci třetinu vstupního napětí, bez fázového posunu.</li>
+<li><b>Levý (RC) dělič:</b> na nízkých frekvencích blokuje sériový kondenzátor, na vysokých zkratuje paralelní kondenzátor – v obou případech je jeho střed blízko nuly. Mezi tím, právě na \(f_m\), je reaktance kondenzátoru rovna \(R\) a dělič dává <b>také třetinu</b> vstupu a fázové posuny obou větví se vyruší.</li>
+<li>Oba středy jsou tedy na \(f_m\) na stejném napětí ve stejné fázi – rozdíl (výstup) je nulový. Na jiných frekvencích se RC dělič od třetiny odchýlí a výstup nenulový je.</li>
 </ol></div>
 
 <p>Aktivní zapojení na slidu (vlevo) má dva OZ: první sčítá vstup (přes \(R_4\)) a výstup (přes \(R_3\)) s rezistorem \(R_2\) ve zpětné vazbě a napájí můstek; druhý OZ měří napětí mezi středy obou větví (dělič \(R_1\), \(2R_1\)). Zpětná vazba přes \(R_3\) zužuje zářez.</p>
 
-<div class="box vzorec"><div class="box-t">Aktivní Wienův-Robinsonův můstek (slide)</div>
-\[ A(s) = -\frac{\frac{\beta}{1 + \alpha} (1 + s^2)}{1 + \frac{3}{1 + \alpha} s + s^2} \]
-\[ \alpha = \frac{R_2}{R_3}, \qquad \beta = \frac{R_2}{R_4} \]
-\[ f_m = \frac{1}{2\pi RC}, \qquad A_0 = -\frac{\beta}{1 + \alpha}, \qquad Q = \frac{1 + \alpha}{3} \]
-<table class="vars">
-<tr><td>\(R\), \(C\)</td><td>prvky můstku; určují střední frekvenci</td></tr>
-<tr><td>\(\alpha\)</td><td>poměr \(R_2/R_3\) – míra zpětné vazby z výstupu; určuje \(Q\)</td></tr>
-<tr><td>\(\beta\)</td><td>poměr \(R_2/R_4\) – zesílení vstupu; spolu s \(\alpha\) určuje zisk \(A_0\)</td></tr>
-<tr><td>\(A_0\)</td><td>zisk v propustném pásmu (záporný)</td></tr>
-</table>
-<p>Například \(Q = 5\) vyžaduje \(\alpha = 14\) a pro \(A_0 = -1\) pak \(\beta = 15\); s \(R_2\) = 10 kΩ je \(R_3\) = 714 Ω a \(R_4\) = 667 Ω (vlastní čísla). Vzorec \(A(s)\) ze slidu jsme ověřili uzlovou analýzou zapojení.</p></div>
+<div class="box intuice"><div class="box-t">Co se stane s výstupem, když změním součástky</div>
+<ul>
+<li><b>Výstup</b> je mimo \(f_m\) <b>invertovaný</b> (zisk je záporný) a na \(f_m\) nulový – stejný zářez jako u ostatních zádrží.</li>
+<li><b>\(R\), \(C\) můstku</b> určují <b>střední frekvenci</b>: větší \(R\) nebo \(C\) posune zářez k nižším frekvencím.</li>
+<li><b>\(R_3\)</b> (zpětná vazba z výstupu) určuje <b>šířku zářezu</b>: menší \(R_3\) = silnější zpětná vazba = užší zářez (větší \(Q\)). Bez zpětné vazby je zářez široký jako u pasivního můstku.</li>
+<li><b>\(R_4\)</b> (vstup) nastaví <b>zisk</b> v propustném pásmu. Protože zisk závisí i na \(R_3\), musí se při zúžení zářezu upravit i \(R_4\), aby výstup zůstal stejně velký.</li>
+<li>Stejně jako u dvojitého T-článku: hloubka zářezu závisí na přesném vyvážení můstku.</li>
+</ul></div>
 
 <h2 id="k15-kaskada">Kaskáda filtrů</h2>
 <div class="box definice" id="k15-def-kaskada-filtru"><div class="box-t">Definice: kaskáda filtrů</div>
@@ -3792,17 +3805,17 @@
 
 <h2 id="k15-srovnani">Srovnání zapojení</h2>
 <div class="tablewrap"><table class="compact">
-<thead><tr><th>zapojení</th><th>řád, zisk</th><th>klíčové vztahy</th><th>poznámka</th></tr></thead>
+<thead><tr><th>zapojení</th><th>řád, výstup</th><th>co ovládá co</th><th>poznámka</th></tr></thead>
 <tbody>
 <tr><td>DP 1. řádu neinv. / inv.</td><td>1; \(1 + R_2/R_3\) / \(-R_2/R_1\)</td><td>\(a_1 = \omega_c R_1 C_1\) / \(\omega_c R_2 C_1\)</td><td>RC článek + zesilovač</td></tr>
 <tr><td>HP 1. řádu neinv. / inv.</td><td>1; \(1 + R_2/R_3\) / \(-R_2/R_1\)</td><td>\(a_1 = 1/(\omega_c R_1 C_1)\)</td><td>R ↔ C proti DP</td></tr>
-<tr><td>Sallen-Key DP</td><td>2; \(A_0 = 1\)</td><td>\(a_1 = \omega_c C_1(R_1 + R_2)\), \(b_1 = \omega_c^2 R_1R_2C_1C_2\)</td><td>neinvertující, kladná ZV přes \(C_2\)</td></tr>
-<tr><td>Sallen-Key HP</td><td>2; \(A_\infty = 1\)</td><td>\(a_1 = 2/(\omega_c R_1 C)\), \(b_1 = 1/(\omega_c^2 R_1R_2C^2)\)</td><td>R ↔ C proti DP</td></tr>
-<tr><td>MFB DP</td><td>2; \(-R_2/R_1\)</td><td>\(b_1 = \omega_c^2 C_1C_2R_2R_3\)</td><td>invertující, dvě ZV</td></tr>
-<tr><td>MFB HP</td><td>2; \(-C/C_2\)</td><td>\(b_1 = 1/(\omega_c^2 R_1R_2CC_2)\)</td><td>invertující</td></tr>
-<tr><td>MFB PP</td><td>2; \(-R_2/(2R_1)\)</td><td>\(Q = \pi f_m R_2 C\), \(B = 1/(\pi R_2 C)\)</td><td>\(R_3\) ladí \(f_m\)</td></tr>
+<tr><td>Sallen-Key DP</td><td>2; ve fázi, zisk 1</td><td>velikost R, C → \(f_c\); \(C_2/C_1\) (nebo zisk) → ostrost ohybu</td><td>neinvertující, kladná ZV přes \(C_2\)</td></tr>
+<tr><td>Sallen-Key HP</td><td>2; ve fázi, zisk 1</td><td>velikost R, C → \(f_c\); \(R_1/R_2\) (nebo zisk) → ostrost ohybu</td><td>R ↔ C proti DP</td></tr>
+<tr><td>MFB DP</td><td>2; invertovaný</td><td>\(R_2/R_1\) → zisk; \(C_2/C_1\) → ohyb; velikost R, C → \(f_c\)</td><td>invertující, dvě ZV</td></tr>
+<tr><td>MFB HP</td><td>2; invertovaný</td><td>poměr kondenzátorů → zisk; velikost R, C → \(f_c\)</td><td>R ↔ C proti DP MFB</td></tr>
+<tr><td>MFB PP</td><td>2; invertovaný, vrchol na \(f_m\)</td><td>\(R_2\) → šířka pásma; \(R_1\) → zisk; \(R_3\) → \(f_m\)</td><td>jeden OZ = HP i DP</td></tr>
 <tr><td>dvojitý T aktivní</td><td>2; \(G\)</td><td>\(f_m = 1/(2\pi RC)\), \(Q = 1/(2(2-G))\)</td><td>\(R/2\) na výstup</td></tr>
-<tr><td>Wien-Robinson</td><td>2; \(-\beta/(1+\alpha)\)</td><td>\(f_m = 1/(2\pi RC)\), \(Q = (1+\alpha)/3\)</td><td>můstek, dva OZ</td></tr>
+<tr><td>Wien-Robinson</td><td>2; invertovaný, nula na \(f_m\)</td><td>R, C → \(f_m\); \(R_3\) → šířka zářezu; \(R_4\) → zisk</td><td>můstek, dva OZ</td></tr>
 </tbody></table></div>
 
 <div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
@@ -3815,7 +3828,7 @@
 <h2 id="k15-shrnuti-h">Shrnutí</h2>
 <p>Filtr propouští signál v požadovaném pásmu a potlačuje nežádoucí frekvence. Popisuje ho <b>přenosová funkce</b> \(H(p)\), podíl polynomů v \(p = j\omega\) (\(m \le n\)), v ustáleném stavu modul a fáze. <b>Ideální filtr</b> má přenos 1, svislou hranu v \(\omega_0\) a nulový přenos za ní (\(n \to \infty\)); reálný filtr má <b>pásmo propustnosti</b>, <b>přechodovou oblast</b> a <b>pásmo útlumu</b>, na mezní frekvenci pokles 3 dB a <b>strmost</b> \(n \cdot 6\) dB/okt = \(n \cdot 20\) dB/dek (přepočet \(\log_2 10 \approx 3{,}32\)).</p>
 <p><b>Pasivní filtry</b> (R, L, C) signál vždy zeslabí, ale nejsou omezeny aktivními prvky; <b>aktivní filtry</b> s OZ potřebují napájení, nepotřebují cívky, jsou kompaktní, strmější a mohou zesilovat. Kde se signál zpracovává digitálně, nechává se co nejvíc operací digitální části. Přenos se zapisuje v <b>normované frekvenci</b> \(\Omega = f/f_c\) jako \(A_0 / (1 + a_1 s + b_1 s^2)\) pro DP a \(A_\infty / (1 + a_1/s + b_1/s^2)\) pro HP.</p>
-<p>Články 1. řádu jsou RC článek s neinvertujícím (\(A_0 = 1 + R_2/R_3\)) nebo invertujícím (\(A_0 = -R_2/R_1\)) zesilovačem. Články 2. řádu: <b>Sallen-Key</b> (neinvertující, OZ jako sledovač, kladná zpětná vazba) a <b>MFB</b> (invertující, dvě zpětné vazby). Horní propust vznikne z dolní záměnou R a C. <b>Pásmová propust</b> MFB má \(f_m\), \(A_m = -R_2/(2R_1)\), \(Q = \pi f_m R_2 C\), \(B = 1/(\pi R_2 C)\). <b>Pásmová zádrž</b> má v čitateli \(1 + s^2\); aktivní dvojitý T-článek má \(Q = 1/(2(2 - G))\), Wienův-Robinsonův můstek \(Q = (1 + \alpha)/3\), oba \(f_m = 1/(2\pi RC)\).</p>
+<p>Články 1. řádu jsou RC článek s neinvertujícím (\(A_0 = 1 + R_2/R_3\)) nebo invertujícím (\(A_0 = -R_2/R_1\)) zesilovačem. Články 2. řádu: <b>Sallen-Key</b> (neinvertující, OZ jako sledovač, kladná zpětná vazba) a <b>MFB</b> (invertující, dvě zpětné vazby). Horní propust vznikne z dolní záměnou R a C. <b>Pásmová propust</b> MFB má invertovaný výstup s vrcholem na \(f_m\); \(R_2\) určuje šířku pásma, \(R_1\) zisk a \(R_3\) doladí \(f_m\). <b>Pásmová zádrž</b> má na \(f_m\) nulový výstup a \(Q\) určuje šířku zářezu; aktivní dvojitý T-článek má \(Q = 1/(2(2 - G))\) a \(f_m = 1/(2\pi RC)\), u Wienova-Robinsonova můstku zužuje zářez zpětná vazba přes \(R_3\).</p>
 <p>Filtr vyššího řádu je <b>kaskáda</b> článků; stejné články dají pozvolný ohyb, proto se koeficienty volí podle <b>aproximace</b>: <b>Butterworth</b> (maximálně ploché pásmo, antialiasing), <b>Čebyšev</b> (rychlý pokles, zvlnění), <b>Bessel</b> (lineární fáze, konstantní skupinové zpoždění). Návrh usnadní nástroj TI Filter Designer.</p>
 <div class="takehome"><h3>Take-home messages</h3><ol>
 <li>Přenosová funkce \(H(p)\) = podíl polynomů v \(p = j\omega\); modul = amplitudová, úhel = fázová charakteristika.</li>
@@ -3841,25 +3854,34 @@
 <p>takže 6 dB/okt ≈ 19,93 ≈ 20 dB/dek. HP 1. řádu s \(f_M\) = 1,8 kHz: na 900 Hz (oktáva) −6,99 dB, na 180 Hz (dekáda) −20,04 dB; v samotné \(f_M\) −3 dB.</p></div></details>
 <details class="q"><summary>Porovnejte pasivní a aktivní filtry. Proč se u zařízení s digitálním zpracováním nechává co nejvíc filtrace digitální části?</summary><div>
 <p>Pasivní filtr je z R, L, C (aspoň jeden reaktanční prvek), nepotřebuje napájení, má teoreticky neomezený frekvenční rozsah, ale vždy snižuje amplitudu signálu a pro strmé charakteristiky potřebuje cívky. Aktivní filtr přidá OZ: potřebuje napájení \(\pm U_{CC}\), nepotřebuje induktory (stačí RC), je kompaktnější, umožňuje strmější charakteristiku a signál může současně zesilovat; frekvenční rozsah omezuje OZ. Analogové filtry nemohou být ideální a jejich návrh optimalizuje jen jedno kritérium; digitální zpracování je přesnější a pružnější, proto se analogově dělá jen nutné minimum (antialiasingová filtrace).</p></div></details>
-<details class="q"><summary>Nakreslete dolní propust Sallen-Key a uveďte její přenos. Jak z ní vznikne horní propust?</summary><div>
-<p>Vstup přes \(R_1\) a \(R_2\) v sérii na neinvertující vstup OZ, z něj \(C_1\) na zem; z uzlu mezi \(R_1\) a \(R_2\) vede \(C_2\) na výstup; OZ je sledovač. Přenos:</p>
-\[ A(s) = \frac{A_0}{1 + a_1 s + b_1 s^2}, \qquad A_0 = 1 \]
-\[ a_1 = \omega_c C_1 (R_1 + R_2), \qquad b_1 = \omega_c^2 R_1 R_2 C_1 C_2 \]
-<p>Horní propust vznikne záměnou rezistorů za kondenzátory a naopak (\(s \to 1/s\)): dva kondenzátory \(C\) v sérii, \(R_1\) na zem, \(R_2\) na výstup; \(a_1 = 2/(\omega_c R_1 C)\), \(b_1 = 1/(\omega_c^2 R_1 R_2 C^2)\). Např. Butterworth na 1 kHz s \(C\) = 10 nF: \(R_1\) = 22,5 kΩ, \(R_2\) = 11,25 kΩ.</p></div></details>
-<details class="q"><summary>Čím se liší zapojení Sallen-Key a MFB? Nakreslete dolní propust MFB.</summary><div>
-<p>Sallen-Key používá OZ v neinvertujícím zapojení (sledovač), zisk je kladný a zpětná vazba přes kondenzátor (u DP) je kladná. MFB (Multiple FeedBack) používá OZ v invertujícím zapojení se dvěma zpětnými vazbami; zisk je záporný a hodí se i pro vysoké \(Q\). DP MFB: vstup přes \(R_1\) do uzlu, z uzlu \(C_2\) na zem, \(R_3\) na invertující vstup a \(R_2\) na výstup; mezi invertujícím vstupem a výstupem \(C_1\); neinvertující vstup na zemi.</p>
-\[ A_0 = -\frac{R_2}{R_1}, \qquad b_1 = \omega_c^2 C_1 C_2 R_2 R_3 \]
-\[ a_1 = \omega_c C_1 \left(R_2 + R_3 + \frac{R_2 R_3}{R_1}\right) \]</div></details>
-<details class="q"><summary>Co je činitel jakosti Q? Navrhněte pásmovou propust MFB na 1 kHz s Q = 5 a ziskem 2 (C = 10 nF).</summary><div>
-<p>\(Q = f_m / B = 1/\Delta\Omega\) – poměr střední frekvence a šířky pásma; velké \(Q\) = úzké pásmo. U DP/HP 2. řádu \(Q = \sqrt{b_1}/a_1\) určuje tvar ohybu (Butterworth 0,71). Návrh MFB pásmové propusti:</p>
-\[ R_2 = \frac{Q}{\pi f_m C} = 159{,}2\ \text{k}\Omega \]
-\[ R_1 = \frac{R_2}{2|A_m|} = 39{,}8\ \text{k}\Omega \]
-\[ R_3 = \frac{R_1}{(2\pi f_m C)^2 R_1 R_2 - 1} = 1{,}66\ \text{k}\Omega \]
-<p>Šířka pásma \(B = 1/(\pi R_2 C) = 200\) Hz, body −3 dB 905 a 1105 Hz.</p></div></details>
-<details class="q"><summary>Jak potlačíte síťový brum 50 Hz aktivní pásmovou zádrží? Vysvětlete roli zisku G u dvojitého T-článku.</summary><div>
-<p>Pásmová zádrž má přenos \(A_0(1 + s^2)/(1 + s/Q + s^2)\) – na střední frekvenci (\(s = j\)) je čitatel nulový. Aktivní dvojitý T-článek: T-článek \(R\)–\(R\) s \(2C\) a \(C\)–\(C\) s \(R/2\), jehož \(R/2\) je připojen na výstup OZ; OZ je neinvertující zesilovač \(G = 1 + R_2/R_1\). Platí</p>
+<details class="q"><summary>Nakreslete dolní propust Sallen-Key a vysvětlete, jak funguje. Co ovlivní mezní frekvenci a tvar ohybu? Jak z ní vznikne horní propust?</summary><div>
+<p>Vstup přes \(R_1\) a \(R_2\) v sérii na neinvertující vstup OZ, z něj \(C_1\) na zem; z uzlu mezi \(R_1\) a \(R_2\) vede \(C_2\) na výstup; OZ je sledovač. Na nízkých frekvencích signál projde beze změny (zisk 1, ve fázi), na vysokých ho \(C_1\) svede na zem a výstup klesá 40 dB/dek. Kolem mezní frekvence vrací výstup přes \(C_2\) signál do uzlu (kladná zpětná vazba) a ohyb se zostří.</p>
+<ul>
+<li>Větší všechny R nebo C → nižší mezní frekvence, stejný tvar.</li>
+<li>Větší \(C_2\) proti \(C_1\) → ostřejší ohyb, případně převýšení; Butterworth pro \(C_2 = 2C_1\).</li>
+<li>Ve variantě se ziskem: větší zisk → větší výstup a zároveň ostřejší ohyb; při zisku 3 a víc obvod kmitá.</li>
+</ul>
+<p>Horní propust vznikne záměnou rezistorů za kondenzátory a naopak: dva kondenzátory \(C\) v sérii, \(R_1\) na zem, \(R_2\) na výstup. Pak propouští vysoké frekvence a potlačuje nízké.</p></div></details>
+<details class="q"><summary>Čím se liší zapojení Sallen-Key a MFB? Nakreslete dolní propust MFB a popište, jak se změní výstup při změně součástek.</summary><div>
+<p>Sallen-Key používá OZ v neinvertujícím zapojení (sledovač), výstup je ve fázi se vstupem a zpětná vazba přes kondenzátor (u DP) je kladná. MFB (Multiple FeedBack) používá OZ v invertujícím zapojení se dvěma zpětnými vazbami; výstup je otočený o 180°, zisk se nastaví poměrem rezistorů, zapojení je méně citlivé na tolerance a hodí se i pro vysoké \(Q\). DP MFB: vstup přes \(R_1\) do uzlu, z uzlu \(C_2\) na zem, \(R_3\) na invertující vstup a \(R_2\) na výstup; mezi invertujícím vstupem a výstupem \(C_1\); neinvertující vstup na zemi.</p>
+<ul>
+<li>Menší \(R_1\) nebo větší \(R_2\) → větší výstup (zisk).</li>
+<li>Větší \(C_2\) proti \(C_1\) → ostřejší ohyb.</li>
+<li>Větší všechny R nebo C → nižší mezní frekvence.</li>
+</ul></div></details>
+<details class="q"><summary>Co je činitel jakosti Q? Vysvětlete, jak funguje pásmová propust MFB a co v ní ovládají jednotlivé rezistory.</summary><div>
+<p>\(Q = f_m / B = 1/\Delta\Omega\) – poměr střední frekvence a šířky pásma; velké \(Q\) = úzké pásmo. U DP/HP 2. řádu \(Q = \sqrt{b_1}/a_1\) určuje tvar ohybu (Butterworth 0,71).</p>
+<p>Pásmová propust MFB: vstup přes \(R_1\) do uzlu, z něj \(R_3\) na zem a dva stejné kondenzátory \(C\) – jeden na invertující vstup, druhý na výstup; \(R_2\) mezi invertujícím vstupem a výstupem. Na nízkých frekvencích kondenzátor k OZ signál nepropustí, na vysokých kondenzátory spojí uzel s výstupem a virtuální zemí – výstup je v obou případech nulový, propustí se jen pásmo kolem \(f_m\).</p>
+<ul>
+<li>\(R_2\) určuje šířku pásma, a tím \(Q\) – větší \(R_2\) = užší pásmo (a větší zisk);</li>
+<li>\(R_1\) určuje zisk – menší \(R_1\) = větší výstup na \(f_m\);</li>
+<li>\(R_3\) doladí střední frekvenci, aniž by změnil zisk a šířku pásma;</li>
+<li>výstup je na \(f_m\) invertovaný.</li>
+</ul></div></details>
+<details class="q"><summary>Jak potlačíte síťový brum 50 Hz aktivní pásmovou zádrží? Vysvětlete princip dvojitého T-článku a roli zisku G.</summary><div>
+<p>Pásmová zádrž propustí všechno kromě úzkého pásma kolem střední frekvence, kde je výstup nulový; \(Q\) určuje šířku zářezu. Dvojitý T-článek má dvě cesty: \(R\)–\(R\) s \(2C\) na zem (dolní propust) a \(C\)–\(C\) s \(R/2\) (horní propust). Na \(f_m\) dávají stejně velký signál v opačné fázi a odečtou se na nulu.</p>
 \[ f_m = \frac{1}{2\pi RC}, \qquad Q = \frac{1}{2(2 - G)} \]
-<p>Pro 50 Hz: \(C\) = 100 nF, \(R\) = 31,8 kΩ. Čím blíž je \(G\) dvěma, tím užší zářez: \(G = 1{,}9\) dá \(Q = 5\), šířku 10 Hz (45,2–55,2 Hz); pasivní článek má jen \(Q = 0{,}25\) (11,8–212 Hz). Alternativa: Wienův-Robinsonův můstek, \(Q = (1 + \alpha)/3\).</p></div></details>
+<p>Pasivní článek má široký zářez (\(Q = 0{,}25\)) a ubere i užitečné frekvence kolem 50 Hz. V aktivní variantě je \(R/2\) připojen na výstup neinvertujícího zesilovače \(G = 1 + R_2/R_1\); zpětná vazba mimo \(f_m\) útlum vyrovná a zářez se zúží. Čím blíž je \(G\) dvěma, tím užší zářez (např. \(G = 1{,}9\) → \(Q = 5\)); při \(G \ge 2\) obvod kmitá. \(G\) mění jen šířku, \(R\) a \(C\) jen střední frekvenci. Alternativa: Wienův-Robinsonův můstek – na \(f_m\) jsou oba děliče vyvážené a výstup nulový, zářez zužuje zpětná vazba přes \(R_3\).</p></div></details>
 <details class="q"><summary>Porovnejte Butterworthovu, Čebyševovu a Besselovu aproximaci. Proč filtr 4. řádu nestačí poskládat ze čtyř stejných RC článků?</summary><div>
 <p>Aproximace volí koeficienty \(a_i\), \(b_i\) podle jednoho kritéria. Butterworth má maximálně plochou charakteristiku v propustném pásmu, \(|A| = 1/\sqrt{1 + \Omega^{2n}}\), používá se jako antialiasingový filtr. Čebyšev má nejrychlejší pokles mezi propustným a nepropustným pásmem, ale zvlnění přenosu ke konci propustného pásma. Bessel má lineární fázi (konstantní skupinové zpoždění) do mezního kmitočtu, signál nezkreslí, ale přechod je nejpozvolnější.</p>
 <p>Kaskáda čtyř stejných RC článků (oddělených sledovači) má sice daleko za zlomem 80 dB/dek, ale velmi pozvolný ohyb: na \(\Omega = 2\) jen −9,8 dB proti −24,1 dB Butterwortha 4. řádu. Navíc stejné články se v mezní frekvenci sečtou na −12 dB, takže se mezní frekvence posune. Správný filtr vyššího řádu je kaskáda článků 2. řádu s různými koeficienty podle aproximace.</p></div></details>
