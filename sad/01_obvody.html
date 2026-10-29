@@ -7,16 +7,16 @@
 <meta name="description" content="Základní zákony obvodů a jak s nimi počítat.">
 <script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-<link rel="stylesheet" href="assets/style.css?v=a7e96b3f">
+<link rel="stylesheet" href="assets/style.css?v=58c8d0bd">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-<script defer src="assets/app.js?v=a7e96b3f"></script>
+<script defer src="assets/app.js?v=58c8d0bd"></script>
 </head>
 <body>
 <header class="topbar">
   <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
   <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
-  <a class="brand" href="index.html">SAD – test a zkouška<small>základy obvodů a přednášky 1–10</small></a>
+  <a class="brand" href="index.html">SAD – půlsemestrální test<small>základy Z1–Z4</small></a>
   <span class="spacer"></span>
   <a class="iconbtn back" href="../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
   
@@ -38,12 +38,6 @@
     <li><a href="03_oz.html"><span class="n">Z3</span><span>Operační zesilovače</span></a></li>
     <li><a href="04_dalsi_zapojeni.html"><span class="n">Z4</span><span>Sledovač, integrátor, derivátor</span></a></li>
     <li><a href="05_tahak.html"><span class="n">★</span><span>Tahák: základy</span></a></li>
-    <li><a href="11_signal.html"><span class="n">P1</span><span>Úvod: signál a jeho převod na napětí</span></a></li>
-    <li><a href="12_uprava.html"><span class="n">P2</span><span>Úprava signálu: tranzistorové zesilovače a OZ</span></a></li>
-    <li><a href="13_napajeni.html"><span class="n">P3</span><span>Napájení a zdroje referenčního napětí</span></a></li>
-    <li><a href="14_oz_zapojeni.html"><span class="n">P4</span><span>Aplikace OZ: integrátor, derivátor, usměrňovač</span></a></li>
-    <li><a href="15_aktivni_filtry.html"><span class="n">P5</span><span>Aplikace OZ II: aktivní filtry</span></a></li>
-    <li><a href="16_komparator.html"><span class="n">P6</span><span>Komparátor, omezovač a úvod do A/D převodu</span></a></li>
     <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
   </ol>
   <h4>Na této stránce</h4>
@@ -59,7 +53,7 @@
   </ul>
 </nav>
 <main>
-<p class="printhead">SAD – test a zkouška · Ohmův zákon, Kirchhoff, dělič napětí – SAD · https://balnerm.github.io/pripravy/sad/01_obvody.html</p>
+<p class="printhead">SAD – půlsemestrální test · Ohmův zákon, Kirchhoff, dělič napětí – SAD · https://balnerm.github.io/pripravy/sad/01_obvody.html</p>
 <p class="kicker">Základy 1</p>
 <h1>Ohmův zákon, Kirchhoffovy zákony a dělič napětí</h1>
 <p class="lead">Každý měřicí řetězec pro biosignály (elektrody → zesilovač → filtr → převodník) je složený z obvodů. Tři pravidla – Ohmův zákon a dva Kirchhoffovy zákony – stačí na výpočet libovolného obvodu z rezistorů a zdrojů. Nejdůležitější aplikací je <b>dělič napětí</b>: je základem filtrů (kap. 2) i zpětné vazby operačních zesilovačů (kap. 3).</p>

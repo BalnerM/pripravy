@@ -22,6 +22,10 @@ vmm/                          hotová skripta VMM – referenční příklad kva
 <zkratka>/                    další předměty se stejnou strukturou jako _sablona/
 ```
 
+Předmět může mít víc samostatných skript (`EDITIONS` v `build.py`, fragmenty v `_build/obsah_<složka>/`, výstup do
+`<zkratka>/<složka>/`, sdílí `assets/` a `figures/`) – vzorem je `sad/` (test = základy, `sad/zkouska/` = přednášky
+se základy vloženými jako `<div class="zaklad">` „Připomenutí ze základů“).
+
 Složka předmětu: `_build/build.py` (konfigurace + engine), `_build/make_figures.py`, `_build/make_pdf.py`,
 `_build/obsah/*.html` (zdrojové texty stránek), `assets/` (styl, skript), `figures/` (PNG z make_figures),
 vygenerované `*.html` a `skripta_vse.html`; `pdf/` vzniká až v GitHub Actions (v gitu není).

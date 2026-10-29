@@ -14,10 +14,28 @@
 \[ A_i = \frac{i_\text{výst}}{i_\text{vst}} \]</p>
 <p class="jinak">zesilovač „nafoukne“ slabý signál tak, aby s ním šlo dál pracovat. Nevyrábí energii z ničeho – bere ji z napájení a signál jen řídí, kolik jí pustí na výstup.</p></div>
 
+<div class="zaklad" id="zaklad-db">
+<p class="zaklad-t">Připomenutí ze základů: decibel</p>
+<div class="box definice" id="def-decibel"><div class="box-t">Definice: decibel</div>
+<p><b>Decibel</b> (dB) je logaritmická jednotka poměru. Napěťový přenos v decibelech je \(A_\text{dB} = 20 \log_{10} |H|\).</p>
+<p class="jinak">místo násobení sčítám a velký rozsah (1 až 0,0001) se vejde do malého rozsahu čísel (0 až −80 dB). 0 dB = beze změny, záporné dB = zeslabení, kladné = zesílení. Každých 20 dB je desetinásobek.</p></div>
+
+<div class="tablewrap"><table>
+<tr><th>přenos \(|H|\)</th><th class="num">v dB</th><th>význam</th></tr>
+<tr><td>1000</td><td class="num">+60</td><td>zesílení 1000×</td></tr>
+<tr><td>10</td><td class="num">+20</td><td>zesílení 10×</td></tr>
+<tr><td>2</td><td class="num">+6</td><td>dvojnásobek</td></tr>
+<tr><td>1</td><td class="num">0</td><td>beze změny</td></tr>
+<tr><td>\(1/\sqrt2 \approx 0{,}707\)</td><td class="num">−3</td><td><b>mezní frekvence</b></td></tr>
+<tr><td>0,5</td><td class="num">−6</td><td>polovina</td></tr>
+<tr><td>0,1</td><td class="num">−20</td><td>desetina</td></tr>
+</table></div>
+</div>
+
 <div class="box priklad"><div class="box-t">Příklad: kolik zesílit EKG (vlastní čísla)</div>
 <p>EKG má amplitudu asi 1 mV, A/D převodník má rozsah asi 1 V. Potřebné zesílení:</p>
 \[ A_u = \frac{1\ \text{V}}{1\ \text{mV}} = 1000 \]
-<p>V decibelech (viz <a href="02_filtry.html#def-decibel">decibel</a>):</p>
+<p>V decibelech (viz <a href="#def-decibel">decibel</a>):</p>
 \[ 20 \log 1000 = 60\ \text{dB} \]</div>
 
 <h2 id="bjt">Bipolární tranzistor jako zesilovač</h2>
@@ -105,7 +123,7 @@
 <figcaption><b>Obr. P2.3</b> SE se zpětnou vazbou z kolektoru do báze (slide „Stabilita zesilovače“).</figcaption></figure>
 
 <div class="box intuice"><div class="box-t">Princip: proč je to stabilnější</div>
-<p>Je to <b>záporná zpětná vazba</b>, stejný princip jako u <a href="03_oz.html#def-zpetna-vazba">OZ</a>. Když se proud kolektorem zvětší (větší \(\beta\), teplo), klesne napětí na kolektoru. Tím klesne i napětí na \(R_1\) a do báze teče <b>menší</b> proud – a ten proud kolektorem zase zmenší. Tranzistor se sám „brzdí“.</p>
+<p>Je to <b>záporná zpětná vazba</b>, stejný princip jako u <a href="11_signal.html#def-zpetna-vazba">OZ</a> (P1: část výstupu se vrací proti změně, která ji vyvolala). Když se proud kolektorem zvětší (větší \(\beta\), teplo), klesne napětí na kolektoru. Tím klesne i napětí na \(R_1\) a do báze teče <b>menší</b> proud – a ten proud kolektorem zase zmenší. Tranzistor se sám „brzdí“.</p>
 <p>Kontrola, že 2M2 dává stejný proud bází (kolektor na polovině, 7,5 V):</p>
 \[ I_B = \frac{7{,}5 - 0{,}7}{2{,}2\ \text{M}\Omega} = 3{,}09\ \mu\text{A} \]</div>
 
@@ -121,7 +139,7 @@
 <figure><div class="paper"><img src="figures/fig12_se_delic.png" alt="SE s děličem: R1 240k a R2 33k nastavují napětí báze, R3 7k5 v kolektoru, R4 1k v emitoru, C1 330n, C2 1µ, BC548, VCC 15 V" loading="lazy"></div>
 <figcaption><b>Obr. P2.4</b> SE s napěťovým děličem a emitorovým rezistorem (hodnoty ze slidu).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
-<p>Napětí báze drží <a href="01_obvody.html#def-delic">dělič</a>, napětí emitoru je o 0,7 V níž a proud emitorem pak určuje <b>\(R_4\)</b>, ne \(\beta\). Proto je pracovní bod stabilní.</p></div>
+<p>Napětí báze drží <a href="11_signal.html#def-delic">dělič</a> (P1; jeho vzorec je v rámečku níže), napětí emitoru je o 0,7 V níž a proud emitorem pak určuje <b>\(R_4\)</b>, ne \(\beta\). Proto je pracovní bod stabilní.</p></div>
 
 <div class="box vzorec"><div class="box-t">SE s děličem a emitorovým rezistorem</div>
 <p>Pracovní bod:</p>
@@ -141,7 +159,7 @@
 </table></div>
 
 <div class="box intuice"><div class="box-t">Princip: proč zesílení je −R3/R4</div>
-<p>Změní-li se napětí báze o \(u_\text{vst}\), změní se o totéž napětí emitoru (rozdíl 0,7 V zůstává). Proud emitorem se tedy změní o \(u_\text{vst}/R_4\). Stejná změna proudu teče kolektorem a na \(R_3\) vytvoří změnu napětí \(R_3 \cdot u_\text{vst}/R_4\). Větší proud = větší úbytek na \(R_3\) = <b>nižší</b> napětí kolektoru, odtud minus. Zesílení tak závisí jen na <b>poměru dvou rezistorů</b>, ne na \(\beta\) – stejná myšlenka jako u <a href="03_oz.html#def-invertujici">invertujícího zesilovače s OZ</a>.</p>
+<p>Změní-li se napětí báze o \(u_\text{vst}\), změní se o totéž napětí emitoru (rozdíl 0,7 V zůstává). Proud emitorem se tedy změní o \(u_\text{vst}/R_4\). Stejná změna proudu teče kolektorem a na \(R_3\) vytvoří změnu napětí \(R_3 \cdot u_\text{vst}/R_4\). Větší proud = větší úbytek na \(R_3\) = <b>nižší</b> napětí kolektoru, odtud minus. Zesílení tak závisí jen na <b>poměru dvou rezistorů</b>, ne na \(\beta\) – stejná myšlenka jako u <a href="11_signal.html#def-invertujici">invertujícího zesilovače s OZ</a>.</p>
 <p><b>Proudové zesílení</b> je dáno zesilovacím činitelem \(\beta\).</p></div>
 
 <div class="box priklad"><div class="box-t">Příklad (čísla ze slidu)</div>
@@ -167,7 +185,7 @@
 <h2 id="sc">Zapojení se společným kolektorem (emitorový sledovač)</h2>
 <div class="box definice" id="def-sc"><div class="box-t">Definice: zapojení se společným kolektorem (SC)</div>
 <p><b>Zapojení se společným kolektorem</b> (SC, <b>emitorový sledovač</b>) je tranzistorový zesilovač, u kterého je kolektor připojen přímo na napájení, signál se přivádí do báze a výstup se odebírá z emitoru. Napěťové zesílení je 1, ale zapojení zesiluje proud (a tím výkon).</p>
-<p class="jinak">napětí chci zachovat, proud posílit. Emitor „sleduje“ bázi (o 0,7 V níž), ale výstup může dodat \(\beta\)-krát větší proud, než odebírá vstup. Je to tranzistorová obdoba <a href="04_dalsi_zapojeni.html#def-sledovac">sledovače s OZ</a>.</p></div>
+<p class="jinak">napětí chci zachovat, proud posílit. Emitor „sleduje“ bázi (o 0,7 V níž), ale výstup může dodat \(\beta\)-krát větší proud, než odebírá vstup. Je to tranzistorová obdoba <a href="11_signal.html#def-sledovac">sledovače s OZ</a>.</p></div>
 
 <figure><div class="paper"><img src="figures/fig12_sc.png" alt="Emitorový sledovač: kolektor BC548 přímo na 15 V, dělič R1 130k a R2 160k v bázi, R3 7k5 z emitoru na zem, vstup přes C1 120n, výstup z emitoru přes C2 1µ" loading="lazy"></div>
 <figcaption><b>Obr. P2.6</b> Zapojení se společným kolektorem (hodnoty ze slidu). Výstup je zapojen přímo do emitoru.</figcaption></figure>
@@ -221,7 +239,7 @@
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>Výstup nekopíruje ani jeden vstup, ale jejich <b>rozdíl</b>. Rozdíl dvou sinusovek 120 mV posunutých o čtvrt periody má amplitudu</p>
 \[ 120\ \text{mV} \cdot \sqrt{2} = 170\ \text{mV} \]
-<p>a výstup 850 mV je jeho pětinásobek (\(5 \cdot 170 = 849\)). Kdyby byly oba vstupy stejné, výstup by se nehýbal – to je potlačení <a href="03_oz.html#def-rozdilove-souhlasne">souhlasného signálu</a>.</p></div>
+<p>a výstup 850 mV je jeho pětinásobek (\(5 \cdot 170 = 849\)). Kdyby byly oba vstupy stejné, výstup by se nehýbal – to je potlačení <a href="11_signal.html#def-rozdilove-souhlasne">souhlasného signálu</a>.</p></div>
 
 <div class="box priklad"><div class="box-t">Příklad: klidový stav diferenčního páru (vlastní výpočet)</div>
 <p>Báze jsou bez signálu na 0 V, emitory tedy na −0,7 V.</p>
@@ -305,7 +323,28 @@
 <div class="box kostka"><div class="box-t">V kostce</div><p>BJT: proud báze řídí \(\beta\)-krát větší proud kolektoru. SE zesiluje napětí i proud, stabilní je s děličem a \(R_4\) (\(A_u = -R_3/R_4\)). SC (sledovač) zachová napětí a posílí proud, Darlington má \(\beta \approx \beta_1\beta_2\). Diferenční pár zesiluje rozdíl, LC v kolektoru dělá laděný zesilovač. MOSFET je řízen napětím na gate, má práh a potřebuje předpětí.</p></div>
 
 <h2 id="oz">Operační zesilovač</h2>
-<p>Podrobně jsou OZ a jejich zapojení v základech <a href="03_oz.html#def-oz">Z3</a>. Slidy přidávají:</p>
+<div class="zaklad" id="zaklad-oz-prehled">
+<p class="zaklad-t">Připomenutí ze základů: OZ bez zpětné vazby a se zpětnou vazbou</p>
+<p>Operační zesilovač (<a href="11_signal.html#def-oz">P1</a>) zesiluje rozdíl napětí svých vstupů obrovským zesílením \(A_0\):</p>
+\[ U_\text{výst} = A_0 \, (U_+ - U_-) \]
+
+<figure><div class="paper"><img src="figures/fig03_oz_char.png" alt="Převodní charakteristika OZ bez zpětné vazby: úzká lineární oblast a saturace" loading="lazy"></div>
+<figcaption><b>Připomenutí</b> – převodní charakteristika OZ bez zpětné vazby: výstupní napětí v závislosti na rozdílu vstupů.</figcaption></figure>
+
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Bez zpětné vazby stačí rozdíl vstupů ±130 µV a výstup je v <b>saturaci</b> (narazí na napájení). OZ pak jen rozhoduje, „který vstup je větší“ – to je komparátor na konci kapitoly. Aby lineárně zesiloval, zapojuje se se <b>zápornou zpětnou vazbou</b>: pak platí virtuální zkrat \(U_+ = U_-\), do vstupů neteče proud a zesílení určují jen rezistory.</p></div>
+
+<div class="tablewrap"><table>
+<tr><th>zapojení (P1)</th><th>zesílení</th><th>vstupní odpor</th><th>k čemu</th></tr>
+<tr><td><a href="11_signal.html#def-invertujici">invertující</a></td><td>\(-R_2/R_1\)</td><td>\(R_1\) (malý)</td><td>zesílení i zeslabení s inverzí</td></tr>
+<tr><td><a href="11_signal.html#def-neinvertujici">neinvertující</a></td><td>\(1 + R_2/R_1\)</td><td>velmi velký</td><td>zesílení měkkého zdroje</td></tr>
+<tr><td><a href="11_signal.html#def-sledovac">sledovač</a></td><td>1</td><td>velmi velký</td><td>oddělení zdroje od zátěže</td></tr>
+<tr><td><a href="11_signal.html#def-rozdilovy">rozdílový</a></td><td>\(\frac{R_2}{R_1}(U_2 - U_1)\)</td><td>malý, nestejný</td><td>odečtení dvou signálů</td></tr>
+<tr><td><a href="11_signal.html#def-pristrojovy">přístrojový</a></td><td>\(\left(1 + \frac{2R}{R_G}\right)\frac{R_2}{R_1}\)</td><td>velmi velký, stejný</td><td>biosignály, můstky</td></tr>
+</table></div>
+</div>
+
+<p>Slidy k tomu přidávají:</p>
 <ul>
 <li>OZ jsou <b>precizní diferenciální zesilovače s vysokým ziskem</b>. Původně sloužily k matematickým operacím v analogových počítačích (odtud „operační“); tuto funkci dnes převzaly mikroprocesory.</li>
 <li>OZ lze sestavit z jednotlivých tranzistorů a rezistorů, prakticky všechny se ale vyrábějí jako <b>integrované obvody</b> – desítky typů s různými kombinacemi vlastností.</li>
@@ -386,9 +425,22 @@
 <li>Na klesající části je <b>součin zisku a šířky pásma konstantní</b>, až zisk klesne na 1 (tranzitní frekvence).</li>
 </ul>
 
+<div class="zaklad" id="zaklad-mezni">
+<p class="zaklad-t">Připomenutí ze základů: přenos a mezní frekvence</p>
+<div class="box definice" id="def-prenos"><div class="box-t">Definice: přenos a frekvenční charakteristika</div>
+<p><b>Přenos</b> (napěťový) obvodu je poměr výstupního a vstupního napětí harmonického signálu: \(H = U_\text{výst}/U_\text{vst}\). Jeho závislost na frekvenci je <b>frekvenční (přenosová) charakteristika</b>; skládá se z <b>amplitudové</b> charakteristiky \(|H(f)|\) (kolikrát se změní amplituda) a <b>fázové</b> charakteristiky \(\varphi(f)\) (o kolik se posune fáze).</p>
+<p class="jinak">pošlu na vstup sinusovku dané frekvence a podívám se, jak velká a jak posunutá vyjde na výstupu. Když to udělám pro všechny frekvence, dostanu „otisk“ filtru. (V literatuře se přenos značí také \(K\) nebo \(P\).)</p></div>
+
+<div class="box definice" id="def-mezni"><div class="box-t">Definice: mezní frekvence</div>
+<p><b>Mezní frekvence</b> \(f_c\) (zlomová, −3dB frekvence) je frekvence, při které modul přenosu klesne na \(1/\sqrt{2} \approx 0{,}707\) své hodnoty v propustném pásmu, tj. o 3 dB. Pro RC článek 1. řádu (dolní i horní propust) platí \(f_c = \frac{1}{2\pi RC}\).</p>
+<p class="jinak">„hranice“ mezi propustným a nepropustným pásmem. Je to frekvence, kdy má kondenzátor stejnou reaktanci jako rezistor (\(X_C = R\)), výstupní výkon klesne na polovinu a amplituda na 70,7 %.</p></div>
+
+<p>Kondenzátor má pro sinusový signál „odpor“ – reaktanci \(X_C = 1/(2\pi f C)\) –, který s frekvencí klesá. V RC článku se proto s frekvencí mění poměr napětí na R a na C; na mezní frekvenci jsou \(X_C\) a \(R\) stejné. Frekvenční charakteristika OZ bez zpětné vazby (obr. P2.16 níže) má stejný tvar jako RC dolní propust 1. řádu: do mezní frekvence je zisk stálý, za ní klesá o 20 dB na dekádu (desetinásobek frekvence = desetina zisku). RC filtry jsou podrobně připomenuté na začátku <a href="15_aktivni_filtry.html#zaklad-rc">P5</a>.</p>
+</div>
+
 <div class="box definice" id="def-sirka-pasma"><div class="box-t">Definice: šířka pásma</div>
 <p><b>Šířka pásma</b> (<i>bandwidth</i>) zesilovače je rozsah frekvencí od 0 Hz (DC) po mezní frekvenci \(f_M\), na které výkon výstupního signálu klesne na polovinu oproti DC, tj. zisk klesne o 3 dB.</p>
-<p class="jinak">pásmo, ve kterém zesilovač „jede naplno“. Nad ním zesílení klesá. Stejný pojem je u filtrů <a href="02_filtry.html#def-mezni">mezní frekvence</a>.</p></div>
+<p class="jinak">pásmo, ve kterém zesilovač „jede naplno“. Nad ním zesílení klesá. Stejný pojem je u filtrů <a href="12_uprava.html#def-mezni">mezní frekvence</a>.</p></div>
 
 <div class="box definice" id="def-gbw"><div class="box-t">Definice: součin zisku a šířky pásma (GBW)</div>
 <p><b>Součin zisku a šířky pásma</b> (<i>gain-bandwidth product</i>, GBW) je konstantní součin zesílení a frekvence na klesající části frekvenční charakteristiky OZ. Rovná se <b>tranzitní frekvenci</b>, na které zisk OZ klesne na 1 (0 dB).</p>
@@ -445,7 +497,7 @@
 <div class="box pozor"><div class="box-t">Pozor: „≫“ stačí velmi malé</div>
 <p>Na slidu je \(V_1 \gg V_2\), ale kvůli obrovskému zesílení stačí nepatrný rozdíl. Při zisku 200 000 a saturaci 13 V:</p>
 \[ \Delta U = \frac{13\ \text{V}}{200\,000} = 65\ \mu\text{V} \]
-<p>Prakticky tedy výstup přeskočí, jakmile jedno napětí převýší druhé (viz <a href="03_oz.html#oz">převodní charakteristika OZ v Z3</a>). Komparátorům se podrobně věnuje <a href="16_komparator.html">přednáška P6</a>.</p></div>
+<p>Prakticky tedy výstup přeskočí, jakmile jedno napětí převýší druhé (viz <a href="#zaklad-oz-prehled">převodní charakteristika OZ</a> výše). Komparátorům se podrobně věnuje <a href="16_komparator.html">přednáška P6</a>.</p></div>
 
 <section class="souhrn" id="shrnuti">
 <h2 id="shrnuti-h">Shrnutí</h2>

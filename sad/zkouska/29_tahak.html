@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tahák ke zkoušce – SAD</title>
+<meta name="description" content="Vzorce, schémata a chytáky z přednášek i základů na jedné stránce.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css?v=58c8d0bd">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js?v=58c8d0bd"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P6 se základy</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/29_tahak.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="11_signal.html"><span class="n">P1</span><span>Úvod: signál a jeho převod na napětí</span></a></li>
+    <li><a href="12_uprava.html"><span class="n">P2</span><span>Úprava signálu: tranzistorové zesilovače a OZ</span></a></li>
+    <li><a href="13_napajeni.html"><span class="n">P3</span><span>Napájení a zdroje referenčního napětí</span></a></li>
+    <li><a href="14_oz_zapojeni.html"><span class="n">P4</span><span>Aplikace OZ: integrátor, derivátor, usměrňovač</span></a></li>
+    <li><a href="15_aktivni_filtry.html"><span class="n">P5</span><span>Aplikace OZ II: aktivní filtry</span></a></li>
+    <li><a href="16_komparator.html"><span class="n">P6</span><span>Komparátor, omezovač a úvod do A/D převodu</span></a></li>
+    <li><a href="29_tahak.html" class="active"><span class="n">★</span><span>Tahák ke zkoušce</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#zaklady">Základy (připomenuté v přednáškách)</a></li>
+    <li><a href="#p1">P1 · Signál a jeho převod na napětí (kapitola)</a></li>
+    <li><a href="#p2">P2 · Tranzistorové zesilovače a reálný OZ (kapitola)</a></li>
+    <li><a href="#p3">P3 · Napájení a reference (kapitola)</a></li>
+    <li><a href="#p4">P4 · Integrátor, derivátor, usměrňovač (kapitola)</a></li>
+    <li><a href="#p5">P5 · Aktivní filtry (kapitola)</a></li>
+    <li><a href="#p6">P6 · Komparátor, omezovač, A/D převod (kapitola)</a></li>
+    <li><a href="#chytaky">Nejčastější chytáky</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">SAD – závěrečná zkouška · Tahák ke zkoušce – SAD · https://balnerm.github.io/pripravy/sad/zkouska/29_tahak.html</p>
+
+<h1>Tahák ke zkoušce: vzorce, schémata a chytáky</h1>
+<p class="lead">Stránka na poslední opakování před zkouškou: nejdřív základy, na kterých stojí všechny přednášky, pak to hlavní z každé přednášky. Odkaz u každé části vede na podrobný výklad v kapitole.</p>
+
+<h2 id="zaklady">Základy (připomenuté v přednáškách)</h2>
+<h3 id="obvody">Obvody a dělič (<a href="11_signal.html#zaklad-obvody">P1</a>)</h3>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec</th><th>poznámka</th></tr>
+<tr><td>Ohmův zákon, výkon</td><td>\(U = R\,I\), \(P = U\,I\)</td><td>kΩ · mA = V</td></tr>
+<tr><td>sériově / paralelně</td><td>\(R_1 + R_2\) / \(\frac{R_1 R_2}{R_1 + R_2}\)</td><td>paralelně menší než nejmenší</td></tr>
+<tr><td>Kirchhoffovy zákony</td><td>\(\sum I_\text{dovnitř} = \sum I_\text{ven}\), \(\sum U = 0\)</td><td>zachování náboje / energie</td></tr>
+<tr><td>dělič nezatížený</td><td>\(U_2 = U_1 \frac{R_2}{R_1 + R_2}\)</td><td>stejný proud oběma R</td></tr>
+<tr><td>dělič zatížený</td><td>\(R_2 \to R_2 \parallel R_\text{z}\)</td><td>\(R_\text{z} \geq 10\times\) → chyba &lt; 5 %</td></tr>
+<tr><td>měkký zdroj</td><td>\(U = U_e - R_i I\)</td><td>vstupní odpor přístroje \(\to \infty\)</td></tr>
+</table></div>
+
+<h3 id="oz">Operační zesilovač (<a href="11_signal.html#zaklad-oz">P1</a>)</h3>
+<div class="box postup"><div class="box-t">Návod na odvození čehokoliv s OZ</div>
+<ol>
+<li>\(U_+ = U_-\) (virtuální zkrat – jen se zápornou zpětnou vazbou a mimo saturaci).</li>
+<li>Do vstupů OZ neteče proud.</li>
+<li>1. KZ v uzlu invertujícího vstupu + Ohmův zákon → vyjádři \(U_\text{výst}\).</li>
+</ol></div>
+<div class="tablewrap"><table>
+<tr><th>zapojení</th><th>výstup / zesílení</th><th>poznámka</th></tr>
+<tr><td>invertující</td><td>\(A = -\frac{R_2}{R_1}\)</td><td>inverze, i zeslabení; \(R_\text{vst} = R_1\)</td></tr>
+<tr><td>neinvertující</td><td>\(A = 1 + \frac{R_2}{R_1}\)</td><td>ZV = dělič; \(A \geq 1\); \(R_\text{vst} \approx \infty\)</td></tr>
+<tr><td>sledovač</td><td>\(U_\text{výst} = U_\text{vst}\)</td><td>oddělovač: \(R_\text{vst} \approx \infty\), \(R_\text{výst} \approx 0\)</td></tr>
+<tr><td>rozdílový</td><td>\(\frac{R_2}{R_1}(U_2 - U_1)\)</td><td>jen při \(R_4/R_3 = R_2/R_1\); malý \(R_\text{vst}\)</td></tr>
+<tr><td>přístrojový</td><td>\(\left(1 + \frac{2R}{R_G}\right)\frac{R_2}{R_1}\)</td><td>zesílení jedním \(R_G\), vysoké CMRR</td></tr>
+<tr><td>CMRR</td><td>\(20 \log_{10} \frac{A_d}{A_s}\)</td><td>\(A_s = A_d / 10^{\text{CMRR}_\text{dB}/20}\)</td></tr>
+<tr><td>integrátor (<a href="14_oz_zapojeni.html#zaklad-int-der">P4</a>)</td><td>\(-\frac{1}{RC}\int u_\text{vst}\,dt\)</td><td>R vstup, C ve ZV; obdélník → trojúhelník</td></tr>
+<tr><td>derivátor (<a href="14_oz_zapojeni.html#zaklad-int-der">P4</a>)</td><td>\(-RC\,\frac{du_\text{vst}}{dt}\)</td><td>C vstup, R ve ZV; trojúhelník → obdélník</td></tr>
+</table></div>
+
+<h3 id="filtry">Decibely a RC filtry (<a href="12_uprava.html#zaklad-mezni">P2</a>, <a href="15_aktivni_filtry.html#zaklad-rc">P5</a>)</h3>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec</th><th>poznámka</th></tr>
+<tr><td>decibely</td><td>\(20\log_{10}|H|\)</td><td>0,707 → −3 dB; 0,1 → −20 dB; 1000 → +60 dB</td></tr>
+<tr><td>reaktance C</td><td>\(X_C = \frac{1}{2\pi f C}\)</td><td>nízké f: rozpojeno, vysoké f: zkrat</td></tr>
+<tr><td>mezní frekvence RC</td><td>\(f_c = \frac{1}{2\pi R C}\)</td><td>\(X_C = R\), −3 dB, fáze ∓45°</td></tr>
+<tr><td>DP / HP</td><td>výstup na C / výstup na R</td><td>sklon \(n \cdot 20\) dB/dek = \(n \cdot 6\) dB/okt</td></tr>
+<tr><td>pásmová propust</td><td>\(B = f_h - f_d\), \(f_0 = \sqrt{f_d f_h}\)</td><td>HP + DP <b>za sebou</b></td></tr>
+<tr><td>pásmová zádrž (dvojitý T)</td><td>\(f_0 = \frac{1}{2\pi R C}\)</td><td>příčně \(R/2\) a \(2C\)</td></tr>
+</table></div>
+
+<h2 id="p1">P1 · Signál a jeho převod na napětí (<a href="11_signal.html">kapitola</a>)</h2>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec</th><th>poznámka</th></tr>
+<tr><td>akviziční cesta</td><td colspan="2">převodník → úprava → (MPX, galvanické oddělení) → A/D převod</td></tr>
+<tr><td>převodník I/U s OZ</td><td>\(U_2 = -i_1 R\)</td><td>invertující bez \(R_1\); bez úbytku napětí</td></tr>
+<tr><td>snímací rezistor</td><td>\(U = R_\text{SENSE} I\), \(P = R_\text{SENSE} I^2\)</td><td>high-side u napájení, low-side u země</td></tr>
+<tr><td>proudový transformátor</td><td>\(I_S = I_P \frac{N_P}{N_S}\)</td><td>proudy se transformují obráceně než napětí</td></tr>
+<tr><td>převodník f/U</td><td>\(u_0 = 2\,U_\text{SAT} C_1 R_A f\)</td><td>z \(Q_1 = 2C_1U_\text{SAT}\) a \(Q_2 = u_0 T/R_A\)</td></tr>
+<tr><td>měření odporu s OZ</td><td>\(U_X = -\frac{R_X}{R_N} U_\text{REF}\)</td><td>konstantní proud \(I_N = U_\text{REF}/R_N\)</td></tr>
+<tr><td>Wheatstoneův můstek</td><td>\(R_X = \frac{R_3 R_2}{R_1}\)</td><td>vyvážený: \(R_1/R_2 = R_3/R_X\)</td></tr>
+</table></div>
+<figure><div class="paper"><img src="../figures/fig11_mustek.png" alt="Wheatstoneův můstek: dva děliče R1, R2 a R3, RX, mezi středy měřidlo VG" loading="lazy"></div>
+<figcaption>Wheatstoneův můstek: dva děliče, mezi jejich středy měřidlo.</figcaption></figure>
+
+<h2 id="p2">P2 · Tranzistorové zesilovače a reálný OZ (<a href="12_uprava.html">kapitola</a>)</h2>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec</th><th>poznámka</th></tr>
+<tr><td>bipolární tranzistor</td><td>\(i_C = \beta\, i_B\)</td><td>ze slidu β = 384</td></tr>
+<tr><td>SE s děličem a \(R_4\)</td><td>\(A_u = -\frac{R_3}{R_4}\)</td><td>pracovní bod drží dělič a \(R_4\), ne β</td></tr>
+<tr><td>SC, Darlington</td><td>\(A_u \approx 1\), \(\beta \approx \beta_1 \beta_2\)</td><td>emitorový sledovač posílí proud</td></tr>
+<tr><td>laděný zesilovač</td><td>\(f_0 = \frac{1}{2\pi\sqrt{LC}}\)</td><td>paralelní LC v kolektoru</td></tr>
+<tr><td>slew rate</td><td>\(f_\text{max} = \frac{SR}{2\pi U_p}\)</td><td>obvykle 10 V/µs; jinak sinus → trojúhelník</td></tr>
+<tr><td>šířka pásma se ZV</td><td>\(f_M = \frac{\text{GBW}}{A}\)</td><td>zisk × šířka pásma = konst.</td></tr>
+<tr><td>−3 dB</td><td>\(20\log\frac{\sqrt2}{2} = -3{,}01\) dB</td><td>polovina <b>výkonu</b>, napětí 0,707</td></tr>
+<tr><td>komparátor</td><td>OZ bez ZV, výstup \(\pm U_\text{SAT}\)</td><td>stačí rozdíl desítek µV</td></tr>
+</table></div>
+
+<h2 id="p3">P3 · Napájení a reference (<a href="13_napajeni.html">kapitola</a>)</h2>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec</th><th>poznámka</th></tr>
+<tr><td>chyba v ppm</td><td>\(\Delta U = U_\text{REF} \cdot \text{ppm} \cdot 10^{-6}\)</td><td>počáteční přesnost → kalibrace</td></tr>
+<tr><td>dlouhodobá stabilita</td><td>\(\text{drift}(t) = k\sqrt{t}\)</td><td>\(t\) v kHr; 10 let ≠ 10× rok</td></tr>
+<tr><td>proč 1,024 V</td><td>\(1{,}024\ \text{V} / 1024 = 1\ \text{mV}\)</td><td>celé milivolty na úroveň</td></tr>
+<tr><td>stabilizátor se ZD a OZ</td><td>\(U_0 = \left(1 + \frac{R_2}{R_1}\right) U_{ZD}\)</td><td>neinvertující zesilovač reference</td></tr>
+<tr><td>proudové omezení</td><td>\(I_{OMAX} = \frac{U_{R_I}}{R_I}\)</td><td>\(U_{R_I} \approx 0{,}5\) V otevře \(T_3\)</td></tr>
+<tr><td>vlečný zdroj</td><td>\(U_{o2} = -U_{o1}\)</td><td>invertor se ziskem −1 (330k/330k)</td></tr>
+<tr><td>zdroj proudu</td><td>\(I_o \approx \frac{U_\text{REF}}{R_1}\)</td><td>ideálně nekonečný výstupní odpor</td></tr>
+</table></div>
+
+<h2 id="p4">P4 · Integrátor, derivátor, usměrňovač (<a href="14_oz_zapojeni.html">kapitola</a>)</h2>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec</th><th>poznámka</th></tr>
+<tr><td>Millerův integrátor</td><td>\(-\frac{1}{RC}\int u_i\,dt + u_o(0)\)</td><td>C = analogová paměť; nulování tranzistorem</td></tr>
+<tr><td>neinvertující / diferenční</td><td>\(+\frac{1}{RC}\int u_i\,dt\) / \(\frac{1}{RC}\int (u_2 - u_1)\,dt\)</td><td></td></tr>
+<tr><td>zisk integrátoru / derivátoru</td><td>\(\frac{1}{\omega RC}\) / \(\omega RC\)</td><td>−6 / +6 dB na oktávu</td></tr>
+<tr><td>ošetřený derivátor</td><td>\(\omega_K = \frac{1}{R_1 C} = \frac{1}{R C_1}\)</td><td>\(R_1\) do série s C, \(C_1\) paralelně k R</td></tr>
+<tr><td>precizní usměrňovač</td><td>práh \(U_D / A\)</td><td>dioda ve ZV se chová jako ideální</td></tr>
+<tr><td>dvoucestný usměrňovač</td><td>\(u_o = |u_i|\)</td><td>VA charakteristika ve tvaru V</td></tr>
+<tr><td>vrcholový detektor</td><td>\(u_C = \max u_i\)</td><td>D + C drží maximum, sledovač, obnovení nuly přes \(R_V\)</td></tr>
+</table></div>
+
+<h2 id="p5">P5 · Aktivní filtry (<a href="15_aktivni_filtry.html">kapitola</a>)</h2>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec</th><th>poznámka</th></tr>
+<tr><td>strmost</td><td>\(n \cdot 6\) dB/okt = \(n \cdot 20\) dB/dek</td><td>\(A_\text{dek} \approx 3{,}32 \cdot A_\text{okt}\)</td></tr>
+<tr><td>normovaná DP</td><td>\(\frac{A_0}{1 + a_1 s + b_1 s^2}\)</td><td>HP: \(s \to 1/s\) = záměna R a C</td></tr>
+<tr><td>Sallen-Key / MFB</td><td colspan="2">neinvertující, kladná ZV / invertující, dvě zpětné vazby</td></tr>
+<tr><td>činitel jakosti</td><td>\(Q = \frac{f_m}{B} = \frac{1}{\Delta\Omega}\)</td><td>úzká propust / zádrž = velké Q</td></tr>
+<tr><td>aktivní dvojitý T</td><td>\(Q = \frac{1}{2(2 - G)}\)</td><td>\(G = 1 + R_2/R_1\); zádrž 50 Hz</td></tr>
+<tr><td>aproximace</td><td colspan="2">Butterworth: ploché pásmo · Čebyšev: strmost se zvlněním · Bessel: lineární fáze</td></tr>
+</table></div>
+
+<h2 id="p6">P6 · Komparátor, omezovač, A/D převod (<a href="16_komparator.html">kapitola</a>)</h2>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec</th><th>poznámka</th></tr>
+<tr><td>precizní omezovač</td><td>\(u_o = u_i\) do meze \(U_\mathrm{REF}\)</td><td>ZV za diodou; obrácená dioda = druhá strana</td></tr>
+<tr><td>Zenerky v můstku</td><td>\(\pm(U_Z + 2U_D)\)</td><td>symetrické meze</td></tr>
+<tr><td>chyba přeběhu komparátoru</td><td>\(U_\mathrm{SAT}/A_u\)</td><td>rušení u prahu → falešná překlopení</td></tr>
+<tr><td>Schmittův KO</td><td>\(U_H = (U_\mathrm{SAT}^+ - U_\mathrm{SAT}^-)\frac{R_1}{R_1 + R_2}\)</td><td>\(U_\mathrm{REF}\) jen posouvá střed prahů</td></tr>
+<tr><td>kvantizační krok</td><td>\(q = \frac{U_\mathrm{REF}}{2^n}\)</td><td>vzorkování = čas, kvantování = amplituda</td></tr>
+<tr><td>flash ADC</td><td>\(2^n - 1\) komparátorů</td><td>termometrický kód → kodér; nejrychlejší</td></tr>
+</table></div>
+
+<h2 id="chytaky">Nejčastější chytáky</h2>
+<div class="box pozor"><div class="box-t">Na co si dát pozor u zkoušky</div>
+<ul>
+<li><b>Neinvertující</b> zesílení je \(1 + R_2/R_1\), <b>invertující</b> \(-R_2/R_1\) (se znaménkem).</li>
+<li><b>Virtuální zkrat</b> platí jen se zápornou zpětnou vazbou; komparátor (bez ZV) a Schmittův KO (kladná ZV) ho nemají.</li>
+<li><b>Saturace:</b> výstup OZ nepřekročí napájení, ať vzorec dá cokoliv.</li>
+<li><b>−3 dB</b> = polovina výkonu, ale napětí 0,707; poloviční napětí je −6 dB.</li>
+<li><b>dB u napětí</b> (zesílení, CMRR) vždy \(20\log\), u výkonu \(10\log\).</li>
+<li><b>\(f_c\) vs. \(\omega_c\):</b> \(f_c = 1/(2\pi RC)\) v Hz, \(\omega_c = 1/(RC)\) v rad/s.</li>
+<li><b>Dolní vs. horní propust:</b> rozhoduje, na které součástce je výstup – na C = dolní, na R = horní.</li>
+<li><b>Pásmová propust</b> = filtry za sebou; <b>zádrž</b> = vedle sebe nebo dvojitý T.</li>
+<li><b>Zatížený dělič:</b> zátěž je paralelně k \(R_2\); biozdroj je měkký, proto velký vstupní odpor.</li>
+<li><b>Převodník f/U:</b> ve výsledku je \(R_A\) (vybíjecí), ne \(R_1\) – výsledek odvoď z rovnosti nábojů.</li>
+<li><b>Dlouhodobá stabilita</b> roste s \(\sqrt{t}\), ne lineárně.</li>
+</ul></div>
+
+<nav class="pager"><a class="prev" href="16_komparator.html"><small>← předchozí</small>Komparátor, omezovač a úvod do A/D převodu</a><a class="next" href="99_slovnik.html"><small>další →</small>Slovník pojmů (definice)</a></nav>
+</main>
+</div>
+</body>
+</html>

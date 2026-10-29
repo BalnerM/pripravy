@@ -1,11 +1,89 @@
 <h1>Aplikace OZ II: aktivní filtry</h1>
-<p class="lead">Biosignál je vždy smíchaný s rušením jiných frekvencí: drift izolinie, síťový brum 50 Hz, šum svalů. Filtr propustí jen pásmo, které nás zajímá. RC články ze základů (<a href="02_filtry.html">Z2</a>) mají dvě slabiny: signál vždy zeslabí a strmost jejich charakteristiky je jen 20 dB na dekádu. <b>Aktivní filtr</b> přidá operační zesilovač – filtr pak může zesilovat, články se navzájem nezatěžují a ze dvou rezistorů a dvou kondenzátorů vznikne filtr 2. řádu se strmostí 40 dB na dekádu. Přednáška ukazuje, jak se filtr popisuje (přenosová funkce, řád, strmost, činitel jakosti), standardní zapojení Sallen-Key a MFB pro všechny čtyři typy filtrů a tři aproximace (Butterworth, Čebyšev, Bessel), mezi kterými se při návrhu vybírá.</p>
+<p class="lead">Biosignál je vždy smíchaný s rušením jiných frekvencí: drift izolinie, síťový brum 50 Hz, šum svalů. Filtr propustí jen pásmo, které nás zajímá. Pasivní RC články (připomenuté níže) mají dvě slabiny: signál vždy zeslabí a strmost jejich charakteristiky je jen 20 dB na dekádu. <b>Aktivní filtr</b> přidá operační zesilovač – filtr pak může zesilovat, články se navzájem nezatěžují a ze dvou rezistorů a dvou kondenzátorů vznikne filtr 2. řádu se strmostí 40 dB na dekádu. Přednáška ukazuje, jak se filtr popisuje (přenosová funkce, řád, strmost, činitel jakosti), standardní zapojení Sallen-Key a MFB pro všechny čtyři typy filtrů a tři aproximace (Butterworth, Čebyšev, Bessel), mezi kterými se při návrhu vybírá.</p>
 
-<p>V <a href="11_signal.html#def-akvizicni-cesta">akviziční cestě</a> patří filtry do bloku <b>úprava signálu</b>, před analogově-digitální převod. Slide „Úprava signálu“ jmenuje čtyři témata: pasivní filtry, aktivní filtry, antialiasingové filtry a filtry typu DP, HP, PP, PZ. Pojmy <a href="02_filtry.html#def-filtr">filtr</a>, <a href="02_filtry.html#def-prenos">přenos</a>, <a href="02_filtry.html#def-decibel">decibel</a>, <a href="02_filtry.html#def-mezni">mezní frekvence</a>, <a href="02_filtry.html#def-rad">řád filtru</a> a čtyři typy filtrů (<a href="02_filtry.html#def-dp">DP</a>, <a href="02_filtry.html#def-hp">HP</a>, <a href="02_filtry.html#def-pp">PP</a>, <a href="02_filtry.html#def-pz">PZ</a>) jsou vysvětlené v základech; tady se na ně navazuje.</p>
+<p>V <a href="11_signal.html#def-akvizicni-cesta">akviziční cestě</a> patří filtry do bloku <b>úprava signálu</b>, před analogově-digitální převod. Slide „Úprava signálu“ jmenuje čtyři témata: pasivní filtry, aktivní filtry, antialiasingové filtry a filtry typu DP, HP, PP, PZ. Pojmy ze základů, na které přednáška navazuje – filtr, typy DP, HP, PP, PZ, mezní frekvence, řád a Bodeho graf –, připomíná rámeček níže.</p>
 <p>U základních dolních a horních propustí 1. řádu je přenos odvozený krok za krokem. U zapojení 2. řádu (Sallen-Key, MFB, pásmová propust, zádrže) je popsaný <b>princip</b> – proč zapojení filtruje – a <b>co se stane s výstupním signálem, když změním některou součástku</b>.</p>
 
+<div class="zaklad" id="zaklad-rc">
+<p class="zaklad-t">Připomenutí ze základů: pasivní RC filtry</p>
+<p>Přenos, decibel a mezní frekvence jsou připomenuté v <a href="12_uprava.html#zaklad-mezni">P2</a>: přenos \(H = U_\text{výst}/U_\text{vst}\), v decibelech \(20\log_{10}|H|\), na mezní frekvenci \(|H| = 0{,}707\), tj. −3 dB. RC článek je <a href="11_signal.html#def-delic">dělič napětí</a> (P1), ve kterém je jeden rezistor nahrazen kondenzátorem.</p>
+
+<div class="box definice" id="def-filtr"><div class="box-t">Definice: analogový filtr</div>
+<p><b>Analogový filtr</b> je obvod, který propouští složky spojitého signálu v určitém rozsahu frekvencí (<b>propustné pásmo</b>) a potlačuje složky v jiném rozsahu (<b>nepropustné pásmo</b>). Podle polohy propustného pásma rozlišujeme dolní propust, horní propust, pásmovou propust a pásmovou zádrž.</p>
+<p class="jinak">„síto na frekvence“ – co je v propustném pásmu, projde beze změny, co je v nepropustném, se ztlumí. Filtr je <b>pasivní</b>, pokud obsahuje jen R, C (L), a <b>aktivní</b>, pokud obsahuje i zesilovač.</p></div>
+
+<figure><div class="paper"><img src="figures/fig02_typy.png" alt="Čtyři typy filtrů: dolní propust, horní propust, pásmová propust a pásmová zádrž" loading="lazy"></div>
+<figcaption><b>Připomenutí</b> – amplitudové charakteristiky čtyř základních typů filtrů. Tečkovaně mezní frekvence (pokles o 3 dB).</figcaption></figure>
+
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>Dolní propust</b> (DP) propouští frekvence <b>pod</b> mezní frekvencí – v EKG odstraní vysokofrekvenční šum.</li>
+<li><b>Horní propust</b> (HP) propouští frekvence <b>nad</b> mezní frekvencí – odstraní stejnosměrnou složku a drift izolinie.</li>
+<li><b>Pásmová propust</b> (PP) propouští jen pásmo mezi dvěma frekvencemi, <b>pásmová zádrž</b> (PZ) jedno pásmo potlačí (např. 50 Hz).</li>
+</ul></div>
+
+<div class="box definice" id="def-reaktance"><div class="box-t">Definice: kapacitní reaktance</div>
+<p><b>Kapacitní reaktance</b> \(X_C\) je „odpor“ kondenzátoru vůči harmonickému (sinusovému) proudu, tedy poměr amplitud napětí a proudu na kondenzátoru: \(X_C = \frac{1}{2\pi f C} = \frac{1}{\omega C}\). Je nepřímo úměrná frekvenci; proud kondenzátorem předbíhá napětí o 90°.</p>
+<p class="jinak">pro <b>nízké frekvence</b> má kondenzátor obrovský odpor (stejnosměrně = rozpojený obvod), pro <b>vysoké frekvence</b> malý (blíží se zkratu). Právě tato závislost na frekvenci dělá z RC článku filtr.</p></div>
+
+<figure><div class="paper"><img src="figures/fig02_dp_hp.png" alt="Schéma dolní propusti RC (R v sérii, C proti zemi) a horní propusti CR (C v sérii, R proti zemi)" loading="lazy"></div>
+<figcaption><b>Připomenutí</b> – dolní propust RC (vlevo) a horní propust CR (vpravo). Obě jsou dělič napětí: podélný prvek nahoře, příčný dole, výstup na příčném prvku.</figcaption></figure>
+
+<div class="box definice" id="def-dp"><div class="box-t">Definice: dolní propust</div>
+<p><b>Dolní propust</b> (low-pass filter) je filtr, který propouští složky signálu s frekvencí nižší než mezní frekvence \(f_c\) a složky s vyšší frekvencí potlačuje. Pasivní dolní propust 1. řádu tvoří rezistor v podélné větvi a kondenzátor v příčné větvi (výstup na kondenzátoru).</p>
+<p class="jinak">pomalé změny projdou, rychlé „zahladí“. Výstup je vyhlazená verze vstupu.</p></div>
+
+<div class="box definice" id="def-hp"><div class="box-t">Definice: horní propust</div>
+<p><b>Horní propust</b> (high-pass filter) je filtr, který propouští složky signálu s frekvencí vyšší než mezní frekvence \(f_c\) a složky s nižší frekvencí (včetně stejnosměrné) potlačuje. Pasivní horní propust 1. řádu tvoří kondenzátor v podélné větvi a rezistor v příčné větvi (výstup na rezistoru).</p>
+<p class="jinak">rychlé změny projdou, pomalé a stálé hodnoty se odstraní. V EKG tak zmizí stejnosměrný offset elektrod a pomalé „plavání“ izolinie.</p></div>
+
+<div class="box intuice"><div class="box-t">Princip: výstup na C = dolní propust, výstup na R = horní propust</div>
+<ul>
+<li><b>Nízká frekvence:</b> \(X_C \gg R\), kondenzátor je skoro rozpojený. V DP (výstup na C) je výstup ≈ vstup, v HP (C v podélné větvi) zůstane celé napětí na C a výstup ≈ 0.</li>
+<li><b>Vysoká frekvence:</b> \(X_C \ll R\), kondenzátor je skoro zkrat. V DP svede signál do země (výstup ≈ 0), v HP signál propustí na R (výstup ≈ vstup).</li>
+</ul>
+<p>Výstup se bere z té součástky, na které má zůstat napětí v propustném pásmu. Rezistor omezuje proud, kterým se kondenzátor nabíjí; časová konstanta je \(\tau = RC\).</p></div>
+
+<div class="box vzorec"><div class="box-t">Přenos RC článků 1. řádu</div>
+\[ H_\text{DP} = \frac{Z_C}{R + Z_C} = \frac{1}{1 + j\omega RC} \]
+\[ |H_\text{DP}| = \frac{1}{\sqrt{1 + (f/f_c)^2}} \]
+\[ |H_\text{HP}| = \frac{f/f_c}{\sqrt{1 + (f/f_c)^2}} \]
+\[ f_c = \frac{1}{2 \pi R C} \]
+<table class="vars">
+<tr><td>\(Z_C\)</td><td>impedance kondenzátoru \(1/(j\omega C)\); její velikost je \(X_C\)</td></tr>
+<tr><td>\(f_c\)</td><td>mezní frekvence, stejná pro DP i HP; tam \(X_C = R\)</td></tr>
+<tr><td>\(|H|\)</td><td>DP: 1 → 0,707 v \(f_c\) → \(\approx f_c/f\); HP zrcadlově</td></tr>
+<tr><td>fáze</td><td>DP 0° → −45° v \(f_c\) → −90°; HP +90° → +45° → 0°</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad: mezní frekvence a útlum</div>
+<p>\(R = 10\) kΩ, \(C = 100\) nF.</p>
+\[ f_c = \frac{1}{2\pi \cdot 10^4 \cdot 10^{-7}} \approx 159\ \text{Hz} \]
+<p>Jako dolní propust: signál 1 kHz projde s přenosem</p>
+\[ |H| = \frac{1}{\sqrt{1 + (1000/159)^2}} \approx 0{,}157 \]
+\[ 20 \log_{10} 0{,}157 \approx -16{,}1\ \text{dB} \]</div>
+
+<div class="box definice" id="def-rad"><div class="box-t">Definice: řád filtru</div>
+<p><b>Řád filtru</b> je řád přenosové funkce, u pasivních RC filtrů daný počtem kondenzátorů (nezávislých reaktančních prvků). Filtr \(n\)-tého řádu má v nepropustném pásmu sklon amplitudové charakteristiky \(20n\) dB na dekádu.</p>
+<p class="jinak">jeden RC článek = 1. řád = pokles o 20 dB na každý desetinásobek frekvence. Chci-li strmější „hranu“, řadím víc článků (2. řád = 40 dB/dek atd.).</p></div>
+
+<div class="box definice" id="def-bode"><div class="box-t">Definice: Bodeho graf</div>
+<p><b>Bodeho graf</b> je zobrazení frekvenční charakteristiky ve dvou grafech nad společnou logaritmickou osou frekvence: amplitudová charakteristika v decibelech (\(20\log_{10}|H|\)) a fázová charakteristika ve stupních.</p>
+<p class="jinak">díky logaritmům na obou osách se z křivek stanou téměř přímky, které jde nakreslit od ruky – stačí znát mezní frekvenci a sklon.</p></div>
+
+<figure><div class="paper"><img src="figures/fig02_bode_dp.png" alt="Bodeho graf dolní propusti: amplituda a fáze s asymptotami" loading="lazy"></div>
+<figcaption><b>Připomenutí</b> – Bodeho graf dolní propusti s \(f_c = 100\) Hz: nahoře amplituda v dB, dole fáze. Čárkovaně asymptoty.</figcaption></figure>
+
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Kreslení: logaritmická osa frekvence, asymptota 0 dB do \(f_c\), pak přímka −20 dB/dekádu (1. řád).</li>
+<li>Skutečná křivka je v \(f_c\) o 3 dB pod zlomem a fáze tam je −45°; dekádu od zlomu splývá s asymptotami.</li>
+<li>Horní propust zrcadlově: zleva stoupá +20 dB/dek až do \(f_c\), pak 0 dB.</li>
+</ul></div>
+</div>
+
 <h2 id="filtry">Filtr a jeho přenosová funkce</h2>
-<p>Podle slidu je filtr obvod, který propouští signál v požadovaném frekvenčním pásmu, zatímco signály nežádoucích frekvencí jsou potlačovány. <b>Ideální</b> přenosové charakteristiky filtrů \(|\bar H(j\omega)|\) mají ostrý zlom amplitudové charakteristiky a maximální strmost poklesu na okraji propustného kmitočtového pásma (\(\omega_0\)) – na slidu jsou nakreslené jako „obdélníky“ pro DP, HP, PP a PZ (stejný tvar jako <a href="02_filtry.html#filtr">obr. 2.1</a>, jen se svislými hranami).</p>
+<p>Podle slidu je filtr obvod, který propouští signál v požadovaném frekvenčním pásmu, zatímco signály nežádoucích frekvencí jsou potlačovány. <b>Ideální</b> přenosové charakteristiky filtrů \(|\bar H(j\omega)|\) mají ostrý zlom amplitudové charakteristiky a maximální strmost poklesu na okraji propustného kmitočtového pásma (\(\omega_0\)) – na slidu jsou nakreslené jako „obdélníky“ pro DP, HP, PP a PZ (stejný tvar jako v <a href="#zaklad-rc">připomenutí výše</a>, jen se svislými hranami).</p>
 
 <div class="box definice" id="def-prenosova-funkce"><div class="box-t">Definice: přenosová funkce filtru</div>
 <p><b>Přenosová funkce</b> \(H(p)\) je podíl výstupního a vstupního napětí v operátorovém tvaru. Obecně je to podíl dvou polynomů v proměnné \(p = j\omega\) s reálnými koeficienty \(c\) a \(b\), přičemž stupeň čitatele \(m\) není větší než stupeň jmenovatele \(n\):</p>
@@ -42,7 +120,7 @@
 </ul></div>
 
 <h2 id="strmost">Řád filtru a strmost charakteristiky</h2>
-<p>Za mezní frekvencí přenos klesá tím rychleji, čím vyšší je <a href="02_filtry.html#def-rad">řád filtru</a>. Rychlost poklesu se udává ve dvou jednotkách: v decibelech na oktávu nebo na dekádu.</p>
+<p>Za mezní frekvencí přenos klesá tím rychleji, čím vyšší je <a href="#def-rad">řád filtru</a>. Rychlost poklesu se udává ve dvou jednotkách: v decibelech na oktávu nebo na dekádu.</p>
 
 <div class="box definice" id="def-strmost"><div class="box-t">Definice: strmost charakteristiky</div>
 <p><b>Strmost</b> charakteristiky filtru je změna přenosu (v dB) v nepropustném pásmu na jednotku logaritmu frekvence. Udává se v dB na oktávu (dB/okt, změna při zdvojnásobení nebo zpoložení frekvence) nebo v dB na dekádu (dB/dek, změna při desetinásobné nebo desetinové frekvenci). Filtr \(n\)-tého řádu má strmost \(n \cdot 6\) dB/okt, tedy \(n \cdot 20\) dB/dek.</p>
@@ -64,7 +142,7 @@
 </ul></div>
 
 <div class="box priklad"><div class="box-t">Příklad: přenos horní propusti 1. řádu (\(f_M\) = 1,8 kHz)</div>
-<p>Přenos horní propusti 1. řádu (<a href="02_filtry.html#hp">Z2</a>):</p>
+<p>Přenos horní propusti 1. řádu (<a href="#def-hp">připomenutí výše</a>):</p>
 \[ |H| = \frac{f/f_M}{\sqrt{1 + (f/f_M)^2}} \]
 <p>1. Oktáva pod mezní frekvencí, \(f\) = 900 Hz, \(f/f_M = 0{,}5\):</p>
 \[ |H| = \frac{0{,}5}{\sqrt{1{,}25}} = 0{,}447 \;\Rightarrow\; -6{,}99\ \text{dB} \]
@@ -74,7 +152,7 @@
 
 <div class="box pozor"><div class="box-t">Pozor: 3 dB a 6 dB nejsou totéž</div>
 <ul>
-<li>Strmost 6 dB/okt = 20 dB/dek má filtr <b>1. řádu</b> (jeden RC článek, <a href="02_filtry.html#def-rad">Z2</a>). Filtr 2. řádu má 12 dB/okt = 40 dB/dek, 3. řádu 18 dB/okt = 60 dB/dek.</li>
+<li>Strmost 6 dB/okt = 20 dB/dek má filtr <b>1. řádu</b> (jeden RC článek, <a href="#def-rad">řád filtru</a>). Filtr 2. řádu má 12 dB/okt = 40 dB/dek, 3. řádu 18 dB/okt = 60 dB/dek.</li>
 <li><b>3 dB</b> je pokles <b>v mezní frekvenci</b> (tím je mezní frekvence definovaná). <b>6 dB/okt</b> (krát řád) je <b>strmost</b> daleko za ní. Nepleť si je: o oktávu za mezní frekvencí není 1. řád na −6 dB, ale na −7,0 dB, o dvě oktávy na −12,3 dB (příklad výše).</li>
 <li>Asymptota (přímka 6 dB/okt) dává 0 / −6 / −12 dB, skutečná křivka −3,0 / −7,0 / −12,3 dB. Čím dál od mezní frekvence, tím víc se obě shodují (o dekádu −20,04 dB, o dvě dekády −40,00 dB).</li>
 </ul></div>
@@ -133,7 +211,7 @@
 </ul>
 
 <h2 id="popis">Základní popis: normovaná frekvence a koeficienty</h2>
-<p>Slide „Základní popis“ ukazuje, jak se přenos zapisuje tak, aby nezávisel na konkrétní mezní frekvenci. Výchozí je RC dolní propust ze základů:</p>
+<p>Slide „Základní popis“ ukazuje, jak se přenos zapisuje tak, aby nezávisel na konkrétní mezní frekvenci. Výchozí je RC dolní propust z připomenutí na začátku kapitoly:</p>
 \[ A(s) = \frac{\frac{1}{RC}}{s + \frac{1}{RC}} = \frac{1}{1 + sRC} \]
 
 <div class="box definice" id="def-normovana-frekvence"><div class="box-t">Definice: normovaná frekvence</div>
@@ -175,9 +253,9 @@
 <p>Slide „Aktivní filtr – DP 1. řádu“ ukazuje dvě zapojení. Obě jsou RC článek 1. řádu doplněný OZ, který určuje zisk \(A_0\).</p>
 
 <figure><div class="paper"><img src="figures/fig15_dp1_neinv.png" alt="Neinvertující DP 1. řádu: vstup přes R1 na neinvertující vstup, z něj C1 na zem; invertující vstup přes R3 na zem a R2 na výstup" loading="lazy"></div>
-<figcaption><b>Obr. P5.3</b> Neinvertující dolní propust 1. řádu: RC článek \(R_1 C_1\) a za ním <a href="03_oz.html#def-neinvertujici">neinvertující zesilovač</a> s \(R_2\), \(R_3\) (podle slidu).</figcaption></figure>
+<figcaption><b>Obr. P5.3</b> Neinvertující dolní propust 1. řádu: RC článek \(R_1 C_1\) a za ním <a href="11_signal.html#def-neinvertujici">neinvertující zesilovač</a> s \(R_2\), \(R_3\) (podle slidu).</figcaption></figure>
 <figure><div class="paper"><img src="figures/fig15_dp1_inv.png" alt="Invertující DP 1. řádu: vstup přes R1 na invertující vstup, ve zpětné vazbě paralelně R2 a C1, neinvertující vstup na zemi" loading="lazy"></div>
-<figcaption><b>Obr. P5.4</b> Invertující dolní propust 1. řádu: <a href="03_oz.html#def-invertujici">invertující zesilovač</a>, ve kterém je k \(R_2\) přidán paralelně \(C_1\) (podle slidu).</figcaption></figure>
+<figcaption><b>Obr. P5.4</b> Invertující dolní propust 1. řádu: <a href="11_signal.html#def-invertujici">invertující zesilovač</a>, ve kterém je k \(R_2\) přidán paralelně \(C_1\) (podle slidu).</figcaption></figure>
 
 <div class="box vzorec"><div class="box-t">DP 1. řádu: \(A(s) = A_0 / (1 + a_1 s)\)</div>
 <p>Neinvertující (obr. P5.3):</p>
@@ -219,7 +297,7 @@
 
 <h3 id="sallen-key">Dolní propust typu Sallen-Key</h3>
 <div class="box definice" id="def-sallen-key"><div class="box-t">Definice: zapojení Sallen-Key</div>
-<p><b>Sallen-Key</b> je zapojení aktivního filtru 2. řádu se dvěma rezistory, dvěma kondenzátory a OZ zapojeným jako <a href="04_dalsi_zapojeni.html#def-sledovac">sledovač</a> (nebo neinvertující zesilovač). Jeden reaktanční prvek vede na zem z neinvertujícího vstupu, druhý vede kladnou zpětnou vazbu z výstupu do uzlu mezi oběma vstupními prvky.</p>
+<p><b>Sallen-Key</b> je zapojení aktivního filtru 2. řádu se dvěma rezistory, dvěma kondenzátory a OZ zapojeným jako <a href="11_signal.html#def-sledovac">sledovač</a> (nebo neinvertující zesilovač). Jeden reaktanční prvek vede na zem z neinvertujícího vstupu, druhý vede kladnou zpětnou vazbu z výstupu do uzlu mezi oběma vstupními prvky.</p>
 <p class="jinak">dva RC články za sebou, ale druhý kondenzátor (u DP) není na zemi – je připojen k výstupu. Výstup tak „pomáhá“ signálu kolem mezní frekvence a charakteristika se v ohybu zostří. Zisk je kladný (neinvertující).</p></div>
 
 <figure><div class="paper"><img src="figures/fig15_sk_dp.png" alt="Sallen-Key DP: vstup přes R1 a R2 v sérii na neinvertující vstup, z něj C1 na zem; z uzlu mezi R1 a R2 kondenzátor C2 na výstup; OZ je sledovač" loading="lazy"></div>
@@ -331,7 +409,7 @@
 <p>Po dosazení \(p = s\,\omega_c\) je v obou případech \(\frac{1}{pR_1C_1} = \frac{1}{\omega_c R_1 C_1} \cdot \frac{1}{s}\), tedy \(a_1 = \frac{1}{\omega_c R_1 C_1}\).</p></div>
 
 <div class="box priklad"><div class="box-t">Příklad: HP pro odstranění driftu EKG se ziskem 10 (vlastní čísla)</div>
-<p>\(f_c\) = 0,5 Hz, \(C_1\) = 1 µF (stejně jako v <a href="02_filtry.html#mezni">Z2</a>):</p>
+<p>\(f_c\) = 0,5 Hz, \(C_1\) = 1 µF:</p>
 \[ R_1 = \frac{1}{2\pi \cdot 0{,}5 \cdot 10^{-6}} = 318\ \text{k}\Omega \]
 <p>Zisk \(A_\infty = 10\) neinvertující variantou, \(R_3\) = 1 kΩ:</p>
 \[ 1 + \frac{R_2}{R_3} = 10 \;\Rightarrow\; R_2 = 9\ \text{k}\Omega \]
@@ -378,7 +456,28 @@
 </ul></div>
 
 <h2 id="pp">Pásmová propust</h2>
-<p>Pásmovou propust lze chápat jako překryv dolní a horní propusti (slide ukazuje graf, kde se charakteristiky DP se ziskem \(A_0\) a HP se ziskem \(A_\infty\) protínají v \(\Omega = 1\)). Pro širokou propust stačí horní a dolní propust za sebou (<a href="02_filtry.html#pp">Z2</a>). Úzká propust se navrhuje <b>transformací</b> dolní propusti: charakteristika DP s mezní frekvencí \(\Omega = 1\) se „zrcadlí“ kolem střední frekvence \(\Omega_m = 1\) a z jejího propustného pásma vznikne pásmo šířky \(\Delta\Omega\) (obrázek na slidu).</p>
+<div class="zaklad" id="zaklad-pp">
+<p class="zaklad-t">Připomenutí ze základů: pasivní pásmová propust</p>
+<div class="box definice" id="def-pp"><div class="box-t">Definice: pásmová propust</div>
+<p><b>Pásmová propust</b> (band-pass filter) je filtr, který propouští složky signálu s frekvencemi mezi dolní mezní frekvencí \(f_d\) a horní mezní frekvencí \(f_h\) a potlačuje frekvence pod \(f_d\) i nad \(f_h\). <b>Šířka pásma</b> je \(B = f_h - f_d\).</p>
+<p class="jinak">„okno“ ve frekvencích – propustí jen pásmo, ve kterém je užitečný signál (EKG asi 0,05–150 Hz), a ořízne drift i šum zároveň.</p></div>
+
+<figure><div class="paper"><img src="figures/fig02_pp_schema.png" alt="Schéma pásmové propusti: horní propust C1, R1 následovaná dolní propustí R2, C2" loading="lazy"></div>
+<figcaption><b>Připomenutí</b> – pasivní pásmová propust: horní propust \(C_1 R_1\) (určuje \(f_d\)) a za ní dolní propust \(R_2 C_2\) (určuje \(f_h\)).</figcaption></figure>
+
+<div class="box vzorec"><div class="box-t">Pásmová propust z HP a DP za sebou</div>
+\[ f_d = \frac{1}{2\pi R_1 C_1} \]
+\[ f_h = \frac{1}{2\pi R_2 C_2} \]
+\[ B = f_h - f_d \]
+\[ f_0 = \sqrt{f_d \, f_h} \]
+<table class="vars">
+<tr><td>\(f_d\), \(f_h\)</td><td>dolní a horní mezní frekvence (z HP a z DP); musí být \(f_d &lt; f_h\)</td></tr>
+<tr><td>\(B\)</td><td>šířka pásma [Hz]</td></tr>
+<tr><td>\(f_0\)</td><td>střední frekvence – geometrický průměr</td></tr>
+</table>
+<p>Přenosy článků se násobí (v dB sčítají). Pozor na zatěžování: druhý článek je zátěží prvního (jako <a href="11_signal.html#def-zatez">zatížený dělič</a>), proto se články oddělují sledovačem – nebo se použije aktivní filtr.</p></div>
+</div>
+<p>Pásmovou propust lze chápat jako překryv dolní a horní propusti (slide ukazuje graf, kde se charakteristiky DP se ziskem \(A_0\) a HP se ziskem \(A_\infty\) protínají v \(\Omega = 1\)). Pro širokou propust stačí horní a dolní propust za sebou (<a href="#zaklad-pp">připomenutí výše</a>). Úzká propust se navrhuje <b>transformací</b> dolní propusti: charakteristika DP s mezní frekvencí \(\Omega = 1\) se „zrcadlí“ kolem střední frekvence \(\Omega_m = 1\) a z jejího propustného pásma vznikne pásmo šířky \(\Delta\Omega\) (obrázek na slidu).</p>
 
 <div class="box vzorec"><div class="box-t">Šířka pásma a činitel jakosti pásmové propusti</div>
 \[ \Delta\Omega = \Omega_2 - \Omega_1 \]
@@ -422,6 +521,25 @@
 </ul></div>
 
 <h2 id="pz">Pásmová zádrž</h2>
+<div class="zaklad" id="zaklad-pz">
+<p class="zaklad-t">Připomenutí ze základů: pasivní pásmová zádrž a dvojitý T-článek</p>
+<div class="box definice" id="def-pz"><div class="box-t">Definice: pásmová zádrž</div>
+<p><b>Pásmová zádrž</b> (band-stop filter) je filtr, který potlačuje složky signálu v pásmu frekvencí kolem střední frekvence \(f_0\) a frekvence pod tímto pásmem i nad ním propouští. Úzká pásmová zádrž potlačující jedinou frekvenci se nazývá <b>notch filtr</b> (odlaďovač).</p>
+<p class="jinak">opak pásmové propusti – „vyřízne“ jedno pásmo a vše ostatní nechá. Typické použití: odstranění síťového brumu 50 Hz z EKG nebo EEG.</p></div>
+
+<figure><div class="paper"><img src="figures/fig02_pz_schema.png" alt="Schéma dvojitého T-článku: horní cesta R, R s 2C k zemi, dolní cesta C, C s R/2 k zemi" loading="lazy"></div>
+<figcaption><b>Připomenutí</b> – dvojitý T-článek (twin-T): horní T z rezistorů \(R\) s kondenzátorem \(2C\) k zemi, dolní T z kondenzátorů \(C\) s rezistorem \(R/2\) k zemi.</figcaption></figure>
+
+<div class="box intuice"><div class="box-t">Princip: dvě cesty, které se v \(f_0\) vyruší</div>
+<p>Horní cesta (R–R, 2C k zemi) je dolní propust a fázi zpožďuje, dolní cesta (C–C, R/2 k zemi) je horní propust a fázi předbíhá. Na frekvenci \(f_0\) jsou oba příspěvky stejně velké a v protifázi, takže se na výstupu odečtou a přenos je teoreticky nulový. (Jiná možnost: DP a HP <b>vedle sebe</b> a sečíst – na rozdíl od pásmové propusti, kde jsou <b>za sebou</b>.)</p></div>
+
+<div class="box vzorec"><div class="box-t">Střední frekvence dvojitého T-článku</div>
+\[ f_0 = \frac{1}{2 \pi R C} \]
+<table class="vars">
+<tr><td>\(R, C\)</td><td>hodnoty v podélných větvích; příčné prvky mají \(R/2\) a \(2C\)</td></tr>
+</table>
+<p>Pro 50 Hz a \(C = 100\) nF vyjde \(R \approx 31{,}8\) kΩ. Pasivní článek má ale široký zářez (−3 dB už na 11,8 Hz a 212 Hz) – proto aktivní varianta níže.</p></div>
+</div>
 <p>Pásmová zádrž vznikne podobnou transformací dolní propusti, jen se pásmo „vyřízne“: přenos má na střední frekvenci \(f_m\) <b>nulu</b>.</p>
 
 <div class="box intuice"><div class="box-t">Co pásmová zádrž 2. řádu dělá s výstupem</div>
@@ -441,11 +559,11 @@
 </ul></div>
 
 <h3 id="dvojity-t">Aktivní dvojitý T-článek</h3>
-<p>Pasivní dvojitý T-článek (<a href="02_filtry.html#pz">Z2</a>, slide vpravo) má \(f_m = 1/(2\pi RC)\), ale velmi široký zářez (\(Q = 0{,}25\)). Aktivní varianta ze slidu ho doplní OZ.</p>
+<p>Pasivní dvojitý T-článek (<a href="#zaklad-pz">připomenutí výše</a>, slide vpravo) má \(f_m = 1/(2\pi RC)\), ale velmi široký zářez (\(Q = 0{,}25\)). Aktivní varianta ze slidu ho doplní OZ.</p>
 
 <div class="box definice" id="def-aktivni-dvojity-t"><div class="box-t">Definice: aktivní pásmová zádrž s dvojitým T-článkem</div>
 <p><b>Aktivní dvojitý T-článek</b> je pásmová zádrž, ve které je výstup dvojitého T-článku připojen na neinvertující zesilovač se ziskem \(G = 1 + R_2/R_1\) a příčný rezistor \(R/2\) není uzemněn, ale připojen na výstup OZ. Činitel jakosti pak závisí na zisku: \(Q = 1/(2(2 - G))\).</p>
-<p class="jinak">stejný T-článek jako v základech, jen jeho „zemní“ rezistor dostává zpět výstupní signál. Tím se zářez zúží – a jak úzký bude, nastavím jedním poměrem rezistorů.</p></div>
+<p class="jinak">stejný T-článek jako pasivní dvojitý T výše, jen jeho „zemní“ rezistor dostává zpět výstupní signál. Tím se zářez zúží – a jak úzký bude, nastavím jedním poměrem rezistorů.</p></div>
 
 <figure><div class="paper"><img src="figures/fig15_twint.png" alt="Aktivní dvojitý T: vstup do dvou cest R-R s 2C na zem a C-C; obě končí na neinvertujícím vstupu OZ; rezistor R/2 z uzlu mezi kondenzátory vede na výstup; OZ je neinvertující zesilovač s R1 na zem a R2 na výstup" loading="lazy"></div>
 <figcaption><b>Obr. P5.15</b> Aktivní pásmová zádrž s dvojitým T-článkem (podle slidu): oranžově \(R/2\) připojený na výstup.</figcaption></figure>

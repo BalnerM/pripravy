@@ -10,19 +10,22 @@ Pro nový předmět se mění jen KONFIGURACE (nahoře), engine pod ní je spole
 # =====================================================================================================================
 LANG = "cs"                                   # jazyk skript: "cs" nebo "en" (texty rozhraní, <html lang>)
 SHORT = "SAD"                                 # zkratka předmětu (titulky stránek)
-BRAND = "SAD – test a zkouška"               # název v horní liště a tiskové hlavičce (en: "XYZ – exam notes")
-BRAND_SUB = "základy obvodů a přednášky 1–10"
+BRAND = "SAD – půlsemestrální test"          # název v horní liště a tiskové hlavičce (en: "XYZ – exam notes")
+BRAND_SUB = "základy Z1–Z4"
 GLOSSARY = "99_slovnik"                       # stránka slovníku generovaná z rámečků definic (None = bez slovníku)
 
 # (soubor fragmentu bez .html, číslo přednášky / značka, název, krátký popis)
 # Stránky s „číslem“ ve tvaru 1, Z1 nebo P1 jsou kapitoly – musí mít definice, #shrnuti, take-home a #otazky.
-# Skripta mají dvě části (PARTS = písmeno štítku → nadpis v záhlaví kapitoly):
-#   Z1–Z4  = základy (soubory 01–05, vznikly bez přednášek; adresy a id se nemění),
-#   P1–P10 = kapitoly přednášek MPC_SAD_01–10, soubory 11_…–20_… (P4 = 14_oz_zapojeni, P5 = 15_aktivni_filtry, P6 = 16_komparator),
-#            tahák ke zkoušce 29_tahak_zkouska. Pojem vysvětlený v základech se v přednášce znovu nedefinuje:
-#            kapitola odkáže na jeho rámeček (např. 03_oz.html#def-…) a jde dál podle slidů. Nová stránka se
-#            do PAGES přidává až hotová (build kontroluje povinné sekce); zároveň se v obsah/index.html
-#            v tabulce #prednasky nahradí „připravuje se“ odkazem a přidá se karta kapitoly.
+# SAD má dvoje samostatná skripta (PARTS = písmeno štítku → nadpis v záhlaví kapitoly):
+#   sad/          půlsemestrální test: jen základy Z1–Z4 (obsah/01–05, vznikly bez přednášek), tahák, slovník;
+#   sad/zkouska/  závěrečná zkouška (EDITIONS níže, fragmenty v obsah_zkouska/): přednášky P1–P10 = MPC_SAD_01–10,
+#                 soubory 11_…–20_… (P4 = 14_oz_zapojeni, P5 = 15_aktivni_filtry, P6 = 16_komparator), tahák
+#                 29_tahak, slovník. Čte se jako celek bez přeskakování: látka základů je v přednáškách vložená
+#                 jako „Připomenutí ze základů“ (<div class="zaklad">) v místě, kde je poprvé potřeba, včetně
+#                 rámečků definic se stejnými id jako v Z1–Z4 (def-delic, def-invertujici…); později se na ně
+#                 odkazuje v rámci verze ke zkoušce. Na stránky testu verze ke zkoušce neodkazuje (jen rozcestník).
+#                 Nová stránka se do PAGES přidává až hotová (build kontroluje povinné sekce); zároveň se
+#                 v obsah_zkouska/index.html v tabulce #prednasky nahradí „připravuje se“ odkazem a přidá karta.
 PARTS = {"Z": "Základy", "P": "Přednáška"}
 PAGES = [
     ("index", "", "Mapa kurzu", "Jak skripta používat a jak spolu témata souvisí."),
@@ -31,6 +34,13 @@ PAGES = [
     ("03_oz", "Z3", "Operační zesilovače", "Invertující, neinvertující, rozdílové a přístrojové zapojení; CMRR."),
     ("04_dalsi_zapojeni", "Z4", "Sledovač, integrátor, derivátor", "Princip a schéma dalších zapojení s OZ."),
     ("05_tahak", "★", "Tahák: základy", "Vzorce a schémata základů na jedné stránce a typické chytáky."),
+    ("99_slovnik", "Aa", "Slovník pojmů (definice)", "Všechny definice ze skript na jednom místě."),
+]
+
+# Další samostatná skripta téhož předmětu ve vlastní podsložce (sdílí assets/ a figures/, mají vlastní slovník,
+# skripta_vse.html a pdf/). Fragmenty v _build/obsah_<DIR>/.
+EDITIONS = [dict(DIR="zkouska", BRAND="SAD – závěrečná zkouška", BRAND_SUB="přednášky P1–P6 se základy", PAGES=[
+    ("index", "", "Mapa kurzu", "Jak skripta ke zkoušce používat a kde je která přednáška."),
     ("11_signal", "P1", "Úvod: signál a jeho převod na napětí",
      "Akviziční cesta, druhy signálů, měkký zdroj; převod proudu, frekvence a odporu na napětí; Wheatstoneův můstek."),
     ("12_uprava", "P2", "Úprava signálu: tranzistorové zesilovače a OZ",
@@ -43,8 +53,9 @@ PAGES = [
      "Přenosová funkce, ideální a reálný filtr, strmost dB/okt a dB/dek; DP, HP, PP a PZ v zapojení Sallen-Key a MFB, dvojitý T, Wienův-Robinsonův můstek; Butterworth, Čebyšev, Bessel."),
     ("16_komparator", "P6", "Komparátor, omezovač a úvod do A/D převodu",
      "Precizní a oboustranný omezovač (Zenerovy diody, můstek); komparátor, chyba přeběhu, rušení; Schmittův klopný obvod a hystereze; amplitudový selektor; kvantování, vzorkování; paralelní (flash) ADC."),
-    ("99_slovnik", "Aa", "Slovník pojmů (definice)", "Všechny definice ze skript na jednom místě."),
-]
+    ("29_tahak", "★", "Tahák ke zkoušce", "Vzorce, schémata a chytáky z přednášek i základů na jedné stránce."),
+    ("99_slovnik", "Aa", "Slovník pojmů (definice)", "Všechny definice ze skript ke zkoušce na jednom místě."),
+])]
 
 # Druhá jazyková verze (volitelné, None = skripta jen v jednom jazyce). Fragmenty jsou v _build/obsah_<jazyk>/
 # se stejnými názvy souborů a stejnými id, stránky se sestaví do <zkratka>/<jazyk>/ a na každé stránce je tlačítko,
@@ -120,8 +131,14 @@ def make_sites():
                           site=f"{SITE}{lang}/"))
         main["other"], sites[1]["other"] = sites[1], main
         main["switch"], sites[1]["switch"] = f"{lang}/", "../"
+    for e in EDITIONS:
+        d = e["DIR"]
+        sites.append(dict(lang=LANG, brand=e["BRAND"], brand_sub=e["BRAND_SUB"], pages=e["PAGES"],
+                          src=SRC.parent / f"obsah_{d}", out=ROOT / d, up="../", fig="../figures/",
+                          site=f"{SITE}{d}/", tag=f"{d}/"))
     for s in sites:
         s["t"] = TEXTS[s["lang"]]
+        s.setdefault("tag", f'{s["lang"]}/' if s["up"] else "")
     return sites
 
 
@@ -320,7 +337,7 @@ def build_site(s):
 def check_site(s, built, errors):
     """Obrázky, odkazy a kotvy, povinné sekce kapitol, formát definic a duplicitní id."""
     lectures = {x for x, n, *_ in s["pages"] if is_chapter(n)}
-    tag = f'{s["lang"]}/' if s["up"] else ""
+    tag = s["tag"]
     ids = {x: set(re.findall(r'id="([^"]+)"', h)) for x, h in built.items()}
     for slug, h in built.items():
         for src in re.findall(r'<img[^>]+src="([^"]+)"', h):
@@ -401,7 +418,7 @@ def build():
     results = [(s, *build_site(s)) for s in SITES]
     for s, built, n_defs in results:
         check_site(s, built, errors)
-        where = f" [{s['lang']}/]" if s["up"] else ""
+        where = f" [{s['tag']}]" if s["tag"] else ""
         print(f"sestaveno stránek{where}: {len(built)} (včetně {ALL}.html), definic ve slovníku: {n_defs}")
     if errors:
         print("CHYBY:")
@@ -411,7 +428,7 @@ def build():
     print("kontrola odkazů, obrázků a povinných sekcí: OK")
     for s in SITES:
         for w in check_math_layout(s["src"], skip={GLOSSARY}):
-            print(f"UPOZORNĚNÍ{' [' + s['lang'] + '/]' if s['up'] else ''}: {w}")
+            print(f"UPOZORNĚNÍ{' [' + s['tag'] + ']' if s['tag'] else ''}: {w}")
 
 
 if __name__ == "__main__":

@@ -1,67 +1,3 @@
-<!doctype html>
-<html lang="cs">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Komparátor, omezovač a úvod do A/D převodu – SAD</title>
-<meta name="description" content="Precizní a oboustranný omezovač (Zenerovy diody, můstek); komparátor, chyba přeběhu, rušení; Schmittův klopný obvod a hystereze; amplitudový selektor; kvantování, vzorkování; paralelní (flash) ADC.">
-<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-<link rel="stylesheet" href="assets/style.css?v=a7e96b3f">
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-<script defer src="assets/app.js?v=a7e96b3f"></script>
-</head>
-<body>
-<header class="topbar">
-  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
-  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
-  <a class="brand" href="index.html">SAD – test a zkouška<small>základy obvodů a přednášky 1–10</small></a>
-  <span class="spacer"></span>
-  <a class="iconbtn back" href="../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
-  
-  <span class="fsgroup">
-    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
-    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
-    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
-  </span>
-  <a class="iconbtn" id="pdfBtn" href="pdf/16_komparator.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
-  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
-</header>
-<div class="layout">
-<nav class="sidebar" aria-label="Navigace">
-  <h4>Kapitoly</h4>
-  <ol>
-    <li><a href="index.html"><span class="n"></span><span>Mapa kurzu</span></a></li>
-    <li><a href="01_obvody.html"><span class="n">Z1</span><span>Ohmův zákon, Kirchhoff, dělič napětí</span></a></li>
-    <li><a href="02_filtry.html"><span class="n">Z2</span><span>Analogové RC filtry</span></a></li>
-    <li><a href="03_oz.html"><span class="n">Z3</span><span>Operační zesilovače</span></a></li>
-    <li><a href="04_dalsi_zapojeni.html"><span class="n">Z4</span><span>Sledovač, integrátor, derivátor</span></a></li>
-    <li><a href="05_tahak.html"><span class="n">★</span><span>Tahák: základy</span></a></li>
-    <li><a href="11_signal.html"><span class="n">P1</span><span>Úvod: signál a jeho převod na napětí</span></a></li>
-    <li><a href="12_uprava.html"><span class="n">P2</span><span>Úprava signálu: tranzistorové zesilovače a OZ</span></a></li>
-    <li><a href="13_napajeni.html"><span class="n">P3</span><span>Napájení a zdroje referenčního napětí</span></a></li>
-    <li><a href="14_oz_zapojeni.html"><span class="n">P4</span><span>Aplikace OZ: integrátor, derivátor, usměrňovač</span></a></li>
-    <li><a href="15_aktivni_filtry.html"><span class="n">P5</span><span>Aplikace OZ II: aktivní filtry</span></a></li>
-    <li><a href="16_komparator.html" class="active"><span class="n">P6</span><span>Komparátor, omezovač a úvod do A/D převodu</span></a></li>
-    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
-  </ol>
-  <h4>Na této stránce</h4>
-  <ul class="toc">
-    <li><a href="#omezovac">Precizní omezovač</a></li>
-    <li><a href="#komparator">Komparátor</a></li>
-    <li><a href="#schmitt">Schmittův klopný obvod</a></li>
-    <li><a href="#selektor">Amplitudový selektor</a></li>
-    <li><a href="#adc">Úvod do A/D převodu</a></li>
-    <li><a href="#flash">Paralelní (flash) A/D převodník</a></li>
-    <li><a href="#srovnani">Srovnání zapojení</a></li>
-    <li><a href="#shrnuti-h">Shrnutí</a></li>
-    <li><a href="#otazky">Otázky ke zkoušce</a></li>
-  </ul>
-</nav>
-<main>
-<p class="printhead">SAD – test a zkouška · Komparátor, omezovač a úvod do A/D převodu – SAD · https://balnerm.github.io/pripravy/sad/16_komparator.html</p>
-<p class="kicker">Přednáška 6</p>
 <h1>Komparátor, omezovač a úvod do A/D převodu</h1>
 <p class="lead">Dosud operační zesilovač <b>zesiloval, integroval nebo filtroval</b>. Tady se naučí <b>rozhodovat</b>: je vstupní napětí větší, nebo menší než zvolená úroveň? Taková odpověď „ano / ne“ je základ <b>komparátoru</b>, a komparátor je základní stavební prvek <b>A/D převodníku</b>. Přednáška začíná <b>omezovačem</b> (hlídá, aby napětí nepřekročilo mez), pokračuje komparátorem, jeho potížemi s rušením a řešením pomocí <b>hystereze</b> (Schmittův klopný obvod), ukáže, jak z komparátorů poskládat <b>amplitudový selektor</b>, a končí úvodem do A/D převodu a nejrychlejším převodníkem, <b>paralelním (flash) ADC</b>.</p>
 
@@ -77,9 +13,9 @@
 
 <div class="box postup"><div class="box-t">Jak omezovač pracuje (zapojená \(D_1\))</div>
 <ol>
-<li>OZ2 je <a href="04_dalsi_zapojeni.html#def-sledovac">sledovač</a>: výstup je stejný jako napětí v uzlu \(U_+\), \(u_o = U_+\). Do vstupu OZ2 neteče proud.</li>
+<li>OZ2 je <a href="11_signal.html#def-sledovac">sledovač</a>: výstup je stejný jako napětí v uzlu \(U_+\), \(u_o = U_+\). Do vstupu OZ2 neteče proud.</li>
 <li><b>\(u_i &lt; U_\mathrm{REF}\):</b> invertující vstup OZ1 je pod \(U_\mathrm{REF}\), výstup OZ1 jde do kladné saturace a dioda \(D_1\) je zavřená. OZ1 je od uzlu odpojený. Přes \(R_1\) neteče žádný proud, takže \(U_+ = u_i\) a \(u_o = u_i\).</li>
-<li><b>\(u_i > U_\mathrm{REF}\):</b> invertující vstup OZ1 by byl nad \(U_\mathrm{REF}\), výstup OZ1 klesne, dioda se otevře a zpětná vazba se uzavře. Platí <a href="03_oz.html#def-virtualni-zkrat">virtuální zkrat</a> a OZ1 udrží svůj invertující vstup přesně na \(U_\mathrm{REF}\). Ten je spojený s uzlem \(U_+\), a proto \(u_o = U_\mathrm{REF}\).</li>
+<li><b>\(u_i > U_\mathrm{REF}\):</b> invertující vstup OZ1 by byl nad \(U_\mathrm{REF}\), výstup OZ1 klesne, dioda se otevře a zpětná vazba se uzavře. Platí <a href="11_signal.html#def-virtualni-zkrat">virtuální zkrat</a> a OZ1 udrží svůj invertující vstup přesně na \(U_\mathrm{REF}\). Ten je spojený s uzlem \(U_+\), a proto \(u_o = U_\mathrm{REF}\).</li>
 <li>Úbytek na diodě se neprojeví, protože zpětná vazba se bere až <b>za diodou</b> (stejný trik jako u <a href="14_oz_zapojeni.html#def-precizni-usmernovac">precizního usměrňovače</a>). Rezistor \(R_1\) omezuje proud, který teče ze zdroje přes diodu do výstupu OZ1: \(i = (u_i - U_\mathrm{REF})/R_1\).</li>
 </ol></div>
 
@@ -117,7 +53,7 @@
 </ul></div>
 
 <h3 id="zener-omezovac">Omezovač s vlastním referenčním napětím: dvě Zenerovy diody</h3>
-<p>Referenční napětí nemusí přicházet zvenčí. Omezovač může mít „mez“ zabudovanou v součástkách: <b>dvojice Zenerových diod</b> zapojených proti sobě ve zpětné vazbě <a href="03_oz.html#def-invertujici">invertujícího zesilovače</a>, paralelně k rezistoru \(R_2\).</p>
+<p>Referenční napětí nemusí přicházet zvenčí. Omezovač může mít „mez“ zabudovanou v součástkách: <b>dvojice Zenerových diod</b> zapojených proti sobě ve zpětné vazbě <a href="11_signal.html#def-invertujici">invertujícího zesilovače</a>, paralelně k rezistoru \(R_2\).</p>
 <figure><div class="paper"><img src="figures/fig16_zener_omezovac.png" alt="Invertující zesilovač s R1 na vstupu, ve zpětné vazbě paralelně R2 a dvě Zenerovy diody D1 a D2 proti sobě" loading="lazy"></div>
 <figcaption><b>Obr. P6.5</b> Oboustranný omezovač se dvěma Zenerovými diodami (podle slidu).</figcaption></figure>
 <div class="box intuice"><div class="box-t">Jak to funguje</div>
@@ -526,9 +462,3 @@
 <p>Rezistorová síť rozdělí \(V_\mathrm{REF}\) na prahy (pro 3 bity 7 prahů po 1 V: \(0{,}5\); \(1{,}5\); …; \(6{,}5\) V), které jdou na invertující vstupy sedmi komparátorů. Měřené napětí jde na všechny neinvertující vstupy. Komparátory s prahem pod \(V_\mathrm{IN}\) jsou v kladné saturaci (1), ostatní v záporné (0).</p>
 <p>Pro \(V_\mathrm{IN} = 3{,}8\) V jsou pod ním prahy \(0{,}5\); \(1{,}5\); \(2{,}5\); \(3{,}5\) V, čtyři komparátory jsou ve stavu 1: kód komparátorů \(0001111\). Kodér z něj udělá \((100)_2 = 4\) (interval \(3{,}5 \le V_\mathrm{IN} &lt; 4{,}5\) V).</p>
 <p>Flash ADC je nejrychlejší, protože se všechny prahy vyhodnotí současně (rychlost daná přeběhem komparátoru, ns až µs). Pro \(n\) bitů ale potřebuje \(2^n - 1\) komparátorů: pro 16 bitů \(2^{16} - 1 = 65535\). K tomu musí být rezistory v síti precizní (integrovaná R-síť), jinak se posunou kvantizační úrovně.</p></div></details>
-
-<nav class="pager"><a class="prev" href="15_aktivni_filtry.html"><small>← předchozí</small>Aplikace OZ II: aktivní filtry</a><a class="next" href="99_slovnik.html"><small>další →</small>Slovník pojmů (definice)</a></nav>
-</main>
-</div>
-</body>
-</html>

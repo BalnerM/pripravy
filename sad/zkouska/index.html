@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAD – závěrečná zkouška</title>
+<meta name="description" content="Jak skripta ke zkoušce používat a kde je která přednáška.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css?v=58c8d0bd">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js?v=58c8d0bd"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P6 se základy</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/skripta_vse.pdf" download title="Celá skripta v jednom PDF" data-dl="Celá skripta v jednom PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html" class="active"><span class="n"></span><span>Mapa kurzu</span></a></li>
+    <li><a href="11_signal.html"><span class="n">P1</span><span>Úvod: signál a jeho převod na napětí</span></a></li>
+    <li><a href="12_uprava.html"><span class="n">P2</span><span>Úprava signálu: tranzistorové zesilovače a OZ</span></a></li>
+    <li><a href="13_napajeni.html"><span class="n">P3</span><span>Napájení a zdroje referenčního napětí</span></a></li>
+    <li><a href="14_oz_zapojeni.html"><span class="n">P4</span><span>Aplikace OZ: integrátor, derivátor, usměrňovač</span></a></li>
+    <li><a href="15_aktivni_filtry.html"><span class="n">P5</span><span>Aplikace OZ II: aktivní filtry</span></a></li>
+    <li><a href="16_komparator.html"><span class="n">P6</span><span>Komparátor, omezovač a úvod do A/D převodu</span></a></li>
+    <li><a href="29_tahak.html"><span class="n">★</span><span>Tahák ke zkoušce</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+
+</nav>
+<main>
+<p class="printhead">SAD – závěrečná zkouška · SAD – závěrečná zkouška · https://balnerm.github.io/pripravy/sad/zkouska/index.html</p>
+
+<h1>SAD – příprava na závěrečnou zkoušku</h1>
+<p class="lead">Skripta k předmětu <b>Měření a zpracování biosignálů</b> ke zkoušce. Po jedné kapitole procházejí přednášky – od signálu přes jeho úpravu, napájení a reference až po komparátor a A/D převod. Elektrotechnické základy (dělič, zapojení s OZ, RC filtry…) nejsou zvlášť: jsou <b>vložené přímo do přednášek</b> jako připomenutí v místě, kde jsou poprvé potřeba. Skripta jsou psaná tak, aby se dala <b>číst jako celek od začátku do konce</b> bez přeskakování.</p>
+
+<h2 id="retezec">Měřicí řetězec: kde je která přednáška</h2>
+<div class="schema">
+<svg viewBox="0 0 760 220" role="img" aria-label="Měřicí řetězec: senzor a signál (P1), úprava signálu zesílením a filtrací (P2, P4, P5), multiplexace (P8), A/D převodník (P7) a číslicové zpracování; napájení a reference (P3) napájí zesilovače i převodník, komparátor (P6) je stavební blok převodníku">
+  <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="10" y="20" width="130" height="64" rx="8" class="node fl1"/>
+  <text x="75" y="46" text-anchor="middle">senzor, signál</text><text x="75" y="66" text-anchor="middle" class="t2">P1</text>
+  <rect x="162" y="20" width="130" height="64" rx="8" class="node fl2"/>
+  <text x="227" y="46" text-anchor="middle">úprava signálu</text><text x="227" y="66" text-anchor="middle" class="t2">P2, P4, P5</text>
+  <rect x="314" y="20" width="130" height="64" rx="8" class="node fl2"/>
+  <text x="379" y="46" text-anchor="middle">multiplexace</text><text x="379" y="66" text-anchor="middle" class="t2">P8</text>
+  <rect x="466" y="20" width="130" height="64" rx="8" class="node fl3"/>
+  <text x="531" y="46" text-anchor="middle">A/D převodník</text><text x="531" y="66" text-anchor="middle" class="t2">P7</text>
+  <rect x="618" y="20" width="132" height="64" rx="8" class="node"/>
+  <text x="684" y="46" text-anchor="middle">číslicově</text><text x="684" y="66" text-anchor="middle" class="t2">zpět přes D/A (P7)</text>
+  <rect x="162" y="140" width="282" height="60" rx="8" class="node fl1"/>
+  <text x="303" y="166" text-anchor="middle">napájení a reference</text><text x="303" y="186" text-anchor="middle" class="t2">P3 – pro zesilovače i převodník</text>
+  <rect x="466" y="140" width="130" height="60" rx="8" class="node fl3"/>
+  <text x="531" y="166" text-anchor="middle">komparátor</text><text x="531" y="186" text-anchor="middle" class="t2">P6</text>
+  <path d="M140 52 H157" class="ln" marker-end="url(#arr)"/>
+  <path d="M292 52 H309" class="ln" marker-end="url(#arr)"/>
+  <path d="M444 52 H461" class="ln" marker-end="url(#arr)"/>
+  <path d="M596 52 H613" class="ln" marker-end="url(#arr)"/>
+  <path d="M227 140 V89" class="ln dash" marker-end="url(#arr)"/>
+  <path d="M420 140 L500 89" class="ln dash" marker-end="url(#arr)"/>
+  <path d="M531 140 V89" class="ln dash" marker-end="url(#arr)"/>
+</svg></div>
+<p>Signál ze senzoru je slabý a zarušený, a tak se nejdřív <b>upraví</b> (zesílí, odfiltruje). Pak se jedním převodníkem postupně měří víc kanálů (<b>multiplexace</b>). <b>A/D převodník</b> ho převede na čísla – uvnitř pracuje s <b>komparátory</b> a porovnává signál s <b>referenčním napětím</b>. Celý řetězec potřebuje stabilní <b>napájení</b>.</p>
+
+<h2 id="prednasky">Přednášky</h2>
+<p>Kapitoly přednášek přibývají postupně.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Přednáška</th><th>Téma</th><th>Kapitola</th></tr></thead>
+<tbody>
+<tr><td>P1</td><td>Úvod, signál</td><td><a href="11_signal.html">P1 · Úvod: signál a jeho převod na napětí</a></td></tr>
+<tr><td>P2</td><td>Úprava signálu</td><td><a href="12_uprava.html">P2 · Úprava signálu: tranzistorové zesilovače a OZ</a></td></tr>
+<tr><td>P3</td><td>Napájení a zdroje referenčního napětí</td><td><a href="13_napajeni.html">P3 · Napájení a zdroje referenčního napětí</a></td></tr>
+<tr><td>P4</td><td>Aplikace OZ I – zapojení</td><td><a href="14_oz_zapojeni.html">P4 · Aplikace OZ: integrátor, derivátor, usměrňovač</a></td></tr>
+<tr><td>P5</td><td>Aplikace OZ II – aktivní filtry</td><td><a href="15_aktivni_filtry.html">P5 · Aplikace OZ II: aktivní filtry</a></td></tr>
+<tr><td>P6</td><td>Komparátor</td><td><a href="16_komparator.html">P6 · Komparátor, omezovač a úvod do A/D převodu</a></td></tr>
+<tr><td>P7</td><td>A/D a D/A převodníky</td><td class="muted">připravuje se</td></tr>
+<tr><td>P8</td><td>Multiplexace signálů</td><td class="muted">připravuje se</td></tr>
+<tr><td>P9, P10</td><td>další přednášky</td><td class="muted">zatím nevyšly</td></tr>
+</tbody></table></div>
+
+<h2 id="zaklady">Kde jsou základy</h2>
+<p>Látka základů je v přednáškách v čárkovaném rámečku <span class="pill">↺ Připomenutí ze základů</span>: definice pojmu, princip, vzorec a schéma – tolik, aby šla daná část přednášky pochopit bez listování jinam. Pokud se pojem objeví znovu v pozdější přednášce, je u něj krátké připomenutí v textu a odkaz zpět.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Základ</th><th>Kde je připomenutý</th><th>Proč právě tam</th></tr></thead>
+<tbody>
+<tr><td>Ohmův a Kirchhoffovy zákony, dělič napětí, zátěž</td><td><a href="11_signal.html#zaklad-obvody">P1 · měkký zdroj</a></td><td>zdroj a vstup přístroje jsou zatížený dělič</td></tr>
+<tr><td>OZ, virtuální zkrat, invertující a neinvertující zesilovač, sledovač</td><td><a href="11_signal.html#zaklad-oz">P1 · převodník I/U</a></td><td>první zapojení s OZ</td></tr>
+<tr><td>souhlasné napětí, CMRR, rozdílový a přístrojový zesilovač</td><td><a href="11_signal.html#zaklad-cmrr">P1 · high-side měření</a></td><td>malý rozdíl „posazený“ na velkém napětí</td></tr>
+<tr><td>kondenzátor</td><td><a href="11_signal.html#zaklad-kondenzator">P1 · převodník f/U</a></td><td>převodník počítá s nábojem \(Q = CU\)</td></tr>
+<tr><td>decibel; přenos a mezní frekvence</td><td><a href="12_uprava.html#zaklad-db">P2 · zesílení</a>, <a href="12_uprava.html#zaklad-mezni">P2 · šířka pásma</a></td><td>zisk v dB, pokles zisku OZ s frekvencí</td></tr>
+<tr><td>integrátor a derivátor</td><td><a href="14_oz_zapojeni.html#zaklad-int-der">P4 · začátek</a></td><td>přednáška na ně přímo navazuje</td></tr>
+<tr><td>RC filtry, Bodeho graf, pásmová propust a zádrž</td><td><a href="15_aktivni_filtry.html#zaklad-rc">P5 · začátek</a>, <a href="15_aktivni_filtry.html#zaklad-pp">PP</a>, <a href="15_aktivni_filtry.html#zaklad-pz">PZ</a></td><td>aktivní filtry vycházejí z pasivních</td></tr>
+</tbody></table></div>
+
+<h2 id="jak-pouzivat">Jak skripta používat</h2>
+<ul>
+<li>Čti kapitoly popořadě: každá navazuje na předchozí a připomenutí ze základů jsou tam, kde je poprvé potřebuješ.</li>
+<li>Každá kapitola má stejnou stavbu: <span class="pill">Definice</span> pojmu → princip (<span class="pill">Intuice</span>) → odvození (<span class="pill">Postup</span>) → vzorec s vysvětlenými proměnnými (<span class="pill">Vzorec</span>) → řešený <span class="pill">Příklad</span> → obrázek s <span class="pill">Co si z obrázku odnést</span>.</li>
+<li>Rámeček <b>Definice</b> má dvě části: větu, kterou lze napsat jako definici, a pod čarou <i>„Jinými slovy“</i>. Všechny definice – i ty ze základů – jsou pohromadě ve <a href="99_slovnik.html">Slovníku pojmů</a>.</li>
+<li>Na konci každé kapitoly je <b>shrnutí</b>, <b>take-home messages</b> a <b>otázky</b> s rozbalovací odpovědí. Na poslední opakování slouží <a href="29_tahak.html">tahák ke zkoušce</a>.</li>
+<li><b>PDF na tablet:</b> tlačítko <span class="pill">PDF</span> v horní liště stáhne aktuální stránku; na této úvodní stránce stáhne <a href="pdf/skripta_vse.pdf" download>celá skripta ke zkoušce v jednom PDF</a>.</li>
+</ul>
+
+<h2 id="kapitoly">Kapitoly</h2>
+<div class="cards">
+<a class="card" href="11_signal.html"><div class="n">Přednáška P1</div><div class="t">Úvod: signál a jeho převod na napětí</div><div class="d">Akviziční cesta, druhy signálů, měkký zdroj; převod proudu, frekvence a odporu na napětí; Wheatstoneův můstek. Připomenutí: dělič, zapojení s OZ, CMRR.</div></a>
+<a class="card" href="12_uprava.html"><div class="n">Přednáška P2</div><div class="t">Úprava signálu: tranzistorové zesilovače a OZ</div><div class="d">Zesilovač s bipolárním tranzistorem a jeho stabilizace, SC, Darlington, rozdílový a laděný zesilovač, MOSFET; reálný OZ, offset, slew rate, odkud jsou 3 dB, komparátor.</div></a>
+<a class="card" href="13_napajeni.html"><div class="n">Přednáška P3</div><div class="t">Napájení a zdroje referenčního napětí</div><div class="d">Přesnost a stabilita reference (ppm, drift, stárnutí), proč 1,024 V; stabilizátor se Zenerovou diodou a OZ, posílení a omezení proudu, foldback, vlečný zdroj, zdroj konstantního proudu.</div></a>
+<a class="card" href="14_oz_zapojeni.html"><div class="n">Přednáška P4</div><div class="t">Aplikace OZ: integrátor, derivátor, usměrňovač</div><div class="d">Millerův integrátor jako analogová paměť, nulovací obvod, neinvertující a diferenční integrátor, 6 dB na oktávu; ošetření nestability derivátoru; dioda a její VA charakteristika; precizní jedno- a dvoucestný usměrňovač; vrcholový detektor a obnovení nuly.</div></a>
+<a class="card" href="15_aktivni_filtry.html"><div class="n">Přednáška P5</div><div class="t">Aplikace OZ II: aktivní filtry</div><div class="d">Připomenutí pasivních RC filtrů; přenosová funkce, ideální a reálný filtr, strmost v dB/okt a dB/dek; články 1. řádu, Sallen-Key a MFB; pásmová zádrž s dvojitým T a Wienovým-Robinsonovým můstkem; Butterworth, Čebyšev, Bessel.</div></a>
+<a class="card" href="16_komparator.html"><div class="n">Přednáška P6</div><div class="t">Komparátor, omezovač a úvod do A/D převodu</div><div class="d">Precizní a oboustranný omezovač (Zenerovy diody, můstek); komparátor, chyba přeběhu a falešná překlopení; Schmittův klopný obvod a hystereze; amplitudový selektor; kvantování a vzorkování; paralelní (flash) ADC a rezistorová síť.</div></a>
+<a class="card" href="29_tahak.html"><div class="n">★ Opakování</div><div class="t">Tahák ke zkoušce</div><div class="d">Vzorce a schémata z přednášek i základů na jedné stránce, typické chytáky.</div></a>
+<a class="card" href="99_slovnik.html"><div class="n">Opakování</div><div class="t">Slovník pojmů</div><div class="d">Všechny definice ze skript ke zkoušce na jednom místě, včetně základů.</div></a>
+</div>
+<p class="muted">Kapitoly přednášek se drží slidů; připomenutí základů vycházejí ze standardní elektrotechniky. Pokud přednášející používá jiné značení (např. \(K\) nebo \(P\) pro přenos, \(A_\text{cm}\) pro souhlasné zesílení), význam je stejný. Na půlsemestrální test (jen základy) jsou samostatná <a href="../index.html">skripta k testu</a>.</p>
+
+<nav class="pager"><a class="next" href="11_signal.html"><small>další →</small>Úvod: signál a jeho převod na napětí</a></nav>
+</main>
+</div>
+</body>
+</html>

@@ -209,6 +209,19 @@ table.vars td:first-child { width: 120px; white-space: nowrap; font-weight: 600;
 .box.definice .jinak { color: var(--ink-2); border-top: 1px dashed var(--line-strong); padding-top: 8px; }
 .box.definice .jinak::before { content: "Jinými slovy: "; font-weight: 600; color: var(--ink); }
 :lang(en) .box.definice .jinak::before { content: "In other words: "; }
+/* připomenutí ze základů ve skriptech ke zkoušce: skupina rámečků vložená do přednášky */
+.zaklad {
+  margin: 26px 0; padding: 4px 16px 6px;
+  border: 1px dashed var(--line-strong); border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface-2) 55%, transparent);
+}
+.zaklad-t {
+  margin: 10px 0 4px; font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--ink-2);
+}
+.zaklad-t::before { content: "↺ "; }
+.zaklad > p.zaklad-t + p { margin-top: 0; }
+@media (max-width: 600px) { .zaklad { padding: 2px 8px 4px; } }
 .slovnik-kap { margin-top: 28px; }
 .slovnik-odkaz { font-size: 13px; }
 :root[data-theme="dark"] .box .box-t, :root:not([data-theme="light"]) .box .box-t { filter: none; }
