@@ -1,0 +1,464 @@
+<h1>Komparátor, omezovač a úvod do A/D převodu</h1>
+<p class="lead">Dosud operační zesilovač <b>zesiloval, integroval nebo filtroval</b>. Tady se naučí <b>rozhodovat</b>: je vstupní napětí větší, nebo menší než zvolená úroveň? Taková odpověď „ano / ne“ je základ <b>komparátoru</b>, a komparátor je základní stavební prvek <b>A/D převodníku</b>. Přednáška začíná <b>omezovačem</b> (hlídá, aby napětí nepřekročilo mez), pokračuje komparátorem, jeho potížemi s rušením a řešením pomocí <b>hystereze</b> (Schmittův klopný obvod), ukáže, jak z komparátorů poskládat <b>amplitudový selektor</b>, a končí úvodem do A/D převodu a nejrychlejším převodníkem, <b>paralelním (flash) ADC</b>.</p>
+
+<p>V <a href="11_signal.html#def-akvizicni-cesta">akviziční cestě</a> se kapitola dotýká konce bloku <b>úprava signálu</b> a začátku <b>A/D převodu</b>. Slide „AD převodník“ jmenuje čtyři témata: omezovač, komparátor, rezistorová síť a flash ADC. Pojem <a href="12_uprava.html#def-komparator">napěťový komparátor</a> je definovaný v <a href="12_uprava.html#komparator">P2</a>; tady se na něj navazuje. <a href="13_napajeni.html#def-zenerova-dioda">Zenerova dioda</a> je v <a href="13_napajeni.html">P3</a>, <a href="14_oz_zapojeni.html#def-dioda">dioda</a> a <a href="14_oz_zapojeni.html#def-precizni-usmernovac">precizní usměrňovač</a> v <a href="14_oz_zapojeni.html">P4</a>. Samotný A/D převod rozebírá další přednáška; tady je jen to, co je potřeba pro flash ADC.</p>
+
+<h2 id="omezovac">Precizní omezovač</h2>
+<div class="box definice" id="def-omezovac"><div class="box-t">Definice: precizní omezovač</div>
+<p><b>Precizní omezovač</b> je zapojení s OZ a diodou, které omezuje výstupní napětí na hodnotu referenčního napětí \(U_\mathrm{REF}\): dokud je vstup za mezí, výstup mu přesně odpovídá, a jakmile mez překročí, zůstane výstup na \(U_\mathrm{REF}\).</p>
+<p class="jinak">omezovač je jako strop, který se nastavuje napětím \(U_\mathrm{REF}\). Menší signály projdou beze změny, větší se „uříznou“. Slide ho nazývá usměrňovačem s <b>posunutou „nulou“</b> o hodnotu \(U_\mathrm{REF}\): přesný usměrňovač z <a href="14_oz_zapojeni.html">P4</a> omezuje na 0 V, omezovač na \(U_\mathrm{REF}\).</p></div>
+
+<figure><div class="paper"><img src="figures/fig16_omezovac.png" alt="Schéma omezovače: OZ1 s rezistorem R1 na invertujícím vstupu, UREF na neinvertujícím, dioda D1 mezi uzlem U+ a výstupem OZ1, OZ2 jako sledovač; čárkovaně alternativní dioda D2" loading="lazy"></div>
+<figcaption><b>Obr. P6.1</b> Precizní omezovač (podle slidu). Invertující vstup OZ1 je spojený s uzlem \(U_+\) (neinvertující vstup sledovače OZ2). Dioda \(D_1\) omezuje shora, místo ní zapojená \(D_2\) (opačná polarita) omezuje zdola.</figcaption></figure>
+
+<div class="box postup"><div class="box-t">Jak omezovač pracuje (zapojená \(D_1\))</div>
+<ol>
+<li>OZ2 je <a href="04_dalsi_zapojeni.html#def-sledovac">sledovač</a>: výstup je stejný jako napětí v uzlu \(U_+\), \(u_o = U_+\). Do vstupu OZ2 neteče proud.</li>
+<li><b>\(u_i &lt; U_\mathrm{REF}\):</b> invertující vstup OZ1 je pod \(U_\mathrm{REF}\), výstup OZ1 jde do kladné saturace a dioda \(D_1\) je zavřená. OZ1 je od uzlu odpojený. Přes \(R_1\) neteče žádný proud, takže \(U_+ = u_i\) a \(u_o = u_i\).</li>
+<li><b>\(u_i > U_\mathrm{REF}\):</b> invertující vstup OZ1 by byl nad \(U_\mathrm{REF}\), výstup OZ1 klesne, dioda se otevře a zpětná vazba se uzavře. Platí <a href="03_oz.html#def-virtualni-zkrat">virtuální zkrat</a> a OZ1 udrží svůj invertující vstup přesně na \(U_\mathrm{REF}\). Ten je spojený s uzlem \(U_+\), a proto \(u_o = U_\mathrm{REF}\).</li>
+<li>Úbytek na diodě se neprojeví, protože zpětná vazba se bere až <b>za diodou</b> (stejný trik jako u <a href="14_oz_zapojeni.html#def-precizni-usmernovac">precizního usměrňovače</a>). Rezistor \(R_1\) omezuje proud, který teče ze zdroje přes diodu do výstupu OZ1: \(i = (u_i - U_\mathrm{REF})/R_1\).</li>
+</ol></div>
+
+<figure><div class="paper"><img src="figures/fig16_omezovac_char.png" alt="Dva grafy převodní charakteristiky: vlevo omezení shora při třech UREF (3 V, 1 V, −2 V), vpravo omezení zdola při −3 V, −1 V, 2 V; přerušovaná osa u_o = u_i" loading="lazy"></div>
+<figcaption><b>Obr. P6.2</b> Převodní charakteristiky omezovače (vlastní hodnoty \(U_\mathrm{REF}\) vybrané podle slidu): vlevo s \(D_1\), vpravo s \(D_2\).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Pod mezí platí \(u_o = u_i\) (přerušovaná přímka), nad ní je výstup <b>vodorovný</b> na úrovni \(U_\mathrm{REF}\).</li>
+<li>Napětím \(U_\mathrm{REF}\) se mez posouvá; může být i záporné (zelená křivka vlevo).</li>
+<li>\(D_1\) omezuje shora, \(D_2\) zdola – obrácená dioda znamená obrácený směr omezení.</li>
+</ul></div>
+
+<div class="box priklad"><div class="box-t">Příklad: omezovač s \(U_\mathrm{REF} = 3\) V (vlastní čísla)</div>
+<p>Zapojená je \(D_1\) (omezení shora), \(U_\mathrm{REF} = 3\) V. Tři vstupní napětí:</p>
+<ul>
+<li>\(u_i = -2\) V: pod mezí, \(u_o = -2\) V.</li>
+<li>\(u_i = 2\) V: pod mezí, \(u_o = 2\) V.</li>
+<li>\(u_i = 5\) V: nad mezí, \(u_o = 3\) V. Ze zdroje teče přes \(R_1\) proud \((5 - 3)/R_1\); pro \(R_1 = 10\ \text{k}\Omega\) je to \(0{,}2\) mA.</li>
+</ul></div>
+
+<h3 id="oboustranny">Oboustranný omezovač</h3>
+<div class="box definice" id="def-oboustranny-omezovac"><div class="box-t">Definice: oboustranný omezovač</div>
+<p><b>Oboustranný omezovač</b> omezuje výstupní napětí shora i zdola: výstup sleduje vstup jen mezi dolní mezí \(U_\mathrm{REF2}\) a horní mezí \(U_\mathrm{REF1}\).</p>
+<p class="jinak">dvě zábrany místo jedné. Signál smí kmitat jen v pásmu mezi nimi; vše mimo pásmo se uřízne.</p></div>
+
+<figure><div class="paper"><img src="figures/fig16_oboustranny.png" alt="Dva omezovače za sebou: první stupeň OZ1 a OZ2 s diodou D1 a UREF1, druhý stupeň OZ3 a OZ4 s opačnou diodou D2 a UREF2" loading="lazy"></div>
+<figcaption><b>Obr. P6.3</b> Oboustranný omezovač: kaskáda dvou omezovačů s opačně zapojenými diodami (podle slidu; druhý stupeň je nakreslený pod prvním).</figcaption></figure>
+<p>Podle slidu lze <b>kaskádním zapojením</b> dvou omezovačů vytvořit oboustranný omezovač se <b>symetrickou</b> charakteristikou (například \(U_\mathrm{REF1} = 3\) V a \(U_\mathrm{REF2} = -3\) V). Při \(U_\mathrm{REF1} \neq |U_\mathrm{REF2}|\) lze omezovat <b>různá napětí</b> shora a zdola. První stupeň s \(D_1\) uřízne vrchol na \(U_\mathrm{REF1}\), druhý s opačnou \(D_2\) uřízne dno na \(U_\mathrm{REF2}\).</p>
+<figure><div class="paper"><img src="figures/fig16_oboustranny_char.png" alt="Převodní charakteristika oboustranného omezovače: symetrická mezi −3 V a 3 V a nesymetrická mezi −1,5 V a 3 V" loading="lazy"></div>
+<figcaption><b>Obr. P6.4</b> Charakteristika oboustranného omezovače pro dvě volby mezí (vlastní hodnoty).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Uprostřed je přímka \(u_o = u_i\), na obou koncích vodorovné „police“ na úrovni \(U_\mathrm{REF1}\) (nahoře) a \(U_\mathrm{REF2}\) (dole).</li>
+<li>Každá mez se nastavuje <b>nezávisle</b> vlastním referenčním napětím – proto jsou obě police nezávislé.</li>
+</ul></div>
+
+<h3 id="zener-omezovac">Omezovač s vlastním referenčním napětím: dvě Zenerovy diody</h3>
+<p>Referenční napětí nemusí přicházet zvenčí. Omezovač může mít „mez“ zabudovanou v součástkách: <b>dvojice Zenerových diod</b> zapojených proti sobě ve zpětné vazbě <a href="03_oz.html#def-invertujici">invertujícího zesilovače</a>, paralelně k rezistoru \(R_2\).</p>
+<figure><div class="paper"><img src="figures/fig16_zener_omezovac.png" alt="Invertující zesilovač s R1 na vstupu, ve zpětné vazbě paralelně R2 a dvě Zenerovy diody D1 a D2 proti sobě" loading="lazy"></div>
+<figcaption><b>Obr. P6.5</b> Oboustranný omezovač se dvěma Zenerovými diodami (podle slidu).</figcaption></figure>
+<div class="box intuice"><div class="box-t">Jak to funguje</div>
+<ul>
+<li>Pro malé výstupní napětí žádná dioda nevede a zpětnou vazbu tvoří jen \(R_2\): zapojení je běžný invertující zesilovač se zesílením \(-R_2/R_1\) (šikmá část charakteristiky).</li>
+<li>Při určité polaritě je jedna Zenerova dioda v <b>závěrném směru</b> (v průrazu, úbytek \(U_Z\)), druhá v <b>propustném směru</b> (úbytek \(U_D \approx 0{,}6\) V). Jakmile výstup dosáhne součtu těchto úbytků, zpětná vazba výstup dál nepustí.</li>
+<li>Referenční napětí je tedy součet úbytků: kladná mez \(U_{Z(D1)} + U_{D2}\), záporná \(-(U_{D1} + U_{Z(D2)})\).</li>
+</ul></div>
+<div class="box vzorec"><div class="box-t">Meze omezovače se dvěma Zenerovými diodami</div>
+\[ U_{o,\max} = U_{Z(D1)} + U_{D2} \]
+\[ U_{o,\min} = -\bigl(U_{D1} + U_{Z(D2)}\bigr) \]
+<p>Mezi mezemi platí zesílení invertujícího zesilovače:</p>
+\[ u_o = -\frac{R_2}{R_1}\,u_i \]
+<table class="vars">
+<tr><td>\(U_{Z(D1)},\ U_{Z(D2)}\)</td><td>Zenerova napětí diod \(D_1\), \(D_2\) (napětí v průrazu)</td></tr>
+<tr><td>\(U_{D1},\ U_{D2}\)</td><td>úbytek na diodě v propustném směru (asi 0,6 V)</td></tr>
+<tr><td>\(R_1,\ R_2\)</td><td>rezistor na vstupu a rezistor ve zpětné vazbě</td></tr>
+</table></div>
+<div class="box priklad"><div class="box-t">Příklad: symetrický a nesymetrický omezovač (hodnoty ze slidu, \(R_1\), \(R_2\) vlastní)</div>
+<p>Slide uvádí \(U_{Z1} = 9{,}4\) V a \(U_D = 0{,}6\) V. Zvolíme \(R_1 = 1\ \text{k}\Omega\), \(R_2 = 10\ \text{k}\Omega\), tedy zesílení \(-10\).</p>
+<p>1. Horní mez:</p>
+\[ U_{o,\max} = 9{,}4 + 0{,}6 = 10\ \text{V} \]
+<p>2. Dolní mez při \(U_{Z2} = 9{,}4\) V (symetrické pásmo):</p>
+\[ U_{o,\min} = -(0{,}6 + 9{,}4) = -10\ \text{V} \]
+<p>3. Dolní mez při \(U_{Z2} = 4{,}4\) V (<b>nesymetrické</b> pásmo):</p>
+\[ U_{o,\min} = -(0{,}6 + 4{,}4) = -5\ \text{V} \]
+<p>4. Vstupní napětí, při kterých se výstup omezí (výstup / zesílení):</p>
+\[ \begin{aligned} u_i &= -\frac{10\ \text{V}}{10} = -1\ \text{V} \\ u_i &= \frac{5\ \text{V}}{10} = 0{,}5\ \text{V} \\ u_i &= \frac{10\ \text{V}}{10} = 1\ \text{V} \end{aligned} \]
+<p>Kladný vstup nad \(0{,}5\) V (resp. \(1\) V) tedy vede na výstup \(-5\) V (resp. \(-10\) V), záporný vstup pod \(-1\) V na \(+10\) V.</p></div>
+<figure><div class="paper"><img src="figures/fig16_zener_char.png" alt="Převodní charakteristika omezovače se Zenerovými diodami: klesající přímka se sklonem −R2/R1, horní mez 10 V, dolní mez −10 V (symetrické) nebo −5 V (nesymetrické)" loading="lazy"></div>
+<figcaption><b>Obr. P6.6</b> Charakteristika omezovače se dvěma Zenerovými diodami (vlastní \(R_2/R_1 = 10\), Zenerova napětí ze slidu).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Charakteristika <b>klesá</b>, protože zapojení invertuje; sklon je \(-R_2/R_1\).</li>
+<li>Obě Zenerovy diody se nikdy nevyrábějí úplně stejné: je-li \(U_{Z1} \neq U_{Z2}\), jsou meze <b>nesymetrické</b> (oranžová křivka). Vlastnosti dvou součástek se prostě liší.</li>
+</ul></div>
+
+<h3 id="zd-mustek">Dokonale symetrické pásmo: jediná Zenerova dioda v můstku</h3>
+<p>Nesymetrii dvou Zenerových diod se vyhneme, když použijeme <b>jedinou</b> Zenerovu diodu: zapojíme ji do úhlopříčky <b>diodového můstku</b> ze čtyř běžných diod a celý můstek dáme do zpětné vazby paralelně k \(R_2\).</p>
+<figure><div class="paper"><img src="figures/fig16_zd_mustek.png" alt="Invertující zesilovač, ve zpětné vazbě R2 paralelně k diodovému můstku D1 až D4 s Zenerovou diodou ZD v úhlopříčce" loading="lazy"></div>
+<figcaption><b>Obr. P6.7</b> Omezovač s jednou Zenerovou diodou v můstku (podle slidu; Zenerova dioda je ve slidu označena \(D_5\)).</figcaption></figure>
+<div class="box intuice"><div class="box-t">Proč je pásmo symetrické</div>
+<p>Můstek převádí proud obou polarit na <b>stejný směr</b> průchodu Zenerovou diodou, takže pro kladný i záporný výstup rozhoduje <b>tatáž</b> Zenerova dioda se stejným \(U_Z\). K ní se přičtou úbytky dvou běžných diod v propustném směru. Rozdíl mezi mezemi tak může vzniknout jen z rozdílu úbytků běžných diod.</p></div>
+<div class="box vzorec"><div class="box-t">Meze omezovače s můstkem</div>
+\[ U_{o,\max} = U_Z + U_{D3} + U_{D4} \]
+\[ U_{o,\min} = -\bigl(U_Z + U_{D1} + U_{D2}\bigr) \]
+<table class="vars">
+<tr><td>\(U_Z\)</td><td>Zenerovo napětí diody ZD</td></tr>
+<tr><td>\(U_{D1}\) až \(U_{D4}\)</td><td>úbytky na diodách můstku v propustném směru (asi 0,6 V)</td></tr>
+</table></div>
+<p>Mezi mezemi je opět zesílení \(-R_2/R_1\). Vstupní napětí, při kterých omezení začne, jsou \(-U_{o,\max}\,R_1/R_2\) a \(-U_{o,\min}\,R_1/R_2\); stejné vztahy jako v předchozím příkladu.</p>
+<div class="box priklad"><div class="box-t">Příklad: omezovač s můstkem (vlastní čísla)</div>
+<p>\(U_Z = 4{,}7\) V, všechny diody \(U_D = 0{,}6\) V:</p>
+\[ U_{o,\max} = 4{,}7 + 2 \cdot 0{,}6 = 5{,}9\ \text{V},\qquad U_{o,\min} = -5{,}9\ \text{V} \]
+<p>Pásmo je symetrické, \(\pm 5{,}9\) V. S \(R_2/R_1 = 10\) se výstup omezí při \(|u_i| = 0{,}59\) V.</p></div>
+
+<h2 id="komparator">Komparátor</h2>
+<p>Napěťový komparátor je zapojení OZ <b>bez zpětné vazby</b> (<a href="12_uprava.html#def-komparator">definice v P2</a>). Kdo si ji nepamatuje, ať se vrátí: komparátor neměří, o kolik se napětí liší, jen <b>které je větší</b>.</p>
+<div class="box vzorec"><div class="box-t">Logická funkce komparátoru (slide)</div>
+\[ U_2 > U_1 \;\Rightarrow\; U_O = +U_\mathrm{SAT} \]
+\[ U_2 &lt; U_1 \;\Rightarrow\; U_O = -U_\mathrm{SAT} \]
+<table class="vars">
+<tr><td>\(U_1\)</td><td>napětí na <b>invertujícím</b> vstupu</td></tr>
+<tr><td>\(U_2\)</td><td>napětí na <b>neinvertujícím</b> vstupu</td></tr>
+<tr><td>\(U_O\)</td><td>výstupní napětí</td></tr>
+<tr><td>\(\pm U_\mathrm{SAT}\)</td><td>saturační napětí OZ (kladné a záporné; zhruba napájení)</td></tr>
+</table></div>
+<p>Případ \(U_2 = U_1\) slide škrtá: OZ má obrovské zesílení, a tak o výstupu při rovnosti rozhodne i nepatrný šum nebo offset. Na tomto případu nic nestojí.</p>
+
+<div class="box definice" id="def-chyba-prebehu"><div class="box-t">Definice: chyba přeběhu komparátoru</div>
+<p><b>Chyba přeběhu</b> komparátoru je dána poměrem saturačního napětí a zesílení OZ. Je to šířka oblasti vstupního rozdílu napětí, v níž výstup ještě není v saturaci:</p>
+\[ |U_{i2} - U_{i1}| &lt; \frac{U_\mathrm{SAT}}{A_u} \]
+<p class="jinak">skutečný OZ nepřeskočí z jedné saturace do druhé v nule, ale potřebuje „rozjezd“ \(\pm U_\mathrm{SAT}/A_u\) kolem nuly. Čím větší zesílení \(A_u\), tím je rozjezd užší a komparátor „ostřejší“.</p></div>
+<div class="box priklad"><div class="box-t">Příklad: jak široký je přeběh (vlastní čísla)</div>
+<p>\(U_\mathrm{SAT} = 12\) V (jako na slidu s průběhy ±12 V), zesílení \(A_u = 10^5\):</p>
+\[ \frac{U_\mathrm{SAT}}{A_u} = \frac{12}{10^5} = 120\ \mu\text{V} \]
+<p>Výstup je tedy mezi \(-12\) V a \(+12\) V jen pro rozdíl vstupů v rozmezí \(\pm 120\ \mu\text{V}\) (celkem 240 µV). Pro rozdíly větší než ±120 µV je výstup v saturaci.</p></div>
+<figure><div class="paper"><img src="figures/fig16_komparator_char.png" alt="Převodní charakteristika komparátoru: výstup −12 V pro záporný rozdíl vstupů, strmá přímka v oblasti ±120 mikrovoltů, výstup +12 V pro kladný rozdíl" loading="lazy"></div>
+<figcaption><b>Obr. P6.8</b> Převodní charakteristika komparátoru. Zvýrazněná oblast přeběhu má skutečnou šířku \(\pm U_\mathrm{SAT}/A_u\) pro \(A_u = 10^5\) (na slidu je pro přehlednost nakreslená mnohem širší).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Výstup nabývá prakticky jen dvou hodnot, \(\pm U_\mathrm{SAT}\); přechod mezi nimi je strmý.</li>
+<li>Takto nakreslená charakteristika platí pro <b>dostatečně pomalé</b> průběhy.</li>
+</ul></div>
+
+<h3 id="ruseni">Rychlý děj a rušení: falešná překlopení</h3>
+<p>Při <b>rychlém ději</b> se <b>superponovanou rušivou složkou</b> vznikají chyby v přeběhu. Rušení se přičte k pomalu rostoucímu signálu. Když signál prochází prahem, rušení ho několikrát vrátí zpět pod práh a zase nad něj. Komparátor se pokaždé překlopí, i když se vstup „skutečně“ překlopil jen jednou: vzniknou <b>falešná překlopení</b>.</p>
+<figure><div class="paper"><img src="figures/fig16_rusivy.png" alt="Tři sloupce grafů: pomalá rampa bez rušení se překlopí jednou, rampa s rušením se překlopí několikrát, rampa s rušením a hysterezí se překlopí jednou" loading="lazy"></div>
+<figcaption><b>Obr. P6.9</b> Komparátor pomalé rampy \(u_{i1}\) s prahem \(u_{i2}\): bez rušení (vlevo), s rušením (uprostřed) a s hysterezí (vpravo). Rušení je modelové (dvě sinusovky).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Bez rušení se výstup překlopí <b>jednou</b>, v okamžiku, kdy rampa překročí práh.</li>
+<li>S rušením vznikne okolo prahu <b>několik pulzů</b> – to jsou falešná překlopení.</li>
+<li>Řešením je <b>hystereze</b>: po překlopení se práh posune (čárkovaná úroveň \(u_{i2}'\) na slidu, tečkovaná čára v pravém sloupci). Rušení menší než šířka hystereze už výstup nepřehodí.</li>
+</ul></div>
+
+<h3 id="komp-omezeni">Komparátor s omezením výstupního napětí</h3>
+<p>Výstup komparátoru je \(\pm U_\mathrm{SAT}\), tedy téměř napájení. To nemusí vyhovovat obvodům za ním (třeba logice). Slide proto omezuje výstup: za OZ je rezistor a <b>Zenerova dioda v můstku</b> (stejný můstek jako u omezovače), takže výstup je místo \(\pm U_\mathrm{SAT}\) pouze</p>
+\[ \pm\,(U_{ZD} + 2U_D) \]
+<figure><div class="paper"><img src="figures/fig16_komp_omezeni.png" alt="Komparátor: ui na invertujícím vstupu, UREF na neinvertujícím, výstup přes rezistor na můstek se Zenerovou diodou proti zemi" loading="lazy"></div>
+<figcaption><b>Obr. P6.10</b> Komparátor s omezením výstupního napětí (podle slidu). Výstup OZ je přes rezistor připojen k můstku se Zenerovou diodou.</figcaption></figure>
+<div class="box priklad"><div class="box-t">Příklad: na jakou hodnotu se výstup omezí (vlastní čísla)</div>
+<p>\(U_{ZD} = 4{,}7\) V, \(U_D = 0{,}6\) V:</p>
+\[ U_{ZD} + 2U_D = 4{,}7 + 2 \cdot 0{,}6 = 5{,}9\ \text{V} \]
+<p>Výstup komparátoru je tedy \(\pm 5{,}9\) V bez ohledu na to, jaké je napájení OZ.</p></div>
+<figure><div class="paper"><img src="figures/fig16_komp_omezeni_prubeh.png" alt="Trojúhelníkový vstup ui s úrovněmi U1 = 1 V a U2 = −1 V; dole dva obdélníkové výstupy ±5,9 V, překlápějící v okamžicích průchodu ui prahem" loading="lazy"></div>
+<figcaption><b>Obr. P6.11</b> Trojúhelníkový vstup \(u_i\) a výstup komparátoru pro dvě referenční napětí (vlastní hodnoty \(U_1 = 1\) V, \(U_2 = -1\) V; modelově \(\pm 5{,}9\) V).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Komparátor mění trojúhelník na <b>obdélník</b>. <b>Šířka</b> obdélníku závisí na referenčním napětí – posun \(U_\mathrm{REF}\) mění šířku pulzu (<b>pulzně šířková modulace</b> v nejjednodušší podobě).</li>
+<li>Signál je přiveden na <b>invertující</b> vstup, proto je výstup <b>vysoký</b>, dokud je \(u_i\) pod \(U_\mathrm{REF}\), a nízký, když ho překročí.</li>
+<li>Výška obdélníku je pevná: \(\pm(U_{ZD} + 2U_D)\).</li>
+</ul></div>
+
+<h2 id="schmitt">Schmittův klopný obvod</h2>
+<div class="box definice" id="def-hystereze"><div class="box-t">Definice: hystereze komparátoru</div>
+<p><b>Hystereze</b> je vlastnost obvodu, jehož výstup závisí nejen na hodnotě vstupu, ale i na jeho <b>původním stavu</b>: práh, při kterém se obvod překlopí nahoru, je jiný než práh, při kterém se překlopí zpět dolů.</p>
+<p class="jinak">obvod si „pamatuje“, kde byl. Aby ho vstup přehodil, musí zajít <b>o kus dál</b>, než byl předešlý práh. Proto drobné chvění kolem prahu obvod nepřehodí.</p></div>
+<div class="box definice" id="def-schmitt"><div class="box-t">Definice: Schmittův klopný obvod</div>
+<p><b>Schmittův klopný obvod</b> je komparátor s kladnou zpětnou vazbou (z výstupu přes dělič \(R_2\), \(R_1\) na neinvertující vstup), jehož základní vlastností je <b>hystereze</b>. Překlápění probíhá kolem bodu, který určuje \(U_\mathrm{REF}\) a rezistory \(R_1\), \(R_2\).</p>
+<p class="jinak">komparátor, který si podle výstupu sám posune práh: je-li výstup nahoře, práh je vyšší, je-li dole, je nižší. Používá se k <b>úpravě tvaru impulzů</b> (rozmazaná, zarušená hrana se změní na čistý skok).</p></div>
+<figure><div class="paper"><img src="figures/fig16_schmitt.png" alt="Schmittův klopný obvod: Ui na invertujícím vstupu OZ, výstup Uo přes R2 a R1 do UREF, střed děliče na neinvertujícím vstupu" loading="lazy"></div>
+<figcaption><b>Obr. P6.12</b> Schmittův klopný obvod (podle slidu). Napětí \(U_+\) na neinvertujícím vstupu určuje dělič \(R_2\), \(R_1\) z výstupu a \(U_\mathrm{REF}\).</figcaption></figure>
+
+<div class="box postup"><div class="box-t">Odkud se berou prahy</div>
+<ol>
+<li>Výstup je buď \(U_\mathrm{SAT}^+\), nebo \(U_\mathrm{SAT}^-\). Napětí \(U_+\) je napětí děliče: součet příspěvku výstupu a příspěvku \(U_\mathrm{REF}\) (princip superpozice).</li>
+<li>Komparátor se překlopí, když \(U_i\) dosáhne \(U_+\). Vstup tedy pozná jen jeden ze dvou prahů podle toho, v jakém stavu je výstup.</li>
+<li>Je-li výstup \(U_\mathrm{SAT}^+\), je práh \(U_{+a}\) (horní). Překlopí se dolů, jakmile \(U_i\) práh překročí.</li>
+<li>Je-li výstup \(U_\mathrm{SAT}^-\), je práh \(U_{+b}\) (dolní). Překlopí se nahoru, jakmile \(U_i\) klesne pod práh.</li>
+</ol></div>
+<div class="box vzorec"><div class="box-t">Prahová napětí a hystereze</div>
+\[ U_{+a} = U_\mathrm{SAT}^+ \cdot \frac{R_1}{R_1 + R_2} + U_\mathrm{REF} \cdot \frac{R_2}{R_1 + R_2} \]
+\[ U_{+b} = U_\mathrm{SAT}^- \cdot \frac{R_1}{R_1 + R_2} + U_\mathrm{REF} \cdot \frac{R_2}{R_1 + R_2} \]
+\[ U_H = U_{+a} - U_{+b} = \bigl(U_\mathrm{SAT}^+ - U_\mathrm{SAT}^-\bigr) \cdot \frac{R_1}{R_1 + R_2} \]
+<table class="vars">
+<tr><td>\(U_{+a},\ U_{+b}\)</td><td>horní a dolní práh (napětí \(U_+\) při výstupu \(U_\mathrm{SAT}^+\), resp. \(U_\mathrm{SAT}^-\))</td></tr>
+<tr><td>\(U_H\)</td><td>šířka hystereze (rozdíl prahů)</td></tr>
+<tr><td>\(U_\mathrm{SAT}^+,\ U_\mathrm{SAT}^-\)</td><td>kladné a záporné saturační napětí výstupu</td></tr>
+<tr><td>\(U_\mathrm{REF}\)</td><td>referenční napětí na konci \(R_1\)</td></tr>
+<tr><td>\(R_1,\ R_2\)</td><td>rezistory děliče: \(R_1\) vede k \(U_\mathrm{REF}\), \(R_2\) k výstupu</td></tr>
+</table></div>
+<p>Z vzorců plyne: šířka hystereze \(U_H\) <b>nezávisí na \(U_\mathrm{REF}\)</b>, ale na poměru rezistorů (větší \(R_1\), menší \(R_2\) = širší hystereze). Napětí \(U_\mathrm{REF}\) oba prahy jen <b>posouvá</b>. Střed hystereze je u symetrického výstupu \(U_\mathrm{SAT}^+ = -U_\mathrm{SAT}^-\) v bodě \(U_\mathrm{REF}\,R_2/(R_1 + R_2)\).</p>
+
+<div class="box priklad"><div class="box-t">Příklad: prahy Schmittova obvodu (vlastní čísla)</div>
+<p>Saturační napětí jsou \(\pm 12\) V, rezistory \(R_1 = 1\ \text{k}\Omega\) a \(R_2 = 9\ \text{k}\Omega\). Dělicí poměry:</p>
+\[ \frac{R_1}{R_1 + R_2} = \frac{1}{10} = 0{,}1 \]
+\[ \frac{R_2}{R_1 + R_2} = \frac{9}{10} = 0{,}9 \]
+<p>Šířka hystereze (nezávisí na \(U_\mathrm{REF}\)):</p>
+\[ U_H = (12 - (-12)) \cdot 0{,}1 = 2{,}4\ \text{V} \]
+<p>1. Pro \(U_\mathrm{REF} = 0\):</p>
+\[ \begin{aligned} U_{+a} &= 12 \cdot 0{,}1 = 1{,}2\ \text{V} \\ U_{+b} &= -12 \cdot 0{,}1 = -1{,}2\ \text{V} \end{aligned} \]
+<p>2. Pro \(U_\mathrm{REF} = 2\) V se oba prahy posunou o \(2 \cdot 0{,}9 = 1{,}8\) V:</p>
+\[ \begin{aligned} U_{+a} &= 1{,}2 + 1{,}8 = 3{,}0\ \text{V} \\ U_{+b} &= -1{,}2 + 1{,}8 = 0{,}6\ \text{V} \end{aligned} \]
+<p>Střed hystereze je \(1{,}8\) V, \(U_H = 3{,}0 - 0{,}6 = 2{,}4\) V jako dřív. Šum menší než \(\pm 1{,}2\) V okolo prahu už výstup nepřehodí.</p></div>
+<figure><div class="paper"><img src="figures/fig16_schmitt_char.png" alt="Hysterezní smyčka: výstup +12 V roste do vstupu 3,0 V, pak klesne na −12 V; zpět se překlopí při 0,6 V; šířka hystereze U_H" loading="lazy"></div>
+<figcaption><b>Obr. P6.13</b> Převodní charakteristika Schmittova obvodu (\(U_\mathrm{REF} = 2\) V, \(R_1 = 1\ \text{k}\Omega\), \(R_2 = 9\ \text{k}\Omega\), \(U_\mathrm{SAT} = \pm 12\) V). Šipky ukazují směr, kterým se po charakteristice jde.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Charakteristika je <b>smyčka</b>, ne jedna křivka: při růstu \(U_i\) se výstup překlopí dolů při \(U_{+a}\), při poklesu zpět nahoru až při menším \(U_{+b}\).</li>
+<li>Obvod je <b>invertující</b> (signál je na invertujícím vstupu): vysoký vstup dá nízký výstup.</li>
+<li>Výstup v oblasti uvnitř hystereze (mezi prahy) závisí na tom, odkud se přišlo.</li>
+</ul></div>
+<div class="box pozor"><div class="box-t">Pozor: prahy nejsou \(U_\mathrm{REF}\)</div>
+<p>Obvod se nepřeklápí při \(U_i = U_\mathrm{REF}\), ale při \(U_{+a}\) nebo \(U_{+b}\). \(U_\mathrm{REF}\) jen posouvá střed hystereze; její šířku určuje poměr \(R_1/(R_1 + R_2)\) a rozdíl saturačních napětí.</p></div>
+
+<h3 id="schmitt-zd">Schmittův obvod s vyloučením změn saturačního napětí</h3>
+<p>Saturační napětí OZ se mění (napájení, zátěž, teplota), a s ním by se měnily prahy i hystereze. Řešením je <b>ustálit</b> výstupní napětí: za OZ je opět rezistor a <b>Zenerova dioda v můstku</b>. Saturační napětí pak určuje napětí na Zenerově diodě a vždy jeden pár diod:</p>
+\[ U_\mathrm{SAT}^+ = -U_\mathrm{SAT}^- = U_{DZ} + 2U_D \]
+<figure><div class="paper"><img src="figures/fig16_schmitt_zd.png" alt="Schmittův klopný obvod s rezistorem a můstkem se Zenerovou diodou na výstupu a děličem R2, R1 zpětné vazby" loading="lazy"></div>
+<figcaption><b>Obr. P6.14</b> Schmittův klopný obvod se stálým saturačním napětím (podle slidu). Dělič \(R_2\), \(R_1\) bere napětí z výstupu za můstkem.</figcaption></figure>
+<div class="box priklad"><div class="box-t">Příklad: stálé prahy (vlastní čísla)</div>
+<p>\(U_{DZ} = 4{,}7\) V, \(U_D = 0{,}6\) V, \(R_1 = 1\ \text{k}\Omega\), \(R_2 = 9\ \text{k}\Omega\), \(U_\mathrm{REF} = 0\) (\(R_1\) na zem):</p>
+\[ U_\mathrm{SAT}^+ = 4{,}7 + 2 \cdot 0{,}6 = 5{,}9\ \text{V} \]
+\[ \begin{aligned} U_{+a} &= 5{,}9 \cdot 0{,}1 = 0{,}59\ \text{V} \\ U_{+b} &= -0{,}59\ \text{V} \\ U_H &= 2 \cdot 0{,}59 = 1{,}18\ \text{V} \end{aligned} \]
+<p>Prahy teď závisejí jen na Zenerově diodě a rezistorech, ne na napájení OZ.</p></div>
+
+<h2 id="selektor">Amplitudový selektor</h2>
+<p>Slide dá otázku: <i>k čemu slouží toto zapojení?</i> Tři OZ bez zpětné vazby mají každý na neinvertujícím vstupu vlastní napětí \(U_{i1} = 3\) V, \(U_{i2} = 5\) V, \(U_{i3} = 2\) V. Invertující vstupy všech tří jsou spojené na <b>společný vodič</b>, který vede přes rezistor \(R\) k zemi. Výstup každého OZ je připojený přes diodu na tentýž společný vodič. Otázka je, jaká je funkce obvodu a jaké bude napětí na společném vodiči.</p>
+<figure><div class="paper"><img src="figures/fig16_selektor.png" alt="Tři operační zesilovače, invertující vstupy spojené na společný vodič s rezistorem R k zemi, výstup každého přes diodu na společný vodič Uomax" loading="lazy"></div>
+<figcaption><b>Obr. P6.15</b> Amplitudový selektor se třemi vstupy (podle slidu). Diody vedou od výstupů OZ ke společnému vodiči.</figcaption></figure>
+<div class="box definice" id="def-amplitudovy-selektor"><div class="box-t">Definice: amplitudový selektor</div>
+<p><b>Amplitudový selektor</b> je zapojení několika komparátorů s diodami na společném vodiči, jehož výstup \(U_\mathrm{omax}\) je rovný <b>největšímu</b> ze vstupních napětí.</p>
+<p class="jinak">obvod „vybírá“ signál s největší amplitudou. Je to analogový <b>výběr maxima</b>: kdo má nejvyšší napětí, ten vyhrává a ostatní jsou odpojeny.</p></div>
+<div class="box postup"><div class="box-t">Jak selektor vybírá (příklad ze slidu)</div>
+<ol>
+<li>Každý OZ <b>porovnává</b> svůj vstup \(U_{i\#}\) s napětím na společném vodiči, které je pro všechny stejné.</li>
+<li>OZ s nejvyšším vstupem (OZ2, 5 V) začne tlačit napětí společného vodiče nahoru přes svou diodu. Zpětná vazba přes diodu ustaví na společném vodiči napětí \(U_\mathrm{omax} = U_{i2} = 5\) V. Výstup OZ2 je o úbytek diody výš: \(5 + U_D \approx 5{,}6\) V.</li>
+<li>Pro ostatní OZ je napětí společného vodiče (5 V) vyšší než jejich vstup (3 V, 2 V). Jejich výstupy jdou do záporné saturace \(-U_\mathrm{SAT}\), diody jsou zavřené a OZ jsou od společného vodiče <b>odpojené</b>.</li>
+<li>Každá vyšší hodnota na jednom vstupu tak <b>posune komparační úroveň</b> ostatních vstupů.</li>
+<li>Rezistor \(R\) táhne společný vodič k zemi. Bez něj by dioda udržela vodič na dosažené hodnotě a selektor by sledoval maximum jen směrem nahoru; \(R\) dovolí, aby napětí při poklesu největšího vstupu klesalo.</li>
+</ol></div>
+<div class="box priklad"><div class="box-t">Příklad: tři vstupy 3 V, 5 V, 2 V</div>
+<div class="tablewrap"><table class="compact">
+<thead><tr><th>OZ</th><th>\(U_i\) [V]</th><th>vstup vs. společný vodič (5 V)</th><th>stav OZ</th><th>dioda</th></tr></thead>
+<tbody>
+<tr><td>OZ1</td><td>3</td><td>\(3 &lt; 5\)</td><td>záporná saturace \(-U_\mathrm{SAT}\)</td><td>zavřená</td></tr>
+<tr><td>OZ2</td><td>5</td><td>\(5 = 5\)</td><td>reguluje (sledovač), výstup \(5 + U_D\)</td><td>vede</td></tr>
+<tr><td>OZ3</td><td>2</td><td>\(2 &lt; 5\)</td><td>záporná saturace \(-U_\mathrm{SAT}\)</td><td>zavřená</td></tr>
+</tbody></table></div>
+<p>Odpověď: obvod vybírá největší vstup, napětí na společném vodiči je <b>5 V</b>.</p></div>
+<figure><div class="paper"><img src="figures/fig16_selektor_prubeh.png" alt="Tři sinusové průběhy Ui1, Ui2, Ui3 se vzájemným posunem; tlustá čára Uomax sleduje vždy nejvyšší z nich" loading="lazy"></div>
+<figcaption><b>Obr. P6.16</b> Tři vstupní signály a výstup selektoru (vlastní modelové průběhy). Tlustá čára je obálka maxima.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>\(U_\mathrm{omax}\) je vždy <b>horní obalová křivka</b> všech vstupů; v bodech, kde se dva signály protínají, výstup „přeskočí“ z jednoho signálu na druhý.</li>
+<li>Selektor rozhoduje po okamžicích: v každém okamžiku zvítězí jiný vstup.</li>
+</ul></div>
+
+<h2 id="adc">Úvod do A/D převodu</h2>
+<p>Komparátor je jednobitový A/D převodník: dává jednu informaci, zda je vstup nad prahem. Plný <b>A/D převodník</b> jich dává víc najednou. Jeho základní pojmy ukazuje tento oddíl; podrobnosti (typy převodníků, chyby) přináší další přednáška.</p>
+<div class="box definice" id="def-adc"><div class="box-t">Definice: analogově-digitální převodník</div>
+<p><b>Analogově-digitální (A/D) převodník</b> slouží k převodu <b>analogového (spojitého)</b> signálu na <b>digitální (diskrétní)</b> signál.</p>
+<p class="jinak">obvod, který změří napětí a řekne ho číslem. Z plynulé hodnoty (například 3,8 V) udělá kód, se kterým počítá procesor.</p></div>
+<div class="box definice" id="def-kvantovani"><div class="box-t">Definice: kvantování</div>
+<p><b>Kvantování</b> je proces převodu <b>amplitudy</b> signálu na příslušnou <b>binární hodnotu</b>.</p>
+<p class="jinak">spojité napětí se zaokrouhlí na nejbližší z konečného počtu hladin a hladina dostane číslo. Tím se ztratí nepatrný rozdíl mezi hladinami – kvantizační chyba.</p></div>
+<div class="box definice" id="def-kvantizacni-uroven"><div class="box-t">Definice: kvantizační úroveň</div>
+<p><b>Kvantizační úroveň</b> (kvantizační krok, \(1\) LSB) souvisí s <b>počtem bitů</b> převodníku a <b>referenčním napětím</b>: je to nejmenší změna vstupu, kterou převodník rozliší,</p>
+\[ q = \frac{U_\mathrm{REF}}{2^{n}} \]
+<p class="jinak">n-bitový převodník rozdělí rozsah \(0\) až \(U_\mathrm{REF}\) na \(2^n\) stejných kroků. Čím víc bitů, tím jemnější krok.</p></div>
+<div class="box definice" id="def-vzorkovani"><div class="box-t">Definice: vzorkování</div>
+<p>Je-li signál pro potřeby A/D převodu diskretizován <b>i v čase</b>, jedná se o <b>vzorkování</b>.</p>
+<p class="jinak">kvantování „řeže“ signál na hladiny podle svislé osy, vzorkování ho „řeže“ po okamžicích podle osy vodorovné. Převodník dělá obojí. Vzorkovací teorém, tj. jak často vzorkovat, patří do zpracování signálů.</p></div>
+<div class="box definice" id="def-dac"><div class="box-t">Definice: digitálně-analogový převodník</div>
+<p><b>Digitálně-analogový (D/A) převodník</b> slouží k převodu <b>digitálního (diskrétního)</b> signálu na <b>analogový (spojitý)</b>.</p>
+<p class="jinak">opak A/D převodníku: z čísla vyrobí napětí.</p></div>
+<div class="box priklad"><div class="box-t">Příklad: kvantizační krok (vlastní čísla)</div>
+<p>3bitový převodník s \(U_\mathrm{REF} = 8\) V (jako ve flash příkladu níže):</p>
+\[ q = \frac{8\ \text{V}}{2^3} = 1\ \text{V} \]
+<p>12bitový převodník s \(U_\mathrm{REF} = 3{,}3\) V:</p>
+\[ q = \frac{3{,}3\ \text{V}}{2^{12}} = \frac{3{,}3}{4096}\ \text{V} \approx 0{,}81\ \text{mV} \]</div>
+<figure><div class="paper"><img src="figures/fig16_kvantovani.png" alt="Analogový sinusový signál, vzorky v pravidelných okamžicích a schodovitý kvantovaný signál na osmi hladinách 000 až 111" loading="lazy"></div>
+<figcaption><b>Obr. P6.17</b> Vzorkování a kvantování 3bitovým převodníkem (vlastní modelový signál, \(U_\mathrm{REF} = 8\) V, krok 1 V).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Oranžové body jsou <b>vzorky</b> (diskretizace v čase), zelené schody jsou <b>kvantované</b> hodnoty (diskretizace v amplitudě).</li>
+<li>Rozdíl mezi modrou křivkou a zelenými schody je <b>kvantizační chyba</b>; s víc bity klesá.</li>
+</ul></div>
+
+<h2 id="flash">Paralelní (flash) A/D převodník</h2>
+<div class="box definice" id="def-flash-adc"><div class="box-t">Definice: paralelní (flash) ADC</div>
+<p><b>Paralelní (flash) ADC</b> je nejrychlejší typ A/D převodníku: měřené napětí se <b>současně</b> porovnává se všemi kvantizačními hladinami pomocí řady komparátorů a z jejich výstupů kodér vyrobí binární kód.</p>
+<p class="jinak">místo hledání hodnoty postupně se napětí „přiloží“ najednou ke všem příčkám žebříku a podívá se, kolik jich je pod ním. Použije se tam, kde je potřeba rychlost, například pro BCD 7segmentový displej.</p></div>
+<div class="box definice" id="def-rezistorova-sit"><div class="box-t">Definice: rezistorová síť převodníku</div>
+<p><b>Rezistorová síť</b> (R-síť) je soubor napěťových děličů, který rozdělí referenční napětí \(U_\mathrm{REF}\) na úrovně, které se přivedou na <b>invertující vstupy komparátorů</b> pro porovnání s měřeným napětím.</p>
+<p class="jinak">žebřík stejných rezistorů mezi referencí a zemí. Každá příčka dává jinou hladinu, a ty jsou prahy komparátorů.</p></div>
+
+<figure><div class="paper"><img src="figures/fig16_flash.png" alt="Schéma 3bitového flash ADC: žebřík rezistorů 3R/2, šest R a R/2 mezi VREF = 8 V a zemí, sedm komparátorů s prahy 6,5 až 0,5 V, měřené napětí VIN = 3,8 V na všech neinvertujících vstupech, kodér a výstupy D2, D1, D0" loading="lazy"></div>
+<figcaption><b>Obr. P6.18</b> Paralelní ADC pro 3 bity (podle slidu): \(V_\mathrm{REF} = 8\) V, \(V_\mathrm{IN} = 3{,}8\) V. Zelené výstupy komparátorů jsou ve stavu 1, šedé ve stavu 0.</figcaption></figure>
+<div class="box intuice"><div class="box-t">Jak flash ADC pracuje</div>
+<ul>
+<li><b>R-síť</b> dělí \(V_\mathrm{REF}\) na prahové úrovně (zde \(0{,}5\); \(1{,}5\); …; \(6{,}5\) V), které jdou na invertující vstupy komparátorů.</li>
+<li>Měřené \(V_\mathrm{IN}\) jde současně na <b>všechny</b> neinvertující vstupy.</li>
+<li>Komparátor je ve <b>stavu 1</b> (kladná saturace, H), když \(V_\mathrm{IN}\) překročí jeho práh, a ve <b>stavu 0</b> (záporná saturace, L), když ne.</li>
+<li>Výstupy komparátorů tvoří řadu jedniček a nul, ze které <b>kodér</b> (priority encoder) vyrobí binární výstup.</li>
+</ul></div>
+<div class="box definice" id="def-termometricky-kod"><div class="box-t">Definice: termometrický kód</div>
+<p><b>Termometrický kód</b> je zápis stavu komparátorů flash ADC, v němž je tolik jedniček (zdola), kolik prahů je pod měřeným napětím.</p>
+<p class="jinak">jako rtuť v teploměru: čím vyšší napětí, tím víc komparátorů „svítí“. Kodér ho převede na obyčejné binární číslo.</p></div>
+
+<h3 id="stavy">Stavy převodníku</h3>
+<ul>
+<li><b>Napětí blízké nule:</b> všechny komparátory jsou v záporné saturaci (L), kódováno \(0000000\), výstup \(000\).</li>
+<li><b>Napětí blízké referenčnímu:</b> všechny komparátory jsou v kladné saturaci (H), kódováno \(1111111\), výstup \(111\).</li>
+<li><b>Napětí někde mezi:</b> „otevřeny“ jsou právě ty komparátory, které mají na invertujícím vstupu z děliče nižší napětí, než je měřené.</li>
+</ul>
+<div class="box priklad"><div class="box-t">Příklad: \(V_\mathrm{IN} = 3{,}8\) V (slide)</div>
+<p>3bitový převodník, \(V_\mathrm{REF} = 8\) V. Kvantizační krok:</p>
+\[ q = \frac{8}{2^3} = 1\ \text{V} \]
+<p>Rezistorová síť: \(\tfrac{3R}{2} + 6R + \tfrac{R}{2} = 8R\), takže na každém \(R\) je \(1\) V a prahy jsou \(0{,}5\); \(1{,}5\); \(2{,}5\); \(3{,}5\); \(4{,}5\); \(5{,}5\); \(6{,}5\) V (nejnižší leží na dolním \(R/2\), tedy \(0{,}5\) V).</p>
+<p>1. Které prahy jsou pod \(3{,}8\) V? Prahy \(0{,}5\); \(1{,}5\); \(2{,}5\); \(3{,}5\) V. Čtyři komparátory zdola jsou ve stavu 1, tři nahoře ve stavu 0:</p>
+\[ 0001111 \]
+<p>2. Kodér spočítá jedničky: čtyři, tedy binárně \(100\):</p>
+\[ (100)_2 = 4 \]
+<p>3. Tomuto kódu odpovídá interval \(3{,}5 \le V_\mathrm{IN} &lt; 4{,}5\) V, střed intervalu je \(4\) V (slide: \(\text{Average} = 4\) V). Každý kód tedy pokrývá krok ±0,5 V kolem své hodnoty.</p></div>
+
+<div class="tablewrap"><table class="compact">
+<thead><tr><th>\(V_\mathrm{IN}\) [V]</th><th>komparátory (termometrický kód)</th><th>výstup</th></tr></thead>
+<tbody>
+<tr><td>\(0\)</td><td>\(0000000\)</td><td>\(000\)</td></tr>
+<tr><td>0,5 až 1,5</td><td>\(0000001\)</td><td>\(001\)</td></tr>
+<tr><td>1,5 až 2,5</td><td>\(0000011\)</td><td>\(010\)</td></tr>
+<tr><td>2,5 až 3,5</td><td>\(0000111\)</td><td>\(011\)</td></tr>
+<tr><td><b>3,5 až 4,5</b></td><td>\(\mathbf{0001111}\)</td><td>\(\mathbf{100}\)</td></tr>
+<tr><td>4,5 až 5,5</td><td>\(0011111\)</td><td>\(101\)</td></tr>
+<tr><td>5,5 až 6,5</td><td>\(0111111\)</td><td>\(110\)</td></tr>
+<tr><td>nad 6,5 až \(V_\mathrm{REF}\)</td><td>\(1111111\)</td><td>\(111\)</td></tr>
+</tbody></table></div>
+<p>Pravý bit kódu komparátorů je ten, který se zapne jako první (nejnižší práh); v binárním výstupu je nejnižší bit LSB, nejvyšší MSB.</p>
+<figure><div class="paper"><img src="figures/fig16_adc_char.png" alt="Schodovitá převodní charakteristika 3bitového flash ADC: kód 0 až 7 při vstupu 0 až 8 V, zvýrazněný bod 3,8 V odpovídá kódu 4" loading="lazy"></div>
+<figcaption><b>Obr. P6.19</b> Převodní charakteristika 3bitového flash ADC (\(V_\mathrm{REF} = 8\) V). Zvýrazněný interval \(3{,}5\) až \(4{,}5\) V dává kód 4.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Převodní charakteristika je <b>schodovitá</b>; všechna napětí uvnitř jednoho schodu dají stejný kód. Šířka schodu je kvantizační krok.</li>
+<li>Prahy jsou posunuté o půl kroku (\(0{,}5\); \(1{,}5\); …), proto je kód zaokrouhlený k nejbližší hladině.</li>
+</ul></div>
+
+<h3 id="presnost">Přesnost rezistorů a počet komparátorů</h3>
+<ul>
+<li>Hodnota odporu \(R\) funkci převodníku <b>neovlivňuje</b>, jen určuje proud rezistorovou sítí.</li>
+<li>Hodnoty však musí být <b>precizní</b>, jinak by se posunuly jednotlivé kvantizační úrovně. R-síť se proto zpravidla vyrábí jako <b>jedna integrovaná součástka</b>, v níž jsou z výroby zaručeny stejné hodnoty \(R\).</li>
+<li><b>Rychlost</b> převodníku je dána rychlostí přeběhu komparátoru, resp. OZ; typicky řádově <b>ns až µs</b>.</li>
+<li><b>Nevýhoda:</b> potřeba velkého množství komparátorů. Pro \(n\) bitů je jich \(2^n - 1\).</li>
+</ul>
+<div class="box vzorec"><div class="box-t">Počet komparátorů flash ADC</div>
+\[ N_\mathrm{komp} = 2^{n} - 1 \]
+<table class="vars">
+<tr><td>\(N_\mathrm{komp}\)</td><td>počet komparátorů</td></tr>
+<tr><td>\(n\)</td><td>počet bitů převodníku</td></tr>
+</table></div>
+<div class="tablewrap"><table class="compact">
+<thead><tr><th>bity \(n\)</th><th>počet komparátorů \(2^n - 1\)</th></tr></thead>
+<tbody>
+<tr><td>3</td><td>7</td></tr>
+<tr><td>8</td><td>255</td></tr>
+<tr><td>12</td><td>4095</td></tr>
+<tr><td>16</td><td>65535</td></tr>
+</tbody></table></div>
+<p>Pro lepší přesnost (víc bitů) by tedy byly třeba <b>stovky až desetitisíce komparátorů</b> – pro 16bitový flash ADC je to \(2^{16} - 1 = 65535\). Proto se flash ADC dělá s malým počtem bitů a používá se tam, kde je rozhodující rychlost.</p>
+
+<h2 id="srovnani">Srovnání zapojení</h2>
+<div class="tablewrap"><table class="compact">
+<thead><tr><th>zapojení</th><th>klíčové součástky</th><th>výstup</th><th>použití, problém</th></tr></thead>
+<tbody>
+<tr><td>precizní omezovač</td><td>OZ1 + dioda, OZ2 sledovač, \(U_\mathrm{REF}\)</td><td>\(u_i\) do meze \(U_\mathrm{REF}\), pak \(U_\mathrm{REF}\)</td><td>ochrana, ořez signálu; opačná dioda = omezení z druhé strany</td></tr>
+<tr><td>oboustranný omezovač</td><td>dva stupně nebo dvě Zenerky nebo můstek + ZD</td><td>\(u_i\) mezi \(U_\mathrm{REF2}\) a \(U_\mathrm{REF1}\)</td><td>dvě Zenerky = možná nesymetrie, jedna ZD v můstku = symetrie</td></tr>
+<tr><td>komparátor</td><td>OZ bez zpětné vazby</td><td>\(\pm U_\mathrm{SAT}\)</td><td>chyba přeběhu \(U_\mathrm{SAT}/A_u\), falešná překlopení při rušení</td></tr>
+<tr><td>komparátor s omezením</td><td>+ rezistor a Zenerka v můstku</td><td>\(\pm(U_{ZD} + 2U_D)\)</td><td>výstup slučitelný s dalším obvodem</td></tr>
+<tr><td>Schmittův KO</td><td>OZ s kladnou ZV (\(R_1\), \(R_2\), \(U_\mathrm{REF}\))</td><td>\(\pm U_\mathrm{SAT}\) s hysterezí \(U_H\)</td><td>úprava tvaru impulzů, odolnost proti rušení</td></tr>
+<tr><td>amplitudový selektor</td><td>\(n\) OZ + diody na společném vodiči, \(R\)</td><td>\(U_\mathrm{omax} = \max U_{i\#}\)</td><td>výběr nejsilnějšího signálu</td></tr>
+<tr><td>flash ADC</td><td>R-síť, \(2^n - 1\) komparátorů, kodér</td><td>\(n\)bitový kód</td><td>nejrychlejší, ale velký počet komparátorů</td></tr>
+</tbody></table></div>
+
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„Komparátor je OZ bez zpětné vazby: je-li napětí na neinvertujícím vstupu větší než na invertujícím, je výstup v kladné saturaci, jinak v záporné. Skutečný OZ potřebuje na překlopení rozdíl vstupů \(U_\mathrm{SAT}/A_u\), to je chyba přeběhu. Při pomalém signálu s rušením se komparátor kolem prahu několikrát překlopí. Proti tomu je Schmittův klopný obvod: kladná zpětná vazba přes dělič \(R_2\), \(R_1\) posouvá práh podle stavu výstupu. Horní práh dostaneme pro kladné saturační napětí:</p>
+\[ U_{+a} = U_\mathrm{SAT}^+ \frac{R_1}{R_1 + R_2} + U_\mathrm{REF} \frac{R_2}{R_1 + R_2} \]
+<p>Dolní práh \(U_{+b}\) je stejný se záporným saturačním napětím a hystereze je jejich rozdíl:</p>
+\[ U_H = \bigl(U_\mathrm{SAT}^+ - U_\mathrm{SAT}^-\bigr)\frac{R_1}{R_1 + R_2} \]
+<p>Precizní omezovač je OZ s diodou, kde zpětná vazba je za diodou: výstup sleduje vstup, dokud nedosáhne \(U_\mathrm{REF}\), a pak na něm zůstane. Oboustranný dostaneme dvěma stupni, dvěma Zenerkami proti sobě, nebo jednou Zenerkou v diodovém můstku. Amplitudový selektor jsou komparátory s diodami na společném vodiči, který se nastaví na největší vstup. Flash ADC má žebřík rezistorů, který rozdělí referenci na prahy, a pro \(n\) bitů \(2^n - 1\) komparátorů. Jejich výstupy ve tvaru termometrického kódu převede kodér na binární číslo. Je nejrychlejší, ale potřebuje mnoho komparátorů.“</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Komparátor = „ano / ne“ (\(\pm U_\mathrm{SAT}\)); hystereze (Schmitt) ho zbaví falešných překlopení; omezovač řízeně „uřízne“ signál; z komparátorů vznikne selektor maxima i nejrychlejší A/D převodník – flash ADC (\(2^n - 1\) komparátorů).</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p><b>Precizní omezovač</b> je „usměrňovač s posunutou nulou“: OZ s diodou, jejíž zpětná vazba se bere za diodou, a sledovač OZ2. Výstup sleduje vstup do meze \(U_\mathrm{REF}\), dál zůstane na \(U_\mathrm{REF}\). Opačná dioda omezuje z druhé strany. <b>Oboustranný omezovač</b> je kaskáda dvou stupňů, nebo invertující zesilovač se dvěma <b>Zenerovými diodami</b> proti sobě (meze \(U_{Z(D1)} + U_{D2}\) a \(-(U_{D1} + U_{Z(D2)})\), pásmo může být nesymetrické), nebo s <b>jedinou Zenerovou diodou v diodovém můstku</b> (dokonale symetrické pásmo, \(\pm(U_Z + 2U_D)\)).</p>
+<p><b>Komparátor</b> je OZ bez zpětné vazby: \(U_2 > U_1 \Rightarrow +U_\mathrm{SAT}\), \(U_2 &lt; U_1 \Rightarrow -U_\mathrm{SAT}\). <b>Chyba přeběhu</b> je \(U_\mathrm{SAT}/A_u\) (pro 12 V a \(10^5\) jen 120 µV). Charakteristika platí pro pomalé průběhy; u rychlého děje s rušením vznikají <b>falešná překlopení</b>. <b>Komparátor s omezením</b> má za OZ rezistor a Zenerovu diodu v můstku, výstup je \(\pm(U_{ZD} + 2U_D)\).</p>
+<p><b>Schmittův klopný obvod</b> má kladnou zpětnou vazbu přes dělič \(R_2\), \(R_1\) a <b>hysterezi</b>: prahy \(U_{+a}\) a \(U_{+b}\) dané stavem výstupu, šířka hystereze \(U_H = (U_\mathrm{SAT}^+ - U_\mathrm{SAT}^-)R_1/(R_1 + R_2)\) nezávisí na \(U_\mathrm{REF}\), který jen posouvá střed. Slouží k úpravě tvaru impulzů. Zenerova dioda v můstku ustálí saturační napětí na \(U_{DZ} + 2U_D\).</p>
+<p><b>Amplitudový selektor</b> (komparátory s diodami na společném vodiči s rezistorem \(R\) k zemi) vybírá <b>největší</b> ze vstupů: pro 3 V, 5 V a 2 V je na společném vodiči 5 V.</p>
+<p><b>A/D převodník</b> převádí spojitý signál na diskrétní; <b>kvantování</b> převádí amplitudu na binární hodnotu, <b>kvantizační krok</b> je \(U_\mathrm{REF}/2^n\), <b>vzorkování</b> je diskretizace v čase, <b>D/A převodník</b> dělá opak. <b>Flash ADC</b> je nejrychlejší: R-síť (integrovaná, s přesnými rezistory) vytvoří \(2^n - 1\) prahů pro komparátory, jejich výstupy (termometrický kód, např. 0001111 pro 3,8 V při \(V_\mathrm{REF} = 8\) V) kodér převede na binární kód (100). Rychlost je dána přeběhem komparátoru (ns až µs), nevýhoda je počet komparátorů (pro 16 bitů 65535).</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Omezovač = OZ + dioda, zpětná vazba za diodou; \(u_o = u_i\) do meze \(U_\mathrm{REF}\), pak \(U_\mathrm{REF}\); obrácená dioda = omezení z druhé strany.</li>
+<li>Oboustranný omezovač: dva stupně, nebo dvě Zenerky (možná nesymetrie), nebo jedna Zenerka v můstku (symetrie, meze \(\pm(U_Z + 2U_D)\)).</li>
+<li>Komparátor: OZ bez zpětné vazby, výstup \(\pm U_\mathrm{SAT}\); chyba přeběhu \(U_\mathrm{SAT}/A_u\).</li>
+<li>Rušení kolem prahu způsobí falešná překlopení; řešením je hystereze.</li>
+<li>Schmitt: dvě prahová napětí \(U_{+a}\) a \(U_{+b}\) podle stavu výstupu, hystereze \(U_H = (U_\mathrm{SAT}^+ - U_\mathrm{SAT}^-)\frac{R_1}{R_1 + R_2}\).</li>
+<li>\(U_\mathrm{REF}\) hysterezi nemění, jen posouvá střed obou prahů.</li>
+<li>Zenerova dioda v můstku za OZ ustálí saturační napětí: \(\pm(U_{DZ} + 2U_D)\).</li>
+<li>Amplitudový selektor vybírá největší vstup (společný vodič \(= U_\mathrm{max}\)); rezistor \(R\) dovolí poklesu.</li>
+<li>Kvantizační krok \(q = U_\mathrm{REF}/2^n\); vzorkování = čas, kvantování = amplituda.</li>
+<li>Flash ADC: R-síť → \(2^n - 1\) komparátorů → termometrický kód → kodér; nejrychlejší, ale drahý na komparátory.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Co je precizní omezovač? Nakreslete ho a vysvětlete, co se děje pod a nad mezí.</summary><div>
+<p>Omezovač udržuje výstupní napětí nejvýš na hodnotě \(U_\mathrm{REF}\) a menší napětí nechává projít beze změny; je to usměrňovač s „nulou“ posunutou na \(U_\mathrm{REF}\). Zapojení: \(u_i\) přes \(R_1\) na invertující vstup OZ1, \(U_\mathrm{REF}\) na jeho neinvertující vstup, dioda \(D_1\) mezi výstupem OZ1 a uzlem \(U_+\), ke kterému je připojen také invertující vstup OZ1; OZ2 je sledovač s neinvertujícím vstupem v uzlu \(U_+\).</p>
+<ul>
+<li>\(u_i &lt; U_\mathrm{REF}\): výstup OZ1 je v kladné saturaci, dioda je zavřená, přes \(R_1\) neteče proud, \(U_+ = u_i\), \(u_o = u_i\).</li>
+<li>\(u_i > U_\mathrm{REF}\): dioda se otevře, zpětná vazba přes ni uzavře smyčku a OZ1 udrží invertující vstup na \(U_\mathrm{REF}\); \(u_o = U_\mathrm{REF}\).</li>
+</ul>
+<p>Úbytek na diodě se neprojeví, protože zpětná vazba se bere za ní. Obrácená dioda \(D_2\) omezuje zdola.</p></div></details>
+<details class="q"><summary>Jakými třemi způsoby lze udělat oboustranný omezovač? Čím se liší?</summary><div>
+<ul>
+<li><b>Kaskáda dvou omezovačů</b> s opačnými diodami a referencemi \(U_\mathrm{REF1}\), \(U_\mathrm{REF2}\): meze se nastavují nezávisle (symetricky i nesymetricky).</li>
+<li><b>Invertující zesilovač se dvěma Zenerovými diodami proti sobě</b> ve zpětné vazbě paralelně k \(R_2\): meze \(U_{Z(D1)} + U_{D2}\) a \(-(U_{D1} + U_{Z(D2)})\); díky rozdílu Zenerových napětí může být pásmo nesymetrické (např. +10 V a −5 V).</li>
+<li><b>Jedna Zenerova dioda v diodovém můstku</b> ve zpětné vazbě: pro obě polarity rozhoduje stejná Zenerova dioda, meze \(\pm(U_Z + 2U_D)\), pásmo je dokonale symetrické.</li>
+</ul>
+<p>Ve druhém a třetím zapojení je mezi mezemi zesílení \(-R_2/R_1\).</p></div></details>
+<details class="q"><summary>Jak vypadá převodní charakteristika komparátoru a co je chyba přeběhu? Kolik je pro \(U_\mathrm{SAT} = 12\) V a \(A_u = 10^5\)?</summary><div>
+<p>Charakteristika má výstup \(-U_\mathrm{SAT}\) pro \(U_{i2} - U_{i1} &lt; 0\) a \(+U_\mathrm{SAT}\) pro rozdíl kladný; v okolí nuly je strmý přechod. Skutečný OZ nepřeskočí přesně v nule, přechod trvá v oblasti \(\pm U_\mathrm{SAT}/A_u\) – to je chyba přeběhu, dána poměrem saturačního napětí a zesílení.</p>
+\[ \frac{U_\mathrm{SAT}}{A_u} = \frac{12}{10^5} = 120\ \mu\text{V} \]
+<p>Tato charakteristika platí pro dostatečně pomalé průběhy.</p></div></details>
+<details class="q"><summary>Proč komparátor u zarušeného signálu několikrát překlopí a jak se tomu zabrání?</summary><div>
+<p>Pomalu rostoucí signál s přidaným rušením prochází prahem několikrát tam a zpět. Protože komparátor reaguje na každý průchod, výstup se překlopí vícekrát (falešná překlopení), i když se skutečný signál překlopil jen jednou.</p>
+<p>Řešení je hystereze: Schmittův klopný obvod má kladnou zpětnou vazbu přes dělič, takže práh po překlopení posune. Aby se výstup překlopil zpět, musí vstup zajít o šířku hystereze \(U_H\) – rušení menší než ta se nepřenese.</p></div></details>
+<details class="q"><summary>Odvoďte prahy a hysterezi Schmittova obvodu. Spočítejte je pro saturační napětí ±10 V, rezistory 1 kΩ a 4 kΩ (\(R_1\), \(R_2\)) a \(U_\mathrm{REF} = 0\).</summary><div>
+<p>Napětí na neinvertujícím vstupu je napětí děliče z výstupu a \(U_\mathrm{REF}\):</p>
+\[ U_+ = U_o \cdot \frac{R_1}{R_1 + R_2} + U_\mathrm{REF} \cdot \frac{R_2}{R_1 + R_2} \]
+<p>Při výstupu \(U_\mathrm{SAT}^+\) vzniká horní práh \(U_{+a}\), při \(U_\mathrm{SAT}^-\) dolní \(U_{+b}\); hystereze je jejich rozdíl:</p>
+\[ U_H = U_{+a} - U_{+b} = \bigl(U_\mathrm{SAT}^+ - U_\mathrm{SAT}^-\bigr)\frac{R_1}{R_1 + R_2} \]
+<p>Pro zadané hodnoty je \(R_1/(R_1 + R_2) = 1/5 = 0{,}2\):</p>
+\[ \begin{aligned} U_{+a} &= 10 \cdot 0{,}2 = 2\ \text{V} \\ U_{+b} &= -2\ \text{V} \\ U_H &= 20 \cdot 0{,}2 = 4\ \text{V} \end{aligned} \]
+<p>Obvod se tedy překlopí dolů, když \(U_i\) překročí \(+2\) V, a zpět nahoru, až když klesne pod \(-2\) V.</p></div></details>
+<details class="q"><summary>K čemu je Zenerova dioda v můstku za výstupem komparátoru a Schmittova obvodu?</summary><div>
+<p>Výstup OZ v saturaci závisí na napájení a na zátěži. Rezistor a Zenerova dioda v diodovém můstku výstup omezí na pevnou hodnotu:</p>
+\[ U_\mathrm{SAT}^+ = -U_\mathrm{SAT}^- = U_{DZ} + 2U_D \]
+<p>Na Zenerově diodě je napětí \(U_{DZ}\) a vždy jeden pár diod přidá \(2U_D\). U komparátoru tak dostaneme výstup použitelný pro další obvod. U Schmittova obvodu je saturační napětí stálé, takže prahy a hystereze nezávisejí na změnách napájení OZ. Například pro \(U_{DZ} = 4{,}7\) V a \(U_D = 0{,}6\) V:</p>
+\[ U_\mathrm{SAT}^+ = 4{,}7 + 1{,}2 = 5{,}9\ \text{V} \]
+<p>a s dělicím poměrem \(R_1/(R_1 + R_2) = 0{,}1\) je hystereze \(U_H = 2 \cdot 5{,}9 \cdot 0{,}1 = 1{,}18\) V.</p></div></details>
+<details class="q"><summary>K čemu slouží obvod se třemi OZ a diodami na společném vodiči? Jaké bude napětí na společném vodiči pro vstupy 3 V, 5 V a 2 V?</summary><div>
+<p>Je to amplitudový selektor – vybírá největší ze vstupních napětí. Každý OZ porovnává svůj vstup s napětím na společném vodiči. OZ s nejvyšším vstupem (5 V) přes svou diodu nastaví napětí společného vodiče na 5 V (jeho výstup je o úbytek diody výš). Ostatní dva mají vstup menší (3 V, 2 V), jejich výstupy jsou v záporné saturaci a diody jsou zavřené, takže na vodič nic nedodávají. Napětí na společném vodiči je <b>5 V</b>. Každá vyšší hodnota na vstupu posune komparační úroveň ostatních. Rezistor \(R\) k zemi dovolí, aby napětí na vodiči klesalo, když největší vstup klesne.</p></div></details>
+<details class="q"><summary>Vysvětlete princip flash ADC. Jak převede 3,8 V při \(V_\mathrm{REF} = 8\) V na 3 bity? Proč se nedělá s mnoha bity?</summary><div>
+<p>Rezistorová síť rozdělí \(V_\mathrm{REF}\) na prahy (pro 3 bity 7 prahů po 1 V: \(0{,}5\); \(1{,}5\); …; \(6{,}5\) V), které jdou na invertující vstupy sedmi komparátorů. Měřené napětí jde na všechny neinvertující vstupy. Komparátory s prahem pod \(V_\mathrm{IN}\) jsou v kladné saturaci (1), ostatní v záporné (0).</p>
+<p>Pro \(V_\mathrm{IN} = 3{,}8\) V jsou pod ním prahy \(0{,}5\); \(1{,}5\); \(2{,}5\); \(3{,}5\) V, čtyři komparátory jsou ve stavu 1: kód komparátorů \(0001111\). Kodér z něj udělá \((100)_2 = 4\) (interval \(3{,}5 \le V_\mathrm{IN} &lt; 4{,}5\) V).</p>
+<p>Flash ADC je nejrychlejší, protože se všechny prahy vyhodnotí současně (rychlost daná přeběhem komparátoru, ns až µs). Pro \(n\) bitů ale potřebuje \(2^n - 1\) komparátorů: pro 16 bitů \(2^{16} - 1 = 65535\). K tomu musí být rezistory v síti precizní (integrovaná R-síť), jinak se posunou kvantizační úrovně.</p></div></details>

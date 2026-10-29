@@ -18,7 +18,7 @@ GLOSSARY = "99_slovnik"                       # stránka slovníku generovaná z
 # Stránky s „číslem“ ve tvaru 1, Z1 nebo P1 jsou kapitoly – musí mít definice, #shrnuti, take-home a #otazky.
 # Skripta mají dvě části (PARTS = písmeno štítku → nadpis v záhlaví kapitoly):
 #   Z1–Z4  = základy (soubory 01–05, vznikly bez přednášek; adresy a id se nemění),
-#   P1–P10 = kapitoly přednášek MPC_SAD_01–10, soubory 11_…–20_… (P4 = 14_oz_zapojeni, P5 = 15_aktivni_filtry),
+#   P1–P10 = kapitoly přednášek MPC_SAD_01–10, soubory 11_…–20_… (P4 = 14_oz_zapojeni, P5 = 15_aktivni_filtry, P6 = 16_komparator),
 #            tahák ke zkoušce 29_tahak_zkouska. Pojem vysvětlený v základech se v přednášce znovu nedefinuje:
 #            kapitola odkáže na jeho rámeček (např. 03_oz.html#def-…) a jde dál podle slidů. Nová stránka se
 #            do PAGES přidává až hotová (build kontroluje povinné sekce); zároveň se v obsah/index.html
@@ -41,6 +41,8 @@ PAGES = [
      "Millerův integrátor a nulování, neinvertující a diferenční integrátor, ošetřený derivátor, precizní usměrňovače, vrcholový detektor."),
     ("15_aktivni_filtry", "P5", "Aplikace OZ II: aktivní filtry",
      "Přenosová funkce, ideální a reálný filtr, strmost dB/okt a dB/dek; DP, HP, PP a PZ v zapojení Sallen-Key a MFB, dvojitý T, Wienův-Robinsonův můstek; Butterworth, Čebyšev, Bessel."),
+    ("16_komparator", "P6", "Komparátor, omezovač a úvod do A/D převodu",
+     "Precizní a oboustranný omezovač (Zenerovy diody, můstek); komparátor, chyba přeběhu, rušení; Schmittův klopný obvod a hystereze; amplitudový selektor; kvantování, vzorkování; paralelní (flash) ADC."),
     ("99_slovnik", "Aa", "Slovník pojmů (definice)", "Všechny definice ze skript na jednom místě."),
 ]
 

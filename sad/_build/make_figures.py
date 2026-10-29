@@ -2515,6 +2515,555 @@ def fig15_aproximace():
     save(fig, "fig15_aproximace")
 
 
+# =====================================================================  přednáška 6: omezovač, komparátor, Schmitt, flash ADC
+def _omez_stupen(d, ox, y0, ref, popis_d, nazvy, horni, vst=None, alt=None):
+    """Jeden stupeň omezovače (slide „Omezovač“): OZ1 s diodou D ve zpětné vazbě za sledovačem OZ2.
+    horni=True: dioda vede z uzlu k výstupu OZ1 (omezení shora), jinak naopak (omezení zdola);
+    vst = popisek vstupní svorky (None = navazuje na předchozí stupeň); alt = popisek čárkované druhé diody."""
+    u = d.unit
+    op1 = elm.Opamp(leads=True).right().at((ox, y0)).anchor("in2").label(nazvy[0], loc="center", fontsize=11)
+    elm.Line().at(op1.in2).left(u * 0.35)
+    elm.Dot(open=True).label(ref, loc="left")
+    elm.Line().at(op1.in1).left(u * 0.2)
+    n = elm.Dot()
+    elm.Resistor().left(u * 0.9).label("$R_1$", loc="bottom")
+    if vst:
+        elm.Dot(open=True).label(vst, loc="left")
+    xk = op1.out[0] + u * 0.9
+    elm.Line().at(op1.out).right(u * 0.1)
+    a = elm.Dot()
+    dd = elm.Diode().right().tox(xk).label(popis_d)
+    if horni:
+        dd.reverse()
+    k = elm.Dot()
+    if alt:
+        ya = op1.out[1] - u * 0.75
+        elm.Line().at(a.center).down().toy(ya).color(MUTED)
+        dd2 = elm.Diode().right().tox(xk).label(alt, loc="bottom").color(MUTED).linestyle("--")
+        if not horni:
+            dd2.reverse()
+        elm.Line().up().toy(k.center).color(MUTED)
+    yt = op1.in1[1] + u * 0.55
+    elm.Line().at(n.center).up().toy(yt)
+    elm.Line().right().tox(xk)
+    elm.Line().down().toy(k.center)
+    op2 = elm.Opamp(leads=True).right().at((xk + u * 0.5, k.center[1])).anchor("in2").label(nazvy[1], loc="center", fontsize=11)
+    elm.Line().at(k.center).right().tox(op2.in2)
+    elm.Line().at(op2.in1).left(u * 0.25)
+    elm.Line().up(u * 0.45)
+    elm.Line().right().tox(op2.out)
+    elm.Line().down().toy(op2.out).dot()
+    elm.Label().at((k.center[0] + 0.05, k.center[1] - 0.38)).label("$U_+$", fontsize=11)
+    return op1, op2
+
+
+def fig16_omezovac():
+    """Precizní omezovač: D1 omezuje shora, místo ní D2 zdola (slide „Omezovač“)."""
+    with schema("fig16_omezovac", unit=2.3) as d:
+        op1, op2 = _omez_stupen(d, 0, 0, "$U_\\mathrm{REF}$", "$D_1$", ("OZ1", "OZ2"), True, vst="$u_i$", alt="$D_2$")
+        elm.Line().at(op2.out).right(d.unit * 0.4)
+        elm.Dot(open=True).label("$u_o$", loc="right")
+
+
+def fig16_oboustranny():
+    """Oboustranný omezovač: dva stupně za sebou (slide „Oboustranný omezovač“), druhý stupeň pod prvním."""
+    with schema("fig16_oboustranny", unit=2.0) as d:
+        u = d.unit
+        op1, op2 = _omez_stupen(d, 0, 0, "$U_\\mathrm{REF1}$", "$D_1$", ("OZ1", "OZ2"), True, vst="$u_i$")
+        p = op2.out
+        y0 = -4.4
+        ymid = -1.0
+        xs = -1.1 * u
+        elm.Line().at(p).down().toy(ymid)
+        elm.Line().left().tox(xs)
+        elm.Line().down().toy(y0 + 1.25).dot()
+        op3, op4 = _omez_stupen(d, 0, y0, "$U_\\mathrm{REF2}$", "$D_2$", ("OZ3", "OZ4"), False)
+        elm.Line().at(op4.out).right(u * 0.4)
+        elm.Dot(open=True).label("$u_o$", loc="right")
+
+
+def fig16_zener_omezovac():
+    """Invertující zesilovač s antisériovými Zenerovými diodami a R2 ve zpětné vazbě (slide „… s vlastním referenčním napětím“)."""
+    with schema("fig16_zener_omezovac", unit=2.3) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True)
+        _vstup_zem(d, op)
+        elm.Line().at(op.in1).left(u * 0.2)
+        n = elm.Dot()
+        elm.Resistor().left(u * 0.9).label("$R_1$", loc="bottom")
+        elm.Dot(open=True).label("$u_i$", loc="left")
+        xb = op.out[0] + u * 0.35
+        y1 = op.in1[1] + u * 0.6
+        y2 = y1 + u * 0.7
+        elm.Line().at(n.center).up().toy(y2)
+        elm.Resistor().right().tox(xb).label("$R_2$")
+        elm.Line().down().toy(y1)
+        elm.Dot()
+        elm.Line().down().toy(op.out[1])
+        elm.Dot()
+        elm.Line().at(op.out).right().tox(xb)
+        elm.Line().at((xb, op.out[1])).right(u * 0.35)
+        elm.Dot(open=True).label("$u_o$", loc="right")
+        elm.Dot().at((n.center[0], y1))
+        elm.Line().at((n.center[0], y1)).right(u * 0.2)
+        elm.Zener().right(u * 0.75).label("$D_1$")
+        elm.Zener().right(u * 0.75).reverse().label("$D_2$")
+        elm.Line().tox(xb)
+
+
+def _zd_mustek(d, cx, cy, r=1.5, popisy=True):
+    """Zenerova dioda v diodovém můstku (X nahoře, Y dole; ZD vodorovně mezi L a R). Vrací body X a Y."""
+    X, Y, L, R = (cx, cy + r), (cx, cy - r), (cx - r, cy), (cx + r, cy)
+    for a, b in ((X, L), (Y, L), (R, X), (R, Y)):
+        elm.Diode().endpoints(a, b)
+    elm.Zener().endpoints(R, L)
+    if popisy:
+        h, o = r / 2, 0.62
+        for t, sx, sy in (("$D_1$", -1, 1), ("$D_3$", 1, 1), ("$D_4$", -1, -1), ("$D_2$", 1, -1)):
+            elm.Label().at((cx + sx * (h + o), cy + sy * (h + o))).label(t, fontsize=10)
+        elm.Label().at((cx, cy - 0.7)).label("ZD", fontsize=10)
+    return X, Y
+
+
+def fig16_zd_mustek():
+    """Oboustranný omezovač s jedinou Zenerovou diodou v můstku (slide „… s vlastním referenčním napětím“, 2.)."""
+    with schema("fig16_zd_mustek", unit=2.2) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True)
+        _vstup_zem(d, op)
+        elm.Line().at(op.in1).left(u * 0.2)
+        n = elm.Dot()
+        elm.Resistor().left(u * 0.9).label("$R_1$", loc="bottom")
+        elm.Dot(open=True).label("$u_i$", loc="left")
+        r = 1.5
+        cx = op.out[0] + u * 0.8
+        cy = op.out[1] + r + 0.55
+        ytop = cy + r + 0.4
+        xr = cx + r + u * 1.3
+        X, Y = _zd_mustek(d, cx, cy, r)
+        elm.Line().at(n.center).up().toy(ytop)
+        elm.Line().right().tox(X[0])
+        elm.Dot()
+        elm.Line().at(X).up().toy(ytop)
+        elm.Resistor().at((X[0], ytop)).right().tox(xr).label("$R_2$")
+        elm.Line().down().toy(op.out[1])
+        elm.Dot()
+        elm.Line().right(u * 0.35)
+        elm.Dot(open=True).label("$u_o$", loc="right")
+        elm.Line().at(op.out).right().tox(cx)
+        elm.Dot()
+        elm.Line().right().tox(xr)
+        elm.Line().at(Y).down().toy(op.out[1])
+
+
+def fig16_komp_omezeni():
+    """Komparátor s omezením výstupního napětí: rezistor a Zenerova dioda v můstku (slide „… s omezením výstupního napětí“)."""
+    with schema("fig16_komp_omezeni", unit=2.2) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True)
+        elm.Line().at(op.in1).left(u * 0.4)
+        elm.Dot(open=True).label("$u_i$", loc="left")
+        elm.Line().at(op.in2).left(u * 0.4)
+        elm.Dot(open=True).label("$U_\\mathrm{REF}$", loc="left")
+        elm.Resistor().at(op.out).right(u * 0.9)
+        j = elm.Dot()
+        elm.Line().right(u * 0.4)
+        elm.Dot(open=True).label("$u_o$", loc="right")
+        r = 1.5
+        cy = op.out[1] - 0.55 - r - 0.4
+        X, Y = _zd_mustek(d, j.center[0], cy, r)
+        elm.Line().at(j.center).down().toy(X[1])
+        elm.Line().at(Y).down(0.4)
+        elm.Ground()
+
+
+def fig16_schmitt():
+    """Schmittův klopný obvod s OZ: R1, R2 a UREF tvoří kladnou zpětnou vazbu (slide „Schmittův klopný obvod“)."""
+    with schema("fig16_schmitt", unit=2.2) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True)
+        elm.Line().at(op.in1).left(u * 0.4)
+        elm.Dot(open=True).label("$U_i$", loc="left")
+        xj = op.out[0] + u * 0.5
+        elm.Line().at(op.out).right().tox(xj)
+        j = elm.Dot()
+        elm.Line().right(u * 0.35)
+        elm.Dot(open=True).label("$U_o$", loc="right")
+        elm.Resistor().at(j.center).down(u * 1.1).label("$R_2$", loc="bottom")
+        m = elm.Dot()
+        elm.Resistor().down(u * 1.1).label("$R_1$", loc="bottom")
+        elm.Dot(open=True).label("$U_\\mathrm{REF}$", loc="bottom")
+        elm.Line().at(m.center).left().tox(op.in2[0] - u * 0.3)
+        elm.Line().up().toy(op.in2[1])
+        elm.Line().right().tox(op.in2[0])
+        elm.Label().at((op.in2[0] - u * 0.45, op.in2[1] + 0.3)).label("$U_+$", fontsize=11)
+
+
+def fig16_schmitt_zd():
+    """Schmittův KO s Zenerovou diodou v můstku: stálé saturační napětí (slide „… s vyloučením změn saturačního napětí“)."""
+    with schema("fig16_schmitt_zd", unit=2.2) as d:
+        u = d.unit
+        op = elm.Opamp(leads=True)
+        elm.Line().at(op.in1).left(u * 0.4)
+        elm.Dot(open=True).label("$U_i$", loc="left")
+        elm.Resistor().at(op.out).right(u * 0.9)
+        j = elm.Dot()
+        elm.Line().right(u * 1.3)
+        k = elm.Dot()
+        elm.Line().right(u * 0.35)
+        elm.Dot(open=True).label("$U_o$", loc="right")
+        r = 1.5
+        cy = op.out[1] - 0.55 - r - 0.4
+        X, Y = _zd_mustek(d, j.center[0], cy, r)
+        elm.Line().at(j.center).down().toy(X[1])
+        elm.Line().at(Y).down(0.4)
+        elm.Ground()
+        yz = Y[1] - 3.2
+        elm.Resistor().at(k.center).down().toy(yz + 1.5).label("$R_2$", loc="bottom")
+        m = elm.Dot()
+        elm.Resistor().down().toy(yz).label("$R_1$", loc="bottom")
+        elm.Ground()
+        elm.Line().at(m.center).left().tox(op.in2[0] - u * 0.3)
+        elm.Line().up().toy(op.in2[1])
+        elm.Line().right().tox(op.in2[0])
+        elm.Label().at((op.in2[0] - u * 0.45, op.in2[1] + 0.3)).label("$U_+$", fontsize=11)
+
+
+def fig16_selektor():
+    """Amplitudový selektor: tři OZ s diodami na společném vodiči (slidy „K čemu slouží toto zapojení?“)."""
+    with schema("fig16_selektor", unit=2.0) as d:
+        xr = -0.7                                           # společný vodič
+        p = 3.2
+        ops = []
+        for i in range(3):
+            yc = -i * p
+            op = elm.Opamp(leads=True).right().at((0, yc - 0.625)).anchor("in2").label(f"OZ{i + 1}", loc="center", fontsize=11)
+            ops.append(op)
+        ytop = ops[0].in1[1] + 0.8
+        elm.Dot(open=True).at((xr, ytop + 0.5)).label("$U_\\mathrm{omax}$", loc="top")
+        elm.Line().at((xr, ytop + 0.5)).down().toy(ops[2].in2[1] - 0.2)
+        for i, op in enumerate(ops):
+            elm.Line().at(op.in1).left().tox(xr)
+            elm.Dot()
+            elm.Line().at(op.in2).left().tox(-2.0)
+            elm.Dot(open=True).label(f"$U_{{i{i + 1}}}$", loc="left")
+            xk = op.out[0] + 0.5
+            yd = op.in1[1] + 0.95
+            elm.Dot().at((xr, yd))
+            elm.Line().at((xr, yd)).right(0.3)
+            elm.Diode().right().tox(xk - 0.4).reverse().label(f"$D_{i + 1}$")
+            elm.Line().tox(xk)
+            elm.Line().down().toy(op.out[1]).dot()
+            elm.Line().at(op.out).right().tox(xk)
+            elm.Line().at((xk, op.out[1])).right(0.4)
+            elm.Dot(open=True).label(f"$U_{{o{i + 1}}}$", loc="right")
+        yb = ops[2].in2[1] - 0.2
+        elm.Line().at((xr, yb)).down(0.2)
+        elm.Resistor().down().label("$R$", loc="bottom")
+        elm.Ground()
+
+
+def fig16_flash():
+    """Paralelní (flash) ADC: 3 bity, VREF = 8 V, VIN = 3,8 V (slidy „Paralelní ADC“)."""
+    with schema("fig16_flash", unit=2.0) as d:
+        p = 2.6
+        prahy = [6.5, 5.5, 4.5, 3.5, 2.5, 1.5, 0.5]
+        vin = 3.8
+        xl, xb, xc = 0.0, 2.2, 4.5
+        ops, taps = [], []
+        for k in range(7):
+            op = elm.Opamp(leads=True).right().at((xc, -k * p - 0.625)).anchor("in2")
+            ops.append(op)
+            taps.append(op.in1[1])
+        ytop = taps[0] + p
+        # žebřík
+        elm.Line().at((xl, ytop)).left(0.35)
+        elm.Dot(open=True).label("$V_\\mathrm{REF}$ = 8 V", loc="left")
+        zn = [ytop] + taps + [taps[6] - p]
+        for j, (y1, y2) in enumerate(zip(zn[:-1], zn[1:])):
+            elm.Resistor().at((xl, y1)).down().toy(y2)
+            elm.Label().at((xl + 0.55, (y1 + y2) / 2)).label("3R/2" if j == 0 else ("R/2" if j == 7 else "R"), fontsize=10)
+        elm.Ground()
+        # sběrnice VIN
+        yv = ytop + 0.9
+        elm.Line().at((xl - 0.35, yv)).right().tox(xb)
+        elm.Dot(open=True).at((xl - 0.35, yv)).label("$V_\\mathrm{IN}$ = 3,8 V", loc="left")
+        elm.Line().at((xb, yv)).down().toy(ops[6].in2[1])
+        for k, op in enumerate(ops):
+            elm.Dot().at((xl, taps[k]))
+            elm.Line().at((xl, taps[k])).right().tox(xc)
+            elm.Label().at((xl + 0.95, taps[k] + 0.2)).label(f"{prahy[k]:.1f} V".replace(".", ","), fontsize=10)
+            elm.Line().at(op.in2).left().tox(xb)
+            elm.Dot().at((xb, op.in2[1]))
+        # kodér
+        xe = xc + 3.415 + 1.0
+        ye1, ye2 = ops[0].out[1] + 0.9, ops[6].out[1] - 0.9
+        for a, b in (((xe, ye1), (xe + 2.0, ye1)), ((xe + 2.0, ye1), (xe + 2.0, ye2)),
+                     ((xe + 2.0, ye2), (xe, ye2)), ((xe, ye2), (xe, ye1))):
+            elm.Line().at(a).to(b)
+        elm.Label().at((xe + 1.0, (ye1 + ye2) / 2)).label("kodér\n(priority\nencoder)", fontsize=11)
+        for k, op in enumerate(ops):
+            zap = prahy[k] < vin
+            col = C3 if zap else MUTED
+            elm.Line().at(op.out).right().tox(xe).color(col)
+            elm.Label().at((op.out[0] + 0.5, op.out[1] + 0.22)).label("1" if zap else "0", fontsize=11, color=col)
+        ymid = (ye1 + ye2) / 2
+        for j, (nm, val) in enumerate((("D2", "1"), ("D1", "0"), ("D0", "0"))):
+            y = ymid + (1 - j) * 1.2
+            elm.Line().at((xe + 2.0, y)).right(0.5)
+            elm.Dot(open=True).label(f"{nm} = {val}", loc="right")
+
+
+def _osy_nula(ax):
+    """Osy procházející nulou (převodní charakteristiky)."""
+    ax.axhline(0, color=AXIS, lw=1)
+    ax.axvline(0, color=AXIS, lw=1)
+
+
+def fig16_omezovac_char():
+    """Převodní charakteristiky precizního omezovače: D1 omezuje shora, D2 zdola (slide „Omezovač“)."""
+    ui = np.linspace(-5, 5, 400)
+    fig, axs = plt.subplots(1, 2, figsize=(9.4, 4.3), sharey=True)
+    for ax, ref, f, titul, pop in (
+            (axs[0], (3, 1, -2), np.minimum, "zapojená $D_1$: omezení shora", "$U_\\mathrm{REF}$"),
+            (axs[1], (-3, -1, 2), np.maximum, "zapojená $D_2$: omezení zdola", "$U_\\mathrm{REF}$")):
+        _osy_nula(ax)
+        ax.plot(ui, ui, color=MUTED, lw=1.2, ls="--", label="$u_o = u_i$")
+        for i, r in enumerate(ref):
+            ax.plot(ui, f(ui, r), color=CAT[i], lw=2.2, marker=MARK[i], markevery=(60 + 40 * i, 120), ms=6,
+                    label=f"{pop} = {r} V".replace("-", "−"))
+        ax.set_title(titul)
+        ax.set_xlabel("vstupní napětí $u_i$ [V]")
+        ax.set_xlim(-5, 5)
+        ax.set_ylim(-5, 5)
+        ax.legend(loc="lower right" if f is np.minimum else "upper left", fontsize=9)
+    axs[0].set_ylabel("výstupní napětí $u_o$ [V]")
+    save(fig, "fig16_omezovac_char")
+
+
+def fig16_oboustranny_char():
+    """Charakteristika oboustranného omezovače: symetrická a nesymetrická (slide „Oboustranný omezovač“)."""
+    ui = np.linspace(-5, 5, 400)
+    fig, ax = plt.subplots(figsize=(5.2, 4.2))
+    _osy_nula(ax)
+    ax.plot(ui, ui, color=MUTED, lw=1.2, ls="--", label="$u_o = u_i$")
+    ax.plot(ui, np.clip(ui, -3, 3), color=C1, lw=2.4, marker=MARK[0], markevery=(40, 120), ms=6,
+            label="$U_\\mathrm{REF1}$ = 3 V, $U_\\mathrm{REF2}$ = −3 V")
+    ax.plot(ui, np.clip(ui, -1.5, 3), color=C2, lw=2.0, marker=MARK[1], markevery=(70, 120), ms=6,
+            label="$U_\\mathrm{REF1}$ = 3 V, $U_\\mathrm{REF2}$ = −1,5 V")
+    ax.set_xlabel("vstupní napětí $u_i$ [V]")
+    ax.set_ylabel("výstupní napětí $u_o$ [V]")
+    ax.set_xlim(-5, 5)
+    ax.set_ylim(-5, 5)
+    ax.set_aspect("equal")
+    ax.legend(loc="upper left", fontsize=8.5)
+    save(fig, "fig16_oboustranny_char")
+
+
+def fig16_zener_char():
+    """Charakteristika omezovače se Zenerovými diodami: symetrická a nesymetrická (slide „… s vlastním referenčním napětím“)."""
+    ui = np.linspace(-1.6, 1.6, 600)
+    k = 10.0                                            # R2/R1
+    fig, ax = plt.subplots(figsize=(6.4, 4.4))
+    _osy_nula(ax)
+    for i, (uz2, c, m, txt) in enumerate(((9.4, C1, "o", "$U_{Z2}$ = 9,4 V (symetrické)"),
+                                          (4.4, C2, "s", "$U_{Z2}$ = 4,4 V (nesymetrické)"))):
+        uo = np.clip(-k * ui, -(uz2 + 0.6), 9.4 + 0.6)
+        ax.plot(ui, uo, color=c, lw=2.2, marker=m, markevery=(80 + 60 * i, 200), ms=6, label=txt)
+    ax.set_xlabel("vstupní napětí $u_i$ [V]")
+    ax.set_ylabel("výstupní napětí $u_o$ [V]")
+    ax.set_xlim(-1.6, 1.6)
+    ax.set_ylim(-12, 12)
+    ax.set_yticks([-10, -5, 0, 5, 10])
+    ax.set_yticklabels(["−10", "−5", "0", "5", "10"])
+    ax.annotate("$+10$ V = $U_{Z1}$ + 0,6 V", (-1.55, 10), (-1.5, 11.0), fontsize=9, color=INK2, va="bottom")
+    ax.annotate("sklon −$R_2/R_1$", (-0.45, 4.5), (0.15, 7.5), fontsize=9, color=INK2,
+                arrowprops=dict(arrowstyle="->", color=MUTED))
+    ax.legend(loc="lower left", fontsize=9)
+    save(fig, "fig16_zener_char")
+
+
+def fig16_komparator_char():
+    """Převodní charakteristika komparátoru se skutečnou šířkou lineární oblasti ±U_sat/A_u (slide „Charakteristika komparátoru“)."""
+    usat, au = 12.0, 1e5
+    ud = np.linspace(-300, 300, 1201)                    # [µV]
+    uo = np.clip(au * ud * 1e-6, -usat, usat)
+    fig, ax = plt.subplots(figsize=(6.4, 4.0))
+    _osy_nula(ax)
+    hr = usat / au * 1e6
+    ax.axvspan(-hr, hr, color=C2, alpha=0.18, lw=0)
+    ax.plot(ud, uo, color=C1, lw=2.4)
+    ax.set_xlabel("rozdíl vstupů $u_{i2} - u_{i1}$ [µV]")
+    ax.set_ylabel("výstupní napětí $u_o$ [V]")
+    ax.set_ylim(-15, 15)
+    ax.set_xlim(-300, 300)
+    ax.set_yticks([-12, -6, 0, 6, 12])
+    ax.set_yticklabels(["−$U_\\mathrm{sat}$ = −12", "−6", "0", "6", "$+U_\\mathrm{sat}$ = 12"])
+    ax.set_xticks([-hr, 0, hr])
+    ax.set_xticklabels(["−$U_\\mathrm{sat}/A_u$\n= −120", "0", "$U_\\mathrm{sat}/A_u$\n= 120"])
+    ax.text(0, -6.3, "oblast přeběhu", ha="center", fontsize=9, color=C2)
+    save(fig, "fig16_komparator_char")
+
+
+def _komp_sim(ui, hi, lo, usat=12.0):
+    """Komparátor s hysterezí: výstup +usat, dokud vstup nepřekročí hi; zpět se překlopí až pod lo."""
+    uo = np.empty_like(ui)
+    stav = usat
+    for i, v in enumerate(ui):
+        if stav > 0 and v > hi:
+            stav = -usat
+        elif stav < 0 and v < lo:
+            stav = usat
+        uo[i] = stav
+    return uo
+
+
+def fig16_rusivy():
+    """Komparátor s pomalým vstupem, s rušením a s hysterezí (slide „Charakteristika komparátoru“)."""
+    t = np.linspace(0, 1, 2000)
+    ramp = 0.9 * t
+    sum_ = 0.045 * np.sin(2 * np.pi * 23 * t) + 0.03 * np.sin(2 * np.pi * 57 * t + 1.0)
+    thr = 0.45
+    scen = (("bez rušení", ramp, thr, thr), ("s rušením", ramp + sum_, thr, thr),
+            ("s hysterezí", ramp + sum_, thr, thr - 0.12))
+    fig, axs = plt.subplots(2, 3, figsize=(10.6, 5.0), sharex=True, gridspec_kw=dict(height_ratios=[1.15, 1]))
+    for j, (titul, ui, hi, lo) in enumerate(scen):
+        a, b = axs[0, j], axs[1, j]
+        a.plot(t, ui, color=C1, lw=1.8, label="$u_{i1}$")
+        a.axhline(hi, color=C2, lw=1.8, ls="--", label="$u_{i2}$")
+        if lo != hi:
+            a.axhline(lo, color=C2, lw=1.4, ls=":")
+            a.annotate("", (0.07, hi), (0.07, lo), arrowprops=dict(arrowstyle="<->", color=INK2))
+            a.text(0.1, (hi + lo) / 2, "hystereze", fontsize=9, color=INK2, va="center")
+        a.set_title(titul)
+        a.set_ylim(-0.05, 1.0)
+        b.step(t, _komp_sim(ui, hi, lo), where="post", color=C3, lw=2)
+        b.set_ylim(-16, 16)
+        b.set_yticks([-12, 0, 12])
+        b.set_yticklabels(["−12", "0", "12"])
+        b.set_xlabel("čas $t$ (libovolné jednotky)")
+        a.set_xticks([])
+        b.set_xticks([])
+    axs[0, 0].set_ylabel("vstupy [V]")
+    axs[1, 0].set_ylabel("výstup $u_o$ [V]")
+    axs[0, 0].legend(loc="upper left", fontsize=9)
+    save(fig, "fig16_rusivy")
+
+
+def fig16_komp_omezeni_prubeh():
+    """Komparátor s omezením: výstup ±(U_ZD + 2U_D) pro dvě referenční napětí (slide „… s omezením výstupního napětí“)."""
+    t = np.linspace(0, 1, 1600)
+    ui = 2.0 * np.interp(t % 1, [0, 0.25, 0.75, 1], [0, 1, -1, 0])
+    ul = 4.7 + 2 * 0.6
+    u1, u2 = 1.0, -1.0
+    fig, axs = plt.subplots(3, 1, figsize=(7.6, 6.2), sharex=True, gridspec_kw=dict(height_ratios=[1.1, 1, 1]))
+    axs[0].plot(t, ui, color=C1, lw=2, label="$u_i$")
+    axs[0].axhline(u1, color=C2, lw=1.6, ls="--", label="$U_\\mathrm{REF} = U_1$")
+    axs[0].axhline(u2, color=C3, lw=1.6, ls=":", label="$U_\\mathrm{REF} = U_2$")
+    axs[0].set_ylabel("$u_i$ [V]")
+    axs[0].set_ylim(-2.6, 2.9)
+    axs[0].legend(loc="upper right", fontsize=8.5, ncol=3)
+    for ax, ref, c, txt in ((axs[1], u1, C2, "$U_\\mathrm{REF} = U_1$"), (axs[2], u2, C3, "$U_\\mathrm{REF} = U_2$")):
+        ax.step(t, np.where(ui < ref, ul, -ul), where="post", color=c, lw=2)
+        ax.set_ylabel("$u_o$ [V]")
+        ax.set_ylim(-9, 9)
+        ax.set_yticks([-ul, 0, ul])
+        ax.set_yticklabels(["−5,9", "0", "5,9"])
+        ax.text(0.99, 7.0, txt, ha="right", va="center", fontsize=9, color=INK2)
+    axs[2].set_xlabel("čas $t$ (libovolné jednotky)")
+    axs[2].set_xticks([])
+    save(fig, "fig16_komp_omezeni_prubeh")
+
+
+def fig16_schmitt_char():
+    """Hysterezní smyčka Schmittova KO (UREF = 2 V, R1 = 1 kΩ, R2 = 9 kΩ, U_sat = ±12 V)."""
+    usat, ur, r1, r2 = 12.0, 2.0, 1.0, 9.0
+    ua = usat * r1 / (r1 + r2) + ur * r2 / (r1 + r2)
+    ub = -usat * r1 / (r1 + r2) + ur * r2 / (r1 + r2)
+    st = ur * r2 / (r1 + r2)
+    fig, ax = plt.subplots(figsize=(7.4, 4.4))
+    _osy_nula(ax)
+    kw = dict(color=C1, lw=2.4)
+    ax.plot([-1.5, ua], [usat, usat], **kw)
+    ax.plot([ua, ua], [usat, -usat], **kw)
+    ax.plot([ua + 2.4, ub], [-usat, -usat], **kw)
+    ax.plot([ub, ub], [-usat, usat], **kw)
+    for x0, y0, x1, y1 in ((-0.2, usat, 0.5, usat), (ua, 3, ua, -3), (ua + 1.0, -usat, ua - 0.6, -usat), (ub, -3, ub, 3)):
+        ax.annotate("", (x1, y1), (x0, y0), arrowprops=dict(arrowstyle="-|>", color=C1, lw=2.4, mutation_scale=16))
+    ax.plot([ua, ub], [0, 0], "o", color=C2, ms=7)
+    ax.plot([st], [0], "s", color=C3, ms=7)
+    ax.annotate("", (ua, 6.5), (ub, 6.5), arrowprops=dict(arrowstyle="<->", color=INK2))
+    ax.text((ua + ub) / 2, 7.2, "$U_H$", ha="center", fontsize=11, color=INK2)
+    ax.text(ua + 0.12, 1.4, f"$U_{{+a}}$ = {ua:.1f} V".replace(".", ","), fontsize=10, color=C2)
+    ax.text(ub - 0.1, -2.4, f"$U_{{+b}}$ = {ub:.1f} V".replace(".", ","), fontsize=10, color=C2, ha="right")
+    ax.text(st, -9.0, "střed hystereze\n$U_\\mathrm{REF}\\,R_2/(R_1+R_2)$ = 1,8 V", fontsize=9, color=C3, ha="center")
+    ax.set_xlim(-1.5, 6.2)
+    ax.set_ylim(-15, 15)
+    ax.set_xlabel("vstupní napětí $U_i$ [V]")
+    ax.set_ylabel("výstupní napětí $U_o$ [V]")
+    ax.set_yticks([-12, 0, 12])
+    ax.set_yticklabels(["$U_\\mathrm{sat}^-$ = −12", "0", "$U_\\mathrm{sat}^+$ = 12"])
+    save(fig, "fig16_schmitt_char")
+
+
+def fig16_selektor_prubeh():
+    """Výstup amplitudového selektoru = maximum ze vstupů (slide „Amplitudový selektor“)."""
+    t = np.linspace(0, 1, 800)
+    uis = [3.0 + 2.2 * np.sin(2 * np.pi * (t + f)) for f in (0.0, 0.33, 0.66)]
+    fig, ax = plt.subplots(figsize=(7.6, 4.0))
+    for i, y in enumerate(uis):
+        ax.plot(t, y, color=CAT[i], lw=1.5, label=f"$U_{{i{i + 1}}}$")
+    ax.plot(t, np.max(uis, axis=0), color=INK, lw=3.4, alpha=0.55, label="$U_\\mathrm{omax}$ (maximum)")
+    ax.set_xlabel("čas $t$ (libovolné jednotky)")
+    ax.set_ylabel("napětí [V]")
+    ax.set_xticks([])
+    ax.legend(loc="lower center", ncol=4, fontsize=9, bbox_to_anchor=(0.5, 1.0))
+    save(fig, "fig16_selektor_prubeh")
+
+
+def fig16_kvantovani():
+    """Vzorkování a kvantování 3bitovým převodníkem, VREF = 8 V (slidy „Analogově-digitální převodník“)."""
+    t = np.linspace(0, 1, 800)
+    sig = lambda x: 4.0 + 3.2 * np.sin(2 * np.pi * x)
+    ts = np.arange(0, 1.0001, 1 / 16)
+    k = np.clip(np.round(sig(ts)), 0, 7)
+    fig, ax = plt.subplots(figsize=(7.6, 4.2))
+    for lv in range(8):
+        ax.axhline(lv, color=GRID, lw=0.8)
+        ax.text(1.015, lv, f"{lv:03b}", va="center", fontsize=9, color=MUTED)
+    ax.plot(t, sig(t), color=C1, lw=1.8, label="analogový signál")
+    ax.step(ts, k, where="post", color=C3, lw=2.2, label="kvantovaný signál (po vzorcích)")
+    ax.plot(ts, sig(ts), "o", color=C2, ms=6, label="vzorky")
+    ax.set_xlim(0, 1)
+    ax.set_ylim(-0.6, 8)
+    ax.set_xticks([])
+    ax.set_xlabel("čas $t$ (libovolné jednotky); vzorky po $T_s$")
+    ax.set_ylabel("napětí [V] (kvantizační krok 1 V)")
+    ax.text(1.015, 8.0, "kód", fontsize=9, color=MUTED, va="center")
+    ax.legend(loc="lower center", ncol=3, fontsize=9, bbox_to_anchor=(0.5, 1.0))
+    save(fig, "fig16_kvantovani")
+
+
+def fig16_adc_char():
+    """Převodní charakteristika 3bitového flash ADC, VREF = 8 V (slide s příkladem VIN = 3,8 V)."""
+    vin = np.linspace(0, 8, 1601)
+    kod = np.clip(np.floor(vin + 0.5), 0, 7)
+    fig, ax = plt.subplots(figsize=(6.6, 4.2))
+    ax.step(vin, kod, where="post", color=C1, lw=2.4)
+    ax.plot([3.8], [4], "s", color=C2, ms=9, zorder=5)
+    ax.annotate("$V_\\mathrm{IN}$ = 3,8 V → kód 4 = (100)$_2$", (3.8, 4), (4.9, 2.2), fontsize=9.5, color=C2,
+                arrowprops=dict(arrowstyle="->", color=C2))
+    ax.axvspan(3.5, 4.5, color=C2, alpha=0.12, lw=0)
+    ax.set_xlim(0, 8)
+    ax.set_ylim(-0.3, 7.6)
+    ax.set_xticks(range(0, 9))
+    ax.set_yticks(range(8))
+    ax.set_xlabel("vstupní napětí $V_\\mathrm{IN}$ [V]")
+    ax.set_ylabel("výstupní kód (desítkově)")
+    ax.text(0.15, 6.6, "kvantizační krok = 1 V,\nprahy 0,5; 1,5; …; 6,5 V", fontsize=9, color=INK2, va="center")
+    save(fig, "fig16_adc_char")
+
+
 ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig02_xc, fig02_dp_hp, fig02_bode_dp, fig02_bode_hp, fig02_postup, fig02_typy, fig02_pp_schema,
        fig02_bode_pp, fig02_pz_schema, fig02_bode_pz,
@@ -2532,7 +3081,8 @@ ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig14_der_trojuhelnik, fig14_usm_prubeh, fig14_dioda_va, fig14_usm_va, fig14_vrchol_prubeh,
        fig15_dp1_neinv, fig15_dp1_inv, fig15_hp1_neinv, fig15_hp1_inv, fig15_sk_dp, fig15_sk_hp, fig15_mfb_dp,
        fig15_mfb_hp, fig15_mfb_pp, fig15_twint, fig15_wien, fig15_kaskada_schema, fig15_idealni_realny,
-       fig15_strmost, fig15_sk_q, fig15_pp_mfb, fig15_pz_q, fig15_kaskada, fig15_butterworth, fig15_aproximace]
+       fig15_strmost, fig15_sk_q, fig15_pp_mfb, fig15_pz_q, fig15_kaskada, fig15_butterworth, fig15_aproximace,
+       fig16_omezovac, fig16_oboustranny, fig16_zener_omezovac, fig16_zd_mustek, fig16_komp_omezeni, fig16_schmitt, fig16_schmitt_zd, fig16_selektor, fig16_flash, fig16_omezovac_char, fig16_oboustranny_char, fig16_zener_char, fig16_komparator_char, fig16_rusivy, fig16_komp_omezeni_prubeh, fig16_schmitt_char, fig16_selektor_prubeh, fig16_kvantovani, fig16_adc_char]
 
 if __name__ == "__main__":
     vyber = sys.argv[1:]

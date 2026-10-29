@@ -383,3 +383,48 @@
 <p>\[ \tau_g = -\frac{d\varphi}{d\omega} \]</p>
 <p>Udává, o jakou dobu filtr zpozdí složky signálu kolem frekvence \(\omega\).</p>
 <p class="jinak">je-li fáze lineární (přímka), je \(\tau_g\) konstantní: všechny frekvence dorazí se stejným zpožděním a tvar signálu se zachová. Kde \(\tau_g\) kolísá, se signál „rozmaže“ nebo zakmitá.</p><p class="slovnik-odkaz"><a href="15_aktivni_filtry.html#def-skupinove-zpozdeni">výklad v kapitole P5 →</a></p></div>
+<h2 id="kP6" class="slovnik-kap">P6 · Komparátor, omezovač a úvod do A/D převodu</h2>
+<div class="box definice" id="s-omezovac"><div class="box-t">precizní omezovač</div>
+<p><b>Precizní omezovač</b> je zapojení s OZ a diodou, které omezuje výstupní napětí na hodnotu referenčního napětí \(U_\mathrm{REF}\): dokud je vstup za mezí, výstup mu přesně odpovídá, a jakmile mez překročí, zůstane výstup na \(U_\mathrm{REF}\).</p>
+<p class="jinak">omezovač je jako strop, který se nastavuje napětím \(U_\mathrm{REF}\). Menší signály projdou beze změny, větší se „uříznou“. Slide ho nazývá usměrňovačem s <b>posunutou „nulou“</b> o hodnotu \(U_\mathrm{REF}\): přesný usměrňovač z <a href="14_oz_zapojeni.html">P4</a> omezuje na 0 V, omezovač na \(U_\mathrm{REF}\).</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-omezovac">výklad v kapitole P6 →</a></p></div>
+<div class="box definice" id="s-oboustranny-omezovac"><div class="box-t">oboustranný omezovač</div>
+<p><b>Oboustranný omezovač</b> omezuje výstupní napětí shora i zdola: výstup sleduje vstup jen mezi dolní mezí \(U_\mathrm{REF2}\) a horní mezí \(U_\mathrm{REF1}\).</p>
+<p class="jinak">dvě zábrany místo jedné. Signál smí kmitat jen v pásmu mezi nimi; vše mimo pásmo se uřízne.</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-oboustranny-omezovac">výklad v kapitole P6 →</a></p></div>
+<div class="box definice" id="s-chyba-prebehu"><div class="box-t">chyba přeběhu komparátoru</div>
+<p><b>Chyba přeběhu</b> komparátoru je dána poměrem saturačního napětí a zesílení OZ. Je to šířka oblasti vstupního rozdílu napětí, v níž výstup ještě není v saturaci:</p>
+\[ |U_{i2} - U_{i1}| &lt; \frac{U_\mathrm{SAT}}{A_u} \]
+<p class="jinak">skutečný OZ nepřeskočí z jedné saturace do druhé v nule, ale potřebuje „rozjezd“ \(\pm U_\mathrm{SAT}/A_u\) kolem nuly. Čím větší zesílení \(A_u\), tím je rozjezd užší a komparátor „ostřejší“.</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-chyba-prebehu">výklad v kapitole P6 →</a></p></div>
+<div class="box definice" id="s-hystereze"><div class="box-t">hystereze komparátoru</div>
+<p><b>Hystereze</b> je vlastnost obvodu, jehož výstup závisí nejen na hodnotě vstupu, ale i na jeho <b>původním stavu</b>: práh, při kterém se obvod překlopí nahoru, je jiný než práh, při kterém se překlopí zpět dolů.</p>
+<p class="jinak">obvod si „pamatuje“, kde byl. Aby ho vstup přehodil, musí zajít <b>o kus dál</b>, než byl předešlý práh. Proto drobné chvění kolem prahu obvod nepřehodí.</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-hystereze">výklad v kapitole P6 →</a></p></div>
+<div class="box definice" id="s-schmitt"><div class="box-t">Schmittův klopný obvod</div>
+<p><b>Schmittův klopný obvod</b> je komparátor s kladnou zpětnou vazbou (z výstupu přes dělič \(R_2\), \(R_1\) na neinvertující vstup), jehož základní vlastností je <b>hystereze</b>. Překlápění probíhá kolem bodu, který určuje \(U_\mathrm{REF}\) a rezistory \(R_1\), \(R_2\).</p>
+<p class="jinak">komparátor, který si podle výstupu sám posune práh: je-li výstup nahoře, práh je vyšší, je-li dole, je nižší. Používá se k <b>úpravě tvaru impulzů</b> (rozmazaná, zarušená hrana se změní na čistý skok).</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-schmitt">výklad v kapitole P6 →</a></p></div>
+<div class="box definice" id="s-amplitudovy-selektor"><div class="box-t">amplitudový selektor</div>
+<p><b>Amplitudový selektor</b> je zapojení několika komparátorů s diodami na společném vodiči, jehož výstup \(U_\mathrm{omax}\) je rovný <b>největšímu</b> ze vstupních napětí.</p>
+<p class="jinak">obvod „vybírá“ signál s největší amplitudou. Je to analogový <b>výběr maxima</b>: kdo má nejvyšší napětí, ten vyhrává a ostatní jsou odpojeny.</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-amplitudovy-selektor">výklad v kapitole P6 →</a></p></div>
+<div class="box definice" id="s-adc"><div class="box-t">analogově-digitální převodník</div>
+<p><b>Analogově-digitální (A/D) převodník</b> slouží k převodu <b>analogového (spojitého)</b> signálu na <b>digitální (diskrétní)</b> signál.</p>
+<p class="jinak">obvod, který změří napětí a řekne ho číslem. Z plynulé hodnoty (například 3,8 V) udělá kód, se kterým počítá procesor.</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-adc">výklad v kapitole P6 →</a></p></div>
+<div class="box definice" id="s-kvantovani"><div class="box-t">kvantování</div>
+<p><b>Kvantování</b> je proces převodu <b>amplitudy</b> signálu na příslušnou <b>binární hodnotu</b>.</p>
+<p class="jinak">spojité napětí se zaokrouhlí na nejbližší z konečného počtu hladin a hladina dostane číslo. Tím se ztratí nepatrný rozdíl mezi hladinami – kvantizační chyba.</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-kvantovani">výklad v kapitole P6 →</a></p></div>
+<div class="box definice" id="s-kvantizacni-uroven"><div class="box-t">kvantizační úroveň</div>
+<p><b>Kvantizační úroveň</b> (kvantizační krok, \(1\) LSB) souvisí s <b>počtem bitů</b> převodníku a <b>referenčním napětím</b>: je to nejmenší změna vstupu, kterou převodník rozliší,</p>
+\[ q = \frac{U_\mathrm{REF}}{2^{n}} \]
+<p class="jinak">n-bitový převodník rozdělí rozsah \(0\) až \(U_\mathrm{REF}\) na \(2^n\) stejných kroků. Čím víc bitů, tím jemnější krok.</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-kvantizacni-uroven">výklad v kapitole P6 →</a></p></div>
+<div class="box definice" id="s-vzorkovani"><div class="box-t">vzorkování</div>
+<p>Je-li signál pro potřeby A/D převodu diskretizován <b>i v čase</b>, jedná se o <b>vzorkování</b>.</p>
+<p class="jinak">kvantování „řeže“ signál na hladiny podle svislé osy, vzorkování ho „řeže“ po okamžicích podle osy vodorovné. Převodník dělá obojí. Vzorkovací teorém, tj. jak často vzorkovat, patří do zpracování signálů.</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-vzorkovani">výklad v kapitole P6 →</a></p></div>
+<div class="box definice" id="s-dac"><div class="box-t">digitálně-analogový převodník</div>
+<p><b>Digitálně-analogový (D/A) převodník</b> slouží k převodu <b>digitálního (diskrétního)</b> signálu na <b>analogový (spojitý)</b>.</p>
+<p class="jinak">opak A/D převodníku: z čísla vyrobí napětí.</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-dac">výklad v kapitole P6 →</a></p></div>
+<div class="box definice" id="s-flash-adc"><div class="box-t">paralelní (flash) ADC</div>
+<p><b>Paralelní (flash) ADC</b> je nejrychlejší typ A/D převodníku: měřené napětí se <b>současně</b> porovnává se všemi kvantizačními hladinami pomocí řady komparátorů a z jejich výstupů kodér vyrobí binární kód.</p>
+<p class="jinak">místo hledání hodnoty postupně se napětí „přiloží“ najednou ke všem příčkám žebříku a podívá se, kolik jich je pod ním. Použije se tam, kde je potřeba rychlost, například pro BCD 7segmentový displej.</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-flash-adc">výklad v kapitole P6 →</a></p></div>
+<div class="box definice" id="s-rezistorova-sit"><div class="box-t">rezistorová síť převodníku</div>
+<p><b>Rezistorová síť</b> (R-síť) je soubor napěťových děličů, který rozdělí referenční napětí \(U_\mathrm{REF}\) na úrovně, které se přivedou na <b>invertující vstupy komparátorů</b> pro porovnání s měřeným napětím.</p>
+<p class="jinak">žebřík stejných rezistorů mezi referencí a zemí. Každá příčka dává jinou hladinu, a ty jsou prahy komparátorů.</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-rezistorova-sit">výklad v kapitole P6 →</a></p></div>
+<div class="box definice" id="s-termometricky-kod"><div class="box-t">termometrický kód</div>
+<p><b>Termometrický kód</b> je zápis stavu komparátorů flash ADC, v němž je tolik jedniček (zdola), kolik prahů je pod měřeným napětím.</p>
+<p class="jinak">jako rtuť v teploměru: čím vyšší napětí, tím víc komparátorů „svítí“. Kodér ho převede na obyčejné binární číslo.</p><p class="slovnik-odkaz"><a href="16_komparator.html#def-termometricky-kod">výklad v kapitole P6 →</a></p></div>
