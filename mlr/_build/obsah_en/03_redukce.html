@@ -34,6 +34,13 @@
 The <b>Spearman coefficient</b> is the Pearson coefficient computed on ranks; it measures a <b>monotonic</b> relationship:
 \[ \rho_S = \rho_P\big(\text{rank}(x),\ \text{rank}(y)\big) \]</p>
 <p class="jinak">Pearson: “how well the points lie on a line” – sensitive to outliers, for numeric variables. Spearman: “when one goes up, does the other go up (down) too?” – the shape does not matter, less sensitive to extremes, usable for ordinal variables too. \(\rho = 0\) does not mean independence (only that a linear / monotonic relationship is missing).</p></div>
+<p><b>In words:</b> for each point we check whether \(x\) and \(y\) are both above their means (or both below) – then the product of deviations \((x_i - \bar x)(y_i - \bar y)\) is positive; if one value is above and the other below its mean, it is negative. The numerator adds up these products: if the positive ones dominate, the variables grow together. The denominator is the product of the “spreads” of both variables (square roots of the sums of squared deviations); dividing by it makes the result independent of units, and it always lies between −1 and 1. The factors \(1/(n-1)\) from the covariance and from the standard deviations cancel in the fraction, which is why they are missing in the second form. Spearman replaces the values by their ranks (1, 2, …, \(n\)) and computes the same thing – so the shape of the relationship and the effect of extreme values disappear.</p>
+<div class="tablewrap"><table>
+<tr><th>value</th><th>meaning</th><th>typical example</th></tr>
+<tr><td>near +1</td><td>they increase together</td><td>height and weight</td></tr>
+<tr><td>near −1</td><td>one rises, the other falls</td><td>outdoor temperature and heating costs</td></tr>
+<tr><td>near 0</td><td>weak linear / monotonic link</td><td>shoe size and exam score</td></tr>
+</table></div>
 <div class="box priklad"><div class="box-t">By hand (lecture): \(y = 2^{x-1}\)</div>
 <p>Data: \(x = 1,\dots,5\), \(y = 1, 2, 4, 8, 16\); means \(\bar x = 3\), \(\bar y = 6.2\).</p>
 <p>1. Sums of deviations:</p>
@@ -47,26 +54,35 @@ The <b>Spearman coefficient</b> is the Pearson coefficient computed on ranks; it
 <p>The <b>entropy</b> of a discrete random variable \(X\) is the average uncertainty of the outcome in bits:
 \[ H(X) = -\sum_x p(x)\log_2 p(x) \]
 Joint entropy and conditional entropy (the uncertainty of \(X\) that remains after observing \(Y\)):
-\[ \begin{aligned} H(X, Y) &= -\sum_{x,y}p(x,y)\log_2 p(x,y) \\ H(X\mid Y) &= -\sum_y p(y)\sum_x p(x\mid y)\log_2 p(x\mid y) \end{aligned} \]</p>
+\[ \begin{aligned} H(X, Y) &= -\sum_{x,y}p(x,y)\log_2 p(x,y) \\ H(X\mid Y) &= \sum_y p(y)\,H(X\mid Y = y) \\ H(X\mid Y = y) &= -\sum_x p(x\mid y)\log_2 p(x\mid y) \end{aligned} \]</p>
 <p class="jinak">“how many yes/no questions I need on average to guess the outcome”. A fair coin 1 bit, a coin with \(p = 0.9\) 0.469 bits, a fair die \(\log_2 6 = 2.585\) bits, a certain outcome 0. Many evenly likely outcomes = high entropy.</p></div>
+<p><b>In words:</b> \(-\log_2 p(x)\) is the “surprise” of the outcome \(x\): a certain outcome (\(p = 1\)) is no surprise at all (0 bits), an outcome with \(p = 1/2\) carries 1 bit, with \(p = 1/4\) 2 bits. Entropy is the <b>average surprise</b> – each surprise weighted by how often it happens (\(p(x)\)). The joint entropy \(H(X, Y)\) is the same for pairs of values. Conditional entropy \(H(X\mid Y)\): we split the data into groups by the value of \(y\), compute the entropy of \(X\) in each group (the inner sum) and average the results with the weights \(p(y)\), i.e. by group size. If \(Y\) determines \(X\) exactly, each group is “pure” and \(H(X\mid Y) = 0\).</p>
 <div class="box definice" id="def-mi"><div class="box-t">Definition: mutual information</div>
 <p><b>Mutual information</b> is the amount of information that observing one variable gives about the other (the reduction of uncertainty):
 \[ \begin{aligned} I(X; Y) &= H(Y) - H(Y\mid X) \\ &= H(X) + H(Y) - H(X, Y) \\ &= \sum_{x,y}p(x,y)\log_2\frac{p(x,y)}{p(x)p(y)} \end{aligned} \]</p>
 <p class="jinak">“how much less uncertain I am about the target when I know the feature”. Unlike correlation it also captures <b>non-linear</b> dependence and works for categorical variables too; \(I = 0\) exactly for independent variables.</p></div>
+<p><b>In words:</b> the three lines are three views of the same number.</p>
+<ol>
+<li>The uncertainty about the target \(Y\) before, minus the uncertainty that remains once I know \(X\) – how much \(X\) helped me.</li>
+<li>If the variables were independent, \(H(X, Y) = H(X) + H(Y)\) would hold. By how much the joint entropy is smaller than this sum, by that much the information of the two variables overlaps.</li>
+<li>For each pair \((x, y)\) we compare how often it really occurs (\(p(x,y)\)) with how often it would occur under independence (\(p(x)p(y)\)). A ratio of 1 gives a logarithm of 0 – independent variables have \(I = 0\); the more reality differs from independence, the larger \(I\) is.</li>
+</ol>
 <p>In practice: for a discrete pair I build a table of counts \(n_{xy}\), divide by \(n\) (\(\hat p(x,y) = n_{xy}/n\)), sum the marginals over rows/columns and plug in (skipping zero cells). For continuous data the density is estimated: <b>kNN</b> (distances to neighbours; you choose \(k\)), <b>KDE</b> (smooth “bumps”; you choose the bandwidth) or <b>binning</b> (discretization; depends on the bin edges and width). scikit-learn: <code>mutual_info_classif</code> for classes, <code>mutual_info_regression</code> for a continuous target; they return nats (divide by \(\ln 2\) for bits).</p>
 <h3>Relevance, redundancy and mRMR</h3>
 <div class="box intuice"><div class="box-t">Correlation matrix with the label</div>
 <p>If we add the target \(Y\) to the correlation matrix, we see <b>relevance</b> (feature–target link: F1–Y 0.65, F2–Y 0.60) and <b>redundancy</b> (feature–feature link: F1–F2 0.92 – they overlap). Selection rule: useful information without duplicates. F1 and F2 are each relevant on their own, but together almost useless – one of them is enough.</p></div>
 <div class="box definice" id="def-mrmr"><div class="box-t">Definition: mRMR (minimum redundancy, maximum relevance)</div>
 <p><b>mRMR</b> is a greedy filter that starts with the feature with the largest mutual information with the target \(I(X_j; Y)\) and then repeatedly adds the feature that maximizes <b>relevance minus mean redundancy</b> with respect to the already selected set \(S\):
-\[ j^\ast = \arg\max_{j\notin S}\left[I(X_j; Y) - \frac{1}{|S|}\sum_{i\in S}I(X_j; X_i)\right] \]
+\[ \begin{aligned} j^\ast = \arg\max_{j\notin S}\Big[\,&I(X_j; Y) \\ &- \frac{1}{|S|}\sum_{i\in S}I(X_j; X_i)\Big] \end{aligned} \]
 until it has the chosen number \(k\) of features.</p>
 <p class="jinak">“add a feature that says a lot about the target and at the same time does not repeat what we already know”. No predictor is fitted – it is fast and independent of the model.</p></div>
+<p><b>In words:</b> for each candidate \(X_j\) that is not selected yet we compute two numbers. The first term \(I(X_j; Y)\) is the <b>relevance</b> – how much the candidate says about the target. The second term is the mean mutual information with the features already in the set \(S\) – how much of it “we already know” (<b>redundancy</b>). The difference is the net benefit of the candidate, and \(\arg\max\) picks the \(j\) for which it is largest. If we selected only by the first term, we would take both F1 and F2 from the previous box; once F1 is selected, the second term penalizes F2 because it overlaps with F1.</p>
 
 <h2 id="wrappery">Wrappers: the model itself says what works</h2>
 <div class="box definice" id="def-wrapper"><div class="box-t">Definition: wrapper method of feature selection</div>
 <p>A <b>wrapper</b> solves the discrete optimization problem \(S^\ast = \arg\min_{S\subseteq F,\ |S| = k}\hat R_{CV}(P_S)\): it looks for the subset \(S\) of feature indices for which the validation (CV) loss of a model trained only on \(S\) is smallest. One evaluation = fitting preprocessing and the model inside each training fold.</p>
 <p class="jinak">the model is trained again and again on different combinations of features and the one that comes out best is chosen. Accurate but expensive – and the space of subsets is huge (\(2^d\)).</p></div>
+<p><b>In words:</b> \(\arg\min\) reads “the set \(S\) for which the expression is smallest”. The conditions below it say where we choose from: \(S\) is a subset of all feature indices \(F = \{1, \dots, d\}\) and has exactly \(k\) elements. \(\hat R_{CV}(P_S)\) is the cross-validation error of the whole pipeline \(P_S\) (preprocessing + model) that sees only the columns in \(S\). If we score by accuracy, maximizing accuracy is the same as minimizing \(1 - \text{accuracy}\).</p>
 <div class="tablewrap"><table>
 <tr><th>strategy</th><th>which subsets it evaluates</th><th>trade-off</th></tr>
 <tr><td>brute force</td><td>all allowed ones</td><td>best CV score guaranteed; combinatorial cost</td></tr>
@@ -76,8 +92,24 @@ until it has the chosen number \(k\) of features.</p>
 <div class="box definice" id="def-forward"><div class="box-t">Definition: forward selection and backward elimination</div>
 <p><b>Forward selection</b> starts with an empty set and in each step adds the feature that gives the largest CV score: \(j^\ast = \arg\max_{j\notin S}\text{CVAcc}(S\cup\{j\})\). <b>Backward elimination</b> starts with all features and in each step removes the one whose removal leaves the set with the highest score. It ends when the chosen number \(k\) is reached or when the improvement drops below a threshold (comparison with a “dummy” predictor).</p>
 <p class="jinak">same objective function, a different path through the space. An added feature stays, a removed one does not come back – neither direction guarantees the best subset.</p></div>
+<p><b>In words:</b> \(\text{CVAcc}(S\cup\{j\})\) is the CV accuracy when we add feature \(j\) to the current set; we try this for every feature not selected yet and take the best one. Backward elimination computes \(\text{CVAcc}(S\setminus\{j\})\) – it judges the <b>remaining</b> set without feature \(j\), not the removed feature alone. It removes the feature whose absence costs the model least (or even improves it).</p>
 <div class="box priklad"><div class="box-t">Forward selection (lecture: breast cancer, logistic regression + scaling in 5-fold CV)</div>
-<p><b>Iteration 1</b> (current ∅): +A (mean radius) 0.877; +B (mean texture) 0.694; +C (texture error) 0.627; +D (fractal dimension error) 0.617 ⇒ A selected. <b>Iteration 2</b> (current {A}): {A, B} 0.88578; {A, C} 0.88581; {A, D} 0.87879 ⇒ C selected, stop at \(|S| = 2\). (The numbers are search scores in CV, not test results.) Notice that C alone was weak, but it complements A.</p></div>
+<p>Features: A = mean radius, B = mean texture, C = texture error, D = fractal dimension error.</p>
+<p><b>Iteration 1</b> (current ∅) – we try adding each feature:</p>
+<ul><li>+A → 0.877 ✓</li><li>+B → 0.694</li><li>+C → 0.627</li><li>+D → 0.617</li></ul>
+<p>A selected.</p>
+<p><b>Iteration 2</b> (current {A}):</p>
+<ul><li>{A, B} → 0.88578</li><li>{A, C} → 0.88581 ✓</li><li>{A, D} → 0.87879</li></ul>
+<p>C selected, stop at \(|S| = 2\). (The numbers are search scores in CV, not test results.) Notice that C alone was weak, but it complements A.</p></div>
+<div class="box priklad"><div class="box-t">Backward elimination (lecture: same data, model and CV splits)</div>
+<p><b>Iteration 1</b> (current {A, B, C, D}) – we try removing each feature and judge what remains:</p>
+<ul><li>−A → {B, C, D} 0.72582</li><li>−B → {A, C, D} 0.88401</li><li>−C → {A, B, D} 0.88929 ✓</li><li>−D → {A, B, C} 0.88227</li></ul>
+<p>C removed – the remaining triple scores best without it.</p>
+<p><b>Iteration 2</b> (current {A, B, D}):</p>
+<ul><li>−A → {B, D} 0.68533</li><li>−B → {A, D} 0.87879</li><li>−D → {A, B} 0.88578 ✓</li></ul>
+<p>D removed, stop at \(|S| = 2\): result {A, B}. Removing A always hurts the most – A is the most important feature in both directions.</p></div>
+<div class="box pozor"><div class="box-t">Same task, different search direction → different result</div>
+<p>Forward selection ended at {A, C} (0.88581), backward elimination at {A, B} (0.88578). Backward elimination dropped C in the very first step, because next to B and D it was the least needed – and a removed feature never comes back. Of all six pairs, {A, C} is the best, so here forward selection found it; the difference in score is negligible, though. The point: <b>the result of a greedy search depends on the path</b>, not only on the objective function.</p></div>
 <div class="box pozor"><div class="box-t">A greedy search can miss the best pair</div>
 <p>Task: select exactly 2 features (lower loss is better). Greedy: the best single feature is A → the best pair with it is AB, loss 0.18. Brute force checks all three pairs → <b>BC, loss 0.10</b>. Random search finds BC if it happens to draw it. Local search (swapping one feature AB → BC) or random restarts can fix the greedy choice. Small space → brute force; limited budget → compare greedy, random and local search with the same budget. <b>Grid search</b> is brute force over a chosen grid of parameters (3 values of C × 2 values of γ = 6 combinations).</p></div>
 <div class="box parametry"><div class="box-t">Parameters: feature selection (filters and wrappers)</div>
@@ -100,6 +132,22 @@ until it has the chosen number \(k\) of features.</p>
 \[ \mathbf z = W^\top\mathbf x,\qquad W \in \mathbb R^{d\times k} \]
 – each new component \(z_j = \mathbf w_j^\top\mathbf x\) is a projection (dot product) onto the column \(\mathbf w_j\), i.e. a weighted sum of the original features. <b>Non-linear</b>: \(\mathbf z = f(\mathbf x)\) with a non-linear \(f\).</p>
 <p class="jinak">the new features are “mixtures” of the old ones, e.g. \(z_1 = 0.7x_1 - 0.2x_2 + 0.5x_3\). Linear = simple, interpretable (readable weights, rotations and projections, fast matrix operations); non-linear = more flexible (curved manifolds, local neighbourhoods) but less transparent. Good advice: try a linear representation first.</p></div>
+<div class="box vzorec"><div class="box-t">Dot product, projection and linearity</div>
+\[ z = \mathbf w^\top\mathbf x = \langle\mathbf x, \mathbf w\rangle = \|\mathbf x\|\,\|\mathbf w\|\cos\theta \]
+<table class="vars">
+<tr><td>\(\mathbf x\)</td><td>feature vector of one sample</td></tr>
+<tr><td>\(\mathbf w\)</td><td>direction (vector of weights)</td></tr>
+<tr><td>\(\|\cdot\|\)</td><td>length of a vector</td></tr>
+<tr><td>\(\theta\)</td><td>angle between \(\mathbf x\) and \(\mathbf w\)</td></tr>
+</table>
+<p><b>In words:</b> the dot product multiplies the matching components and adds them up – it is a weighted sum of the features. Geometrically it is the length of \(\mathbf x\) times the length of \(\mathbf w\) times the cosine of the angle between them. If \(\mathbf w\) has length 1, what remains is \(\|\mathbf x\|\cos\theta\): the <b>signed length of the “shadow”</b> of the point \(\mathbf x\) on the line in the direction \(\mathbf w\) (negative if the shadow falls on the other side of the origin). Several directions at once = a matrix \(W\) with the directions in its columns, \(\mathbf z = W^\top\mathbf x\); each component \(z_j = \mathbf w_j^\top\mathbf x\) is the shadow on one column \(\mathbf w_j\).</p>
+<p>Example (the first point of the PCA example below): \(\mathbf x = (2, 1)\), \(\mathbf w = \tfrac1{\sqrt2}(1, 1)\).</p>
+\[ \begin{aligned} &\text{by components:} \\ z &= \tfrac1{\sqrt2}(2\cdot1 + 1\cdot1) = \tfrac{3}{\sqrt2} = 2.12 \\ &\text{geometrically:} \\ z &= \sqrt5\cdot\cos18.4^\circ = 2.236\cdot0.949 = 2.12 \end{aligned} \]
+<p><b>Why “linear”:</b> a function \(f\) is linear if it satisfies two rules:</p>
+\[ \begin{aligned} &\text{additivity:} \\ &f(\mathbf x_1 + \mathbf x_2) = f(\mathbf x_1) + f(\mathbf x_2) \\ &\text{homogeneity:} \\ &f(a\mathbf x) = a\,f(\mathbf x) \\ &\text{together (superposition):} \\ &f(a\mathbf x_1 + b\mathbf x_2) = a\,f(\mathbf x_1) + b\,f(\mathbf x_2) \end{aligned} \]
+<p><b>In words:</b> the output for a sum of inputs is the sum of the outputs, and a doubled input gives a doubled output. Exactly the weighted sums of the inputs satisfy both rules – that is why every new feature of a linear reduction is a “mixture” of the original ones:</p>
+\[ z_1 = w_{1,1}x_1 + w_{2,1}x_2 + \dots + w_{d,1}x_d \]
+<p>where \(w_{j,1}\) is the weight of feature \(x_j\) in the new feature \(z_1\) (e.g. \(z_1 = 0.7x_1 - 0.2x_2 + 0.5x_3\)).</p></div>
 <div class="box definice" id="def-pca"><div class="box-t">Definition: principal component analysis (PCA)</div>
 <p><b>PCA</b> is an unsupervised method that projects centred data into a new coordinate system of orthogonal directions (principal components) ordered by variance: the first component is the direction of <b>largest variance</b>, the second is perpendicular to it with the second largest variance, and so on. The directions are the eigenvectors of the covariance matrix \(S = \frac1n X^\top X\) and the variances are its eigenvalues.</p>
 <p class="jinak">PCA rotates the axes so that the first axis runs along the “longest” stretch of the point cloud. If we keep only the first few axes, we lose the smallest possible part of the information (measured by the squared reconstruction error). The new components (scores) are uncorrelated. It does not need labels.</p></div>
@@ -108,7 +156,12 @@ until it has the chosen number \(k\) of features.</p>
 \[ \begin{aligned} \text{projection:}\quad & z_i = \mathbf w^\top\mathbf x_i \\ \text{reconstruction:}\quad & \hat{\mathbf x}_i = z_i\mathbf w \\ \text{error:}\quad & \mathbf e_i = \mathbf x_i - \hat{\mathbf x}_i \end{aligned} \]
 <p>By Pythagoras \(\|\mathbf x_i\|^2 = z_i^2 + \|\mathbf e_i\|^2\). Averaged over all points:</p>
 \[ \frac1n\sum_i\|\mathbf e_i\|^2 = \operatorname{trace}(S) - \mathbf w^\top S\mathbf w \]
+<p><b>In words:</b> \(z_i\) is the shadow of the point on the line, \(\hat{\mathbf x}_i\) is the place on the line where the shadow falls, and \(\mathbf e_i\) is the perpendicular segment from the point to the line. The length of the point, the shadow and the error form a right triangle – hence Pythagoras. In the averaged formula, \(\operatorname{trace}(S)\) is the sum of the variances of all features, i.e. the total variance of the data (the mean \(\|\mathbf x_i\|^2\)); it does not depend on the chosen direction. \(\mathbf w^\top S\mathbf w\) is the variance of the projections (the mean \(z_i^2\)). Mean error = total variance − captured variance.</p>
 <p>The total variance is fixed, so <b>the more variance the projection captures, the smaller the error</b>. The line on which the projections are “most spread out” is also the line closest to the points.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig03_pca_uhel.png" alt="Variance of projections and reconstruction error depending on the angle of the direction" loading="lazy"></div>
+<figcaption><b>Fig. 3.2</b> Eight centred points (as in the lecture, our own random data); we rotate the direction \(\mathbf w\) in 1° steps from 0° to 180°. Left: the best direction with projections (×) and errors (dashed); right: both quantities for every angle.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>The blue and the orange curve are mirror images: for every angle they add up to the same number 3.83 (the mean \(\|\mathbf x_i\|^2\)). Where the variance of the projections is largest (3.66 at 34°), the reconstruction error is smallest (0.17) – that is PC1. Perpendicular to PC1 (90° further) it is the other way round: that is where PC2 lies. The maximum variance is the largest eigenvalue of \(S\).</p></div>
 <div class="box vzorec"><div class="box-t">PCA as optimization and its solution</div>
 \[ \begin{aligned} &\max_{\mathbf w_1}\ \mathbf w_1^\top S\,\mathbf w_1\ \ \text{s.t.}\ \|\mathbf w_1\|_2 = 1 \\ &\mathcal L(\mathbf w, \lambda) = \mathbf w^\top S\mathbf w - \lambda(\mathbf w^\top\mathbf w - 1) \\ &\nabla_{\mathbf w}\mathcal L = 2S\mathbf w - 2\lambda\mathbf w = 0 \ \Rightarrow\ S\mathbf w = \lambda\mathbf w \end{aligned} \]
 <table class="vars">
@@ -117,7 +170,14 @@ until it has the chosen number \(k\) of features.</p>
 <tr><td>\(\lambda\)</td><td>Lagrange multiplier = eigenvalue; \(\mathbf w^\top S\mathbf w = \lambda\) is the captured variance ⇒ we choose the largest \(\lambda\)</td></tr>
 <tr><td>top-\(k\)</td><td>\(\max\operatorname{trace}(W^\top SW)\) with \(W^\top W = I_k\): the \(k\) eigenvectors with the largest eigenvalues</td></tr>
 </table>
-<p>Orthonormality prevents repeating the same direction; centring is necessary – otherwise \(S\) mixes the effect of the mean with the variance.</p></div>
+<p>Orthonormality prevents repeating the same direction; centring is necessary – otherwise \(S\) mixes the effect of the mean with the variance.</p>
+<p><b>In words, line by line:</b></p>
+<ol>
+<li>We look for the direction \(\mathbf w_1\) on which the projections have the largest variance \(\mathbf w_1^\top S\mathbf w_1\). The condition \(\|\mathbf w_1\| = 1\) is necessary – otherwise the “variance” could grow forever just by making \(\mathbf w\) longer.</li>
+<li>The Lagrangian puts the condition directly into the optimized function: the term \(\lambda(\mathbf w^\top\mathbf w - 1)\) is zero exactly when \(\mathbf w\) has length 1.</li>
+<li>At the optimum the derivative is zero, which leads to \(S\mathbf w = \lambda\mathbf w\): if we multiply the direction \(\mathbf w\) by the covariance matrix, we get <b>the same direction</b>, only stretched \(\lambda\) times. Such directions are the eigenvectors of \(S\).</li>
+<li>Plugging back: \(\mathbf w^\top S\mathbf w = \lambda\mathbf w^\top\mathbf w = \lambda\). The variance along an eigenvector is its eigenvalue, so we take the eigenvector with the largest \(\lambda\).</li>
+</ol></div>
 <div class="box priklad"><div class="box-t">PCA by hand: four points (lecture)</div>
 <p>\(X\) = (2, 1), (−2, −1), (1, 2), (−1, −2); the column means are 0.</p>
 <ol>
@@ -128,6 +188,10 @@ until it has the chosen number \(k\) of features.</p>
 </ol></div>
 <div data-demo="pca-rotace"></div>
 <p><b>Uses of PCA.</b> (1) <i>Exploration</i>: plot of the samples in 2D/3D, looking for trends, groups and unusual samples, a <b>scree plot</b> (explained variance of each component) and a <b>biplot</b> (samples + feature arrows) to interpret the axes – no predictive model is needed. (2) <i>Input for prediction</i>: split the data / set up CV → fit scaling + PCA only on the training data → transform the held-out data with the same fit → train the predictor; tune the number of components \(k\) in CV. Explained variance describes the data, the validation score judges the prediction – these are two different goals.</p>
+<figure class="wide"><div class="paper"><img src="figures/fig03_scree_biplot.png" alt="Scree plot and PCA biplot for the Iris dataset" loading="lazy"></div>
+<figcaption><b>Fig. 3.3</b> Unsupervised exploration of the Iris dataset (as in the lecture): 150 flowers, 4 standardized features. Left: scree plot; right: biplot PC1–PC2; the species only colours the points, PCA does not see it.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p><b>Scree plot:</b> PC1 explains 73.0 % of the variance, PC2 22.9 %, together 95.8 %. After PC2 there is an “elbow” – PC3 and PC4 (3.7 % and 0.5 %) can be dropped and the 4D data shown faithfully in 2D. <b>Biplot:</b> an arrow shows how a feature contributes to the axes. Petal length, petal width and sepal length point along PC1 – so PC1 is roughly “flower size”; sepal width points mainly along PC2. Arrows almost on top of each other (petal length and width) = strongly correlated, redundant features. Setosa (small petals) lies on the left, against the direction of the petal arrows – the species separate even though PCA does not know the labels.</p></div>
 <div class="box parametry"><div class="box-t">Parameters: PCA</div>
 <div class="tablewrap"><table class="params">
 <tr><th>parameter</th><th>what it means</th><th><span class="up">↑</span> when I increase it</th><th><span class="dn">↓</span> when I decrease it</th></tr>
@@ -142,6 +206,23 @@ until it has the chosen number \(k\) of features.</p>
 \[ J(\mathbf w) = \frac{(\mathbf w^\top(\boldsymbol\mu_1 - \boldsymbol\mu_2))^2}{\mathbf w^\top S_W\mathbf w} \]
 where \(S_W = S_1 + S_2\) is the within-class scatter matrix.</p>
 <p class="jinak">PCA looks for the direction where the data are most spread out; LDA for the direction where the <b>classes are best separated</b>: class means far apart, each class “narrow”. It needs labels.</p></div>
+<div class="box vzorec"><div class="box-t">Fisher criterion after projection (lecture appendix)</div>
+<p>After the projection \(z_i = \mathbf w^\top\mathbf x_i\) each class \(c\) has its own mean and spread on the line:</p>
+\[ \begin{aligned} \tilde\mu_c &= \mathbf w^\top\boldsymbol\mu_c \\ \tilde s_c^2 &= \textstyle\sum_{i: y_i = c}(z_i - \tilde\mu_c)^2 = \mathbf w^\top S_c\,\mathbf w \end{aligned} \]
+\[ \begin{aligned} J(\mathbf w) &= \frac{(\tilde\mu_1 - \tilde\mu_2)^2}{\tilde s_1^2 + \tilde s_2^2} \\ &= \frac{(\mathbf w^\top(\boldsymbol\mu_1 - \boldsymbol\mu_2))^2}{\mathbf w^\top S_W\mathbf w} \end{aligned} \]
+<table class="vars">
+<tr><td>\(\tilde\mu_c\)</td><td>projected mean of class \(c\) – one number on the line</td></tr>
+<tr><td>\(\tilde s_c^2\)</td><td>scatter of class \(c\) on the line – sum of squared deviations, i.e. \(n_c\cdot\operatorname{Var}_c(z)\)</td></tr>
+<tr><td>\(S_c\)</td><td>scatter matrix of class \(c\) in the original space (defined in the box below)</td></tr>
+<tr><td>\(S_W = S_1 + S_2\)</td><td>within-class scatter matrix</td></tr>
+</table>
+<p><b>In words:</b> we project all points onto the line with direction \(\mathbf w\) – each gets one number \(z_i\). For each class we compute the mean of these numbers (\(\tilde\mu_c\)) and how much they spread around it (\(\tilde s_c^2\)). The <b>numerator</b> is the squared distance between the two means – we want it large (classes far apart). The <b>denominator</b> is the sum of the spreads of both classes – we want it small (each class narrow). The ratio is large only when both hold. The second line is the same thing written with the original data: the mean of the projections = the projection of the mean, and the spread of the projections = \(\mathbf w^\top S_c\mathbf w\), so \(J\) can be computed without projecting individual points.</p></div>
+<div class="box intuice"><div class="box-t">Diamonds and bars (lecture)</div>
+<p>Project the points of both classes onto a line. For each class draw a <b>diamond</b> at its mean and a <b>bar</b> mean ± one standard deviation. LDA rotates the line so that the diamonds are as far apart as possible and the bars as short as possible. PCA ignores the bars – it only wants the whole point cloud together to be spread out.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig03_lda_fisher.png" alt="Projection of two classes onto the PCA and LDA directions with class means and standard deviations" loading="lazy"></div>
+<figcaption><b>Fig. 3.4</b> Two classes of 20 points each (as in the lecture, our own random data). Left: the PCA and LDA directions; middle and right: the projections – diamond = class mean, bar = ± 1 standard deviation. \(J\) is the Fisher criterion.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div>
+<p>On the PCA direction the class means are 1.53 apart, but each class is wide (standard deviations 1.27 and 1.35) – the bars overlap and \(J = 0.034\). On the LDA direction the means are almost equally far apart (1.67), but the classes are narrow (0.32 and 0.31) – \(J = 0.691\), about 20× more. LDA did not win here by a larger gap between the means but by a <b>smaller spread within the classes</b> – that is why it is in the denominator.</p></div>
 <div class="box vzorec"><div class="box-t">LDA solution (two classes)</div>
 \[ \begin{aligned} S_W\,\mathbf w = \boldsymbol\mu_1 - \boldsymbol\mu_2\ \ &\Rightarrow\ \ \mathbf w \propto S_W^{-1}(\boldsymbol\mu_1 - \boldsymbol\mu_2) \\ z &= \mathbf w^\top\mathbf x \\ S_c &= \sum_{i: y_i = c}(\mathbf x_i - \boldsymbol\mu_c)(\mathbf x_i - \boldsymbol\mu_c)^\top \end{aligned} \]
 <table class="vars">
@@ -149,9 +230,10 @@ where \(S_W = S_1 + S_2\) is the within-class scatter matrix.</p>
 <tr><td>\(S_W\)</td><td>within-class scatter (sum of squared deviations from the mean of the sample’s own class)</td></tr>
 <tr><td>\(z\)</td><td>score – one number; with a threshold it gives a linear classifier</td></tr>
 </table>
-<p>For \(C\) classes it leads to the eigenproblem \(S_W^{-1}S_B\mathbf w = \lambda\mathbf w\) and gives at most \(\min(d, C-1)\) directions – it is not a general replacement for PCA. Singular \(S_W\) (more features than samples): regularization or a rank-aware solver. In practice: regularized LDA as a classifier of EEG signals.</p></div>
+<p>For \(C\) classes it leads to the eigenproblem \(S_W^{-1}S_B\mathbf w = \lambda\mathbf w\) and gives at most \(\min(d, C-1)\) directions – it is not a general replacement for PCA. Singular \(S_W\) (more features than samples): regularization or a rank-aware solver. In practice: regularized LDA as a classifier of EEG signals.</p>
+<p><b>In words:</b> we get the optimal direction by taking the line joining the class means \(\boldsymbol\mu_1 - \boldsymbol\mu_2\) and “correcting” it with the inverse of the within-class scatter matrix: in directions where the classes are wide, \(S_W^{-1}\) reduces the weight; where they are narrow, it increases it. If the classes were round (the same spread in all directions), \(\mathbf w\) would simply be the direction joining the means. The symbol \(\propto\) means “proportional to” – the length of \(\mathbf w\) does not matter, only its direction. The score \(z\) is the coordinate of a point on this line; a threshold between the projected means assigns it to a class.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig03_pca_lda.png" alt="Comparison of PCA and LDA projections on two elongated classes" loading="lazy"></div>
-<figcaption><b>Fig. 3.2</b> Two elongated classes lie parallel next to each other. Left: the PCA and LDA directions; middle and right: histograms of the projections onto each of them.</figcaption></figure>
+<figcaption><b>Fig. 3.5</b> Two elongated classes lie parallel next to each other. Left: the PCA and LDA directions; middle and right: histograms of the projections onto each of them.</figcaption></figure>
 <div class="box odnes"><div class="box-t">What to take from the figure</div>
 <p>PCA does not see the labels and chooses the direction of largest variance – along the stretch of the classes, where both classes overlap completely. LDA chooses a direction in which the variance is <i>small</i> but the class means are far apart – the classes separate. <b>The direction with the largest variance need not be the direction that separates the classes.</b></p></div>
 
@@ -169,11 +251,19 @@ where \(S_W = S_1 + S_2\) is the within-class scatter matrix.</p>
 <tr><td>perplexity</td><td>\(2^{H}\) = effective number of neighbours; 4 equally likely neighbours = 2 bits = perplexity 4</td></tr>
 <tr><td>\(p_{ij}\)</td><td>\(p_{ij} = (p_{j|i} + p_{i|j})/2n\) – symmetrized probabilities, they sum to 1</td></tr>
 <tr><td>\(q_{ij}\)</td><td>similarity in the map with a heavy tail</td></tr>
-<tr><td>gradient</td><td>\[ \nabla_{\mathbf z_i}L = 4\sum_j(p_{ij} - q_{ij})\frac{\mathbf z_i - \mathbf z_j}{1 + \|\mathbf z_i - \mathbf z_j\|^2} \] \(p \gt q\) attracts, \(p \lt q\) repels; the problem is non-convex</td></tr>
-</table></div>
+<tr><td>gradient</td><td>\[ \begin{aligned} \nabla_{\mathbf z_i}L = 4\sum_j\,&(p_{ij} - q_{ij}) \\ &\cdot\frac{\mathbf z_i - \mathbf z_j}{1 + \|\mathbf z_i - \mathbf z_j\|^2} \end{aligned} \] \(p \gt q\) attracts, \(p \lt q\) repels; the problem is non-convex</td></tr>
+</table>
+<p><b>In words, formula by formula:</b></p>
+<ol>
+<li>\(p_{j\mid i}\): around the point \(\mathbf x_i\) we put a Gaussian “bell” of width \(\sigma_i\). Every other point gets the height of the bell at its distance – a close one a high value, a distant one almost zero. The denominator rescales the heights so that they sum to 1 for point \(i\): we get the probability that \(i\) picks exactly \(j\) as its neighbour.</li>
+<li>Perplexity turns the entropy of these probabilities into a “number of neighbours”. The width \(\sigma_i\) is tuned for each point so that it has roughly the requested effective number of neighbours – in a dense region the bell comes out narrower, in a sparse one wider.</li>
+<li>\(q_{ij}\): the same in the map, but instead of a bell the curve \(1/(1 + \text{distance}^2)\), which falls more slowly (heavy tail). It is normalized over all pairs.</li>
+<li>The KL divergence compares, for each pair, \(p_{ij}\) (how close the points were) with \(q_{ij}\) (how close they are in the map), weighted by \(p_{ij}\). It penalizes most when real neighbours (large \(p\)) end up far apart in the map (small \(q\)); the opposite error costs little. That is why t-SNE keeps local neighbourhoods faithfully, but not global distances.</li>
+<li>Gradient: each pair pulls the point \(\mathbf z_i\) towards \(\mathbf z_j\) (if \(p_{ij} \gt q_{ij}\)) or pushes it away (if \(p_{ij} \lt q_{ij}\)), with a force proportional to the difference. In each step the point moves by the sum of all these “springs”.</li>
+</ol></div>
 <div data-demo="perplexita"></div>
 <figure class="wide"><div class="paper"><img src="figures/fig03_tsne_perp.png" alt="t-SNE of digits for four values of perplexity" loading="lazy"></div>
-<figcaption><b>Fig. 3.3</b> The same 600 handwritten digits (standardized), t-SNE with four perplexities. Colour = digit (only for colouring, the method does not see the labels).</figcaption></figure>
+<figcaption><b>Fig. 3.6</b> The same 600 handwritten digits (standardized), t-SNE with four perplexities. Colour = digit (only for colouring, the method does not see the labels).</figcaption></figure>
 <div class="box odnes"><div class="box-t">What to take from the figure</div>
 <p>A small perplexity (2) looks only at a few nearest neighbours – the map breaks into tiny fragments. Middle values (10–30) give readable clusters of digits. A large perplexity (100) connects a wider neighbourhood, the islands move closer and merge. The layout <b>is not a property of the data alone</b> – always state the hyperparameters with every t-SNE picture.</p></div>
 <div class="box definice" id="def-umap"><div class="box-t">Definition: UMAP</div>
@@ -181,17 +271,24 @@ where \(S_W = S_1 + S_2\) is the within-class scatter matrix.</p>
 <p class="jinak">“build a network of friendships and lay it out on a table so that friends stand close together”. Unlike t-SNE, UMAP has a <code>transform</code> method – it can place <b>new samples</b> into a trained map, so it can also be used as preprocessing before a classifier (fit_transform on training data, transform on new data).</p></div>
 <div class="box vzorec"><div class="box-t">UMAP formulas (lecture appendix)</div>
 \[ \begin{aligned} a_{j\mid i} &= \exp\!\left(-\frac{\max(0, d_{ij} - \rho_i)}{\sigma_i}\right) \\ v_{ij} &= a_{j\mid i} + a_{i\mid j} - a_{j\mid i}a_{i\mid j} \\ q_{ij} &= \frac{1}{1 + a\|\mathbf z_i - \mathbf z_j\|^{2b}} \end{aligned} \]
-\[ L_{\text{graph}} = -\sum_{i\lt j}\left[v_{ij}\log q_{ij} + (1 - v_{ij})\log(1 - q_{ij})\right] \]
+\[ \begin{aligned} L_{\text{graph}} = -\sum_{i\lt j}\Big[\,&v_{ij}\log q_{ij} \\ &+ (1 - v_{ij})\log(1 - q_{ij})\Big] \end{aligned} \]
 <table class="vars">
 <tr><td>\(\rho_i\)</td><td>distance to the nearest neighbour – the nearest connections get full strength 1</td></tr>
 <tr><td>\(\sigma_i\)</td><td>local scale set by the size of the neighbourhood (<code>n_neighbors</code>)</td></tr>
 <tr><td>\(v_{ij}\)</td><td>fuzzy union of the directed weights (0.8 and 0.5 give 0.8 + 0.5 − 0.4 = 0.9); unlike \(p_{ij}\) they do not sum to 1</td></tr>
 <tr><td>\(a, b\)</td><td>shape of the similarity curve in the map, set by the parameters <code>min_dist</code> and <code>spread</code></td></tr>
 </table>
+<p><b>In words, formula by formula:</b></p>
+<ol>
+<li>\(a_{j\mid i}\): the strength of the connection from point \(i\) to neighbour \(j\). First \(\rho_i\) (the distance to the nearest neighbour) is subtracted from the distance, so the nearest neighbour gets strength \(e^0 = 1\) – every point is firmly connected to someone, even in a sparse region. Beyond that the strength drops exponentially, at a rate set by \(\sigma_i\).</li>
+<li>\(v_{ij}\): the connection from \(i\) to \(j\) and from \(j\) to \(i\) can have different strengths. We merge them like the probability that <i>at least one</i> of them holds: sum minus product.</li>
+<li>\(q_{ij}\): the strength of the connection in the map – close to 1 for nearby points, towards 0 for distant ones; \(a, b\) set how fast it drops with distance.</li>
+<li>\(L_{\text{graph}}\) (cross-entropy): the first term – where there is a strong edge (\(v_{ij}\) close to 1), we want a large \(q_{ij}\), i.e. the points close together (attraction). The second term – where the edge is weak or missing (\(1 - v_{ij}\) close to 1), we want a small \(q_{ij}\), i.e. the points apart (repulsion), so that the map does not collapse into one spot.</li>
+</ol>
 <p>New sample: the map of the training points stays fixed; its neighbours among the training samples are found, the connection strengths are computed, the position is initialized as the weighted mean of their coordinates and refined by optimization.</p></div>
 <div data-demo="umap-graf"></div>
 <figure class="wide"><div class="paper"><img src="figures/fig03_umap_params.png" alt="UMAP of digits for three values of n_neighbors and two values of min_dist" loading="lazy"></div>
-<figcaption><b>Fig. 3.4</b> The same digits, UMAP with \(n\_neighbors \in \{3, 15, 100\}\) (columns) and \(min\_dist \in \{0.0,\ 0.8\}\) (rows).</figcaption></figure>
+<figcaption><b>Fig. 3.7</b> The same digits, UMAP with \(n\_neighbors \in \{3, 15, 100\}\) (columns) and \(min\_dist \in \{0.0,\ 0.8\}\) (rows).</figcaption></figure>
 <div class="box odnes"><div class="box-t">What to take from the figure</div>
 <p><b>n_neighbors</b> sets the scale: 3 neighbours = the graph breaks into small isolated pieces (we see only details); 100 neighbours = the global arrangement is kept, the clusters touch. <b>min_dist</b> sets how tightly the points may “pack”: 0.0 = compact, sharply separated clusters; 0.8 = points spread evenly, the structure is blurred.</p></div>
 <div class="box parametry"><div class="box-t">Parameters: t-SNE and UMAP</div>
@@ -222,14 +319,16 @@ where \(S_W = S_1 + S_2\) is the within-class scatter matrix.</p>
 <div class="box definice" id="def-jadro"><div class="box-t">Definition: kernel and the kernel trick</div>
 <p>A <b>kernel</b> is a function \(k(\mathbf x, \mathbf z) = \Phi(\mathbf x)^\top\Phi(\mathbf z)\) that returns the dot product of the images of two vectors in the expanded space. The <b>kernel trick</b> means that a method which needs only dot products of samples is computed with \(k(\mathbf x, \mathbf z)\) directly – without building \(\Phi(\mathbf x)\). The pairwise kernel values for \(n\) samples form the <b>Gram matrix</b> \(K\), \(K_{ij} = k(\mathbf x_i, \mathbf x_j)\).</p>
 <p class="jinak">“compare the points as if we had expanded them, but do not expand them”. The benefit of high-dimensional features at the cost of computing in the original dimension.</p></div>
+<p><b>In words:</b> \(\Phi(\mathbf x)^\top\Phi(\mathbf z)\) means “first map both points into the expanded space, then compute their dot product” – a measure of how similar they are there. The kernel \(k\) gives the same number in one computation directly from the original vectors. The Gram matrix is an \(n\times n\) table with this similarity for every pair of training samples; methods such as kernel PCA or SVM need only this table.</p>
 <div class="box priklad"><div class="box-t">Kernel trick by hand (lecture)</div>
 <p>\(\Phi(\mathbf x) = (x_1^2,\ x_2^2,\ \sqrt2x_1x_2)\), \(\mathbf x = (1, 2)\), \(\mathbf u = (3, 4)\).</p>
 <ul><li><b>Explicitly (2D → 3D):</b> \[ \begin{aligned} \Phi(\mathbf x) &= (1,\ 4,\ 2\sqrt2) \\ \Phi(\mathbf u) &= (9,\ 16,\ 12\sqrt2) \\ \Phi(\mathbf x)^\top\Phi(\mathbf u) &= 9 + 64 + 48 = 121 \end{aligned} \]</li>
-<li><b>With the kernel (we stay in 2D):</b> \[ k(\mathbf x, \mathbf u) = (\mathbf x^\top\mathbf u)^2 = (1\cdot3 + 2\cdot4)^2 = 11^2 = 121 \]</li></ul>
+<li><b>With the kernel (we stay in 2D):</b> \[ \begin{aligned} k(\mathbf x, \mathbf u) &= (\mathbf x^\top\mathbf u)^2 \\ &= (1\cdot3 + 2\cdot4)^2 \\ &= 11^2 = 121 \end{aligned} \]</li></ul>
 <p>The same result without building the expanded vectors; the factor \(\sqrt2\) makes the mixed term match.</p></div>
 <div class="box definice" id="def-kpca"><div class="box-t">Definition: kernel PCA</div>
 <p><b>Kernel PCA</b> is PCA done in the (implicit) feature space \(\Phi(\mathbf x)\) using a kernel: the Gram matrix \(K_{ij} = k(\mathbf x_i, \mathbf x_j)\) is computed, centred (\(\tilde K = HKH\), \(H = I - \frac1n\mathbf 1\mathbf 1^\top\)) and the component scores are obtained from its eigenvectors and eigenvalues.</p>
 <p class="jinak">linear in the feature space, non-linear in the original inputs; the kernel decides what structure PCA captures. It is unsupervised, and a trained kernel PCA can also transform new samples (their kernel values are centred with the stored means from the training data).</p></div>
+<p><b>In words:</b> \(H = I - \frac1n\mathbf 1\mathbf 1^\top\) is the “centring” matrix: multiplying by \(H\) from the left subtracts from each column its mean, from the right from each row. \(\tilde K = HKH\) is therefore the Gram matrix we would get if we first centred the expanded vectors \(\Phi(\mathbf x_i)\) – just as ordinary PCA needs centred data. The eigenvectors of \(\tilde K\) then play the role of the PCA directions, only expressed through the training samples instead of through the features.</p>
 <p><b>Primal vs. dual PCA:</b> the same scores can be computed from a \(d\times d\) matrix (\(S = \frac1nX^\top X\)) or from an \(n\times n\) matrix (\(XX^\top\)); which matrix is smaller depends on whether \(d \lt n\) or \(n \lt d\). The dual contains only dot products of samples – that is why it can be “kernelized”.</p>
 <div data-demo="kernel"></div>
 <div class="box parametry"><div class="box-t">Parameters: kernel PCA (and kernels in general)</div>
@@ -270,12 +369,12 @@ where \(S_W = S_1 + S_2\) is the within-class scatter matrix.</p>
 <p>In each step it only adds the best feature to the current set and never undoes a decision – it explores only one path through the space of \(2^d\) subsets. It cannot see combinations that do not start with the best single feature: greedy gives AB (loss 0.18), brute force BC (0.10). Remedy: brute force for small spaces, random or local search, restarts.</p></div></details>
 <details class="q"><summary>What does PCA optimize and how is it solved? Compute the explained variance for the covariance matrix [[2.5, 2], [2, 2.5]].</summary><div>
 <p>PCA looks for a unit direction \(\mathbf w\) maximizing the variance of the projections \(\mathbf w^\top S\mathbf w\) (equivalently minimizing the reconstruction error). The Lagrangian gives \(S\mathbf w = \lambda\mathbf w\) – the directions are eigenvectors of the covariance matrix and the captured variance is the eigenvalue. For the given \(S\):</p>
-\[ \begin{aligned} (2.5 - \lambda)^2 = 4 \quad&\Rightarrow\quad \lambda_1 = 4.5,\ \ \lambda_2 = 0.5 \\ \text{PC1} &= (1, 1)/\sqrt2 \\ \text{explained variance} &= 4.5/5 = 90\,\% \end{aligned} \]</div></details>
+\[ \begin{aligned} (2.5 - \lambda)^2 &= 4 \\ \lambda_1 = 4.5,\quad \lambda_2 &= 0.5 \\ \text{PC1} &= (1, 1)/\sqrt2 \\ \text{explained variance} &= 4.5/5 = 90\,\% \end{aligned} \]</div></details>
 <details class="q"><summary>How do PCA and LDA differ? What information does LDA keep that PCA can lose?</summary><div>
 <p>Both are linear projections. PCA is unsupervised and maximizes the total variance; LDA is supervised and maximizes the Fisher criterion – the distance between class means relative to the variance within classes, \(\mathbf w \propto S_W^{-1}(\boldsymbol\mu_1 - \boldsymbol\mu_2)\). LDA keeps the separability of the classes: if the classes differ in a direction of small variance, PCA throws it away and the classes merge. LDA gives at most \(C-1\) directions.</p></div></details>
 <details class="q"><summary>How do t-SNE and UMAP work and what do their main hyperparameters do?</summary><div>
 <p>t-SNE turns distances into neighbourhood probabilities (a Gaussian with a local \(\sigma_i\)) and looks for 2D positions whose t-distributed similarities match them as closely as possible (min. KL divergence). Perplexity = effective number of neighbours: small → broken fragments, large → clusters merge. UMAP builds a weighted graph of \(k\) neighbours and lays it out so that the strong edges are kept; n_neighbors sets the local vs. global scale, min_dist the density of points in clusters. UMAP can transform new samples, scikit-learn t-SNE cannot. Distances between islands are not calibrated.</p></div></details>
 <details class="q"><summary>What is the kernel trick? Show on an example what it saves.</summary><div>
 <p>A kernel \(k(\mathbf x, \mathbf z) = \Phi(\mathbf x)^\top\Phi(\mathbf z)\) computes the dot product in an expanded space without building \(\Phi\). For \(\Phi(\mathbf x) = (x_1^2, x_2^2, \sqrt2x_1x_2)\), \(\mathbf x = (1, 2)\) and \(\mathbf u = (3, 4)\):</p>
-\[ \begin{aligned} \text{explicitly:}\quad & \Phi(\mathbf x)^\top\Phi(\mathbf u) = 9 + 64 + 48 = 121 \\ \text{kernel:}\quad & (\mathbf x^\top\mathbf u)^2 = 11^2 = 121 \end{aligned} \]
+\[ \begin{aligned} &\text{explicitly:} \\ &\Phi(\mathbf x)^\top\Phi(\mathbf u) = 9 + 64 + 48 = 121 \\ &\text{kernel:} \\ &(\mathbf x^\top\mathbf u)^2 = 11^2 = 121 \end{aligned} \]
 <p>It saves computing (and storing) high-dimensional vectors – for the RBF kernel the space would even be infinite-dimensional. It is used in methods that depend only on dot products (kernel PCA, SVM, kernel ridge).</p></div></details>

@@ -412,6 +412,148 @@ def fig03_pca_lda():
     save(fig, "fig03_pca_lda")
 
 
+def fig03_pca_uhel():
+    """Osm vycentrovaných bodů, směr w otáčený po stupních: rozptyl projekcí + průměrná chyba rekonstrukce = konst."""
+    R = rng(8)
+    X = R.normal(size=(8, 2)) @ np.array([[1.35, 0.45], [0.0, 0.75]])
+    X -= X.mean(0)
+    ang = np.arange(0, 181)
+    W = np.c_[np.cos(np.deg2rad(ang)), np.sin(np.deg2rad(ang))]
+    Z = X @ W.T                                   # 8 × 181
+    var = (Z ** 2).mean(0)                        # dělitel n (data jsou vycentrovaná)
+    tot = (X ** 2).sum(1).mean()
+    err = tot - var
+    best = ang[np.argmax(var)]
+    w = W[best]
+    fig, axs = plt.subplots(1, 2, figsize=(11, 4.2), gridspec_kw={"width_ratios": [1, 1.25]})
+    ax = axs[0]
+    L = 3.2
+    ax.plot([-L * w[0], L * w[0]], [-L * w[1], L * w[1]], color=C2, lw=2, label=T("směr PC1 (w)", "PC1 direction (w)"))
+    P = np.outer(X @ w, w)
+    for p, q in zip(X, P):
+        ax.plot([p[0], q[0]], [p[1], q[1]], color=MUTED, ls="--", lw=1)
+    ax.scatter(X[:, 0], X[:, 1], s=46, c=C1, edgecolors=SURF, zorder=3, label=T("body xᵢ", "points xᵢ"))
+    ax.scatter(P[:, 0], P[:, 1], s=46, c=C2, marker="x", zorder=4, label=T("průměty x̂ᵢ = zᵢw", "projections x̂ᵢ = zᵢw"))
+    ax.set_aspect("equal"); ax.set_xlim(-3, 3); ax.set_ylim(-2.4, 2.4)
+    ax.set_xlabel(T("příznak 1", "feature 1")); ax.set_ylabel(T("příznak 2", "feature 2"))
+    ax.legend(fontsize=8.5, loc="upper left")
+    ax.set_title(T(f"Nejlepší směr: θ = {best}°, přerušované = chyby eᵢ", f"Best direction: θ = {best}°, dashed = errors eᵢ"),
+                 fontsize=10)
+    ax = axs[1]
+    ax.axhline(tot, color=MUTED, ls=":", lw=1.2)
+    ax.text(2, tot + 0.06, T(f"součet = průměr ‖xᵢ‖² = {cz(tot)} (pro každý úhel)",
+                            f"sum = mean ‖xᵢ‖² = {cz(tot)} (for every angle)"), fontsize=8.5, color=INK2)
+    ax.plot(ang, var, color=C1, label=T("rozptyl projekcí Var(z)", "variance of projections Var(z)"))
+    ax.plot(ang, err, color=C2, ls="--", label=T("průměrná chyba rekonstrukce ‖e‖²", "mean reconstruction error ‖e‖²"))
+    ax.axvline(best, color=INK2, lw=1)
+    ax.scatter([best, best], [var.max(), err.min()], c=[C1, C2], s=40, zorder=3)
+    ax.text(best + 3, var.max() * 0.5 + err.min() * 0.5, T(f"PC1: Var = {cz(var.max())}\nchyba = {cz(err.min())}",
+                                                          f"PC1: Var = {cz(var.max())}\nerror = {cz(err.min())}"),
+            fontsize=8.5, color=INK2)
+    ax.set_xlim(0, 180); ax.set_xticks([0, 45, 90, 135, 180]); ax.set_ylim(0, tot * 1.55)
+    ax.set_xlabel(T("úhel směru w [°]", "angle of direction w [°]"))
+    ax.set_ylabel(T("hodnota", "value"))
+    ax.legend(fontsize=8.5, loc="upper right")
+    ax.set_title(T("Otáčení směru: co přibude rozptylu, ubude chyby", "Rotating the direction: variance gained = error lost"),
+                 fontsize=10)
+    save(fig, "fig03_pca_uhel")
+
+
+def fig03_scree_biplot():
+    """Iris (standardizovaná): scree plot a biplot PC1–PC2; labely jen obarvují body."""
+    from sklearn.datasets import load_iris
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.decomposition import PCA
+    d = load_iris()
+    X = StandardScaler().fit_transform(d.data); y = d.target
+    pca = PCA().fit(X)
+    r = pca.explained_variance_ratio_
+    Z = pca.transform(X)
+    load = pca.components_.T * np.sqrt(pca.explained_variance_)   # korelace příznak–komponenta
+    fig, axs = plt.subplots(1, 2, figsize=(11.5, 4.3), gridspec_kw={"width_ratios": [0.8, 1.25]})
+    ax = axs[0]
+    k = np.arange(1, 5)
+    ax.bar(k, r * 100, color=C1, width=0.6)
+    for i, v in zip(k, r):
+        big = v > 0.5
+        ax.text(i, v * 100 - 7 if big else v * 100 + 1.5, f"{cz(100 * v, 1)} %", ha="center", fontsize=9,
+                color=SURF if big else INK)
+    ax.plot(k, np.cumsum(r) * 100, color=C2, marker="s", lw=1.5, label=T("kumulativně", "cumulative"))
+    ax.set_xticks(k, [f"PC{i}" for i in k]); ax.set_ylim(0, 108)
+    ax.set_xlabel(T("hlavní komponenta", "principal component"))
+    ax.set_ylabel(T("vysvětlený rozptyl [%]", "explained variance [%]"))
+    ax.legend(fontsize=9, loc="center right")
+    ax.set_title(T("Scree plot (Iris, standardizováno)", "Scree plot (Iris, standardized)"), fontsize=10)
+    ax = axs[1]
+    names = d.target_names
+    for c in range(3):
+        m = y == c
+        ax.scatter(Z[m, 0], Z[m, 1], s=16, c=CAT[c], marker=MARK[c], edgecolors=SURF, linewidths=0.5, label=names[c],
+                   zorder=2)
+    feat = T(["délka kališ. lístku", "šířka kališ. lístku", "délka okv. lístku", "šířka okv. lístku"],
+             ["sepal length", "sepal width", "petal length", "petal width"])
+    s = 2.6
+    offs = [(0.12, 0.18), (0.1, 0.05), (0.15, 0.12), (0.15, -0.28)]
+    for j in range(4):
+        ax.annotate("", xy=(s * load[j, 0], s * load[j, 1]), xytext=(0, 0),
+                    arrowprops=dict(arrowstyle="-|>", color=INK, lw=1.3), zorder=4)
+        ax.text(s * load[j, 0] + offs[j][0], s * load[j, 1] + offs[j][1], feat[j], fontsize=8.5, color=INK, zorder=5,
+                bbox=dict(boxstyle="round,pad=0.15", fc=SURF, ec="none", alpha=0.85))
+    ax.axhline(0, color=AXIS, lw=0.8); ax.axvline(0, color=AXIS, lw=0.8)
+    ax.set_xlabel(f"PC1 ({cz(100 * r[0], 1)} % {T('rozptylu', 'of variance')})")
+    ax.set_ylabel(f"PC2 ({cz(100 * r[1], 1)} % {T('rozptylu', 'of variance')})")
+    ax.legend(fontsize=8.5, loc="lower left")
+    ax.set_title(T("Biplot: vzorky (body) + příznaky (šipky)", "Biplot: samples (points) + features (arrows)"), fontsize=10)
+    save(fig, "fig03_scree_biplot")
+
+
+def fig03_lda_fisher():
+    """Projekce na směr PCA a LDA: průměr třídy (kosočtverec) a ±1 směrodatná odchylka (úsečka), Fisherovo J."""
+    R = rng(11); n = 20
+    ang = np.deg2rad(30); Rm = np.array([[np.cos(ang), -np.sin(ang)], [np.sin(ang), np.cos(ang)]])
+    base = R.normal(size=(2 * n, 2)) * [1.5, 0.4]
+    y = np.r_[np.zeros(n), np.ones(n)].astype(int)
+    X = base @ Rm.T + np.outer(2 * y - 1, Rm @ np.array([0.5, 0.75]))
+    X -= X.mean(0)
+    w_pca = np.linalg.eigh(np.cov(X.T))[1][:, -1]
+    mu = [X[y == c].mean(0) for c in (0, 1)]
+    Sw = sum((X[y == c] - mu[c]).T @ (X[y == c] - mu[c]) for c in (0, 1))
+    w_lda = np.linalg.solve(Sw, mu[1] - mu[0]); w_lda /= np.linalg.norm(w_lda)
+    if w_pca[0] < 0:
+        w_pca = -w_pca
+    fig, axs = plt.subplots(1, 3, figsize=(12.5, 3.9), gridspec_kw={"width_ratios": [1, 1.1, 1.1]})
+    ax = axs[0]
+    scatter2(ax, X, y, s=24)
+    for w, c, ls, lab in [(w_pca, INK2, "--", T("směr PCA", "PCA direction")), (w_lda, C3, "-", T("směr LDA", "LDA direction"))]:
+        ax.plot([-4 * w[0], 4 * w[0]], [-4 * w[1], 4 * w[1]], color=c, ls=ls, lw=2, label=lab)
+    ax.set_aspect("equal"); ax.set_xlim(-3.6, 3.6); ax.set_ylim(-3, 3)
+    ax.set_xlabel("x₁"); ax.set_ylabel("x₂"); ax.legend(fontsize=8.5, loc="upper left")
+    ax.set_title(T("Data se dvěma třídami", "Data with two classes"), fontsize=10)
+    for ax, w, ttl in [(axs[1], w_pca, T("Projekce na směr PCA", "Projection on the PCA direction")),
+                       (axs[2], w_lda, T("Projekce na směr LDA", "Projection on the LDA direction"))]:
+        z = X @ w
+        m = [z[y == c].mean() for c in (0, 1)]
+        sd = [z[y == c].std() for c in (0, 1)]
+        s2 = [((z[y == c] - m[c]) ** 2).sum() for c in (0, 1)]
+        J = (m[1] - m[0]) ** 2 / (s2[0] + s2[1])
+        jit = rng(2).uniform(-0.12, 0.12, size=len(z))
+        for c, yy in [(0, 0.75), (1, 0.25)]:
+            k = y == c
+            ax.scatter(z[k], yy + jit[k], s=20, c=CAT[c], marker=MARK[c], edgecolors=SURF, linewidths=0.5, alpha=0.75,
+                       zorder=2)
+            ax.plot([m[c] - sd[c], m[c] + sd[c]], [yy - 0.22, yy - 0.22], color=CAT[c], lw=3, solid_capstyle="butt")
+            ax.scatter([m[c]], [yy - 0.22], marker="D", s=70, c=CAT[c], edgecolors=INK, linewidths=0.8, zorder=4)
+        ax.set_ylim(-0.15, 1.45); ax.set_yticks([]); ax.set_xlim(-3.3, 3.3)
+        ax.set_xlabel(T("souřadnice z = wᵀx", "coordinate z = wᵀx"))
+        ax.text(0.02, 0.98, T(f"rozdíl průměrů = {cz(abs(m[1] - m[0]))}\nsměr. odch. tříd = {cz(sd[0])}; {cz(sd[1])}\nJ = {cz(J, 3)}",
+                              f"difference of means = {cz(abs(m[1] - m[0]))}\nclass std. dev. = {cz(sd[0])}; {cz(sd[1])}\nJ = {cz(J, 3)}"),
+                transform=ax.transAxes, fontsize=8.5, color=INK2, va="top",
+                bbox=dict(boxstyle="round,pad=0.3", fc=SURF, ec=GRID))
+        ax.set_title(ttl, fontsize=10)
+        print("  ", ttl, "diff", round(abs(m[1] - m[0]), 3), "sd", np.round(sd, 3), "J", round(J, 4))
+    save(fig, "fig03_lda_fisher")
+
+
 def _digits(n=600):
     from sklearn.datasets import load_digits
     from sklearn.preprocessing import StandardScaler
@@ -1124,7 +1266,7 @@ def t1_parabola():
 T1 = [t1_ridge_lambda, t1_standardizace, t1_strom, t1_parabola]
 
 ALL = [fig01_gd_eta, fig01_knn_k, fig02_roc, fig02_kfold_var, fig02_kalibrace, fig02_imputace, fig02_odlehle,
-       fig03_hughes, fig03_pca_lda, fig03_tsne_perp,
+       fig03_hughes, fig03_pca_uhel, fig03_scree_biplot, fig03_pca_lda, fig03_lda_fisher, fig03_tsne_perp,
        fig03_umap_params, fig04_poly, fig04_ridge_lasso, fig04_losses, fig04_svm_c, fig04_svm_rbf,
        fig06_terce, fig06_regimy, fig06_bias_variance, fig06_tree_depth, fig06_impurity, fig06_bagging, fig06_rf, fig06_adaboost,
        fig06_ada_kola, fig06_ada_silny,

@@ -245,7 +245,7 @@ kde \(Q_1, Q_3\) jsou kvartily a IQR = \(Q_3 - Q_1\). <b>Winsorizace</b> je oř�
 <p><b>Entropie</b> diskrétní náhodné veličiny \(X\) je průměrná nejistota výsledku v bitech:
 \[ H(X) = -\sum_x p(x)\log_2 p(x) \]
 Sdružená entropie a podmíněná entropie (nejistota \(X\), která zbude po pozorování \(Y\)):
-\[ \begin{aligned} H(X, Y) &= -\sum_{x,y}p(x,y)\log_2 p(x,y) \\ H(X\mid Y) &= -\sum_y p(y)\sum_x p(x\mid y)\log_2 p(x\mid y) \end{aligned} \]</p>
+\[ \begin{aligned} H(X, Y) &= -\sum_{x,y}p(x,y)\log_2 p(x,y) \\ H(X\mid Y) &= \sum_y p(y)\,H(X\mid Y = y) \\ H(X\mid Y = y) &= -\sum_x p(x\mid y)\log_2 p(x\mid y) \end{aligned} \]</p>
 <p class="jinak">„kolik ano/ne otázek v průměru potřebuju, abych výsledek uhodl“. Férová mince 1 bit, mince s \(p = 0{,}9\) 0,469 bitu, férová kostka \(\log_2 6 = 2{,}585\) bitu, jistý výsledek 0. Hodně rovnoměrně obsazených výsledků = vysoká entropie.</p><p class="slovnik-odkaz"><a href="03_redukce.html#def-entropie">výklad v kapitole 3 →</a></p></div>
 <div class="box definice" id="s-mi"><div class="box-t">vzájemná informace</div>
 <p><b>Vzájemná informace</b> je množství informace, které pozorování jedné veličiny přinese o druhé (snížení nejistoty):
@@ -253,7 +253,7 @@ Sdružená entropie a podmíněná entropie (nejistota \(X\), která zbude po po
 <p class="jinak">„o kolik méně nejistý jsem o cíli, když znám příznak“. Na rozdíl od korelace zachytí i <b>nelineární</b> závislost a funguje i pro kategorické proměnné; \(I = 0\) právě pro nezávislé veličiny.</p><p class="slovnik-odkaz"><a href="03_redukce.html#def-mi">výklad v kapitole 3 →</a></p></div>
 <div class="box definice" id="s-mrmr"><div class="box-t">mRMR (minimum redundancy, maximum relevance)</div>
 <p><b>mRMR</b> je hladový filtr, který začne příznakem s největší vzájemnou informací s cílem \(I(X_j; Y)\) a pak opakovaně přidá příznak, který maximalizuje <b>relevanci minus průměrnou redundanci</b> vůči již vybrané množině \(S\):
-\[ j^\ast = \arg\max_{j\notin S}\left[I(X_j; Y) - \frac{1}{|S|}\sum_{i\in S}I(X_j; X_i)\right] \]
+\[ \begin{aligned} j^\ast = \arg\max_{j\notin S}\Big[\,&I(X_j; Y) \\ &- \frac{1}{|S|}\sum_{i\in S}I(X_j; X_i)\Big] \end{aligned} \]
 dokud nemá zvolený počet \(k\) příznaků.</p>
 <p class="jinak">„přidej příznak, který o cíli hodně říká a zároveň neopakuje, co už víme“. Nefituje se žádný prediktor – je to rychlé a nezávislé na modelu.</p><p class="slovnik-odkaz"><a href="03_redukce.html#def-mrmr">výklad v kapitole 3 →</a></p></div>
 <div class="box definice" id="s-wrapper"><div class="box-t">wrapper metoda výběru příznaků</div>

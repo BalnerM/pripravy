@@ -99,6 +99,13 @@
 <b>Spearmanův koeficient</b> je Pearsonův koeficient spočítaný na pořadích; měří <b>monotónní</b> závislost:
 \[ \rho_S = \rho_P\big(\text{rank}(x),\ \text{rank}(y)\big) \]</p>
 <p class="jinak">Pearson: „jak dobře body leží na přímce“ – citlivý na odlehlé hodnoty, pro číselné proměnné. Spearman: „roste-li jedna, roste (klesá) i druhá?“ – na tvaru nezáleží, méně citlivý na extrémy, použitelný i pro ordinální proměnné. \(\rho = 0\) neznamená nezávislost (jen chybí lineární / monotónní vztah).</p></div>
+<p><b>Slovy:</b> u každého bodu se podíváme, jestli jsou \(x\) i \(y\) zároveň nad svým průměrem (nebo zároveň pod) – pak je součin odchylek \((x_i - \bar x)(y_i - \bar y)\) kladný; je-li jedna hodnota nad a druhá pod průměrem, je záporný. Čitatel tyto součiny sečte: převažují-li kladné, proměnné rostou spolu. Jmenovatel je součin „rozsahů“ obou proměnných (odmocniny ze součtů čtverců odchylek); vydělením přestane výsledek záviset na jednotkách a vždy leží mezi −1 a 1. Faktory \(1/(n-1)\) z kovariance i ze směrodatných odchylek se ve zlomku zkrátí, proto ve druhém tvaru chybí. Spearman nahradí hodnoty jejich pořadím (1, 2, …, \(n\)) a spočítá totéž – tím zmizí tvar závislosti i vliv extrémních hodnot.</p>
+<div class="tablewrap"><table>
+<tr><th>hodnota</th><th>význam</th><th>typický příklad</th></tr>
+<tr><td>blízko +1</td><td>rostou spolu</td><td>výška a hmotnost</td></tr>
+<tr><td>blízko −1</td><td>jedna roste, druhá klesá</td><td>venkovní teplota a náklady na topení</td></tr>
+<tr><td>blízko 0</td><td>slabá lineární / monotónní vazba</td><td>velikost bot a výsledek zkoušky</td></tr>
+</table></div>
 <div class="box priklad"><div class="box-t">Ručně (přednáška): \(y = 2^{x-1}\)</div>
 <p>Data: \(x = 1,\dots,5\), \(y = 1, 2, 4, 8, 16\); průměry \(\bar x = 3\), \(\bar y = 6{,}2\).</p>
 <p>1. Součty odchylek:</p>
@@ -112,26 +119,35 @@
 <p><b>Entropie</b> diskrétní náhodné veličiny \(X\) je průměrná nejistota výsledku v bitech:
 \[ H(X) = -\sum_x p(x)\log_2 p(x) \]
 Sdružená entropie a podmíněná entropie (nejistota \(X\), která zbude po pozorování \(Y\)):
-\[ \begin{aligned} H(X, Y) &= -\sum_{x,y}p(x,y)\log_2 p(x,y) \\ H(X\mid Y) &= -\sum_y p(y)\sum_x p(x\mid y)\log_2 p(x\mid y) \end{aligned} \]</p>
+\[ \begin{aligned} H(X, Y) &= -\sum_{x,y}p(x,y)\log_2 p(x,y) \\ H(X\mid Y) &= \sum_y p(y)\,H(X\mid Y = y) \\ H(X\mid Y = y) &= -\sum_x p(x\mid y)\log_2 p(x\mid y) \end{aligned} \]</p>
 <p class="jinak">„kolik ano/ne otázek v průměru potřebuju, abych výsledek uhodl“. Férová mince 1 bit, mince s \(p = 0{,}9\) 0,469 bitu, férová kostka \(\log_2 6 = 2{,}585\) bitu, jistý výsledek 0. Hodně rovnoměrně obsazených výsledků = vysoká entropie.</p></div>
+<p><b>Slovy:</b> \(-\log_2 p(x)\) je „překvapení“ z výsledku \(x\): jistý výsledek (\(p = 1\)) nepřekvapí vůbec (0 bitů), výsledek s \(p = 1/2\) nese 1 bit, s \(p = 1/4\) 2 bity. Entropie je <b>průměrné překvapení</b> – každé překvapení vážené tím, jak často nastává (\(p(x)\)). Sdružená entropie \(H(X, Y)\) je totéž pro dvojice hodnot. Podmíněná entropie \(H(X\mid Y)\): data rozdělíme do skupin podle hodnoty \(y\), v každé skupině spočítáme entropii \(X\) (vnitřní suma) a výsledky zprůměrujeme s vahami \(p(y)\), tedy podle velikosti skupin. Určuje-li \(Y\) hodnotu \(X\) přesně, je každá skupina „čistá“ a \(H(X\mid Y) = 0\).</p>
 <div class="box definice" id="def-mi"><div class="box-t">Definice: vzájemná informace</div>
 <p><b>Vzájemná informace</b> je množství informace, které pozorování jedné veličiny přinese o druhé (snížení nejistoty):
 \[ \begin{aligned} I(X; Y) &= H(Y) - H(Y\mid X) \\ &= H(X) + H(Y) - H(X, Y) \\ &= \sum_{x,y}p(x,y)\log_2\frac{p(x,y)}{p(x)p(y)} \end{aligned} \]</p>
 <p class="jinak">„o kolik méně nejistý jsem o cíli, když znám příznak“. Na rozdíl od korelace zachytí i <b>nelineární</b> závislost a funguje i pro kategorické proměnné; \(I = 0\) právě pro nezávislé veličiny.</p></div>
+<p><b>Slovy:</b> tři řádky jsou tři pohledy na totéž číslo.</p>
+<ol>
+<li>Nejistota o cíli \(Y\) předtím minus nejistota, která zbude, když znám \(X\) – o kolik mi \(X\) pomohl.</li>
+<li>Kdyby byly veličiny nezávislé, platilo by \(H(X, Y) = H(X) + H(Y)\). O kolik je sdružená entropie menší než tento součet, o tolik se informace obou veličin překrývá.</li>
+<li>Pro každou dvojici \((x, y)\) porovnáme, jak často skutečně nastává (\(p(x,y)\)), s tím, jak často by nastávala při nezávislosti (\(p(x)p(y)\)). Poměr 1 dá logaritmus 0 – nezávislé veličiny mají \(I = 0\); čím víc se skutečnost od nezávislosti liší, tím je \(I\) větší.</li>
+</ol>
 <p>V praxi: pro diskrétní dvojici spočítám tabulku četností \(n_{xy}\), vydělím \(n\) (\(\hat p(x,y) = n_{xy}/n\)), marginály sečtu po řádcích/sloupcích a dosadím (nulové buňky vynechám). Pro spojitá data se hustota odhaduje: <b>kNN</b> (vzdálenosti k sousedům; volí se \(k\)), <b>KDE</b> (hladké „hrbolky“; volí se šířka pásma) nebo <b>binning</b> (diskretizace; záleží na hranicích a šířce binů). scikit-learn: <code>mutual_info_classif</code> pro třídy, <code>mutual_info_regression</code> pro spojitý cíl; vrací naty (pro bity vyděl \(\ln 2\)).</p>
 <h3>Relevance, redundance a mRMR</h3>
 <div class="box intuice"><div class="box-t">Korelační matice s labelem</div>
 <p>Přidáme-li cíl \(Y\) do korelační matice, vidíme <b>relevanci</b> (vazba příznak–cíl: F1–Y 0,65, F2–Y 0,60) i <b>redundanci</b> (vazba příznak–příznak: F1–F2 0,92 – překrývají se). Pravidlo výběru: užitečná informace bez duplicit. F1 a F2 jsou každý zvlášť relevantní, ale společně skoro zbyteční – stačí jeden z nich.</p></div>
 <div class="box definice" id="def-mrmr"><div class="box-t">Definice: mRMR (minimum redundancy, maximum relevance)</div>
 <p><b>mRMR</b> je hladový filtr, který začne příznakem s největší vzájemnou informací s cílem \(I(X_j; Y)\) a pak opakovaně přidá příznak, který maximalizuje <b>relevanci minus průměrnou redundanci</b> vůči již vybrané množině \(S\):
-\[ j^\ast = \arg\max_{j\notin S}\left[I(X_j; Y) - \frac{1}{|S|}\sum_{i\in S}I(X_j; X_i)\right] \]
+\[ \begin{aligned} j^\ast = \arg\max_{j\notin S}\Big[\,&I(X_j; Y) \\ &- \frac{1}{|S|}\sum_{i\in S}I(X_j; X_i)\Big] \end{aligned} \]
 dokud nemá zvolený počet \(k\) příznaků.</p>
 <p class="jinak">„přidej příznak, který o cíli hodně říká a zároveň neopakuje, co už víme“. Nefituje se žádný prediktor – je to rychlé a nezávislé na modelu.</p></div>
+<p><b>Slovy:</b> pro každého kandidáta \(X_j\), který ještě není vybraný, spočítáme dvě čísla. První člen \(I(X_j; Y)\) je <b>relevance</b> – kolik kandidát říká o cíli. Druhý člen je průměrná vzájemná informace s příznaky, které už v množině \(S\) jsou – kolik z toho „už víme“ (<b>redundance</b>). Rozdíl je čistý přínos kandidáta a \(\arg\max\) vybere toho \(j\), pro kterého je největší. Kdybychom vybírali jen podle prvního členu, vzali bychom F1 i F2 z předchozího boxu; druhý člen F2 po výběru F1 penalizuje, protože se s F1 překrývá.</p>
 
 <h2 id="wrappery">Wrappery: model sám řekne, co funguje</h2>
 <div class="box definice" id="def-wrapper"><div class="box-t">Definice: wrapper metoda výběru příznaků</div>
 <p><b>Wrapper</b> řeší diskrétní optimalizační úlohu \(S^\ast = \arg\min_{S\subseteq F,\ |S| = k}\hat R_{CV}(P_S)\): hledá podmnožinu \(S\) indexů příznaků, pro kterou je validační (CV) ztráta modelu natrénovaného jen na \(S\) nejmenší. Jedno vyhodnocení = fit předzpracování a modelu uvnitř každého trénovacího foldu.</p>
 <p class="jinak">model se natrénuje znovu a znovu na různých kombinacích příznaků a vybere se ta, která vychází nejlépe. Přesné, ale drahé – a prostor podmnožin je obrovský (\(2^d\)).</p></div>
+<p><b>Slovy:</b> \(\arg\min\) čteme „ta množina \(S\), pro kterou je výraz nejmenší“. Podmínky pod ním říkají, odkud vybíráme: \(S\) je podmnožina všech indexů příznaků \(F = \{1, \dots, d\}\) a má přesně \(k\) prvků. \(\hat R_{CV}(P_S)\) je chyba v křížové validaci celé pipeline \(P_S\) (předzpracování + model), která vidí jen sloupce z \(S\). Hodnotíme-li přesností, maximalizace přesnosti je totéž jako minimalizace \(1 - \text{přesnost}\).</p>
 <div class="tablewrap"><table>
 <tr><th>strategie</th><th>které podmnožiny hodnotí</th><th>kompromis</th></tr>
 <tr><td>hrubá síla (brute force)</td><td>všechny přípustné</td><td>nejlepší CV skóre zaručeno; kombinatorická cena</td></tr>
@@ -141,8 +157,24 @@ dokud nemá zvolený počet \(k\) příznaků.</p>
 <div class="box definice" id="def-forward"><div class="box-t">Definice: dopředný výběr a zpětná eliminace</div>
 <p><b>Dopředný výběr</b> (forward selection) začne s prázdnou množinou a v každém kroku přidá příznak, se kterým je CV skóre největší: \(j^\ast = \arg\max_{j\notin S}\text{CVAcc}(S\cup\{j\})\). <b>Zpětná eliminace</b> (backward elimination) začne se všemi příznaky a v každém kroku odebere ten, bez kterého je skóre zbylé množiny největší. Končí se po dosažení zvoleného počtu \(k\) nebo když zlepšení klesne pod práh (srovnání s „dummy“ prediktorem).</p>
 <p class="jinak">stejná účelová funkce, jiná cesta prostorem. Přidaný příznak už zůstane, odebraný se nevrátí – ani jeden směr nezaručuje nejlepší podmnožinu.</p></div>
+<p><b>Slovy:</b> \(\text{CVAcc}(S\cup\{j\})\) je přesnost v CV, když k aktuální množině přidáme příznak \(j\); zkusíme to pro každý ještě nevybraný \(j\) a vezmeme nejlepší. Zpětná eliminace počítá \(\text{CVAcc}(S\setminus\{j\})\) – hodnotí <b>zbylou</b> množinu bez příznaku \(j\), ne odebraný příznak samotný. Odebere ten příznak, bez kterého model ztratí nejméně (nebo se dokonce zlepší).</p>
 <div class="box priklad"><div class="box-t">Dopředný výběr (přednáška: breast cancer, logistická regrese + škálování v 5-fold CV)</div>
-<p><b>Iterace 1</b> (aktuálně ∅): +A (mean radius) 0,877; +B (mean texture) 0,694; +C (texture error) 0,627; +D (fractal dimension error) 0,617 ⇒ vybrán A. <b>Iterace 2</b> (aktuálně {A}): {A, B} 0,88578; {A, C} 0,88581; {A, D} 0,87879 ⇒ vybrán C, konec při \(|S| = 2\). (Čísla jsou skóre prohledávání v CV, ne výsledky na testu.) Všimni si, že C sám byl slabý, ale s A se doplňuje.</p></div>
+<p>Příznaky: A = mean radius, B = mean texture, C = texture error, D = fractal dimension error.</p>
+<p><b>Iterace 1</b> (aktuálně ∅) – zkusíme přidat každý příznak:</p>
+<ul><li>+A → 0,877 ✓</li><li>+B → 0,694</li><li>+C → 0,627</li><li>+D → 0,617</li></ul>
+<p>Vybrán A.</p>
+<p><b>Iterace 2</b> (aktuálně {A}):</p>
+<ul><li>{A, B} → 0,88578</li><li>{A, C} → 0,88581 ✓</li><li>{A, D} → 0,87879</li></ul>
+<p>Vybrán C, konec při \(|S| = 2\). (Čísla jsou skóre prohledávání v CV, ne výsledky na testu.) Všimni si, že C sám byl slabý, ale s A se doplňuje.</p></div>
+<div class="box priklad"><div class="box-t">Zpětná eliminace (přednáška: stejná data, model i rozdělení CV)</div>
+<p><b>Iterace 1</b> (aktuálně {A, B, C, D}) – zkusíme odebrat každý příznak a hodnotíme, co zbude:</p>
+<ul><li>−A → {B, C, D} 0,72582</li><li>−B → {A, C, D} 0,88401</li><li>−C → {A, B, D} 0,88929 ✓</li><li>−D → {A, B, C} 0,88227</li></ul>
+<p>Odebrán C – bez něj zbylá trojice vychází nejlépe.</p>
+<p><b>Iterace 2</b> (aktuálně {A, B, D}):</p>
+<ul><li>−A → {B, D} 0,68533</li><li>−B → {A, D} 0,87879</li><li>−D → {A, B} 0,88578 ✓</li></ul>
+<p>Odebrán D, konec při \(|S| = 2\): výsledek {A, B}. Odebrání A vždy nejvíc uškodí – A je nejdůležitější příznak v obou směrech.</p></div>
+<div class="box pozor"><div class="box-t">Stejná úloha, jiný směr hledání → jiný výsledek</div>
+<p>Dopředný výběr skončil na {A, C} (0,88581), zpětná eliminace na {A, B} (0,88578). Zpětná eliminace vyhodila C hned v prvním kroku, protože vedle B a D byl nejméně potřebný – a odebraný příznak se už nevrátí. Mezi všemi šesti dvojicemi je nejlepší právě {A, C}, takže tady ji našel dopředný výběr; rozdíl skóre je ale zanedbatelný. Pointa: <b>výsledek hladového hledání závisí na cestě</b>, ne jen na účelové funkci.</p></div>
 <div class="box pozor"><div class="box-t">Hladový postup může minout nejlepší dvojici</div>
 <p>Úloha: vybrat přesně 2 příznaky (nižší ztráta je lepší). Hladově: nejlepší jednotlivý příznak je A → nejlepší dvojice s ním AB, ztráta 0,18. Hrubá síla zkontroluje všechny tři dvojice → <b>BC, ztráta 0,10</b>. Náhodné prohledávání BC najde, pokud ji vylosuje. Lokální prohledávání (výměna jednoho příznaku AB → BC) nebo náhodné restarty mohou hladovou volbu opravit. Malý prostor → hrubá síla; omezený rozpočet → porovnat hladový, náhodný a lokální postup se stejným rozpočtem. <b>Grid search</b> je hrubá síla nad zvolenou mřížkou parametrů (3 hodnoty C × 2 hodnoty γ = 6 kombinací).</p></div>
 <div class="box parametry"><div class="box-t">Parametry: výběr příznaků (filtry i wrappery)</div>
@@ -165,6 +197,22 @@ dokud nemá zvolený počet \(k\) příznaků.</p>
 \[ \mathbf z = W^\top\mathbf x,\qquad W \in \mathbb R^{d\times k} \]
 – každá nová složka \(z_j = \mathbf w_j^\top\mathbf x\) je projekce (skalární součin) na sloupec \(\mathbf w_j\), tj. vážený součet původních příznaků. <b>Nelineární</b>: \(\mathbf z = f(\mathbf x)\) s nelineární \(f\).</p>
 <p class="jinak">nové příznaky jsou „směsi“ starých, např. \(z_1 = 0{,}7x_1 - 0{,}2x_2 + 0{,}5x_3\). Lineární = jednoduché, interpretovatelné (čitelné váhy, rotace a projekce, rychlé maticové operace); nelineární = pružnější (zakřivené variety, lokální okolí), ale méně průhledné. Dobrá rada: nejdřív zkus lineární reprezentaci.</p></div>
+<div class="box vzorec"><div class="box-t">Skalární součin, projekce a linearita</div>
+\[ z = \mathbf w^\top\mathbf x = \langle\mathbf x, \mathbf w\rangle = \|\mathbf x\|\,\|\mathbf w\|\cos\theta \]
+<table class="vars">
+<tr><td>\(\mathbf x\)</td><td>vektor příznaků jednoho vzorku</td></tr>
+<tr><td>\(\mathbf w\)</td><td>směr (vektor vah)</td></tr>
+<tr><td>\(\|\cdot\|\)</td><td>délka vektoru</td></tr>
+<tr><td>\(\theta\)</td><td>úhel mezi \(\mathbf x\) a \(\mathbf w\)</td></tr>
+</table>
+<p><b>Slovy:</b> skalární součin vynásobí odpovídající složky a sečte je – je to vážený součet příznaků. Geometricky je to délka \(\mathbf x\) krát délka \(\mathbf w\) krát kosinus úhlu mezi nimi. Má-li \(\mathbf w\) délku 1, zbude \(\|\mathbf x\|\cos\theta\): <b>znaménková délka „stínu“</b> bodu \(\mathbf x\) na přímce ve směru \(\mathbf w\) (záporná, padne-li stín na druhou stranu od počátku). Víc směrů najednou = matice \(W\) se směry ve sloupcích, \(\mathbf z = W^\top\mathbf x\); každá složka \(z_j = \mathbf w_j^\top\mathbf x\) je stín na jeden sloupec \(\mathbf w_j\).</p>
+<p>Příklad (první bod z příkladu PCA níže): \(\mathbf x = (2, 1)\), \(\mathbf w = \tfrac1{\sqrt2}(1, 1)\).</p>
+\[ \begin{aligned} &\text{po složkách:} \\ z &= \tfrac1{\sqrt2}(2\cdot1 + 1\cdot1) = \tfrac{3}{\sqrt2} = 2{,}12 \\ &\text{geometricky:} \\ z &= \sqrt5\cdot\cos18{,}4^\circ = 2{,}236\cdot0{,}949 = 2{,}12 \end{aligned} \]
+<p><b>Proč „lineární“:</b> funkce \(f\) je lineární, splňuje-li dvě pravidla:</p>
+\[ \begin{aligned} &\text{aditivita:} \\ &f(\mathbf x_1 + \mathbf x_2) = f(\mathbf x_1) + f(\mathbf x_2) \\ &\text{homogenita:} \\ &f(a\mathbf x) = a\,f(\mathbf x) \\ &\text{dohromady (superpozice):} \\ &f(a\mathbf x_1 + b\mathbf x_2) = a\,f(\mathbf x_1) + b\,f(\mathbf x_2) \end{aligned} \]
+<p><b>Slovy:</b> výstup pro součet vstupů je součet výstupů a dvojnásobný vstup dá dvojnásobný výstup. Obě pravidla splňují právě vážené součty vstupů – proto je každý nový příznak lineární redukce „směs“ původních:</p>
+\[ z_1 = w_{1,1}x_1 + w_{2,1}x_2 + \dots + w_{d,1}x_d \]
+<p>kde \(w_{j,1}\) je váha příznaku \(x_j\) v novém příznaku \(z_1\) (např. \(z_1 = 0{,}7x_1 - 0{,}2x_2 + 0{,}5x_3\)).</p></div>
 <div class="box definice" id="def-pca"><div class="box-t">Definice: analýza hlavních komponent (PCA)</div>
 <p><b>PCA</b> je metoda bez učitele, která promítne vycentrovaná data do nového souřadného systému z ortogonálních směrů (hlavních komponent) seřazených podle rozptylu: první komponenta je směr <b>největšího rozptylu</b>, druhá je na ni kolmá s druhým největším rozptylem atd. Směry jsou vlastní vektory kovarianční matice \(S = \frac1n X^\top X\) a rozptyly jejich vlastní čísla.</p>
 <p class="jinak">PCA otočí osy tak, aby první osa vedla podél „nejdelšího“ protažení mraku bodů. Ponecháme-li jen několik prvních os, ztratíme nejmenší možnou část informace (měřeno čtvercovou chybou rekonstrukce). Nové složky (skóre) jsou nekorelované. Labely nepotřebuje.</p></div>
@@ -173,7 +221,12 @@ dokud nemá zvolený počet \(k\) příznaků.</p>
 \[ \begin{aligned} \text{projekce:}\quad & z_i = \mathbf w^\top\mathbf x_i \\ \text{rekonstrukce:}\quad & \hat{\mathbf x}_i = z_i\mathbf w \\ \text{chyba:}\quad & \mathbf e_i = \mathbf x_i - \hat{\mathbf x}_i \end{aligned} \]
 <p>Podle Pythagorovy věty \(\|\mathbf x_i\|^2 = z_i^2 + \|\mathbf e_i\|^2\). Zprůměrováno přes všechny body:</p>
 \[ \frac1n\sum_i\|\mathbf e_i\|^2 = \operatorname{trace}(S) - \mathbf w^\top S\mathbf w \]
+<p><b>Slovy:</b> \(z_i\) je stín bodu na přímce, \(\hat{\mathbf x}_i\) je místo na přímce, kam stín padne, a \(\mathbf e_i\) je kolmá úsečka od bodu k přímce. Délka bodu, stín a chyba tvoří pravoúhlý trojúhelník – odtud Pythagoras. Ve zprůměrovaném vzorci je \(\operatorname{trace}(S)\) součet rozptylů všech příznaků, tj. celkový rozptyl dat (průměrné \(\|\mathbf x_i\|^2\)); na volbě směru nezávisí. \(\mathbf w^\top S\mathbf w\) je rozptyl projekcí (průměrné \(z_i^2\)). Průměrná chyba = celkový rozptyl − zachycený rozptyl.</p>
 <p>Celkový rozptyl je pevný, takže <b>čím víc rozptylu projekce zachytí, tím menší je chyba</b>. Přímka, na které jsou průměty „nejroztaženější“, je zároveň přímka nejbližší bodům.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig03_pca_uhel.png" alt="Rozptyl projekcí a chyba rekonstrukce v závislosti na úhlu směru" loading="lazy"></div>
+<figcaption><b>Obr. 3.2</b> Osm vycentrovaných bodů (jako v přednášce, vlastní náhodná data); směr \(\mathbf w\) otáčíme po 1° od 0° do 180°. Vlevo nejlepší směr s průměty (×) a chybami (přerušovaně), vpravo obě veličiny pro každý úhel.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Modrá a oranžová křivka jsou zrcadlové: pro každý úhel dávají dohromady stejné číslo 3,83 (průměrné \(\|\mathbf x_i\|^2\)). Kde je rozptyl projekcí největší (3,66 při 34°), je chyba rekonstrukce nejmenší (0,17) – to je PC1. Kolmo na PC1 (o 90° dál) je to naopak: tam leží PC2. Maximum rozptylu je největší vlastní číslo \(S\).</p></div>
 <div class="box vzorec"><div class="box-t">PCA jako optimalizace a její řešení</div>
 \[ \begin{aligned} &\max_{\mathbf w_1}\ \mathbf w_1^\top S\,\mathbf w_1\ \ \text{s.t.}\ \|\mathbf w_1\|_2 = 1 \\ &\mathcal L(\mathbf w, \lambda) = \mathbf w^\top S\mathbf w - \lambda(\mathbf w^\top\mathbf w - 1) \\ &\nabla_{\mathbf w}\mathcal L = 2S\mathbf w - 2\lambda\mathbf w = 0 \ \Rightarrow\ S\mathbf w = \lambda\mathbf w \end{aligned} \]
 <table class="vars">
@@ -182,7 +235,14 @@ dokud nemá zvolený počet \(k\) příznaků.</p>
 <tr><td>\(\lambda\)</td><td>Lagrangeův multiplikátor = vlastní číslo; \(\mathbf w^\top S\mathbf w = \lambda\) je zachycený rozptyl ⇒ volíme největší \(\lambda\)</td></tr>
 <tr><td>top-\(k\)</td><td>\(\max\operatorname{trace}(W^\top SW)\) s \(W^\top W = I_k\): \(k\) vlastních vektorů s největšími vlastními čísly</td></tr>
 </table>
-<p>Ortonormalita brání opakování stejného směru; centrování je nutné – jinak \(S\) míchá efekt průměru s rozptylem.</p></div>
+<p>Ortonormalita brání opakování stejného směru; centrování je nutné – jinak \(S\) míchá efekt průměru s rozptylem.</p>
+<p><b>Slovy, řádek po řádku:</b></p>
+<ol>
+<li>Hledáme směr \(\mathbf w_1\), na kterém mají projekce největší rozptyl \(\mathbf w_1^\top S\mathbf w_1\). Podmínka \(\|\mathbf w_1\| = 1\) je nutná – jinak by šel „rozptyl“ zvětšovat donekonečna prostým prodlužováním \(\mathbf w\).</li>
+<li>Lagrangián vloží podmínku přímo do optimalizované funkce: člen \(\lambda(\mathbf w^\top\mathbf w - 1)\) je nulový, právě když má \(\mathbf w\) délku 1.</li>
+<li>V optimu je derivace nulová, což vede na \(S\mathbf w = \lambda\mathbf w\): vynásobíme-li směr \(\mathbf w\) kovarianční maticí, vyjde <b>stejný směr</b>, jen \(\lambda\)-krát natažený. Takové směry jsou vlastní vektory \(S\).</li>
+<li>Dosadíme zpět: \(\mathbf w^\top S\mathbf w = \lambda\mathbf w^\top\mathbf w = \lambda\). Rozptyl na vlastním vektoru je jeho vlastní číslo, proto bereme vlastní vektor s největším \(\lambda\).</li>
+</ol></div>
 <div class="box priklad"><div class="box-t">PCA ručně: čtyři body (přednáška)</div>
 <p>\(X\) = (2, 1), (−2, −1), (1, 2), (−1, −2); sloupcové průměry jsou 0.</p>
 <ol>
@@ -193,6 +253,10 @@ dokud nemá zvolený počet \(k\) příznaků.</p>
 </ol></div>
 <div data-demo="pca-rotace"></div>
 <p><b>Použití PCA.</b> (1) <i>Průzkum</i>: graf vzorků ve 2D/3D, hledání trendů, skupin a neobvyklých vzorků, <b>scree plot</b> (vysvětlený rozptyl jednotlivých komponent) a <b>biplot</b> (vzorky + šipky příznaků) pro interpretaci os – žádný prediktivní model není potřeba. (2) <i>Vstup pro predikci</i>: rozdělit data / nastavit CV → fit škálování + PCA jen na trénovacích datech → transformovat odložená data stejným fitem → natrénovat prediktor; počet komponent \(k\) ladit v CV. Vysvětlený rozptyl popisuje data, validační skóre hodnotí predikci – to jsou dva různé cíle.</p>
+<figure class="wide"><div class="paper"><img src="figures/fig03_scree_biplot.png" alt="Scree plot a biplot PCA pro dataset Iris" loading="lazy"></div>
+<figcaption><b>Obr. 3.3</b> Průzkum datasetu Iris bez učitele (jako v přednášce): 150 květů, 4 standardizované příznaky. Vlevo scree plot, vpravo biplot PC1–PC2; druh květu jen obarvuje body, PCA ho nevidí.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p><b>Scree plot:</b> PC1 vysvětlí 73,0 % rozptylu, PC2 22,9 %, dohromady 95,8 %. Za PC2 je „koleno“ – PC3 a PC4 (3,7 % a 0,5 %) lze vynechat a 4D data věrně zobrazit ve 2D. <b>Biplot:</b> šipka ukazuje, jak příznak přispívá k osám. Délka a šířka okvětního lístku a délka kališního lístku míří podél PC1 – PC1 je tedy zhruba „velikost květu“; šířka kališního lístku míří hlavně podél PC2. Šipky téměř v zákrytu (délka a šířka okvětního lístku) = silně korelované, redundantní příznaky. Setosa (malé okvětní lístky) leží vlevo, proti směru šipek okvětních lístků – druhy se oddělí, ačkoli PCA labely nezná.</p></div>
 <div class="box parametry"><div class="box-t">Parametry: PCA</div>
 <div class="tablewrap"><table class="params">
 <tr><th>parametr</th><th>co znamená</th><th><span class="up">↑</span> když ho zvětším</th><th><span class="dn">↓</span> když ho zmenším</th></tr>
@@ -207,6 +271,23 @@ dokud nemá zvolený počet \(k\) příznaků.</p>
 \[ J(\mathbf w) = \frac{(\mathbf w^\top(\boldsymbol\mu_1 - \boldsymbol\mu_2))^2}{\mathbf w^\top S_W\mathbf w} \]
 kde \(S_W = S_1 + S_2\) je matice rozptylu uvnitř tříd (within-class scatter).</p>
 <p class="jinak">PCA hledá směr, kde jsou data nejroztaženější; LDA směr, kde jsou <b>třídy nejlépe oddělené</b>: průměry tříd daleko od sebe, každá třída „úzká“. Potřebuje labely.</p></div>
+<div class="box vzorec"><div class="box-t">Fisherovo kritérium po projekci (příloha přednášky)</div>
+<p>Po projekci \(z_i = \mathbf w^\top\mathbf x_i\) má každá třída \(c\) na přímce svůj průměr a rozptyl:</p>
+\[ \begin{aligned} \tilde\mu_c &= \mathbf w^\top\boldsymbol\mu_c \\ \tilde s_c^2 &= \textstyle\sum_{i: y_i = c}(z_i - \tilde\mu_c)^2 = \mathbf w^\top S_c\,\mathbf w \end{aligned} \]
+\[ \begin{aligned} J(\mathbf w) &= \frac{(\tilde\mu_1 - \tilde\mu_2)^2}{\tilde s_1^2 + \tilde s_2^2} \\ &= \frac{(\mathbf w^\top(\boldsymbol\mu_1 - \boldsymbol\mu_2))^2}{\mathbf w^\top S_W\mathbf w} \end{aligned} \]
+<table class="vars">
+<tr><td>\(\tilde\mu_c\)</td><td>promítnutý průměr třídy \(c\) – jedno číslo na přímce</td></tr>
+<tr><td>\(\tilde s_c^2\)</td><td>rozptyl (scatter) třídy \(c\) na přímce – součet čtverců odchylek, tj. \(n_c\cdot\operatorname{Var}_c(z)\)</td></tr>
+<tr><td>\(S_c\)</td><td>matice rozptylu třídy \(c\) v původním prostoru (definice v boxu níže)</td></tr>
+<tr><td>\(S_W = S_1 + S_2\)</td><td>matice rozptylu uvnitř tříd</td></tr>
+</table>
+<p><b>Slovy:</b> všechny body promítneme na přímku se směrem \(\mathbf w\) – každý dostane jedno číslo \(z_i\). Pro každou třídu spočítáme průměr těchto čísel (\(\tilde\mu_c\)) a to, jak moc se kolem něj rozptylují (\(\tilde s_c^2\)). <b>Čitatel</b> je čtverec vzdálenosti obou průměrů – chceme ho velký (třídy daleko od sebe). <b>Jmenovatel</b> je součet rozptylů obou tříd – chceme ho malý (každá třída úzká). Poměr je velký, jen když platí obojí. Druhý řádek je totéž zapsané přes původní data: průměr projekcí = projekce průměru a rozptyl projekcí = \(\mathbf w^\top S_c\mathbf w\), takže \(J\) jde spočítat bez promítání jednotlivých bodů.</p></div>
+<div class="box intuice"><div class="box-t">Kosočtverce a úsečky (přednáška)</div>
+<p>Promítni body obou tříd na přímku. Pro každou třídu nakresli <b>kosočtverec</b> v místě jejího průměru a <b>úsečku</b> průměr ± jedna směrodatná odchylka. LDA otáčí přímkou tak, aby kosočtverce byly co nejdál od sebe a úsečky co nejkratší. PCA na úsečky nehledí – chce jen, aby byl rozptýlený celý mrak bodů dohromady.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig03_lda_fisher.png" alt="Projekce dvou tříd na směr PCA a LDA s průměry tříd a směrodatnými odchylkami" loading="lazy"></div>
+<figcaption><b>Obr. 3.4</b> Dvě třídy po 20 bodech (jako v přednášce, vlastní náhodná data). Vlevo směry PCA a LDA, uprostřed a vpravo projekce: kosočtverec = průměr třídy, úsečka = ± 1 směrodatná odchylka. \(J\) je Fisherovo kritérium.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Na směru PCA jsou průměry tříd od sebe 1,53, ale každá třída je široká (směrodatné odchylky 1,27 a 1,35) – úsečky se překrývají a \(J = 0{,}034\). Na směru LDA jsou průměry od sebe skoro stejně (1,67), ale třídy jsou úzké (0,32 a 0,31) – \(J = 0{,}691\), asi 20× víc. LDA tu nevyhrála větším rozestupem průměrů, ale <b>menším rozptylem uvnitř tříd</b> – proto je ve jmenovateli.</p></div>
 <div class="box vzorec"><div class="box-t">Řešení LDA (dvě třídy)</div>
 \[ \begin{aligned} S_W\,\mathbf w = \boldsymbol\mu_1 - \boldsymbol\mu_2\ \ &\Rightarrow\ \ \mathbf w \propto S_W^{-1}(\boldsymbol\mu_1 - \boldsymbol\mu_2) \\ z &= \mathbf w^\top\mathbf x \\ S_c &= \sum_{i: y_i = c}(\mathbf x_i - \boldsymbol\mu_c)(\mathbf x_i - \boldsymbol\mu_c)^\top \end{aligned} \]
 <table class="vars">
@@ -214,9 +295,10 @@ kde \(S_W = S_1 + S_2\) je matice rozptylu uvnitř tříd (within-class scatter)
 <tr><td>\(S_W\)</td><td>rozptyl uvnitř tříd (součet čtverců odchylek od průměru vlastní třídy)</td></tr>
 <tr><td>\(z\)</td><td>skóre – jedno číslo; s prahem dává lineární klasifikátor</td></tr>
 </table>
-<p>Pro \(C\) tříd vede na vlastní problém \(S_W^{-1}S_B\mathbf w = \lambda\mathbf w\) a dává nejvýše \(\min(d, C-1)\) směrů – není to obecná náhrada PCA. Singulární \(S_W\) (víc příznaků než vzorků): regularizace nebo solver ohleduplný k hodnosti. Prakticky: regularizovaná LDA jako klasifikátor EEG signálů.</p></div>
+<p>Pro \(C\) tříd vede na vlastní problém \(S_W^{-1}S_B\mathbf w = \lambda\mathbf w\) a dává nejvýše \(\min(d, C-1)\) směrů – není to obecná náhrada PCA. Singulární \(S_W\) (víc příznaků než vzorků): regularizace nebo solver ohleduplný k hodnosti. Prakticky: regularizovaná LDA jako klasifikátor EEG signálů.</p>
+<p><b>Slovy:</b> optimální směr dostaneme tak, že spojnici průměrů tříd \(\boldsymbol\mu_1 - \boldsymbol\mu_2\) „opravíme“ inverzí matice rozptylu uvnitř tříd: ve směrech, kde jsou třídy široké, \(S_W^{-1}\) váhu zmenší, ve směrech, kde jsou úzké, ji zvětší. Kdyby byly třídy kulaté (stejný rozptyl ve všech směrech), byl by \(\mathbf w\) prostě směr spojnice průměrů. Symbol \(\propto\) znamená „úměrné“ – na délce \(\mathbf w\) nezáleží, jen na směru. Skóre \(z\) je souřadnice bodu na této přímce; práh mezi promítnutými průměry ho zařadí do třídy.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig03_pca_lda.png" alt="Srovnání projekce PCA a LDA na dvou protáhlých třídách" loading="lazy"></div>
-<figcaption><b>Obr. 3.2</b> Dvě protáhlé třídy leží rovnoběžně vedle sebe. Vlevo směry PCA a LDA, uprostřed a vpravo histogramy projekcí na každý z nich.</figcaption></figure>
+<figcaption><b>Obr. 3.5</b> Dvě protáhlé třídy leží rovnoběžně vedle sebe. Vlevo směry PCA a LDA, uprostřed a vpravo histogramy projekcí na každý z nich.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>PCA labely nevidí a zvolí směr největšího rozptylu – podél protažení tříd, kde se obě třídy úplně překrývají. LDA zvolí směr, ve kterém je rozptyl <i>malý</i>, ale průměry tříd jsou daleko od sebe – třídy se oddělí. <b>Směr s největším rozptylem nemusí být směr, který odděluje třídy.</b></p></div>
 
@@ -234,11 +316,19 @@ kde \(S_W = S_1 + S_2\) je matice rozptylu uvnitř tříd (within-class scatter)
 <tr><td>perplexita</td><td>\(2^{H}\) = efektivní počet sousedů; 4 stejně pravděpodobní sousedé = 2 bity = perplexita 4</td></tr>
 <tr><td>\(p_{ij}\)</td><td>\(p_{ij} = (p_{j|i} + p_{i|j})/2n\) – symetrizované pravděpodobnosti, sčítají se do 1</td></tr>
 <tr><td>\(q_{ij}\)</td><td>podobnost v mapě s těžkým chvostem</td></tr>
-<tr><td>gradient</td><td>\[ \nabla_{\mathbf z_i}L = 4\sum_j(p_{ij} - q_{ij})\frac{\mathbf z_i - \mathbf z_j}{1 + \|\mathbf z_i - \mathbf z_j\|^2} \] \(p \gt q\) přitahuje, \(p \lt q\) odpuzuje; úloha je nekonvexní</td></tr>
-</table></div>
+<tr><td>gradient</td><td>\[ \begin{aligned} \nabla_{\mathbf z_i}L = 4\sum_j\,&(p_{ij} - q_{ij}) \\ &\cdot\frac{\mathbf z_i - \mathbf z_j}{1 + \|\mathbf z_i - \mathbf z_j\|^2} \end{aligned} \] \(p \gt q\) přitahuje, \(p \lt q\) odpuzuje; úloha je nekonvexní</td></tr>
+</table>
+<p><b>Slovy, vzorec po vzorci:</b></p>
+<ol>
+<li>\(p_{j\mid i}\): kolem bodu \(\mathbf x_i\) postavíme Gaussův „zvon“ o šířce \(\sigma_i\). Každý další bod dostane výšku zvonu podle své vzdálenosti – blízký vysokou, vzdálený téměř nulovou. Jmenovatel výšky přeškáluje, aby se pro bod \(i\) sečetly do 1: vznikne pravděpodobnost, že si \(i\) vybere za souseda právě \(j\).</li>
+<li>Perplexita převede entropii těchto pravděpodobností na „počet sousedů“. Šířka \(\sigma_i\) se pro každý bod ladí tak, aby měl zhruba zadaný počet efektivních sousedů – v husté oblasti vyjde zvon užší, v řídké širší.</li>
+<li>\(q_{ij}\): totéž v mapě, ale místo zvonu křivka \(1/(1 + \text{vzdálenost}^2)\), která klesá pomaleji (těžký chvost). Normalizuje se přes všechny dvojice.</li>
+<li>KL divergence porovná pro každou dvojici \(p_{ij}\) (jak blízko body byly) s \(q_{ij}\) (jak blízko jsou v mapě), s vahou \(p_{ij}\). Nejvíc trestá, když skuteční sousedé (velké \(p\)) skončí v mapě daleko (malé \(q\)); opačná chyba stojí málo. Proto t-SNE věrně drží lokální okolí, ale globální vzdálenosti ne.</li>
+<li>Gradient: každá dvojice táhne bod \(\mathbf z_i\) k bodu \(\mathbf z_j\) (je-li \(p_{ij} \gt q_{ij}\)) nebo od něj (je-li \(p_{ij} \lt q_{ij}\)), silou úměrnou rozdílu. Bod se v každém kroku posune podle součtu všech těchto „pružin“.</li>
+</ol></div>
 <div data-demo="perplexita"></div>
 <figure class="wide"><div class="paper"><img src="figures/fig03_tsne_perp.png" alt="t-SNE číslic pro čtyři hodnoty perplexity" loading="lazy"></div>
-<figcaption><b>Obr. 3.3</b> Stejných 600 ručně psaných číslic (standardizovaných), t-SNE se čtyřmi perplexitami. Barva = číslice (jen obarvení, metoda labely nevidí).</figcaption></figure>
+<figcaption><b>Obr. 3.6</b> Stejných 600 ručně psaných číslic (standardizovaných), t-SNE se čtyřmi perplexitami. Barva = číslice (jen obarvení, metoda labely nevidí).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>Malá perplexita (2) se dívá jen na pár nejbližších sousedů – mapa se rozpadne na drobné úlomky. Střední hodnoty (10–30) dají čitelné shluky číslic. Velká perplexita (100) propojí širší okolí, ostrovy se přibližují a slévají. Rozložení <b>není vlastnost dat samotných</b> – ke každému obrázku t-SNE vždy uváděj hyperparametry.</p></div>
 <div class="box definice" id="def-umap"><div class="box-t">Definice: UMAP</div>
@@ -246,17 +336,24 @@ kde \(S_W = S_1 + S_2\) je matice rozptylu uvnitř tříd (within-class scatter)
 <p class="jinak">„postav síť přátelství a rozlož ji na stůl tak, aby kamarádi stáli blízko“. Na rozdíl od t-SNE má UMAP metodu <code>transform</code> – umí zařadit <b>nové vzorky</b> do natrénované mapy, takže se dá použít i jako předzpracování před klasifikátorem (fit_transform na trénovacích, transform na nových datech).</p></div>
 <div class="box vzorec"><div class="box-t">Vzorce UMAP (příloha přednášky)</div>
 \[ \begin{aligned} a_{j\mid i} &= \exp\!\left(-\frac{\max(0, d_{ij} - \rho_i)}{\sigma_i}\right) \\ v_{ij} &= a_{j\mid i} + a_{i\mid j} - a_{j\mid i}a_{i\mid j} \\ q_{ij} &= \frac{1}{1 + a\|\mathbf z_i - \mathbf z_j\|^{2b}} \end{aligned} \]
-\[ L_{\text{graph}} = -\sum_{i\lt j}\left[v_{ij}\log q_{ij} + (1 - v_{ij})\log(1 - q_{ij})\right] \]
+\[ \begin{aligned} L_{\text{graph}} = -\sum_{i\lt j}\Big[\,&v_{ij}\log q_{ij} \\ &+ (1 - v_{ij})\log(1 - q_{ij})\Big] \end{aligned} \]
 <table class="vars">
 <tr><td>\(\rho_i\)</td><td>vzdálenost k nejbližšímu sousedovi – nejbližší spojení dostanou plnou sílu 1</td></tr>
 <tr><td>\(\sigma_i\)</td><td>lokální měřítko nastavené podle velikosti okolí (<code>n_neighbors</code>)</td></tr>
 <tr><td>\(v_{ij}\)</td><td>fuzzy sjednocení směrovaných vah (0,8 a 0,5 dá 0,8 + 0,5 − 0,4 = 0,9); na rozdíl od \(p_{ij}\) se nesčítají do 1</td></tr>
 <tr><td>\(a, b\)</td><td>tvar křivky podobnosti v mapě, určený parametry <code>min_dist</code> a <code>spread</code></td></tr>
 </table>
+<p><b>Slovy, vzorec po vzorci:</b></p>
+<ol>
+<li>\(a_{j\mid i}\): síla spojení z bodu \(i\) do souseda \(j\). Od vzdálenosti se nejdřív odečte \(\rho_i\) (vzdálenost k nejbližšímu sousedovi), takže nejbližší soused má sílu \(e^0 = 1\) – každý bod je s někým pevně spojený i v řídké oblasti. Dál síla klesá exponenciálně, tempo určuje \(\sigma_i\).</li>
+<li>\(v_{ij}\): spojení z \(i\) do \(j\) a z \(j\) do \(i\) může mít různou sílu. Sloučíme je jako pravděpodobnost, že platí <i>aspoň jedno</i> z nich: součet minus součin.</li>
+<li>\(q_{ij}\): síla spojení v mapě – blízko 1 pro blízké body, k 0 pro vzdálené; \(a, b\) určují, jak rychle se vzdáleností klesá.</li>
+<li>\(L_{\text{graph}}\) (křížová entropie): první člen – kde je silná hrana (\(v_{ij}\) blízko 1), chceme velké \(q_{ij}\), tedy body k sobě (přitahování). Druhý člen – kde je hrana slabá nebo chybí (\(1 - v_{ij}\) blízko 1), chceme malé \(q_{ij}\), tedy body od sebe (odpuzování), aby se mapa nezhroutila do jednoho místa.</li>
+</ol>
 <p>Nový vzorek: mapa trénovacích bodů zůstane pevná; najdou se jeho sousedé mezi trénovacími vzorky, spočítají se síly spojení, poloha se inicializuje váženým průměrem jejich souřadnic a doladí optimalizací.</p></div>
 <div data-demo="umap-graf"></div>
 <figure class="wide"><div class="paper"><img src="figures/fig03_umap_params.png" alt="UMAP číslic pro tři hodnoty n_neighbors a dvě hodnoty min_dist" loading="lazy"></div>
-<figcaption><b>Obr. 3.4</b> Stejné číslice, UMAP s \(n\_neighbors \in \{3, 15, 100\}\) (sloupce) a \(min\_dist \in \{0{,}0;\ 0{,}8\}\) (řádky).</figcaption></figure>
+<figcaption><b>Obr. 3.7</b> Stejné číslice, UMAP s \(n\_neighbors \in \{3, 15, 100\}\) (sloupce) a \(min\_dist \in \{0{,}0;\ 0{,}8\}\) (řádky).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p><b>n_neighbors</b> řídí měřítko: 3 sousedé = graf se rozpadne na malé izolované kousky (vidíme jen detaily); 100 sousedů = zachová se globální uspořádání, shluky se dotýkají. <b>min_dist</b> řídí, jak těsně se body smějí „nahustit“: 0,0 = kompaktní, ostře oddělené shluky; 0,8 = body rozprostřené rovnoměrně, struktura rozmazaná.</p></div>
 <div class="box parametry"><div class="box-t">Parametry: t-SNE a UMAP</div>
@@ -287,14 +384,16 @@ kde \(S_W = S_1 + S_2\) je matice rozptylu uvnitř tříd (within-class scatter)
 <div class="box definice" id="def-jadro"><div class="box-t">Definice: jádro a jádrový trik</div>
 <p><b>Jádro</b> je funkce \(k(\mathbf x, \mathbf z) = \Phi(\mathbf x)^\top\Phi(\mathbf z)\), která vrací skalární součin obrazů dvou vektorů v rozšířeném prostoru. <b>Jádrový trik</b> spočívá v tom, že metodu, která potřebuje jen skalární součiny vzorků, počítáme s \(k(\mathbf x, \mathbf z)\) přímo – bez sestrojení \(\Phi(\mathbf x)\). Párové hodnoty jádra pro \(n\) vzorků tvoří <b>Gramovu matici</b> \(K\), \(K_{ij} = k(\mathbf x_i, \mathbf x_j)\).</p>
 <p class="jinak">„porovnej body, jako bychom je rozšířili, ale nerozšiřuj je“. Výhoda vysokodimenzionálních příznaků za cenu výpočtu v původní dimenzi.</p></div>
+<p><b>Slovy:</b> \(\Phi(\mathbf x)^\top\Phi(\mathbf z)\) znamená „oba body nejdřív převeď do rozšířeného prostoru a pak spočítej jejich skalární součin“ – míru, jak moc jsou si tam podobné. Jádro \(k\) dá stejné číslo jedním výpočtem přímo z původních vektorů. Gramova matice je tabulka \(n\times n\) s touto podobností pro každou dvojici trénovacích vzorků; metodám jako kernel PCA nebo SVM stačí právě ona.</p>
 <div class="box priklad"><div class="box-t">Jádrový trik ručně (přednáška)</div>
 <p>\(\Phi(\mathbf x) = (x_1^2,\ x_2^2,\ \sqrt2x_1x_2)\), \(\mathbf x = (1, 2)\), \(\mathbf u = (3, 4)\).</p>
 <ul><li><b>Explicitně (2D → 3D):</b> \[ \begin{aligned} \Phi(\mathbf x) &= (1,\ 4,\ 2\sqrt2) \\ \Phi(\mathbf u) &= (9,\ 16,\ 12\sqrt2) \\ \Phi(\mathbf x)^\top\Phi(\mathbf u) &= 9 + 64 + 48 = 121 \end{aligned} \]</li>
-<li><b>Jádrem (zůstaneme ve 2D):</b> \[ k(\mathbf x, \mathbf u) = (\mathbf x^\top\mathbf u)^2 = (1\cdot3 + 2\cdot4)^2 = 11^2 = 121 \]</li></ul>
+<li><b>Jádrem (zůstaneme ve 2D):</b> \[ \begin{aligned} k(\mathbf x, \mathbf u) &= (\mathbf x^\top\mathbf u)^2 \\ &= (1\cdot3 + 2\cdot4)^2 \\ &= 11^2 = 121 \end{aligned} \]</li></ul>
 <p>Stejný výsledek bez sestrojení rozšířených vektorů; faktor \(\sqrt2\) zajistí, že smíšený člen sedí.</p></div>
 <div class="box definice" id="def-kpca"><div class="box-t">Definice: kernel PCA</div>
 <p><b>Kernel PCA</b> je PCA provedená v (implicitním) prostoru příznaků \(\Phi(\mathbf x)\) pomocí jádra: spočítá se Gramova matice \(K_{ij} = k(\mathbf x_i, \mathbf x_j)\), vycentruje se (\(\tilde K = HKH\), \(H = I - \frac1n\mathbf 1\mathbf 1^\top\)) a skóre komponent se získají z jejích vlastních vektorů a vlastních čísel.</p>
 <p class="jinak">lineární v prostoru příznaků, nelineární v původních vstupech; jádro určuje, jakou strukturu PCA zachytí. Je bez učitele a natrénovaná kernel PCA umí transformovat i nové vzorky (jejich hodnoty jádra se vycentrují uloženými průměry z trénovacích dat).</p></div>
+<p><b>Slovy:</b> \(H = I - \frac1n\mathbf 1\mathbf 1^\top\) je „centrovací“ matice: násobení \(H\) zleva odečte od každého sloupce jeho průměr, zprava od každého řádku. \(\tilde K = HKH\) je tedy Gramova matice, jakou bychom dostali, kdybychom rozšířené vektory \(\Phi(\mathbf x_i)\) nejdřív vycentrovali – stejně jako obyčejná PCA potřebuje vycentrovaná data. Vlastní vektory \(\tilde K\) pak hrají roli směrů PCA, jen jsou vyjádřené přes trénovací vzorky místo přes příznaky.</p>
 <p><b>Primár vs. duál PCA:</b> stejná skóre lze spočítat z matice \(d\times d\) (\(S = \frac1nX^\top X\)) nebo z matice \(n\times n\) (\(XX^\top\)); menší matice závisí na tom, zda \(d \lt n\), nebo \(n \lt d\). Duál obsahuje jen skalární součiny vzorků – proto ho lze „zjádrovat“.</p>
 <div data-demo="kernel"></div>
 <div class="box parametry"><div class="box-t">Parametry: kernel PCA (a jádra obecně)</div>
@@ -335,14 +434,14 @@ kde \(S_W = S_1 + S_2\) je matice rozptylu uvnitř tříd (within-class scatter)
 <p>V každém kroku přidá jen nejlepší příznak k aktuální množině a rozhodnutí už nevrací – prozkoumá jen jednu cestu prostorem \(2^d\) podmnožin. Kombinace, které nezačínají nejlepším jednotlivým příznakem, nevidí: hladově AB (ztráta 0,18), hrubou silou BC (0,10). Řešení: hrubá síla pro malé prostory, náhodné nebo lokální prohledávání, restarty.</p></div></details>
 <details class="q"><summary>Co optimalizuje PCA a jak se řeší? Spočítejte vysvětlený rozptyl pro kovarianční matici [[2,5; 2]; [2; 2,5]].</summary><div>
 <p>PCA hledá jednotkový směr \(\mathbf w\) maximalizující rozptyl projekcí \(\mathbf w^\top S\mathbf w\) (ekvivalentně minimalizující chybu rekonstrukce). Lagrangián dává \(S\mathbf w = \lambda\mathbf w\) – směry jsou vlastní vektory kovarianční matice a zachycený rozptyl je vlastní číslo. Pro danou \(S\):</p>
-\[ \begin{aligned} (2{,}5 - \lambda)^2 = 4 \quad&\Rightarrow\quad \lambda_1 = 4{,}5,\ \ \lambda_2 = 0{,}5 \\ \text{PC1} &= (1, 1)/\sqrt2 \\ \text{vysvětlený rozptyl} &= 4{,}5/5 = 90\,\% \end{aligned} \]</div></details>
+\[ \begin{aligned} (2{,}5 - \lambda)^2 &= 4 \\ \lambda_1 = 4{,}5,\quad \lambda_2 &= 0{,}5 \\ \text{PC1} &= (1, 1)/\sqrt2 \\ \text{vysvětlený rozptyl} &= 4{,}5/5 = 90\,\% \end{aligned} \]</div></details>
 <details class="q"><summary>Čím se liší PCA a LDA? Jakou informaci LDA zachová a PCA může ztratit?</summary><div>
 <p>Obě jsou lineární projekce. PCA je bez učitele a maximalizuje celkový rozptyl; LDA je s učitelem a maximalizuje Fisherovo kritérium – vzdálenost průměrů tříd vůči rozptylu uvnitř tříd, \(\mathbf w \propto S_W^{-1}(\boldsymbol\mu_1 - \boldsymbol\mu_2)\). LDA zachová oddělitelnost tříd: pokud se třídy liší ve směru s malým rozptylem, PCA ho zahodí a třídy splynou. LDA dává nejvýše \(C-1\) směrů.</p></div></details>
 <details class="q"><summary>Jak fungují t-SNE a UMAP a co dělají jejich hlavní hyperparametry?</summary><div>
 <p>t-SNE převede vzdálenosti na pravděpodobnosti sousedství (Gauss s lokálním \(\sigma_i\)) a hledá 2D polohy, jejichž t-rozdělené podobnosti se jim co nejvíc blíží (min. KL divergence). Perplexita = efektivní počet sousedů: malá → rozpadlé úlomky, velká → slévání shluků. UMAP staví vážený graf \(k\) sousedů a rozloží ho tak, aby zachoval silné hrany; n_neighbors řídí lokální vs. globální měřítko, min_dist hustotu bodů ve shlucích. UMAP umí transform nových vzorků, scikit-learn t-SNE ne. Vzdálenosti mezi ostrovy nejsou kalibrované.</p></div></details>
 <details class="q"><summary>Co je jádrový trik? Ukažte na příkladu, co ušetří.</summary><div>
 <p>Jádro \(k(\mathbf x, \mathbf z) = \Phi(\mathbf x)^\top\Phi(\mathbf z)\) spočítá skalární součin v rozšířeném prostoru bez sestrojení \(\Phi\). Pro \(\Phi(\mathbf x) = (x_1^2, x_2^2, \sqrt2x_1x_2)\), \(\mathbf x = (1, 2)\) a \(\mathbf u = (3, 4)\):</p>
-\[ \begin{aligned} \text{explicitně:}\quad & \Phi(\mathbf x)^\top\Phi(\mathbf u) = 9 + 64 + 48 = 121 \\ \text{jádrem:}\quad & (\mathbf x^\top\mathbf u)^2 = 11^2 = 121 \end{aligned} \]
+\[ \begin{aligned} &\text{explicitně:} \\ &\Phi(\mathbf x)^\top\Phi(\mathbf u) = 9 + 64 + 48 = 121 \\ &\text{jádrem:} \\ &(\mathbf x^\top\mathbf u)^2 = 11^2 = 121 \end{aligned} \]
 <p>Ušetří výpočet (a paměť) vysokodimenzionálních vektorů – u RBF jádra by byl prostor dokonce nekonečněrozměrný. Použije se v metodách, které závisí jen na skalárních součinech (kernel PCA, SVM, kernel ridge).</p></div></details>
 
 <nav class="pager"><a class="prev" href="02_hodnoceni.html"><small>← předchozí</small>Hodnocení modelů a předzpracování</a><a class="next" href="04_linearni.html"><small>další →</small>Lineární modely, jádra a SVM</a></nav>
