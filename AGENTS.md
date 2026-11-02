@@ -113,6 +113,8 @@ Elektrická schémata (R, C, OZ…) kresli knihovnou `schemdraw` v `make_figures
 Velikost písma = CSS `zoom` na `main` přes `--fs` (kroky 0,85 / 0,9 / 0,95 / 1 / 1,05 / 1,1), klíč `localStorage["vmm-fs"]`; skrytý panel = třída
 `side-hidden` na `<html>`, klíč `vmm-side`. Základ nastavuje inline skript v `<head>` (bez bliknutí); stejné klíče má `index.html`.
 Tlačítko PDF při `--fs ≠ 1` volá `window.print()` (hotová PDF z Actions jsou jen ve výchozí velikosti, `?pdf` vynutí `--fs: 1`).
+Celá skripta s nastavenou velikostí: odkazy s `data-printall` (tlačítko PDF na úvodní stránce a „⎙ Celá skripta – PDF / tisk“
+v postranním panelu) při `--fs ≠ 1` otevřou `skripta_vse.html?tisk`, kde `app.js` po načtení obrázků a písem spustí tisk.
 Při úpravě ovládání uprav všechny předměty (`_sablona`, `vmm`, `sad`, `mlr`) i `index.html`.
 
 ## Úpravy kapitol podle přednášek

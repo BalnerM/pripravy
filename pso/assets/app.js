@@ -39,6 +39,20 @@
     root.style.setProperty("--fs", "1");   // PDF z Actions má vždy výchozí velikost
     document.addEventListener("DOMContentLoaded", preparePrint);
   }
+  // ?tisk: celá skripta otevřená z tlačítka PDF při jiné velikosti písma – po načtení obrázků a písem rovnou tisk
+  if (/[?&]tisk\b/.test(location.search)) {
+    window.addEventListener("load", () => {
+      document.querySelectorAll('img[loading="lazy"]').forEach(img => { img.loading = "eager"; });
+      const waits = Array.from(document.images).filter(img => !img.complete).map(img => new Promise(r => {
+        img.addEventListener("load", r); img.addEventListener("error", r);
+      }));
+      if (document.fonts) waits.push(document.fonts.ready);
+      Promise.all(waits).then(() => setTimeout(() => {
+        history.replaceState(null, "", location.pathname + location.hash);   // obnovení stránky už tisk nespustí
+        window.print();
+      }, 300));
+    });
+  }
 
   document.addEventListener("DOMContentLoaded", function () {
     const tb = document.getElementById("themeBtn");
@@ -77,10 +91,15 @@
       fsUp.addEventListener("click", () => applyFs(fsIndex() + 1));
       fsVal.addEventListener("click", () => applyFs(FS_DEFAULT));
     }
-    // jiná než výchozí velikost: tlačítko PDF otevře tisk stránky (hotová PDF mají jen výchozí velikost)
-    if (pdfBtn) pdfBtn.addEventListener("click", e => {
-      if (fsIndex() !== FS_DEFAULT) { e.preventDefault(); window.print(); }
-    });
+    // jiná než výchozí velikost: tlačítko PDF otevře tisk stránky (hotová PDF mají jen výchozí velikost);
+    // odkazy na celá skripta (data-printall) přejdou na stránku se všemi kapitolami a tisk se spustí tam
+    document.querySelectorAll("#pdfBtn, [data-printall]").forEach(a => a.addEventListener("click", e => {
+      if (fsIndex() === FS_DEFAULT) return;
+      e.preventDefault();
+      const all = a.dataset.printall ? new URL(a.dataset.printall, location.href) : null;
+      if (all && all.pathname !== location.pathname) location.href = all.href;
+      else window.print();
+    }));
     const sb = document.getElementById("sideBtn");
     if (sb) {
       const syncSide = () => {

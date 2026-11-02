@@ -140,6 +140,9 @@ TEXTS = {
         chapters="Kapitoly", on_page="Na této stránce", prev="← předchozí", next="další →", lecture="Přednáška",
         pdf_page="Stáhnout tuto stránku jako PDF", pdf_all="Celá skripta v jednom PDF",
         pdf_print="Vytisknout / uložit jako PDF s nastavenou velikostí písma",
+        pdf_side="⎙ Celá skripta – PDF / tisk",
+        pdf_side_tip="Všechny kapitoly v jednom PDF; při jiné než výchozí velikosti písma se otevře tisk "
+                     "celých skript s touto velikostí",
         fs_down="Zmenšit písmo", fs_up="Zvětšit písmo", fs_reset="Původní velikost písma",
         side_label="◧ Panel", side_hide="Skrýt postranní panel", side_show="Zobrazit postranní panel",
         all_title="Celá skripta", all_desc="Všechny kapitoly na jedné stránce (tisková verze).",
@@ -154,6 +157,9 @@ TEXTS = {
         chapters="Chapters", on_page="On this page", prev="← previous", next="next →", lecture="Lecture",
         pdf_page="Download this page as PDF", pdf_all="All notes in one PDF",
         pdf_print="Print / save as PDF with the chosen font size",
+        pdf_side="⎙ All notes – PDF / print",
+        pdf_side_tip="All chapters in one PDF; with a non-default font size it opens printing of the "
+                     "whole notes at that size",
         fs_down="Smaller text", fs_up="Larger text", fs_reset="Default text size",
         side_label="◧ Sidebar", side_hide="Hide the sidebar", side_show="Show the sidebar",
         all_title="All notes", all_desc="All chapters on one page (print version).",
@@ -269,6 +275,7 @@ TEMPLATE = """<!doctype html>
   <ol>
 {nav}
   </ol>
+  <ul class="pdfall"><li><a href="pdf/skripta_vse.pdf" download data-printall="skripta_vse.html?tisk" title="{t[pdf_side_tip]}">{t[pdf_side]}</a></li></ul>
 {toc}
 </nav>
 <main>
@@ -303,11 +310,11 @@ def chrome(s, slug, page_title):
     """Tlačítko PDF a tisková hlavička; úvodní stránka odkazuje na PDF celých skript."""
     T = s["t"]
     if slug in ("index", ALL):
-        pdf, tip = ALL, T["pdf_all"]
+        pdf, tip, extra = ALL, T["pdf_all"], f' data-printall="{ALL}.html?tisk"'
     else:
-        pdf, tip = slug, T["pdf_page"]
+        pdf, tip, extra = slug, T["pdf_page"], ""
     pdfbtn = (f'<a class="iconbtn" id="pdfBtn" href="pdf/{pdf}.pdf" download title="{tip}" data-dl="{tip}" '
-              f'data-print="{T["pdf_print"]}">PDF</a>')
+              f'data-print="{T["pdf_print"]}"{extra}>PDF</a>')
     printhead = f'<p class="printhead">{s["brand"]} · {html.escape(page_title)} · {s["site"]}{slug}.html</p>'
     return pdfbtn, printhead
 

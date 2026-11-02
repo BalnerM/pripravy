@@ -145,6 +145,7 @@ a.iconbtn { display: inline-flex; align-items: center; gap: 4px; text-decoration
   color: var(--ink-2); text-decoration: none; line-height: 1.35;
 }
 .sidebar a .n { color: var(--muted); min-width: 20px; font-variant-numeric: tabular-nums; }
+.sidebar .pdfall { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
 .sidebar a:hover { background: var(--surface-2); color: var(--ink); }
 .sidebar a.active { background: var(--box-intuice); color: var(--ink); font-weight: 600; }
 .sidebar .toc a { font-size: 13.5px; padding: 3px 8px 3px 20px; }
