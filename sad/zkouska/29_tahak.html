@@ -16,7 +16,7 @@
 <header class="topbar">
   <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
   <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
-  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P9 se základy</small></a>
+  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P10 se základy</small></a>
   <span class="spacer"></span>
   <a class="iconbtn back" href="../../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
   
@@ -42,6 +42,7 @@
     <li><a href="17_prevodniky.html"><span class="n">P7</span><span>A/D a D/A převodníky</span></a></li>
     <li><a href="18_multiplexace.html"><span class="n">P8</span><span>Multiplexace signálů</span></a></li>
     <li><a href="19_galvanicke_oddeleni.html"><span class="n">P9</span><span>Galvanické oddělení signálu</span></a></li>
+    <li><a href="20_modulace.html"><span class="n">P10</span><span>Modulace a přenos signálu</span></a></li>
     <li><a href="29_tahak.html" class="active"><span class="n">★</span><span>Tahák ke zkoušce</span></a></li>
     <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
   </ol>
@@ -57,6 +58,7 @@
     <li><a href="#p7">P7 · A/D a D/A převodníky (kapitola)</a></li>
     <li><a href="#p8">P8 · Multiplexace signálů (kapitola)</a></li>
     <li><a href="#p9">P9 · Galvanické oddělení (kapitola)</a></li>
+    <li><a href="#p10">P10 · Modulace a přenos signálu (kapitola)</a></li>
     <li><a href="#chytaky">Nejčastější chytáky</a></li>
   </ul>
 </nav>
@@ -216,6 +218,21 @@
 <tr><td>izolační DC/DC</td><td>PWM → impulzní trafo → usměrnění, filtrace</td><td>regulace zpětnou vazbou přes optočlen</td></tr>
 </table></div>
 
+<h2 id="p10">P10 · Modulace a přenos signálu (<a href="20_modulace.html">kapitola</a>)</h2>
+<div class="tablewrap"><table>
+<tr><th>co</th><th>vzorec / princip</th><th>poznámka</th></tr>
+<tr><td>vlnová délka</td><td>\(\lambda = \frac{c}{f}\)</td><td>2,4 GHz → 12,5 cm; 1 kHz → 300 km</td></tr>
+<tr><td>modulace</td><td>modulační signál mění A, f nebo φ nosné</td><td>nosná nese energii, přijímač ji musí znát</td></tr>
+<tr><td>AM, hloubka</td><td>\(m = \frac{M}{A}\)</td><td>100 % = hranice, nad = přemodulování (fáze se překlopí)</td></tr>
+<tr><td>demodulace AM</td><td>usměrňovač + dolní propust</td><td>krystalka: dioda + RC</td></tr>
+<tr><td>spektrum AM</td><td>nosná \(A\) + USB a LSB \(\frac{Am}{2}\)</td><td>šířka \(2f_m\); nosná ≥ 2/3 výkonu</td></tr>
+<tr><td>derivát</td><td>odvozená varianta modulace</td><td>SSB, SSB-SC (z AM), PSK (z PM), QAM (z AM i PM)</td></tr>
+<tr><td>FM</td><td>\(f(t) = f_n + \Delta f\,\frac{m(t)}{M}\)</td><td>stálá amplituda, mnoho postranních složek; demodulace f/U; odolná proti šumu</td></tr>
+<tr><td>bity</td><td>AM je/není, FM 2 frekvence, PM otočení fáze</td><td>nutná známá přenosová rychlost \(T_b = 1/R\)</td></tr>
+<tr><td>QAM</td><td>\(s = I\sin\omega_n t + Q\cos\omega_n t\)</td><td>I a Q v kvadratuře; \(\log_2 M\) bitů na symbol</td></tr>
+<tr><td>šum</td><td>víc bodů = blíž k sobě</td><td>vyšší QAM potřebuje vyšší SNR</td></tr>
+</table></div>
+
 <h2 id="chytaky">Nejčastější chytáky</h2>
 <div class="box pozor"><div class="box-t">Na co si dát pozor u zkoušky</div>
 <ul>
@@ -234,9 +251,12 @@
 <li><b>TDM vs. FDM:</b> TDM má celé pásmo a minimální přeslech, FDM současný přenos, ale omezené pásmo a přeslechy.</li>
 <li><b>Kondenzátor jako bariéra</b> izoluje jen DC, ne AC; transformátor ani kondenzátor stejnosměrné napětí nepřenesou – musí se rozsekat.</li>
 <li><b>Linearizovaná vazba:</b> nelinearitu LED kompenzuje PD1 ve zpětné vazbě vstupního OZ; v přenosu je jen \(K_2/K_1\) a \(R_2/R_1\), ne charakteristika LED.</li>
+<li><b>Derivát modulace</b> = odvozená varianta (SSB, PSK, QAM), nemá nic společného s derivací ani s derivátorem.</li>
+<li><b>AM nosná</b> nese většinu výkonu, ale žádnou informaci – ta je v postranních pásmech; USB a LSB nesou totéž.</li>
+<li><b>Víc bitů na symbol</b> (QAM64, QAM256) = vyšší datový tok, ale nižší odolnost vůči šumu – ne obojí zároveň.</li>
 </ul></div>
 
-<nav class="pager"><a class="prev" href="19_galvanicke_oddeleni.html"><small>← předchozí</small>Galvanické oddělení signálu</a><a class="next" href="99_slovnik.html"><small>další →</small>Slovník pojmů (definice)</a></nav>
+<nav class="pager"><a class="prev" href="20_modulace.html"><small>← předchozí</small>Modulace a přenos signálu</a><a class="next" href="99_slovnik.html"><small>další →</small>Slovník pojmů (definice)</a></nav>
 </main>
 </div>
 </body>

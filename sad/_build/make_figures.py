@@ -3785,6 +3785,334 @@ def fig19_pwm_zvlneni():
     save(fig, "fig19_pwm_zvlneni")
 
 
+# =====================================================================  přednáška 10: modulace a přenos signálu
+def _bez_os(ax):
+    ax.set_yticks([])
+    ax.grid(False)
+    ax.spines["left"].set_visible(False)
+
+
+def fig20_am():
+    """AM v čase (vlastní čísla): modulační m(t), nosná n(t), modulovaný y(t) = A[1 + m cos(ω_m t)] sin(ω_n t), m = 50 %."""
+    t = np.linspace(0, 2, 8001)
+    fm, fn, A, m = 1.0, 20.0, 1.0, 0.5
+    mod = m * np.cos(2 * np.pi * fm * t)
+    nos = A * np.sin(2 * np.pi * fn * t)
+    obal = A * (1 + mod)
+    fig, axs = plt.subplots(3, 1, figsize=(8.4, 5.6), sharex=True)
+    ax = axs[0]
+    ax.plot(t, mod, color=C2)
+    ax.set_title("modulační signál m(t) – nese informaci (pomalý)", loc="left")
+    ax = axs[1]
+    ax.plot(t, nos, color=C1, lw=1.2)
+    ax.set_title("nosný signál n(t) – harmonický, vysoká frekvence $f_n$", loc="left")
+    ax = axs[2]
+    ax.plot(t, obal * np.sin(2 * np.pi * fn * t), color=C1, lw=1.2, label="modulovaný signál y(t)")
+    ax.plot(t, obal, "--", color=C2, lw=1.6, label="obálka = tvar m(t)")
+    ax.plot(t, -obal, "--", color=C2, lw=1.6)
+    ax.set_title("AM: amplituda nosné sleduje modulační signál (m = 50 %)", loc="left")
+    ax.legend(loc="upper right", fontsize=9, ncol=2)
+    ax.set_ylim(-1.9, 2.3)
+    ax.set_xlabel("čas [periody modulačního signálu]")
+    for ax in axs:
+        ax.axhline(0, color=AXIS, lw=0.8)
+        ax.set_ylabel("napětí")
+    save(fig, "fig20_am")
+
+
+def fig20_hloubka():
+    """Hloubka modulace m = 50 %, 100 %, 150 % (přemodulování) – obálka a překlopení fáze nosné."""
+    t = np.linspace(0, 2, 8001)
+    fn = 16.0
+    fig, axs = plt.subplots(1, 3, figsize=(10.4, 3.6), sharey=True)
+    for ax, m, tit in zip(axs, (0.5, 1.0, 1.5), ("a) m = 50 %", "b) m = 100 % (hraniční)", "c) m = 150 % (přemodulovaný)")):
+        obal = 1 + m * np.cos(2 * np.pi * t)
+        ax.plot(t, obal * np.sin(2 * np.pi * fn * t), color=C1, lw=1.0)
+        ax.plot(t, np.abs(obal), "--", color=C2, lw=1.6)
+        ax.plot(t, -np.abs(obal), "--", color=C2, lw=1.6)
+        ax.axhline(1, color=MUTED, lw=0.8, ls=":")
+        ax.axhline(0, color=AXIS, lw=0.8)
+        ax.set_title(tit, loc="left")
+        ax.set_xlabel("čas [periody m(t)]")
+    axs[0].set_ylabel("napětí [násobky A]")
+    axs[0].text(0.5, 1.08, "úroveň bez\nmodulace", fontsize=8.5, color=INK2, ha="center", va="bottom")
+    axs[1].annotate("obálka se dotkne nuly", (0.5, 0), (0.1, 3.05), fontsize=9, color=INK2,
+                    arrowprops=dict(arrowstyle="->", color=INK2))
+    axs[2].annotate("obálka by šla pod nulu:\nfáze nosné se překlopí", (0.5, 0.05), (0.05, 2.75), fontsize=9,
+                    color=INK2, arrowprops=dict(arrowstyle="->", color=INK2))
+    axs[0].set_ylim(-2.7, 3.8)
+    axs[0].set_yticks([-2, -1, 0, 1, 2])
+    save(fig, "fig20_hloubka")
+
+
+def fig20_demodulace():
+    """Demodulace AM (princip krystalky): usměrnění (abs. hodnota) a dolní propust vrátí obálku = modulační signál."""
+    t = np.linspace(0, 2, 20001)
+    fn, m = 20.0, 0.5
+    sig = 0.6 * np.cos(2 * np.pi * t) + 0.25 * np.sin(2 * np.pi * 2.3 * t)
+    sig = sig / np.max(np.abs(sig)) * m
+    y = (1 + sig) * np.sin(2 * np.pi * fn * t)
+    us = np.abs(y)
+    b, a = signal.butter(3, 4.0, fs=1 / (t[1] - t[0]))
+    dp = signal.filtfilt(b, a, us)
+    fig, axs = plt.subplots(3, 1, figsize=(8.4, 5.6), sharex=True)
+    axs[0].plot(t, y, color=C1, lw=1.0)
+    axs[0].set_title("1. přijatý AM signál", loc="left")
+    axs[1].plot(t, us, color=C1, lw=1.0)
+    axs[1].set_title("2. po usměrnění (absolutní hodnota): zůstane jen kladná část", loc="left")
+    st = (t > 0.2) & (t < 1.8)
+    axs[2].plot(t[st], dp[st], color=C3, lw=2.2, label="po dolní propusti")
+    axs[2].plot(t[st], (1 + sig[st]) * 2 / np.pi, ":", color=C2, lw=1.8, label="tvar modulačního signálu")
+    axs[2].set_title("3. dolní propust odstraní nosnou a zůstane obálka", loc="left")
+    axs[2].legend(loc="lower left", fontsize=9, ncol=2)
+    axs[2].set_ylim(0, 1.25)
+    axs[2].set_xlabel("čas [s] (ilustrační čísla)")
+    for ax in axs:
+        ax.axhline(0, color=AXIS, lw=0.8)
+        ax.set_ylabel("napětí")
+    save(fig, "fig20_demodulace")
+
+
+def _cara(ax, f, a, barva, text=None, mk="o"):
+    ax.vlines(f, 0, a, color=barva, lw=3)
+    ax.plot(f, a, mk, color=barva, ms=6)
+    if text:
+        ax.text(f, a + 0.06, text, ha="center", va="bottom", fontsize=9.5, color=INK2)
+
+
+def fig20_spektrum():
+    """Amplitudové spektrum AM s jedním tónem (A = 1, m = 80 %): nosná A, postranní složky Am/2; SSB a SSB-SC."""
+    fn, fm, A, m = 10.0, 1.5, 1.0, 0.8
+    fig, axs = plt.subplots(1, 3, figsize=(10.4, 3.7), sharey=True)
+    tit = ("a) AM (DSB): nosná + obě pásma", "b) SSB: nosná + USB", "c) SSB s potlačenou nosnou")
+    for i, ax in enumerate(axs):
+        if i < 2:
+            _cara(ax, fn, A, C1, "$f_n$\nnosná")
+        if i == 0:
+            _cara(ax, fn - fm, A * m / 2, C2, "LSB\n$f_n - f_m$", "s")
+        _cara(ax, fn + fm, A * m / 2, C3, "USB\n$f_n + f_m$", "^")
+        ax.set_xlim(fn - 3.2, fn + 3.2)
+        ax.set_ylim(0, 1.45)
+        ax.set_xticks([fn - fm, fn, fn + fm])
+        ax.set_xticklabels(["$f_n - f_m$", "$f_n$", "$f_n + f_m$"])
+        ax.grid(False)
+        ax.set_title(tit[i], loc="left")
+        ax.set_xlabel("frekvence")
+    axs[0].set_ylabel("amplituda složky")
+    axs[0].set_yticks([0, 0.4, 1.0])
+    axs[0].set_yticklabels(["0", "Am/2", "A"])
+    save(fig, "fig20_spektrum")
+
+
+def fig20_fm():
+    """FM v čase (vlastní čísla): modulační signál a nosná s konstantní amplitudou, okamžitá frekvence f_n + Δf·m(t)."""
+    t = np.linspace(0, 2, 20001)
+    fn, df = 12.0, 7.0
+    mod = np.sin(2 * np.pi * t)
+    faze = 2 * np.pi * (fn * t - df / (2 * np.pi) * np.cos(2 * np.pi * t))
+    fig, axs = plt.subplots(2, 1, figsize=(8.4, 4.4), sharex=True)
+    axs[0].plot(t, mod, color=C2)
+    axs[0].set_title("modulační signál m(t)", loc="left")
+    axs[1].plot(t, np.sin(faze), color=C1, lw=1.0)
+    axs[1].set_title("FM: amplituda stálá, kmity se zhušťují při kladném m(t) a zřeďují při záporném", loc="left")
+    axs[1].set_xlabel("čas [periody modulačního signálu]")
+    for ax in axs:
+        ax.axhline(0, color=AXIS, lw=0.8)
+        ax.set_ylabel("napětí")
+    save(fig, "fig20_fm")
+
+
+def fig20_fm_spektrum():
+    """Spektrum FM s jedním tónem: složky f_n ± k·f_m s amplitudami |J_k(β)| (β = 2,5) vs. AM se dvěma postranními."""
+    from scipy.special import jv
+    beta, fn, fm = 2.5, 0.0, 1.0
+    fig, axs = plt.subplots(1, 2, figsize=(10.0, 3.7), sharey=True, gridspec_kw=dict(width_ratios=[1, 1.6]))
+    ax = axs[0]
+    _cara(ax, 0, 1.0, C1)
+    _cara(ax, -1, 0.4, C2, mk="s")
+    _cara(ax, 1, 0.4, C2, mk="s")
+    ax.set_title("a) AM: nosná a 2 postranní složky", loc="left")
+    ax.set_xlim(-6.5, 6.5)
+    ax = axs[1]
+    for k in range(-8, 9):
+        a = abs(jv(k, beta))
+        if a > 0.005:
+            _cara(ax, k, a, C1 if k == 0 else C2, mk="o" if k == 0 else "s")
+    ax.set_title("b) FM (β = 2,5): mnoho složek na obě strany, slábnou", loc="left")
+    ax.set_xlim(-8.5, 8.5)
+    for ax in axs:
+        ax.grid(False)
+        ax.set_xlabel("frekvence: $f_n + k\\,f_m$, osa ukazuje k")
+        ax.set_ylim(0, 1.15)
+    axs[0].set_ylabel("amplituda složky (nosná bez modulace = 1)")
+    save(fig, "fig20_fm_spektrum")
+
+
+def fig20_binarni():
+    """Kódování bitů 1 0 1 pomocí AM, FM a PM (podle slidu): je/není amplituda, dvě frekvence, skok fáze o 180°."""
+    tb = 1.0
+    t = np.linspace(0, 3 * tb, 9001)
+    bity = np.array([1, 0, 1])
+    b = bity[np.minimum((t / tb).astype(int), 2)]
+    f1, f0 = 4.0, 10.0
+    am = b * np.sin(2 * np.pi * f1 * t)
+    faze = np.cumsum(np.where(b == 1, f1, f0)) * (t[1] - t[0]) * 2 * np.pi
+    fm = np.sin(faze)
+    pm = np.sin(2 * np.pi * f1 * t + np.where(b == 1, 0, np.pi))
+    fig, axs = plt.subplots(3, 1, figsize=(8.6, 5.6), sharex=True)
+    for ax, y, nazev, pop in zip(axs, (am, fm, pm), ("AM", "FM", "PM"),
+                                 ("1 = je amplituda, 0 = není (nulová)", "1 = nižší frekvence, 0 = vyšší frekvence",
+                                  "1 = fáze 0°, 0 = fáze otočená o 180°")):
+        ax.plot(t, y, color=C1, lw=1.5)
+        ax.axhline(0, color=AXIS, lw=0.8)
+        for x in (tb, 2 * tb):
+            ax.axvline(x, color=MUTED, lw=1, ls="--")
+        ax.set_ylabel(nazev, rotation=0, ha="right", va="center", fontsize=12, color=INK)
+        ax.set_title(pop, loc="left", fontsize=10, fontweight="normal", color=INK2)
+        ax.set_ylim(-1.3, 1.3)
+        _bez_os(ax)
+    axs[2].set_xticks([0.5, 1.5, 2.5])
+    axs[2].set_xticklabels(["bit 1", "bit 0", "bit 1"], fontsize=11, color=INK)
+    axs[2].set_xlim(0, 3 * tb)
+    save(fig, "fig20_binarni")
+
+
+def fig20_bpsk():
+    """BPSK: bitový proud 0 0 1 0 1 1, každý bit = jedna doba bitu, 1 → fáze 0°, 0 → fáze 180°; vpravo konstelace."""
+    bity = [0, 0, 1, 0, 1, 1]
+    n = len(bity)
+    t = np.linspace(0, n, 6001)
+    b = np.array(bity)[np.minimum(t.astype(int), n - 1)]
+    s = np.sin(2 * np.pi * 2 * t + np.where(b == 1, 0, np.pi))
+    fig, axs = plt.subplots(1, 2, figsize=(10.4, 3.4), gridspec_kw=dict(width_ratios=[2.6, 1]))
+    ax = axs[0]
+    ax.plot(t, s, color=C1, lw=1.5)
+    ax.axhline(0, color=AXIS, lw=0.8)
+    for k in range(1, n):
+        ax.axvline(k, color=MUTED, lw=1, ls="--")
+    ax.set_xticks(np.arange(n) + 0.5)
+    ax.set_xticklabels([str(v) for v in bity], fontsize=12, color=INK)
+    ax.set_xlim(0, n)
+    ax.set_ylim(-1.3, 1.3)
+    ax.set_title("a) BPSK v čase: změna bitu = otočení fáze o 180°", loc="left")
+    ax.set_xlabel("vysílané bity")
+    _bez_os(ax)
+    ax = axs[1]
+    ax.axhline(0, color=AXIS, lw=1)
+    ax.axvline(0, color=AXIS, lw=1)
+    ax.plot([-1], [0], "s", color=C2, ms=10)
+    ax.plot([1], [0], "o", color=C1, ms=10)
+    ax.text(-1, 0.25, "0\n(180°)", ha="center", fontsize=10)
+    ax.text(1, 0.25, "1\n(0°)", ha="center", fontsize=10)
+    ax.set_xlim(-1.6, 1.6)
+    ax.set_ylim(-1.2, 1.2)
+    ax.set_aspect("equal")
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.grid(False)
+    ax.set_xlabel("I")
+    ax.set_title("b) konstelační diagram", loc="left")
+    save(fig, "fig20_bpsk")
+
+
+def fig20_qpsk_iq():
+    """QPSK modulátor (podle slidu): bit I → A = ±1 · sin, bit Q → A = ±1 · cos, součet má stálou amplitudu √2 a 4 fáze."""
+    pary = [(0, 1), (1, 1), (0, 0), (1, 0)]
+    n = len(pary)
+    t = np.linspace(0, n, 8001)
+    k = np.minimum(t.astype(int), n - 1)
+    I = np.array([2 * p[0] - 1 for p in pary])[k]
+    Q = np.array([2 * p[1] - 1 for p in pary])[k]
+    w = 2 * np.pi * 1.5
+    si, sq = I * np.sin(w * t), Q * np.cos(w * t)
+    fig, axs = plt.subplots(3, 1, figsize=(8.6, 6.0), sharex=True)
+    axs[0].plot(t, si, color=C1, lw=1.4)
+    axs[0].set_title("větev I: (±1) · sin($\\omega_n t$)", loc="left")
+    axs[1].plot(t, sq, color=C2, lw=1.4)
+    axs[1].set_title("větev Q: (±1) · cos($\\omega_n t$) – nosná posunutá o 90°", loc="left")
+    axs[2].plot(t, si + sq, color=C3, lw=1.8)
+    axs[2].axhline(np.sqrt(2), color=MUTED, lw=0.8, ls=":")
+    axs[2].axhline(-np.sqrt(2), color=MUTED, lw=0.8, ls=":")
+    axs[2].set_title("součet = QPSK: amplituda vždy √2, fáze se mění podle dvojice bitů", loc="left")
+    for ax in axs:
+        ax.axhline(0, color=AXIS, lw=0.8)
+        for x in range(1, n):
+            ax.axvline(x, color=MUTED, lw=1, ls="--")
+        ax.set_ylim(-1.8, 1.8)
+        ax.set_yticks([-1, 0, 1])
+    axs[2].set_xticks(np.arange(n) + 0.5)
+    axs[2].set_xticklabels([f"bity I Q = {a} {b}" for a, b in pary], fontsize=10, color=INK)
+    axs[2].set_xlim(0, n)
+    save(fig, "fig20_qpsk_iq")
+
+
+QAM16_GRAY = {0b00: -3, 0b01: -1, 0b11: 1, 0b10: 3}
+
+
+def fig20_qam16():
+    """Konstelace QAM16 s bitovým přiřazením ze slidu: první dvojice bitů → úroveň Q, druhá → úroveň I (Grayův kód)."""
+    fig, ax = plt.subplots(figsize=(5.8, 5.4))
+    ax.axhline(0, color=AXIS, lw=1)
+    ax.axvline(0, color=AXIS, lw=1)
+    for hq, q in QAM16_GRAY.items():
+        for hi, i in QAM16_GRAY.items():
+            kod = f"{hq:02b}{hi:02b}"
+            zvyr = kod == "1110"
+            ax.plot(i, q, "o", color=C2 if zvyr else C1, ms=10 if zvyr else 8)
+            ax.text(i, q - 0.55, kod, ha="center", va="center", fontsize=10, color=INK if zvyr else INK2,
+                    weight="semibold" if zvyr else "normal")
+    ax.annotate("", (3, 1), (0, 0), arrowprops=dict(arrowstyle="->", color=C2, lw=1.6))
+    ax.text(1.75, -0.4, "1110: √10, 18,4°", fontsize=9.5, color=C2, ha="center")
+    ax.set_xlim(-4.3, 4.3)
+    ax.set_ylim(-4.2, 4.2)
+    ax.set_aspect("equal")
+    ax.set_xticks([-3, -1, 1, 3])
+    ax.set_yticks([-3, -1, 1, 3])
+    ax.set_xlabel("I (amplituda složky sin)")
+    ax.set_ylabel("Q (amplituda složky cos)")
+    ax.set_title("QAM16: 16 bodů = 4 bity na symbol", loc="left")
+    save(fig, "fig20_qam16")
+
+
+def _konstelace(M):
+    k = int(np.sqrt(M))
+    lv = np.arange(-(k - 1), k, 2, dtype=float)
+    I, Q = np.meshgrid(lv, lv)
+    body = (I + 1j * Q).ravel()
+    return body / np.sqrt(np.mean(np.abs(body) ** 2))
+
+
+def fig20_sum():
+    """Stejný šum (SNR 15 dB, stejný střední výkon) na QPSK, QAM16 a QAM64: chybovost symbolů roste s počtem bodů."""
+    rng = np.random.default_rng(7)
+    snr_db = 15.0
+    sigma = np.sqrt(10 ** (-snr_db / 10) / 2)
+    fig, axs = plt.subplots(1, 3, figsize=(10.6, 3.9), sharey=True)
+    vysl = {}
+    for ax, M, tit in zip(axs, (4, 16, 64), ("QPSK (2 bity)", "QAM16 (4 bity)", "QAM64 (6 bitů)")):
+        body = _konstelace(M)
+        n = 6000
+        idx = rng.integers(0, M, n)
+        prij = body[idx] + sigma * (rng.standard_normal(n) + 1j * rng.standard_normal(n))
+        rozh = np.argmin(np.abs(prij[:, None] - body[None, :]), axis=1)
+        ser = np.mean(rozh != idx)
+        vysl[M] = ser
+        ax.plot(prij.real[:1500], prij.imag[:1500], ".", color=MUTED, ms=2, alpha=0.6)
+        ax.plot(body.real, body.imag, "o", color=C1, ms=5)
+        d = (body.real.max() - body.real.min()) / (np.sqrt(M) - 1)
+        x0, y0 = body.real.min(), body.imag.max()
+        ax.add_patch(plt.Rectangle((x0 - d / 2 if M > 4 else -1.6, y0 - d / 2 if M > 4 else 0), d if M > 4 else 1.6,
+                                   d if M > 4 else 1.6, fill=False, ec=C2, lw=2))
+        ax.set_title(f"{tit}: chybně {cz(100 * ser, 1)} %", loc="left")
+        ax.set_aspect("equal")
+        ax.set_xlim(-1.6, 1.6)
+        ax.set_ylim(-1.6, 1.6)
+        ax.set_xlabel("I")
+    axs[0].set_ylabel("Q")
+    print("SER", vysl)
+    save(fig, "fig20_sum")
+
+
 ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig02_xc, fig02_dp_hp, fig02_bode_dp, fig02_bode_hp, fig02_postup, fig02_typy, fig02_pp_schema,
        fig02_bode_pp, fig02_pz_schema, fig02_bode_pz,
@@ -3808,7 +4136,9 @@ ALL = [fig01_ohm, fig01_kirchhoff, fig01_delic, fig01_zatizeni,
        fig17_counter_tracking, fig17_cas_konverze,
        fig18_mpx_analog, fig18_spinac_sp, fig18_cas_frekvence, fig18_tdm_prubeh, fig18_fdm_spektrum, fig18_chyba_r1,
        fig19_trafo, fig19_trafo_frekvence, fig19_kapacitni_prubeh, fig19_opto_nelinearita, fig19_lin_zesilovac,
-       fig19_linearizace, fig19_pwm, fig19_pwm_menic, fig19_pwm_zvlneni]
+       fig19_linearizace, fig19_pwm, fig19_pwm_menic, fig19_pwm_zvlneni,
+       fig20_am, fig20_hloubka, fig20_demodulace, fig20_spektrum, fig20_fm, fig20_fm_spektrum, fig20_binarni,
+       fig20_bpsk, fig20_qpsk_iq, fig20_qam16, fig20_sum]
 
 if __name__ == "__main__":
     vyber = sys.argv[1:]

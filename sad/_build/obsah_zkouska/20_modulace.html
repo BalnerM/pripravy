@@ -1,0 +1,619 @@
+<h1>Modulace a přenos signálu</h1>
+<p class="lead">Naměřený biosignál často nezůstává u přístroje: posílá se bezdrátově do telefonu, do monitoru u sestry nebo do sítě. Signál ze senzoru (pomalý, s nízkými frekvencemi) ale nejde přímo vyzářit anténou. Proto se „naloží“ na rychlý <b>nosný signál</b> – a tomu se říká <b>modulace</b>. Kapitola vysvětluje, jak informaci nese amplituda (AM), frekvence (FM) a fáze (PM), co jsou odvozené varianty (tzv. <b>deriváty</b>) jako SSB, PSK a QAM, jak vypadá cesta od vysílače k přijímači a proč „víc bitů najednou“ znamená „citlivější na šum“.</p>
+
+<p>S modulací jsme se už potkali: ve <a href="18_multiplexace.html#fdm">frekvenčním multiplexu</a> (P8) se signály modulací posunuly každý na vlastní nosnou a u <a href="19_galvanicke_oddeleni.html#pwm">galvanického oddělení</a> (P9) se signál převedl na PWM. Tady jde o <b>radiofrekvenční přenos</b>: vysílač (TX) → elektromagnetická vlna → přijímač (RX).</p>
+
+<h2 id="em-spektrum">Elektromagnetické pole a spektrum</h2>
+<p>Bezdrátový přenos mezi vysílačem a přijímačem je realizován <b>elektromagnetickými vlnami</b>. Elektromagnetické vlnění má vlastnosti <b>vlnové</b> (odraz, interference, polarizace) i <b>kvantové</b>. Samotný přenos je realizován časovými a prostorovými změnami elektromagnetického pole (EMF). Detaily patří do fyziky – stačí rozumět principu.</p>
+
+<div class="box definice" id="def-vlnova-delka"><div class="box-t">Definice: vlnová délka</div>
+<p><b>Vlnová délka</b> \(\lambda\) je vzdálenost, kterou vlna urazí za jednu periodu; pro elektromagnetické vlnění je dána podílem rychlosti šíření a frekvence: \[ \lambda = \frac{c}{f}\quad [\text{m}] \]</p>
+<p class="jinak">čím vyšší frekvence, tím kratší vlna. Podle vlnové délky (nebo frekvence) se celé elektromagnetické spektrum dělí na pásma – od dlouhých rádiových vln po záření gama.</p></div>
+
+<div class="box vzorec"><div class="box-t">Vlnová délka</div>
+\[ \lambda = \frac{c}{f} \]
+<table class="vars">
+<tr><td>\(\lambda\)</td><td>vlnová délka [m]</td></tr>
+<tr><td>\(c\)</td><td>rychlost elektromagnetického vlnění ve vakuu, \(c \approx 3{,}00 \cdot 10^{8}\ \text{m}\,\text{s}^{-1}\)</td></tr>
+<tr><td>\(f\)</td><td>frekvence [Hz]</td></tr>
+</table>
+<p>Elektromagnetické vlnění se kromě vlnové délky popisuje i energií fotonu \(E = hf\) (\(h\) je Planckova konstanta).</p></div>
+
+<p>Pro bezdrátový přenos dat se využívá část spektra <b>rádiových vln a mikrovln</b>, pro optický přenos část spektra <b>infračerveného (IR) a viditelného</b> záření – obecně tedy <b>neionizující</b> část spektra. Přehled pásem ze slidu (zkráceně):</p>
+<div class="tablewrap"><table class="compact">
+<thead><tr><th>pásmo</th><th>frekvence</th><th>vlnová délka</th><th>šíření</th><th>použití</th></tr></thead>
+<tbody>
+<tr><td>γ, X (rentgen)</td><td>&gt; 3·10<sup>16</sup> Hz</td><td>&lt; 10 nm</td><td>ionizace, penetrace</td><td>nukleární fyzika, X-ray</td></tr>
+<tr><td>UV</td><td>750 THz – 3·10<sup>16</sup> Hz</td><td>400 – 10 nm</td><td>ionizace</td><td>(dezinfekce)</td></tr>
+<tr><td>viditelné (VS)</td><td>400 – 750 THz</td><td>750 – 400 nm</td><td>přímá viditelnost, optika</td><td>telekomunikace</td></tr>
+<tr><td>IR</td><td>300 GHz – 400 THz</td><td>1 mm – 750 nm</td><td>přímá viditelnost, optika</td><td>telekomunikace</td></tr>
+<tr><td>EHF, SHF</td><td>3 – 300 GHz</td><td>100 – 1 mm</td><td>přímá viditelnost</td><td>mikrovlnné spoje, satelity, radary</td></tr>
+<tr><td>UHF, VHF</td><td>30 MHz – 3 GHz</td><td>10 – 0,1 m</td><td>přímá viditelnost</td><td>TV, GPS, GSM, FM rádio, Wi-Fi 2,4 GHz</td></tr>
+<tr><td>HF</td><td>3 – 30 MHz</td><td>100 – 10 m</td><td>přímá viditelnost, vlny</td><td>telekomunikace</td></tr>
+<tr><td>MF, LF, VLF</td><td>3 kHz – 3 MHz</td><td>100 km – 100 m</td><td>pozemní vlny</td><td>AM rádio, telemetrie, námořní a letecké spoje</td></tr>
+<tr><td>„hlasové“ VF, ELF</td><td>30 Hz – 3 kHz</td><td>10 000 – 100 km</td><td>pozemní vlny</td><td>–</td></tr>
+</tbody></table></div>
+
+<div class="box priklad"><div class="box-t">Příklad: vlnové délky známých pásem</div>
+<p>S \(c \approx 3 \cdot 10^{8}\ \text{m/s}\) pro AM rádio (1 MHz), FM rádio (100 MHz) a Wi-Fi (2,4 GHz a 5 GHz):</p>
+\[ \begin{aligned} \lambda_\text{AM} &= \frac{3 \cdot 10^{8}}{10^{6}} = 300\ \text{m} \\ \lambda_\text{FM} &= \frac{3 \cdot 10^{8}}{10^{8}} = 3\ \text{m} \\ \lambda_{2{,}4\,\text{GHz}} &= \frac{3 \cdot 10^{8}}{2{,}4 \cdot 10^{9}} = 12{,}5\ \text{cm} \\ \lambda_{5\,\text{GHz}} &= \frac{3 \cdot 10^{8}}{5 \cdot 10^{9}} = 6\ \text{cm} \end{aligned} \]
+<p>A pro zvuk 1 kHz, kdybychom ho chtěli vyzařovat přímo:</p>
+\[ \lambda = \frac{3 \cdot 10^{8}}{10^{3}} = 300\ \text{km} \]</div>
+
+<div class="box intuice"><div class="box-t">Pro zajímavost: bude lépe fungovat Wi-Fi 5 GHz, nebo 2,4 GHz?</div>
+<p>Záleží na tom, co je mezi routerem a tebou:</p>
+<ul>
+<li><b>Na vzdálenost a přes zdi je lepší 2,4 GHz.</b> Vyšší frekvence se při šíření víc tlumí: ve volném prostoru roste útlum s druhou mocninou frekvence, takže 5 GHz má na stejné vzdálenosti útlum vyšší asi o \(20 \log(5/2{,}4) \approx 6{,}4\ \text{dB}\). Zdi, nábytek i lidské tělo (voda) tlumí kratší vlnu ještě víc.</li>
+<li><b>Na blízko, v jedné místnosti, je lepší 5 GHz.</b> V pásmu je víc místa, kanály mohou být širší a je jich víc, takže přenos je rychlejší. Pásmo 2,4 GHz je přeplněné: sdílí ho sousedovy sítě, Bluetooth i mikrovlnná trouba, a to je rušení.</li>
+</ul>
+<p>Proto mají routery obě pásma: 2,4 GHz na dosah, 5 GHz na rychlost.</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Bezdrátově se přenáší elektromagnetickou vlnou; \(\lambda = c/f\). Pro data se používají rádiové vlny a mikrovlny, opticky IR a viditelné světlo – neionizující část spektra.</p></div>
+
+<h2 id="modulace">Modulace: jak signál „naložit“ na nosnou</h2>
+<p>Informaci pro RF přenos můžeme kódovat pomocí tří parametrů harmonického signálu:</p>
+<ul>
+<li><b>amplitudy</b> – zvětšovat a zmenšovat napětí,</li>
+<li><b>frekvence</b> – zrychlovat a zpomalovat kmity,</li>
+<li><b>fáze</b> – posouvat průběh v čase (fázový posun např. o \(+\pi/2\), o \(\pi\) …).</li>
+</ul>
+<p>Digitální komunikační systémy kódují binární informaci (0 a 1) – a tu lze vyjádřit všemi třemi způsoby (viz <a href="#binarni">kódování binární informace</a>).</p>
+
+<div class="box definice" id="def-modulace"><div class="box-t">Definice: modulace</div>
+<p><b>Modulace</b> je nelineární proces, který mění charakter (amplitudu, frekvenci nebo fázi) <b>nosného signálu</b> pomocí <b>modulačního signálu</b>; výsledkem je <b>modulovaný signál</b> vhodný pro přenos.</p>
+<p class="jinak">modulační signál je pomocí nosného signálu „poslán“ pro RF přenos – nosná ho veze jako náklad. Na slidu je modulace nakreslená jako násobička: modulační × nosný = modulovaný.</p></div>
+<div class="box definice" id="def-nosny-signal"><div class="box-t">Definice: nosný signál</div>
+<p><b>Nosný signál</b> (nosná) je harmonický signál o vysoké frekvenci \(f_n\), jehož parametr (amplituda, frekvence nebo fáze) se při modulaci mění podle modulačního signálu.</p>
+<p class="jinak">signál, který ponese energii a dá se vyzářit anténou. V rádiu je to frekvence, na kterou ladíš stanici. Jeho parametry musí přijímač znát i pro demodulaci.</p></div>
+<div class="box definice" id="def-modulacni-signal"><div class="box-t">Definice: modulační signál</div>
+<p><b>Modulační signál</b> \(m(t)\) je signál nesoucí přenášenou informaci (např. zvuk, biosignál nebo data), podle kterého se mění parametr nosného signálu.</p>
+<p class="jinak">„významově“ mění nosnou – to, co chceme přenést. Bývá mnohem pomalejší (nižší frekvence) než nosná.</p></div>
+
+<div class="box intuice"><div class="box-t">Proč nestačí poslat signál přímo</div>
+<ul>
+<li>Anténa vyzařuje dobře jen tehdy, když je její rozměr srovnatelný s vlnovou délkou (typicky \(\lambda/4\)). Pro zvuk 1 kHz je \(\lambda = 300\ \text{km}\) – anténa by měla 75 km. Pro nosnou 2,4 GHz stačí 3 cm.</li>
+<li>Kdyby všichni vysílali „holý“ signál, překrývali by se ve stejném pásmu. Každý vysílač má svou nosnou, takže si signály v kanálu nepřekážejí (stejně jako ve <a href="18_multiplexace.html#def-fdm">FDM</a>).</li>
+</ul></div>
+
+<h3 id="harmonicky">Harmonický signál a tři druhy analogové modulace</h3>
+<p>Nejjednodušší je <b>spojitá analogová modulace</b>: nosný signál má harmonický průběh v čase a modulační signál je analogový. Harmonický signál je obecně:</p>
+<div class="box vzorec"><div class="box-t">Harmonický (nosný) signál</div>
+\[ y(t) = A \cdot \sin(\omega t + \varphi) \]
+<table class="vars">
+<tr><td>\(A\)</td><td>amplituda → mění ji <b>AM</b></td></tr>
+<tr><td>\(\omega\)</td><td>úhlová frekvence, \(\omega = 2\pi f\); v čase proměnná část argumentu, projeví se v ní frekvence → mění ji <b>FM</b></td></tr>
+<tr><td>\(\varphi\)</td><td>fáze → mění ji <b>PM</b></td></tr>
+<tr><td>\(t\)</td><td>čas</td></tr>
+</table></div>
+<p>Podle parametru, který modulační signál ovlivňuje, rozlišujeme <b>AM</b> (amplituda), <b>FM</b> (frekvence) a <b>PM</b> (fáze).</p>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Modulace = modulační signál (informace) mění amplitudu, frekvenci nebo fázi nosného signálu (energie, vysoká frekvence). Podle toho AM, FM, PM.</p></div>
+
+<h2 id="am">Amplitudová modulace (AM)</h2>
+<div class="box definice" id="def-am"><div class="box-t">Definice: amplitudová modulace (AM)</div>
+<p><b>Amplitudová modulace</b> je modulace, při které se <b>amplituda</b> nosného signálu mění úměrně okamžité hodnotě modulačního signálu, zatímco frekvence a fáze nosné zůstávají stálé.</p>
+<p class="jinak">obálka (spojnice vrcholů) modulovaného signálu má tvar modulačního signálu. Nosná „dýchá“ v rytmu přenášeného zvuku.</p></div>
+
+<p>Nosný a modulační signál ze slidu:</p>
+\[ \begin{aligned} n(t) &= A \cdot \sin(\omega_n t + \varphi) \\ m(t) &= M \cdot \sin(\omega_m t + \varphi) \end{aligned} \]
+
+<figure><div class="paper"><img src="figures/fig20_am.png" alt="Tři grafy pod sebou: pomalá kosinusovka modulačního signálu, rychlá sinusovka nosné s amplitudou 1 a modulovaný signál, jehož amplituda kolísá mezi 0,5 a 1,5 a obálka čárkovaně kopíruje modulační signál" loading="lazy"></div>
+<figcaption><b>Obr. P10.1</b> AM v čase (vlastní čísla, nosná 20× rychlejší než modulační signál, \(m\) = 50 %).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Frekvence nosné se nemění – kmity jsou pořád stejně husté. Mění se jen jejich <b>výška</b>.</li>
+<li><b>Obálka</b> (čárkovaně) má tvar modulačního signálu – v ní je informace.</li>
+<li>Bez modulace by amplituda byla stále \(A\); s modulací kolísá kolem \(A\) nahoru i dolů.</li>
+</ul></div>
+
+<h3 id="hloubka">Hloubka modulace</h3>
+<div class="box definice" id="def-hloubka-modulace"><div class="box-t">Definice: hloubka modulace</div>
+<p><b>Hloubka modulace</b> \(m\) je poměr amplitudy modulačního signálu \(M\) k amplitudě nosného signálu \(A\), vyjádřený obvykle v procentech: \[ m = \frac{M}{A} \cdot 100\ \% \]</p>
+<p class="jinak">říká, jak moc je signál „promodulovaný“ – o kolik procent se amplituda nosné při modulaci zvětšuje a zmenšuje. Při \(m\) = 50 % kolísá mezi 0,5 A a 1,5 A.</p></div>
+
+<figure><div class="paper"><img src="figures/fig20_hloubka.png" alt="Tři AM signály vedle sebe: m 50 procent s obálkou mezi 0,5 a 1,5; m 100 procent, obálka se dotýká nuly a maximum je dvojnásobek; m 150 procent, maximum 2,5 a obálka se láme v nule, fáze nosné se překlápí" loading="lazy"></div>
+<figcaption><b>Obr. P10.2</b> Hloubka modulace 50 %, 100 % a 150 % (podle tří grafů na slidu „Hloubka modulace“).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>m = 50 %:</b> amplituda kolísá ±50 % kolem úrovně bez modulace. Obálka nikde nezmizí.</li>
+<li><b>m = 100 %:</b> maximum je <b>dvojnásobek</b> úrovně bez modulace a minimum se <b>dotkne nuly</b>. To je hraniční stav – není vhodný, stačí malé zvětšení signálu a přejde se do přemodulování.</li>
+<li><b>m &gt; 100 % (přemodulovaný signál):</b> maximum je víc než dvojnásobek a obálka by měla jít pod nulu. To nejde – místo toho se nosná <b>překlopí o 180°</b> (carrier exhibits phase reversal). Obálka pak už nemá tvar modulačního signálu a ten se při demodulaci zkreslí.</li>
+</ul></div>
+<div class="box pozor"><div class="box-t">Co se stane při m = 100 %</div>
+<p>Obálka právě dosáhne nuly – signál ještě jde demodulovat, ale je na hranici. Při překročení 100 % vzniká <b>přemodulování</b>: obálka se v nule „láme“, nosná překlápí fázi a demodulovaný signál je zkreslený. V praxi se proto drží \(m\) &lt; 100 %.</p></div>
+
+<h3 id="demodulace-am">Demodulace AM</h3>
+<div class="box definice" id="def-demodulace"><div class="box-t">Definice: demodulace</div>
+<p><b>Demodulace</b> je opačný proces k modulaci: z přijatého modulovaného signálu se s využitím znalosti nosné a použitého způsobu modulace získá zpět původní modulační signál (nebo přenášené symboly).</p>
+<p class="jinak">„sundání nákladu z nosné“. U AM stačí vzít obálku, u FM převést frekvenci na napětí, u digitálních modulací rozhodnout, který symbol přišel.</p></div>
+<p>U AM je demodulace jednoduchá: <b>usměrňovač</b> (udělá absolutní hodnotu) a pak <b>dolní propust</b> – a získám modulační signál.</p>
+<figure><div class="paper"><img src="figures/fig20_demodulace.png" alt="Tři grafy: přijatý AM signál; po usměrnění jen kladné půlvlny, jejichž vrcholy sledují obálku; po dolní propusti hladká křivka, která se překrývá s tvarem modulačního signálu" loading="lazy"></div>
+<figcaption><b>Obr. P10.3</b> Demodulace AM (vlastní signál): usměrnění a dolní propust.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Po usměrnění už signál není symetrický kolem nuly – jeho střední hodnota sleduje obálku.</li>
+<li><a href="15_aktivni_filtry.html#def-dp">Dolní propust</a> s mezní frekvencí mezi frekvencí modulačního signálu a nosné odstraní rychlé kmity nosné a nechá pomalou obálku.</li>
+<li>Proto se u AM drží \(m\) &lt; 100 %: přemodulovanou obálku by takto získaný signál nekopíroval.</li>
+</ul></div>
+<div class="box intuice"><div class="box-t">Jak přijímač přijímá: „krystalka“ (jen princip)</div>
+<p>Nejjednodušší AM přijímač tvoří jen <b>dioda</b> a za ní paralelně <b>kondenzátor a rezistor</b>. Dioda propustí jen jednu polaritu (usměrnění), kondenzátor se nabíjí na vrcholy kmitů a rezistor ho pomalu vybíjí – takže napětí na něm sleduje obálku. Je to vlastně <a href="14_oz_zapojeni.html#def-vrcholovy-detektor">vrcholový detektor</a>, který stihne sledovat pomalé změny obálky, ale ne rychlé kmity nosné. Na výstupu je zvuk.</p></div>
+
+<h3 id="am-spektrum">Spektrum AM a postranní pásma</h3>
+<p>Modulovaný signál AM lze zapsat jako nosnou, jejíž amplituda kolísá kolem \(A\) podle modulačního signálu:</p>
+<div class="box postup"><div class="box-t">Rozepsání AM signálu na složky</div>
+<p>1. Amplituda nosné kolísá kolem \(A\) s hloubkou \(m = M/A\):</p>
+\[ y(t) = A\,\bigl[1 + m\cos(\omega_m t + \varphi)\bigr] \cdot \sin(\omega_n t) \]
+<p>2. Roznásobíme a použijeme vzorec pro součin:</p>
+\[ \sin\alpha\cos\beta = \tfrac{1}{2}\bigl[\sin(\alpha + \beta) + \sin(\alpha - \beta)\bigr] \]
+<p>3. Dostaneme všechny složky signálu:</p>
+\[ \begin{aligned} y(t) = {} & A \sin(\omega_n t) \\ & + \frac{A m}{2}\, \sin\bigl[(\omega_n + \omega_m)\,t + \varphi\bigr] \\ & + \frac{A m}{2}\, \sin\bigl[(\omega_n - \omega_m)\,t - \varphi\bigr] \end{aligned} \]
+<p>První člen je samotná <b>nosná</b>, druhý <b>horní postranní pásmo</b> (USB, Upper Sideband), třetí <b>dolní postranní pásmo</b> (LSB, Lower Sideband). Rovnost obou tvarů je ověřena i numericky.</p></div>
+
+<div class="box definice" id="def-postranni-pasmo"><div class="box-t">Definice: postranní pásmo</div>
+<p><b>Postranní pásmo</b> je část spektra modulovaného signálu ležící nad nosnou frekvencí (<b>horní</b>, USB, \(f_n + f_m\)) nebo pod ní (<b>dolní</b>, LSB, \(f_n - f_m\)); každé z nich nese celou informaci modulačního signálu.</p>
+<p class="jinak">modulace „posune“ spektrum modulačního signálu k nosné – frekvenční posun dvou signálů na jejich součet a rozdíl. Kolem nosné tak vzniknou dvě zrcadlové kopie.</p></div>
+
+<figure><div class="paper"><img src="figures/fig20_spektrum.png" alt="Tři spektra: a) nosná fn s amplitudou A a dvě menší složky fn minus fm a fn plus fm s amplitudou Am/2; b) jen nosná a horní složka; c) jen horní složka fn plus fm" loading="lazy"></div>
+<figcaption><b>Obr. P10.4</b> Amplitudové spektrum AM s jedním modulačním tónem (\(A\) = 1, \(m\) = 80 %) a jeho deriváty SSB a SSB s potlačenou nosnou. Se skutečným signálem (např. řečí) jsou místo čar „kopečky“ pásem, jako na slidu.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Spektrum AM je posunuté kolem frekvence nosné a je <b>symetrické podle \(f_n\)</b>: LSB je zrcadlo USB.</li>
+<li><b>Nosná nese hlavní energii</b>, proto je její čára nejvyšší (\(A\) proti \(Am/2\)). Přitom žádnou informaci nenese – ta je v postranních pásmech.</li>
+<li>AM zabírá pásmo od \(f_n - f_m\) do \(f_n + f_m\), tedy šířku \(2 f_m\). Stačila by ale polovina – USB i LSB nesou totéž.</li>
+</ul></div>
+
+<div class="box priklad"><div class="box-t">Příklad: kolik výkonu „spotřebuje“ nosná</div>
+<p>Výkon složky je úměrný druhé mocnině její amplitudy. Nosná má amplitudu \(A\), každé postranní pásmo \(Am/2\).</p>
+<p>1. Podíl nosné na celkovém výkonu:</p>
+\[ \frac{P_n}{P_\text{celk}} = \frac{A^2}{A^2 + 2\left(\frac{Am}{2}\right)^2} = \frac{1}{1 + \frac{m^2}{2}} \]
+<p>2. Pro \(m\) = 100 %:</p>
+\[ \frac{1}{1 + 0{,}5} = \frac{2}{3} \approx 67\ \% \]
+<p>3. Pro \(m\) = 50 %:</p>
+\[ \frac{1}{1 + 0{,}125} = 0{,}889 \approx 89\ \% \]
+<p>I při maximální dovolené hloubce modulace jdou dvě třetiny výkonu vysílače do nosné, která informaci nenese.</p></div>
+
+<p>Přestože je AM konstrukčně jednoduchá, její velkou nevýhodou je značná (a zbytečná) <b>šířka spektra</b>, kterou zabírá. Energie se přenáší v podobě <b>obou pásem</b> (Double Sideband, DSB) <b>a nosné vlny</b>. Řešením je potlačit jedno postranní pásmo (DSB → SSB) a potlačit nosnou frekvenci. Tak vznikají <b>deriváty AM</b>.</p>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>AM: amplituda nosné sleduje modulační signál, \(m = M/A\) má být pod 100 %. Demodulace = usměrnění + dolní propust. Spektrum = nosná + USB + LSB (zrcadla), šířka \(2 f_m\); nosná nese většinu výkonu, ale žádnou informaci.</p></div>
+
+<h2 id="derivat">Co je „derivát“ modulace a k čemu je</h2>
+<div class="box definice" id="def-derivat-modulace"><div class="box-t">Definice: derivát modulace</div>
+<p><b>Derivát modulace</b> je odvozená varianta základní modulace (AM, FM, PM), která základní princip zachovává, ale upravuje ho – vynechá část signálu, omezí modulační signál na několik diskrétních stavů nebo kombinuje více modulovaných parametrů najednou.</p>
+<p class="jinak">„vylepšená verze“ AM nebo PM. Slovo derivát tu nemá nic společného s derivací – znamená „odvozený od“. Vždy řeší nějakou slabinu základní modulace.</p></div>
+
+<div class="box intuice"><div class="box-t">K čemu deriváty jsou</div>
+<p>Každá základní modulace má slabinu a derivát ji obchází:</p>
+<ul>
+<li>AM plýtvá pásmem a výkonem → <b>SSB</b> vynechá jedno postranní pásmo, <b>SSB s potlačenou nosnou</b> i nosnou.</li>
+<li>PM má složitý demodulátor a spojitou fázi je těžké přesně rozlišit → <b>PSK</b> (BPSK) používá jen několik pevných fází.</li>
+<li>Jedna modulace nese málo stavů → <b>QAM</b> (derivát AM i PM) může měnit <b>amplitudu a zároveň fázi</b>. Tím vznikne víc stavů, např. 00, 01, 10, 11 – 4 stavy = 2 bity najednou.</li>
+</ul></div>
+<div class="tablewrap"><table class="compact">
+<thead><tr><th>derivát</th><th>odvozen od</th><th>co mění oproti základní modulaci</th><th>k čemu</th></tr></thead>
+<tbody>
+<tr><td><a href="#ssb">SSB</a></td><td>AM</td><td>vynechá jedno postranní pásmo (LSB)</td><td>poloviční šířka pásma</td></tr>
+<tr><td><a href="#ssb-sc">SSB s potlačenou nosnou</a></td><td>AM</td><td>vynechá LSB i nosnou</td><td>poloviční pásmo, žádný výkon do nosné</td></tr>
+<tr><td><a href="#pm">PSK, BPSK</a></td><td>PM</td><td>jen diskrétní fáze (např. 0° a 180°)</td><td>jednoduchá detekce, přenos bitů</td></tr>
+<tr><td><a href="#qam">QAM</a></td><td>AM a PM</td><td>mění amplitudu i fázi najednou</td><td>víc bitů v jednom taktu</td></tr>
+</tbody></table></div>
+
+<h3 id="ssb">Derivát AM: Single Sideband (SSB)</h3>
+<div class="box definice" id="def-ssb"><div class="box-t">Definice: SSB (Single Sideband)</div>
+<p><b>SSB</b> (jednopásmová modulace) je derivát AM, ve kterém se z modulovaného signálu odstraní jedno postranní pásmo; přenáší se jen nosná a jedno postranní pásmo (obvykle horní, USB). Ve variantě <b>s potlačenou nosnou</b> se odstraní i nosná a přenáší se pouze jedno postranní pásmo.</p>
+<p class="jinak">protože USB a LSB nesou totéž, stačí poslat jen jedno. Ušetří se polovina pásma, a když se vynechá i nosná, ušetří se i výkon, který by nesl „prázdnou“ nosnou.</p></div>
+<p>Ze všech složek AM se škrtne poslední člen (LSB):</p>
+\[ y(t) = A \sin(\omega_n t) + \frac{A m}{2}\, \sin\bigl[(\omega_n + \omega_m)\,t + \varphi\bigr] \]
+<p>Zůstává <b>Upper Sideband a nosná</b> (obr. P10.4 b). Šířka pásma klesne z \(2 f_m\) na \(f_m\).</p>
+
+<h3 id="ssb-sc">Derivát AM: SSB s potlačenou nosnou</h3>
+<p>Škrtne se i nosná:</p>
+\[ y(t) = \frac{A m}{2}\, \sin\bigl[(\omega_n + \omega_m)\,t + \varphi\bigr] \]
+<p>Zůstává <b>pouze Upper Sideband</b> (obr. P10.4 c) – celý výkon vysílače jde do složky, která nese informaci.</p>
+<div class="box pozor"><div class="box-t">Komplikuje přenos pouze USB složky demodulaci?</div>
+<p><b>Ano – přenos je úspornější, ale demodulace složitější.</b></p>
+<ul>
+<li>Bez nosné už obálka signálu nemá tvar modulačního signálu, takže jednoduchý detektor obálky (dioda + RC, krystalka) nefunguje.</li>
+<li>Přijímač si musí nosnou <b>vyrobit sám</b> vlastním oscilátorem a signál s ní vynásobit (tzv. synchronní neboli koherentní demodulace). Vynásobením se USB posune zpět na \(f_m\) a dolní propust odstraní zbytek.</li>
+<li>Vyrobená nosná musí mít <b>přesně</b> frekvenci \(f_n\). Když je mimo, všechny frekvence demodulovaného signálu se posunou o tuto chybu a řeč zní zkresleně („kačeří hlas“).</li>
+</ul>
+<p>Platí tedy obecné pravidlo přenosové cesty: demodulátor potřebuje <b>známou nosnou vlnu</b>. U klasické AM ji dostane zadarmo v signálu, u SSB s potlačenou nosnou ji musí obnovit sám.</p></div>
+<div class="box priklad"><div class="box-t">Příklad: šířka pásma hovorového signálu</div>
+<p>Hovorový signál má složky do \(f_m = 3{,}4\ \text{kHz}\).</p>
+\[ \begin{aligned} \text{AM (DSB)}:&\quad B = 2 f_m = 6{,}8\ \text{kHz} \\ \text{SSB}:&\quad B = f_m = 3{,}4\ \text{kHz} \end{aligned} \]
+<p>Do stejného úseku spektra se tak se SSB vejde dvakrát víc kanálů (srovnej s <a href="18_multiplexace.html#fdm">FDM</a>).</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Derivát = odvozená varianta základní modulace, která řeší její slabinu. SSB nechá jen USB (+ nosnou) → poloviční pásmo; SSB s potlačenou nosnou nechá jen USB → i úspora výkonu, ale přijímač si musí nosnou obnovit sám.</p></div>
+
+<h2 id="prenosova-cesta">Přenosová cesta: vysílač – přijímač</h2>
+<p>Modulace je jen jeden článek. Celá cesta od zdroje dat k výstupu má tyto bloky:</p>
+<div class="schema">
+<svg viewBox="0 0 760 320" role="img" aria-label="Přenosová cesta: zdroj dat, kódování zdroje, kódování kanálu, modulátor s oscilátorem, vysílač; přenosový kanál se šumem, útlumem a rušením; přijímač, demodulátor se známou nosnou vlnou, dekodér, výstupní signál">
+  <defs><marker id="ar10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="10" y="20" width="128" height="58" rx="8" class="node"/>
+  <text x="74" y="44" text-anchor="middle">zdroj dat</text><text x="74" y="64" text-anchor="middle" class="t2">signál</text>
+  <rect x="160" y="20" width="128" height="58" rx="8" class="node fl1"/>
+  <text x="224" y="44" text-anchor="middle">kódování zdroje</text><text x="224" y="64" text-anchor="middle" class="t2">komprese</text>
+  <rect x="310" y="20" width="128" height="58" rx="8" class="node fl1"/>
+  <text x="374" y="44" text-anchor="middle">kódování kanálu</text><text x="374" y="64" text-anchor="middle" class="t2">+ redundance</text>
+  <rect x="460" y="20" width="128" height="58" rx="8" class="node fl2"/>
+  <text x="524" y="44" text-anchor="middle">modulátor</text><text x="524" y="64" text-anchor="middle" class="t2">data → analog</text>
+  <rect x="610" y="20" width="140" height="58" rx="8" class="node fl3"/>
+  <text x="680" y="44" text-anchor="middle">vysílač</text><text x="680" y="64" text-anchor="middle" class="t2">zesílení, anténa</text>
+  <rect x="460" y="104" width="128" height="40" rx="8" class="node"/>
+  <text x="524" y="129" text-anchor="middle">oscilátor (nosná)</text>
+  <rect x="610" y="148" width="140" height="58" rx="8" class="node"/>
+  <text x="680" y="172" text-anchor="middle">přenosový kanál</text><text x="680" y="192" text-anchor="middle" class="t2">šum, útlum, rušení</text>
+  <rect x="460" y="166" width="128" height="40" rx="8" class="node"/>
+  <text x="524" y="191" text-anchor="middle">známá nosná</text>
+  <rect x="610" y="244" width="140" height="58" rx="8" class="node fl3"/>
+  <text x="680" y="268" text-anchor="middle">přijímač</text><text x="680" y="288" text-anchor="middle" class="t2">zesílení, filtrace</text>
+  <rect x="460" y="244" width="128" height="58" rx="8" class="node fl2"/>
+  <text x="524" y="268" text-anchor="middle">demodulátor</text><text x="524" y="288" text-anchor="middle" class="t2">symboly zpět</text>
+  <rect x="310" y="244" width="128" height="58" rx="8" class="node fl1"/>
+  <text x="374" y="268" text-anchor="middle">dekodér</text><text x="374" y="288" text-anchor="middle" class="t2">kontrola, oprava</text>
+  <rect x="160" y="244" width="128" height="58" rx="8" class="node"/>
+  <text x="224" y="268" text-anchor="middle">výstupní signál</text><text x="224" y="288" text-anchor="middle" class="t2">původní data</text>
+  <path d="M138 49 H155" class="ln" marker-end="url(#ar10)"/>
+  <path d="M288 49 H305" class="ln" marker-end="url(#ar10)"/>
+  <path d="M438 49 H455" class="ln" marker-end="url(#ar10)"/>
+  <path d="M588 49 H605" class="ln" marker-end="url(#ar10)"/>
+  <path d="M524 104 V83" class="ln" marker-end="url(#ar10)"/>
+  <path d="M680 78 V143" class="ln dash" marker-end="url(#ar10)"/>
+  <path d="M680 206 V239" class="ln dash" marker-end="url(#ar10)"/>
+  <path d="M610 273 H593" class="ln" marker-end="url(#ar10)"/>
+  <path d="M524 206 V239" class="ln" marker-end="url(#ar10)"/>
+  <path d="M460 273 H443" class="ln" marker-end="url(#ar10)"/>
+  <path d="M310 273 H293" class="ln" marker-end="url(#ar10)"/>
+</svg></div>
+<p class="muted">Schéma: přenosová cesta podle tří slidů „Přenosová cesta: vysílač – přijímač“. Nahoře vysílací strana, dole přijímací (čte se zprava doleva), mezi nimi kanál.</p>
+<div class="box postup"><div class="box-t">Bloky přenosové cesty</div>
+<ol>
+<li><b>Zdroj dat</b> – signál (např. biosignál po A/D převodu).</li>
+<li><b>Kódování zdroje</b> – komprese, aby se posílalo co nejméně bitů (PCM, MPEG, Huffmanovo kódování).</li>
+<li><b>Kódování kanálu</b> – přidání redundantních (nadbytečných) prvků, aby šly chyby odhalit a opravit.</li>
+<li><b>Modulátor</b> – převede data na analogový signál pro přenos kanálem; nosnou mu dodává <b>oscilátor</b>.</li>
+<li><b>Vysílač</b> – zesílení a přizpůsobení signálu pro formu přenosu (anténa, optika…).</li>
+<li><b>Přenosový kanál</b> – médium přenosu („vzduch“, elektrický kabel, optické vlákno); jeho parametry jsou <b>šum, útlum a rušení</b>.</li>
+<li><b>Přijímač</b> – „zachytí“ signál, provede základní zesílení a filtraci.</li>
+<li><b>Demodulátor</b> – s použitím <b>známé nosné vlny</b> a algoritmu modulace provede demodulaci: rekonstrukci symbolů, fázovou nebo frekvenční detekci.</li>
+<li><b>Dekodér</b> – odstraní redundantní bity a ověří správnost původní informace.</li>
+</ol></div>
+<div class="box definice" id="def-kodovani-zdroje"><div class="box-t">Definice: kódování zdroje</div>
+<p><b>Kódování zdroje</b> je převod dat ze zdroje do co nejúspornějšího tvaru (komprese) odstraněním nadbytečné informace před přenosem.</p>
+<p class="jinak">„zmenši, co se dá“ – např. MPEG u videa nebo Huffmanův kód, který častým znakům dá krátké kódy.</p></div>
+<div class="box definice" id="def-kodovani-kanalu"><div class="box-t">Definice: kódování kanálu</div>
+<p><b>Kódování kanálu</b> je přidání řízené redundance (kontrolních bitů) k datům, které přijímači umožní odhalit a opravit chyby vzniklé v přenosovém kanále.</p>
+<p class="jinak">opak komprese: schválně přidám pár bitů navíc, aby se poznalo, že šum nějaký bit převrátil. Dekodér je pak zase odstraní.</p></div>
+<div class="box intuice"><div class="box-t">Jak vysílač vysílá a přijímač přijímá (jen princip, zapojení znát netřeba)</div>
+<ul>
+<li><b>Zesilovač AM</b> (slide se dvěma tranzistory MOSFET): nosná 1 MHz střídavě spíná tranzistory koncového stupně, a napájecí napětí tohoto stupně se mění v rytmu zvuku (1 kHz) přes transformátor. Výška výstupních kmitů tak sleduje zvuk; laděný obvod LC z nich udělá sinusovku a anténa ji vyzáří.</li>
+<li><b>Vysílač AM</b> (slide s mikrofonem): mikrofon → tranzistorový zesilovač → oscilátor s rezonančním obvodem LC, který určuje frekvenci nosné (laděním kondenzátoru se mění) → anténa.</li>
+<li><b>Krystalka</b>: dioda + RC = detektor obálky (viz <a href="#demodulace-am">demodulace AM</a>).</li>
+<li><b>AM přijímač s audio zesilovačem</b>: anténa → laděný obvod LC vybere stanici (jen její nosnou) → tranzistor provede detekci (demodulaci) → audio zesilovač (LM386) → reproduktor nebo sluchátka.</li>
+</ul></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Zdroj → kódování zdroje (komprese) → kódování kanálu (redundance) → modulátor + oscilátor → vysílač → kanál (šum, útlum, rušení) → přijímač → demodulátor + známá nosná → dekodér → výstup.</p></div>
+
+<h2 id="fm">Frekvenční modulace (FM)</h2>
+<div class="box definice" id="def-fm"><div class="box-t">Definice: frekvenční modulace (FM)</div>
+<p><b>Frekvenční modulace</b> je modulace, při které modulační signál ovlivňuje přímo <b>frekvenci</b> nosné vlny; amplituda nosné vlny je konstantní.</p>
+<p class="jinak">kladná hodnota modulačního signálu nosnou „zrychlí“ (kmity se zhustí), záporná „zpomalí“. Informace je v hustotě kmitů, ne v jejich výšce.</p></div>
+<div class="box vzorec"><div class="box-t">Okamžitá frekvence FM signálu</div>
+\[ f(t) = f_n + \Delta f \cdot \frac{m(t)}{M} \]
+<table class="vars">
+<tr><td>\(f(t)\)</td><td>okamžitá frekvence modulovaného signálu</td></tr>
+<tr><td>\(f_n\)</td><td>frekvence nosné (bez modulace)</td></tr>
+<tr><td>\(\Delta f\)</td><td>kmitočtový zdvih – největší odchylka frekvence od \(f_n\)</td></tr>
+<tr><td>\(m(t)/M\)</td><td>modulační signál normovaný na rozsah −1 až +1</td></tr>
+</table></div>
+<figure><div class="paper"><img src="figures/fig20_fm.png" alt="Nahoře sinusový modulační signál, dole FM signál se stálou amplitudou, jehož kmity jsou husté v maximech modulačního signálu a řídké v minimech" loading="lazy"></div>
+<figcaption><b>Obr. P10.5</b> FM v čase (vlastní čísla; jako na slidu „Modulating signal“ a „Radio frequency signal“).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Amplituda FM signálu je pořád stejná – obálka nenese nic.</li>
+<li>Kde je modulační signál kladný, jsou kmity hustší (vyšší frekvence), kde je záporný, řidší.</li>
+</ul></div>
+<p>Díky změnám v kmitočtu vzniká ve spektru FM i při jediném modulačním tónu <b>mnoho postranních složek</b>, které se rozšiřují na obě strany od nosné. Ve skutečnosti se rozšiřují do nekonečna, ale jejich intenzita klesá.</p>
+<figure><div class="paper"><img src="figures/fig20_fm_spektrum.png" alt="Vlevo spektrum AM: nosná a dvě postranní složky; vpravo spektrum FM: malá nosná a mnoho postranních složek na obě strany do vzdálenosti asi pěti násobků fm, směrem ven slábnou" loading="lazy"></div>
+<figcaption><b>Obr. P10.6</b> Spektrum AM a FM pro jeden modulační tón (amplitudy složek FM jsou Besselovy funkce \(J_k(\beta)\), index modulace \(\beta = \Delta f / f_m\) = 2,5).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>AM má na každé straně jednu složku, FM <b>mnoho</b> (ve vzdálenostech \(f_m, 2f_m, 3f_m…\)), které slábnou.</li>
+<li>FM proto zabírá <b>širší pásmo</b> než AM – za odolnost proti šumu se platí šířkou pásma.</li>
+<li>Výkon FM signálu je stálý; modulace ho jen přerozdělí mezi nosnou a postranní složky (nosná může i téměř zmizet).</li>
+</ul></div>
+<p><b>Demodulátorem FM</b> je <a href="11_signal.html#def-prevodnik-fu">převodník frekvence na napětí</a> – jeho výstupní napětí představuje původní signál. Demodulátor musí stejně jako u AM pracovat na stejné frekvenci, jakou měla nosná vlna.</p>
+<div class="box intuice"><div class="box-t">Výhody FM</div>
+<ul>
+<li>FM je vysoce <b>odolná proti šumu</b>: šum a rušení mění hlavně amplitudu signálu, a ta u FM informaci nenese – nemá přímý vliv na modulační signál (na rozdíl od AM).</li>
+<li>Odolnost proti <b>interferenci</b> signálu.</li>
+<li>Ve srovnání s AM postačuje <b>nižší výkon</b> vysílače.</li>
+<li>Díky tomu je FM široce používaná v rádiových spojích včetně obousměrné rádiové komunikace.</li>
+</ul></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>FM: modulační signál mění frekvenci nosné, amplituda je stálá. Spektrum má mnoho postranních složek (široké pásmo). Demodulace převodníkem f/U. Výhoda: odolnost proti šumu a rušení, nižší výkon.</p></div>
+
+<h2 id="pm">Fázová modulace (PM) a PSK</h2>
+<div class="box definice" id="def-pm"><div class="box-t">Definice: fázová modulace (PM)</div>
+<p><b>Fázová modulace</b> je modulace, při které modulační signál mění <b>fázi</b> \(\varphi\) nosného signálu \(n(t) = A \sin(\omega_n t + \varphi)\), zatímco amplituda zůstává stálá.</p>
+<p class="jinak">průběh nosné se posouvá dopředu a dozadu v čase podle modulačního signálu. Na pohled je PM podobná FM – posun fáze krátce změní i hustotu kmitů.</p></div>
+<p>Spojitá PM není příliš využívaná:</p>
+<ul>
+<li>má velmi <b>složitý demodulátor</b>,</li>
+<li>je pracné (a způsobuje chybovost) rozlišit např. \(\varphi = 0°\) od \(\varphi = 180°\) – přijímač musí přesně vědět, kde je „nulová“ fáze.</li>
+</ul>
+<p>Používá se proto jen <b>derivát PM</b>: <b>PSK</b> (Phase Shift Keying, klíčování fázovým posuvem) s <b>diskrétním</b> modulačním signálem, u kterého není složité detekovat fázor – fáze může nabývat jen několika předem daných hodnot.</p>
+<div class="box definice" id="def-psk"><div class="box-t">Definice: PSK (Phase Shift Keying)</div>
+<p><b>PSK</b> (klíčování fázovým posuvem) je derivát fázové modulace s diskrétním (digitálním) modulačním signálem: každému symbolu odpovídá jedna z konečného počtu předem daných fází nosné.</p>
+<p class="jinak">místo plynulého „kroucení“ fáze se fáze přepíná mezi několika pevnými polohami. Přijímač nemusí měřit fázi přesně, stačí rozhodnout, ke které poloze má nejblíž.</p></div>
+
+<h2 id="binarni">Kódování binární informace pomocí AM, FM a PM</h2>
+<div class="box definice" id="def-bit"><div class="box-t">Definice: bit</div>
+<p><b>Bit</b> (binary digit) je základní jednotka informace, která může nabývat jedné ze dvou hodnot, 0 nebo 1; \(n\) bitů dává \(2^n\) různých kombinací.</p>
+<p class="jinak">odpověď ano/ne. Dva bity rozliší 4 stavy (00, 01, 10, 11), tři bity 8 stavů, čtyři bity 16.</p></div>
+<p>Při digitálním přenosu se mění parametr nosné vždy na celou <b>dobu bitu</b>:</p>
+<figure><div class="paper"><img src="figures/fig20_binarni.png" alt="Tři průběhy pod sebou rozdělené čárkovanými čarami na bity 1, 0, 1: AM má v bitu 0 nulovou amplitudu; FM má v bitu 0 mnohem hustší kmity se stejnou amplitudou; PM má všude stejnou frekvenci i amplitudu, ale na hranicích bitů se průběh zlomí, fáze se otočí o 180 stupňů" loading="lazy"></div>
+<figcaption><b>Obr. P10.7</b> Kódování bitů 1, 0, 1 pomocí AM, FM a PM (podle slidu „Kódování binární informace pomocí AM, FM a PM“).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>V amplitudě</b>: je, nebo není amplituda (1 = nosná vysílá, 0 = nevysílá).</li>
+<li><b>Ve frekvenci</b>: dvě frekvence, jedna pro 1 a druhá pro 0.</li>
+<li><b>Ve fázi</b>: frekvence i amplituda stálé, informace je v poloze průběhu. Když se fáze na hranici bitů otočí o 180°, změnil se bit – každý zlom průběhu je změna bitu.</li>
+</ul></div>
+<div class="box definice" id="def-bitova-rychlost"><div class="box-t">Definice: přenosová (bitová) rychlost</div>
+<p><b>Přenosová rychlost</b> \(R\) je počet bitů přenesených za sekundu [bit/s]; doba trvání jednoho bitu je její převrácená hodnota: \[ T_b = \frac{1}{R} \]</p>
+<p class="jinak">„takt“ přenosu. Vysílač i přijímač se na něm musí dohodnout předem, jinak přijímač neví, kde jeden bit končí a další začíná.</p></div>
+<div class="box intuice"><div class="box-t">Pro zajímavost: jak vím, že nepřišly dvě nuly?</div>
+<p>Ze samotného průběhu to nepoznám – dvě nuly za sebou vypadají jako jedna dlouhá. Potřebuju znát <b>přenosovou rychlost</b>. Při 1 kbit/s trvá bit 1 ms; trvá-li „nula“ 2 ms, byly to dvě nuly.</p>
+<p>V praxi navíc přijímač musí být s vysílačem <b>synchronizovaný</b> – jeho <a href="17_prevodniky.html#def-hodinovy-signal">hodiny</a> musí tikat ve stejném rytmu a ve stejné fázi. Hodiny se dolaďují podle hran mezi bity; proto se dlouhé řady stejných bitů v kódování kanálu „rozbíjejí“, aby měl přijímač podle čeho se srovnat.</p></div>
+
+<h3 id="bpsk">BPSK – dvoustavová modulace</h3>
+<div class="box definice" id="def-bpsk"><div class="box-t">Definice: BPSK</div>
+<p><b>BPSK</b> (Binary Phase Shift Keying) je dvoustavová fázová modulace: modulátor kóduje postupně vždy jeden bit otočením fáze nosné, takže nosná má jen dvě možné fáze (0° a 180°).</p>
+<p class="jinak">jeden takt = jeden bit. Bit 1 pošle nosnou „normálně“, bit 0 obrácenou (vynásobenou −1).</p></div>
+<div class="box definice" id="def-konstelacni-diagram"><div class="box-t">Definice: konstelační diagram</div>
+<p><b>Konstelační diagram</b> je zobrazení všech možných symbolů digitální modulace jako bodů v rovině, kde vodorovná osa (I) a svislá osa (Q) udávají amplitudy dvou navzájem kolmých složek nosné; vzdálenost bodu od počátku odpovídá amplitudě a jeho úhel fázi.</p>
+<p class="jinak">„mapa symbolů“. Každý bod je jeden stav, který vysílač umí poslat. Čím víc bodů, tím víc bitů v jednom taktu – ale tím blíž jsou u sebe.</p></div>
+<figure><div class="paper"><img src="figures/fig20_bpsk.png" alt="Vlevo BPSK signál pro bity 0 0 1 0 1 1: na každé změně bitu se průběh zlomí, fáze se otočí o 180 stupňů; vpravo konstelační diagram se dvěma body na vodorovné ose, vlevo 0 (180 stupňů), vpravo 1 (0 stupňů)" loading="lazy"></div>
+<figcaption><b>Obr. P10.8</b> BPSK pro bity 0 0 1 0 1 1 a jeho konstelační diagram (podle slidů „BPSK“ a „Konstelační diagram BPSK“).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Konstelační diagram BPSK má jen <b>dvě polohy</b> – stavovou hodnotu 0 nebo 1. Leží proti sobě (stejná amplituda, fáze 0° a 180°).</li>
+<li>Body jsou od sebe co nejdál, proto je BPSK velmi odolná vůči šumu; nese ale jen 1 bit na takt.</li>
+<li>Když se bit nezmění (0 → 0), fáze se nezmění a průběh pokračuje plynule.</li>
+</ul></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>Bit = 0/1, \(n\) bitů = \(2^n\) stavů. Binárně: AM = je/není amplituda, FM = dvě frekvence, PM = otočení fáze. Přijímač musí znát přenosovou rychlost. BPSK: 1 bit na takt, dva body v konstelačním diagramu.</p></div>
+
+<h2 id="qam">QAM – derivát AM a PM</h2>
+<div class="box definice" id="def-qam"><div class="box-t">Definice: QAM (kvadraturní amplitudová modulace)</div>
+<p><b>QAM</b> (Quadrature Amplitude Modulation) je modulace, která využívá amplitudovou i fázovou složku signálu: používá dvě nosné stejné frekvence posunuté o 90° (sin a cos), každou z nich amplitudově moduluje vlastním signálem a obě sečte.</p>
+<p class="jinak">dvě AM najednou na „kolmých“ nosných. Výsledek má podle kombinace jinou amplitudu i jinou fázi, takže jeden takt nese víc bitů. Dnes se využívá prakticky všude.</p></div>
+<div class="box definice" id="def-iq"><div class="box-t">Definice: složky I a Q</div>
+<p><b>Složka I</b> (in-phase, „ve fázi“) je část QAM signálu nesená nosnou \(\sin(\omega_n t)\), <b>složka Q</b> (quadrature, „kvadratura“) část nesená nosnou posunutou o 90°, \(\cos(\omega_n t)\); protože jsou nosné vůči sobě posunuté o 90°, jsou ve vzájemné <b>kvadratuře</b> a přijímač je dokáže od sebe oddělit.</p>
+<p class="jinak">I a Q jsou dvě nezávislé „kolejnice“ na jedné frekvenci. V konstelačním diagramu jsou to vodorovná a svislá osa.</p></div>
+
+<div class="schema">
+<svg viewBox="0 0 760 250" role="img" aria-label="Modulátor QAM: bitový proud se rozdělí na bity pro větev I a větev Q; každý bit se převede na amplitudu (0 na minus 1, 1 na plus 1), vynásobí nosnou z oscilátoru, ve větvi Q posunutou o 90 stupňů; obě větve se sečtou na výstupní QAM signál">
+  <defs><marker id="ar10q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <text x="12" y="118" class="t2">bity</text>
+  <text x="12" y="138" class="t2">…0110</text>
+  <rect x="80" y="95" width="110" height="58" rx="8" class="node"/>
+  <text x="135" y="120" text-anchor="middle">rozdělení</text><text x="135" y="140" text-anchor="middle" class="t2">po dvojicích</text>
+  <path d="M60 124 H75" class="ln" marker-end="url(#ar10q)"/>
+  <rect x="230" y="28" width="150" height="54" rx="8" class="node fl1"/>
+  <text x="305" y="51" text-anchor="middle">bit I → amplituda</text><text x="305" y="71" text-anchor="middle" class="t2">0 → −1, 1 → +1</text>
+  <rect x="230" y="168" width="150" height="54" rx="8" class="node fl2"/>
+  <text x="305" y="191" text-anchor="middle">bit Q → amplituda</text><text x="305" y="211" text-anchor="middle" class="t2">0 → −1, 1 → +1</text>
+  <path d="M190 110 L210 110 L210 55 H225" class="ln" marker-end="url(#ar10q)"/>
+  <path d="M190 138 L210 138 L210 195 H225" class="ln" marker-end="url(#ar10q)"/>
+  <circle cx="450" cy="55" r="17" class="node"/><text x="450" y="61" text-anchor="middle">×</text>
+  <circle cx="450" cy="195" r="17" class="node"/><text x="450" y="201" text-anchor="middle">×</text>
+  <path d="M380 55 H428" class="ln" marker-end="url(#ar10q)"/>
+  <path d="M380 195 H428" class="ln" marker-end="url(#ar10q)"/>
+  <circle cx="530" cy="125" r="20" class="node fl3"/><text x="530" y="131" text-anchor="middle">~</text>
+  <text x="560" y="130" class="t2">oscilátor</text>
+  <path d="M530 105 V55 H472" class="ln" marker-end="url(#ar10q)"/>
+  <text x="538" y="86" class="t2">sin</text>
+  <rect x="508" y="152" width="44" height="24" rx="5" class="node"/><text x="530" y="169" text-anchor="middle" class="t2">90°</text>
+  <path d="M530 145 V152" class="ln"/>
+  <path d="M530 176 V195 H472" class="ln" marker-end="url(#ar10q)"/>
+  <text x="538" y="192" class="t2">cos</text>
+  <text x="438" y="30" class="t2">I</text>
+  <text x="438" y="232" class="t2">Q</text>
+  <circle cx="650" cy="125" r="17" class="node"/><text x="650" y="131" text-anchor="middle">+</text>
+  <path d="M450 38 V18 H650 V103" class="ln" marker-end="url(#ar10q)"/>
+  <path d="M450 212 V240 H650 V147" class="ln" marker-end="url(#ar10q)"/>
+  <path d="M667 125 H712" class="ln" marker-end="url(#ar10q)"/>
+  <text x="716" y="130">QAM</text>
+</svg></div>
+<p class="muted">Schéma: modulátor QAM „víc zblízka“ podle slidu – pro 2 bity na takt (QPSK). U QAM16 jde do každé větve dvojice bitů, která vybere jednu ze 4 možných amplitud.</p>
+
+<div class="box vzorec"><div class="box-t">QAM signál</div>
+\[ s(t) = I \cdot \sin(\omega_n t) + Q \cdot \cos(\omega_n t) \]
+<p>Součet lze zapsat jako jedinou sinusovku s amplitudou a fází:</p>
+\[ s(t) = \sqrt{I^2 + Q^2} \cdot \sin(\omega_n t + \varphi) \]
+<p>kde fáze \(\varphi\) je úhel bodu \([I, Q]\) od osy I.</p>
+<table class="vars">
+<tr><td>\(I\)</td><td>amplituda složky ve fázi (souřadnice na vodorovné ose konstelace)</td></tr>
+<tr><td>\(Q\)</td><td>amplituda kvadraturní složky (souřadnice na svislé ose)</td></tr>
+<tr><td>\(\omega_n\)</td><td>úhlová frekvence nosné (stejná pro obě složky)</td></tr>
+<tr><td>\(\sqrt{I^2 + Q^2}\)</td><td>amplituda výsledného signálu = vzdálenost bodu od počátku</td></tr>
+<tr><td>\(\varphi\)</td><td>fáze výsledného signálu = úhel bodu</td></tr>
+</table></div>
+
+<div class="box priklad"><div class="box-t">Příklad: QPSK, bity 0 a 1 (přiřazení ze slidu)</div>
+<p>Bit pro větev I je 0 → \(A = -1\), bit pro větev Q je 1 → \(A = +1\).</p>
+<p>1. Složky:</p>
+\[ s(t) = -1 \cdot \sin(\omega_n t) + 1 \cdot \cos(\omega_n t) \]
+<p>2. Amplituda:</p>
+\[ \sqrt{(-1)^2 + 1^2} = \sqrt{2} \approx 1{,}41 \]
+<p>3. Fáze (bod \([-1, +1]\) leží ve 2. kvadrantu):</p>
+\[ \varphi = 135° \]
+<p>Výsledek: \(s(t) = \sqrt{2}\,\sin(\omega_n t + 135°)\). Ostatní tři dvojice bitů dají stejnou amplitudu \(\sqrt 2\) a fáze 45°, −45° a −135° – QPSK je tedy čtyřstavová <b>fázová</b> modulace.</p></div>
+<figure><div class="paper"><img src="figures/fig20_qpsk_iq.png" alt="Tři grafy pod sebou pro čtyři dvojice bitů 01, 11, 00, 10: větev I je plus nebo minus sinusovka, větev Q plus nebo minus kosinusovka, jejich součet má vždy amplitudu odmocnina ze dvou, ale na hranicích dvojic skáče fáze" loading="lazy"></div>
+<figcaption><b>Obr. P10.9</b> Jak modulátor QAM (zde QPSK) skládá signál z větví I a Q (vlastní posloupnost bitů, přiřazení 0 → −1, 1 → +1 jako na slidu).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Každá větev je obyčejná dvoustavová modulace (±1 krát nosná). Teprve <b>součet</b> dává čtyři různé stavy.</li>
+<li>Výsledná amplituda je u QPSK pořád stejná, mění se jen fáze – podle dvojice bitů.</li>
+<li>Jeden takt nese <b>2 bity</b>: při stejném počtu taktů za sekundu dvojnásobná rychlost proti BPSK.</li>
+</ul></div>
+
+<h3 id="qam16">QAM16 a vyšší</h3>
+<p>Když každá větev nedostane jen 2 úrovně (±1), ale 4 (−3, −1, +1, +3), vznikne mřížka 4 × 4 = 16 bodů – <b>QAM16</b>. Na slidu jde do větve I dvojice bitů „1 0“ a do větve Q dvojice „1 1“; každá dvojice vybere jednu ze <b>4 možných hodnot amplitudy</b>.</p>
+<div class="box vzorec"><div class="box-t">Počet bitů na symbol</div>
+\[ b = \log_2 M \]
+<table class="vars">
+<tr><td>\(b\)</td><td>počet bitů v jednom taktu (na jeden symbol)</td></tr>
+<tr><td>\(M\)</td><td>počet bodů (stavů) konstelačního diagramu</td></tr>
+</table>
+<p>BPSK: \(M = 2 → 1\) bit; QPSK: \(4 → 2\); QAM16: \(16 → 4\); QAM64: \(64 → 6\); QAM256: \(256 → 8\) (celý bajt); QAM1024: \(1024 → 10\).</p></div>
+<div class="box definice" id="def-symbol"><div class="box-t">Definice: symbol</div>
+<p><b>Symbol</b> je jeden stav modulovaného signálu (jeden bod konstelačního diagramu) vysílaný po dobu jednoho taktu; nese \(\log_2 M\) bitů, kde \(M\) je počet možných symbolů.</p>
+<p class="jinak">„písmeno“ abecedy, kterou si vysílač a přijímač domluvili. U QAM16 má abeceda 16 písmen, každé znamená 4 bity.</p></div>
+<figure><div class="paper"><img src="figures/fig20_qam16.png" alt="Konstelace QAM16: mřížka 4 krát 4 bodů na úrovních minus 3, minus 1, 1, 3 v osách I a Q s bitovými popisky; horní řada 1000 1001 1011 1010, druhá 1100 1101 1111 1110, třetí 0100 0101 0111 0110, dolní 0000 0001 0011 0010; zvýrazněn bod 1110 na souřadnicích 3, 1 se šipkou z počátku" loading="lazy"></div>
+<figcaption><b>Obr. P10.10</b> Konstelace QAM16 s bitovým přiřazením ze slidu „QAM16 konstelace“. Zvýrazněn symbol 1110 (I = +3, Q = +1).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li>Každá kombinace QAM16 definuje <b>4 bity</b>: první dva určují řádek (úroveň Q), druhé dva sloupec (úroveň I).</li>
+<li>Body mají různou vzdálenost od počátku (3 různé amplitudy) i různý úhel (fázi) – QAM opravdu mění amplitudu i fázi.</li>
+<li>Sousední body se liší vždy jen v <b>jednom bitu</b> (Grayův kód). Když šum posune symbol k sousedovi, pokazí se jen jeden bit ze čtyř.</li>
+</ul></div>
+<div class="box priklad"><div class="box-t">Příklad: symbol 1110 v QAM16</div>
+<p>Podle konstelace: \(I = +3\), \(Q = +1\).</p>
+<p>1. Amplituda:</p>
+\[ \sqrt{3^2 + 1^2} = \sqrt{10} \approx 3{,}16 \]
+<p>2. Fáze (úhel bodu od osy I):</p>
+\[ \varphi = \arctan\frac{1}{3} \approx 18{,}4° \]
+<p>Symbol 1110 se tedy vysílá jako \(3{,}16\,\sin(\omega_n t + 18{,}4°)\) po dobu jednoho taktu.</p></div>
+
+<h3 id="sum">Modulace QAM a odolnost vůči šumu</h3>
+<p>Každý bod konstelace představuje <b>ideální pozici symbolu</b>. Přijatý symbol je ale kvůli šumu kanálu posunutý. <b>Odolnost vůči šumu</b> je dána oblastí, ve které je daná pozice ještě vyhodnocena jako správný symbol – přijímač vybere nejbližší ideální bod.</p>
+<div class="box definice" id="def-snr"><div class="box-t">Definice: odstup signálu od šumu (SNR)</div>
+<p><b>SNR</b> (Signal-to-Noise Ratio) je poměr výkonu užitečného signálu k výkonu šumu, obvykle v decibelech: \[ \text{SNR} = 10 \log \frac{P_\text{signál}}{P_\text{šum}}\ \ [\text{dB}] \]</p>
+<p class="jinak">jak moc je signál „nad“ šumem. Čím vyšší SNR, tím menší mračna kolem bodů konstelace a tím víc bodů se do ní dá natěsnat.</p></div>
+<figure><div class="paper"><img src="figures/fig20_sum.png" alt="Tři konstelace se stejným šumem: QPSK se čtyřmi oddělenými mračny bodů, žádná chyba, oblast správného vyhodnocení je celý kvadrant; QAM16 s mračny, která se téměř dotýkají, 1,9 procenta chyb; QAM64 s mračny, která se překrývají, 34,7 procenta chyb, oblast je malý čtvereček" loading="lazy"></div>
+<figcaption><b>Obr. P10.11</b> Stejný šum (SNR 15 dB) a stejný střední výkon vysílače pro QPSK, QAM16 a QAM64 (simulace 6000 symbolů, pevný seed). Oranžový rámeček = oblast, kde se symbol vyhodnotí jako levý horní bod.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<ul>
+<li><b>QPSK</b>: oblast správného vyhodnocení je celý kvadrant – šum by musel symbol posunout přes osu. Chyb 0 %.</li>
+<li><b>QAM16</b>: body jsou blíže k sobě, a proto jsou náchylnější k šumu a chybám v přenosu dat – 1,9 % chybných symbolů.</li>
+<li><b>QAM64</b>: oblasti jsou malé, mračna se překrývají – 34,7 % chybných symbolů. Vyšší modulační schémata umožňují vyšší datový tok, ale vyžadují <b>výrazně lepší SNR</b> v přenosovém kanálu.</li>
+</ul></div>
+<div class="box pozor"><div class="box-t">Víc bitů = méně odolnosti</div>
+<p>Při stejném výkonu vysílače se víc bodů musí vejít do stejné plochy, takže jsou blíž k sobě. Přidat bity na symbol jde jen tehdy, když je kanál dost čistý. Proto se systémy (Wi-Fi, LTE) <b>přizpůsobují</b>: při dobrém signálu jedou QAM256 nebo QAM1024, při slabém přejdou na QAM16, QPSK nebo BPSK.</p></div>
+<div class="box intuice"><div class="box-t">Pro zajímavost: jak funguje zarušování pásem?</div>
+<p>Rušička (jammer) vysílá ve stejném pásmu jako napadený systém silný šum nebo jiný signál. U přijímače tím <b>klesne SNR</b>: mračna kolem bodů konstelace se zvětší tak, že přesahují rozhodovací oblasti (jako u QAM64 na obr. P10.11), a symboly se vyhodnocují špatně. Systém nejdřív přejde na odolnější modulaci (méně bodů), a když ani to nestačí, spojení se rozpadne. Obranou je větší výkon, směrové antény, nebo skákání po frekvencích (viz Bluetooth níže) – rušička pak musí zarušit celé pásmo najednou. Úmyslné rušení je mimo vojenské a speciální účely zakázané.</p></div>
+
+<h3 id="formy-qam">Formy QAM</h3>
+<ul>
+<li><b>Analogová QAM</b> se používá k přenosu více analogových signálů na jedné nosné: v televizních systémech <b>PAL a NTSC</b> přenáší barevnou informaci obrazu; v AM rádiu systém <b>C-QUAM</b> přenáší dva kanály (stereo) na jedné nosné.</li>
+<li><b>Digitální (kvantovaná) QAM</b> se používá pro datovou komunikaci v radiokomunikačních systémech: celulární technologie, LTE, WiMAX, Wi-Fi 802.11…</li>
+</ul>
+<div class="box intuice"><div class="box-t">Pro zajímavost: jak funguje koaxiální kabel televize?</div>
+<p>Kabelem vede mnoho televizních kanálů najednou, každý na jiné nosné frekvenci vedle sebe – je to <a href="18_multiplexace.html#def-fdm">frekvenční multiplex</a>. Digitální kabelová televize (DVB-C) moduluje každý kanál pomocí <b>QAM</b> (typicky 64-QAM nebo 256-QAM). QAM samostatnou nosnou vlnu nevysílá – kdyby byly \(I = Q = 0\), nevyšlo by nic. Všechna informace je v <b>postranních pásmech</b> kolem nosné frekvence a přijímač si nosnou dopočítá sám. Kabel je stíněný a čistý (vysoké SNR), proto si může dovolit hustou konstelaci.</p></div>
+
+<h3 id="wifi-bluetooth">Pro zajímavost: jak fungují Wi-Fi a Bluetooth</h3>
+<div class="box intuice"><div class="box-t">Wi-Fi</div>
+<ul>
+<li>Pracuje v pásmech <b>2,4 GHz a 5 GHz</b> (nově i 6 GHz) a pásmo dělí na kanály široké 20 až 160 MHz.</li>
+<li>Kanál se nepoužije jako jedna nosná, ale rozdělí se na <b>stovky úzkých podnosných</b> těsně vedle sebe (OFDM – je to vlastně frekvenční multiplex). Na každé podnosné běží vlastní QAM.</li>
+<li>Modulace se mění podle kvality signálu: od BPSK a QPSK (daleko od routeru) po 256-QAM (Wi-Fi 5) a 1024-QAM (Wi-Fi 6). Proto rychlost klesá se vzdáleností – přesně podle obr. P10.11.</li>
+<li>Zařízení se o kanál dělí časově: než vysílají, poslouchají, jestli je volno.</li>
+</ul></div>
+<div class="box intuice"><div class="box-t">Bluetooth</div>
+<ul>
+<li>Pracuje v pásmu <b>2,4 GHz</b> s malým výkonem, typický dosah je kolem 10 m.</li>
+<li>Pásmo je rozdělené na úzké kanály (klasický Bluetooth 79 kanálů po 1 MHz, Bluetooth Low Energy 40 kanálů po 2 MHz) a spojení <b>skáče po kanálech</b> (frequency hopping) – u klasického až 1600× za sekundu podle dohodnutého pořadí. Rušení na jednom kanálu tak zkazí jen malou část dat.</li>
+<li>Základní modulace je <b>GFSK</b> – frekvenční klíčování (FM s dvěma frekvencemi pro 0 a 1, jako na obr. P10.7) s vyhlazenými přechody. Rychlejší režimy používají fázové modulace (varianty QPSK a 8-PSK).</li>
+</ul></div>
+<div class="box kostka"><div class="box-t">V kostce</div>
+<p>QAM = dvě nosné posunuté o 90° (I = sin, Q = cos), každá amplitudově modulovaná, sečtené → mění se amplituda i fáze. \(M\) bodů = \(\log_2 M\) bitů na takt. Víc bodů = vyšší datový tok, ale body blíž k sobě → potřeba vyššího SNR.</p></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
+<p>„QAM je derivát AM a PM: můžu šahat na amplitudu a zároveň na fázi, takže můžu kódovat víc stavů – např. 00, 01, 10, 11, tedy 4 stavy = 2 bity. Používá dvě nosné posunuté o 90°, sin a cos, které jsou ve vzájemné kvadratuře; jedna je složka I, druhá Q, každá se amplitudově moduluje a sečtou se. V konstelačním diagramu je každý bod jeden symbol; QAM16 nese 4 bity, QAM64 6 bitů, QAM256 celý bajt. Čím víc bodů, tím blíž jsou u sebe a tím víc je přenos náchylný k šumu, takže vyšší QAM potřebuje lepší SNR. Dnes se využívá všude – LTE, Wi-Fi, kabelová televize.“</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2>Shrnutí</h2>
+<p>Bezdrátový přenos využívá <b>elektromagnetické vlny</b>; vlnová délka je \(\lambda = c/f\) a pro data se používají rádiové vlny a mikrovlny, opticky IR a viditelné světlo. <b>Modulace</b> je nelineární proces, při kterém modulační signál (informace) mění amplitudu, frekvenci nebo fázi nosného signálu (energie, vysoká frekvence, dá se vyzářit). Podle toho rozlišujeme <b>AM, FM a PM</b>.</p>
+<p>U <b>AM</b> sleduje amplituda nosné modulační signál; hloubka modulace \(m = M/A\) má být pod 100 % – při 100 % se obálka dotkne nuly, nad 100 % je signál přemodulovaný a nosná překlápí fázi. Demodulace je usměrnění a dolní propust (krystalka). Spektrum AM tvoří nosná a dvě zrcadlová postranní pásma (USB, LSB) – zabírá šířku \(2 f_m\) a většinu výkonu spotřebuje nosná bez informace. <b>Deriváty</b> jsou odvozené varianty, které řeší slabiny základní modulace: SSB vynechá LSB (poloviční pásmo), SSB s potlačenou nosnou i nosnou.</p>
+<p>Přenosová cesta: zdroj → kódování zdroje (komprese) → kódování kanálu (redundance) → modulátor s oscilátorem → vysílač → kanál (šum, útlum, rušení) → přijímač → demodulátor se známou nosnou → dekodér → výstup. <b>FM</b> mění frekvenci při stálé amplitudě, má mnoho postranních složek, demoduluje se převodníkem f/U a je odolná proti šumu. <b>PM</b> mění fázi, ale má složitý demodulátor, proto se používá jen derivát <b>PSK</b> s diskrétními fázemi.</p>
+<p>Binární informaci lze kódovat amplitudou (je/není), frekvencí (dvě frekvence) i fází (otočení); přijímač musí znát přenosovou rychlost. <b>BPSK</b> nese 1 bit na takt, konstelační diagram má 2 body. <b>QAM</b> (derivát AM a PM) moduluje dvě nosné posunuté o 90° (I a Q), takže mění amplitudu i fázi: QPSK 2 bity, QAM16 4 bity, QAM64 6 bitů. Víc bodů znamená vyšší datový tok, ale body jsou blíž k sobě a přenos potřebuje vyšší SNR.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Modulace: informace (modulační signál) mění amplitudu, frekvenci nebo fázi nosné; nosná nese energii a musí ji znát i přijímač.</li>
+<li>AM: obálka = modulační signál; \(m = M/A\) pod 100 %, jinak přemodulování.</li>
+<li>Demodulace AM = usměrňovač + dolní propust.</li>
+<li>Spektrum AM = nosná + USB + LSB, šířka \(2 f_m\); nosná nese většinu výkonu, ale žádnou informaci.</li>
+<li>Derivát = odvozená varianta modulace: SSB, SSB s potlačenou nosnou (z AM), PSK (z PM), QAM (z AM a PM).</li>
+<li>FM: stálá amplituda, odolná proti šumu, širší pásmo; demodulace převodníkem f/U.</li>
+<li>Binárně: AM je/není, FM dvě frekvence, PM otočení fáze; nutná známá přenosová rychlost.</li>
+<li>QAM: I (sin) a Q (cos), \(\log_2 M\) bitů na symbol; víc bodů = víc bitů, ale potřeba lepšího SNR.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky ke zkoušce</h2>
+<div class="qtools"><button class="iconbtn" data-qall="open">Rozbalit všechny odpovědi</button><button class="iconbtn" data-qall="close">Sbalit</button></div>
+<details class="q"><summary>Co je modulace? Popište nosný, modulační a modulovaný signál a vysvětlete, proč se signál moduluje.</summary><div>
+<p><b>Modulace</b> je nelineární proces, který mění charakter nosného signálu pomocí modulačního signálu.</p>
+<ul>
+<li><b>Modulační signál</b> nese informaci (zvuk, biosignál, data) a je pomalý.</li>
+<li><b>Nosný signál</b> je harmonický signál vysoké frekvence, který ponese energii. Přijímač musí znát jeho parametry, aby mohl demodulovat; v rádiu je to frekvence stanice.</li>
+<li><b>Modulovaný signál</b> je nosná, jejíž amplituda, frekvence nebo fáze se mění podle modulačního signálu.</li>
+</ul>
+<p>Modulujeme, protože pomalý signál nejde vyzářit: anténa musí mít rozměr srovnatelný s vlnovou délkou a pro 1 kHz je \(\lambda = 300\ \text{km}\). Každý vysílač má navíc svou nosnou, takže si signály v prostoru nepřekážejí.</p></div></details>
+<details class="q"><summary>Popište amplitudovou modulaci. Co je hloubka modulace a co se stane při m = 100 % a více?</summary><div>
+<p>U AM se amplituda nosné mění podle modulačního signálu; obálka má tvar modulačního signálu, frekvence nosné je stálá.</p>
+\[ y(t) = A\,\bigl[1 + m\cos(\omega_m t + \varphi)\bigr] \cdot \sin(\omega_n t) \]
+<p>Hloubka modulace udává promodulovanost signálu:</p>
+\[ m = \frac{M}{A} \cdot 100\ \% \]
+<ul>
+<li>\(m\) &lt; 100 %: amplituda kolísá mezi \(A(1-m)\) a \(A(1+m)\), obálka nezmizí.</li>
+<li>\(m\) = 100 %: maximum je dvojnásobek úrovně bez modulace a obálka se dotkne nuly – hraniční stav, není vhodný.</li>
+<li>\(m\) &gt; 100 %: přemodulování – nosná překlopí fázi, obálka neodpovídá modulačnímu signálu a demodulovaný signál je zkreslený.</li>
+</ul>
+<p>Demodulace AM: usměrňovač (absolutní hodnota) a dolní propust.</p></div></details>
+<details class="q"><summary>Jak vypadá spektrum AM signálu? Jaká je jeho nevýhoda a jak ji řeší SSB?</summary><div>
+<p>Rozepsáním AM signálu dostaneme tři složky:</p>
+\[ \begin{aligned} y(t) = {} & A \sin(\omega_n t) \\ & + \frac{A m}{2}\, \sin\bigl[(\omega_n + \omega_m)\,t + \varphi\bigr] \\ & + \frac{A m}{2}\, \sin\bigl[(\omega_n - \omega_m)\,t - \varphi\bigr] \end{aligned} \]
+<p>Nosnou na \(f_n\) a dvě postranní pásma USB (\(f_n + f_m\)) a LSB (\(f_n - f_m\)), symetrická podle nosné. Nevýhodou je zbytečná šířka spektra \(2 f_m\) – obě pásma nesou stejnou informaci – a výkon v nosné, která informaci nenese (při \(m\) = 100 % dvě třetiny výkonu).</p>
+<p><b>SSB</b> je derivát AM: odstraní LSB a nechá USB a nosnou, šířka pásma klesne na \(f_m\). <b>SSB s potlačenou nosnou</b> odstraní i nosnou a přenáší jen USB, takže celý výkon jde do složky s informací.</p>
+<p>Cenou je složitější demodulace: bez nosné nefunguje detektor obálky, přijímač si musí nosnou vyrobit sám a přesně na frekvenci \(f_n\) (synchronní demodulace).</p></div></details>
+<details class="q"><summary>Co znamená „derivát“ modulace? Uveďte příklady z přednášky a k čemu jsou.</summary><div>
+<p>Derivát je <b>odvozená varianta</b> základní modulace (s derivací nemá nic společného). Zachovává princip, ale upravuje ho tak, aby odstranil slabinu základní modulace:</p>
+<ul>
+<li><b>SSB</b> (z AM) – jen jedno postranní pásmo → poloviční šířka pásma;</li>
+<li><b>SSB s potlačenou nosnou</b> (z AM) – jen USB → i úspora výkonu;</li>
+<li><b>PSK, BPSK</b> (z PM) – jen několik diskrétních fází → jednoduchá detekce, přenos bitů;</li>
+<li><b>QAM</b> (z AM i PM) – mění amplitudu a zároveň fázi → víc stavů, např. 4 stavy = 2 bity, 16 stavů = 4 bity.</li>
+</ul></div></details>
+<details class="q"><summary>Popište přenosovou cestu od vysílače k přijímači.</summary><div>
+<ol>
+<li><b>Zdroj dat</b> – signál.</li>
+<li><b>Kódování zdroje</b> – komprese (PCM, MPEG, Huffman).</li>
+<li><b>Kódování kanálu</b> – přidání redundance pro odhalení a opravu chyb.</li>
+<li><b>Modulátor</b> s <b>oscilátorem</b> – převede data na analogový signál na nosné.</li>
+<li><b>Vysílač</b> – zesílení a přizpůsobení pro přenos (anténa, optika).</li>
+<li><b>Přenosový kanál</b> – vzduch, kabel, optické vlákno; šum, útlum, rušení.</li>
+<li><b>Přijímač</b> – zachytí signál, zesílí a filtruje.</li>
+<li><b>Demodulátor</b> – se známou nosnou a algoritmem modulace rekonstruuje symboly (fázová, frekvenční detekce).</li>
+<li><b>Dekodér</b> – odstraní redundantní bity a ověří správnost informace.</li>
+</ol></div></details>
+<details class="q"><summary>Vysvětlete princip FM. Jak vypadá její spektrum, jak se demoduluje a jaké má výhody oproti AM?</summary><div>
+<p>Modulační signál mění přímo <b>frekvenci</b> nosné, amplituda je konstantní: kladný modulační signál kmity zhustí, záporný zředí.</p>
+\[ f(t) = f_n + \Delta f \cdot \frac{m(t)}{M} \]
+<p>Ve spektru vzniká i pro jediný tón mnoho postranních složek na obě strany (teoreticky do nekonečna, ale slábnou), takže FM zabírá širší pásmo než AM. Demodulátorem je převodník frekvence na napětí, který pracuje na frekvenci nosné.</p>
+<p>Výhody: odolnost proti šumu (šum mění amplitudu, která u FM informaci nenese), odolnost proti interferenci a nižší potřebný výkon vysílače.</p></div></details>
+<details class="q"><summary>Proč se spojitá PM téměř nepoužívá? Jak lze binární informaci zakódovat pomocí AM, FM a PM?</summary><div>
+<p>PM mění fázi nosné, ale má velmi složitý demodulátor a je pracné (a chybové) rozlišit např. 0° od 180°. Používá se proto jen derivát <b>PSK</b> s diskrétním modulačním signálem, u kterého je snadné detekovat fázor.</p>
+<p>Binární informace:</p>
+<ul>
+<li><b>AM</b> – je, nebo není amplituda;</li>
+<li><b>FM</b> – dvě frekvence pro 0 a 1;</li>
+<li><b>PM</b> – otočení fáze o 180°; změna fáze = změna bitu (BPSK).</li>
+</ul>
+<p>Přijímač musí znát <b>přenosovou rychlost</b> (dobu bitu), jinak nepozná např. dvě nuly za sebou od jedné.</p></div></details>
+<details class="q"><summary>Co je QAM a konstelační diagram? Kolik bitů nese QAM16 a proč vyšší QAM potřebuje lepší SNR?</summary><div>
+<p><b>QAM</b> je derivát AM a PM. Používá dvě nosné stejné frekvence posunuté o 90° (sin = složka I, cos = složka Q), každou amplitudově moduluje a sečte je. Výsledek má podle kombinace jinou amplitudu i fázi:</p>
+\[ s(t) = I \cdot \sin(\omega_n t) + Q \cdot \cos(\omega_n t) \]
+<p><b>Konstelační diagram</b> zobrazuje všechny symboly jako body v rovině I–Q; vzdálenost od počátku je amplituda, úhel je fáze. Počet bitů na symbol je \(\log_2 M\): BPSK 1, QPSK 2, <b>QAM16 4</b>, QAM64 6, QAM256 8.</p>
+<p>Při stejném výkonu jsou body vyšší QAM blíž k sobě. Šum posune přijatý symbol a přijímač vybere nejbližší bod – menší rozhodovací oblast znamená víc chyb. Proto vyšší QAM dává vyšší datový tok, ale vyžaduje výrazně lepší SNR.</p></div></details>

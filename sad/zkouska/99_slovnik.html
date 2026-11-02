@@ -16,7 +16,7 @@
 <header class="topbar">
   <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
   <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
-  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P9 se základy</small></a>
+  <a class="brand" href="index.html">SAD – závěrečná zkouška<small>přednášky P1–P10 se základy</small></a>
   <span class="spacer"></span>
   <a class="iconbtn back" href="../../index.html#sad" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
   
@@ -42,6 +42,7 @@
     <li><a href="17_prevodniky.html"><span class="n">P7</span><span>A/D a D/A převodníky</span></a></li>
     <li><a href="18_multiplexace.html"><span class="n">P8</span><span>Multiplexace signálů</span></a></li>
     <li><a href="19_galvanicke_oddeleni.html"><span class="n">P9</span><span>Galvanické oddělení signálu</span></a></li>
+    <li><a href="20_modulace.html"><span class="n">P10</span><span>Modulace a přenos signálu</span></a></li>
     <li><a href="29_tahak.html"><span class="n">★</span><span>Tahák ke zkoušce</span></a></li>
     <li><a href="99_slovnik.html" class="active"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
   </ol>
@@ -56,6 +57,7 @@
     <li><a href="#kP7">P7 · A/D a D/A převodníky</a></li>
     <li><a href="#kP8">P8 · Multiplexace signálů</a></li>
     <li><a href="#kP9">P9 · Galvanické oddělení signálu</a></li>
+    <li><a href="#kP10">P10 · Modulace a přenos signálu</a></li>
   </ul>
 </nav>
 <main>
@@ -583,6 +585,76 @@
 <div class="box definice" id="s-izolacni-napeti"><div class="box-t">izolační napětí</div>
 <p><b>Izolační napětí</b> je nejvyšší napětí mezi oběma galvanicky oddělenými stranami, které izolační bariéra vydrží bez průrazu (obvykle se udává pro stanovenou dobu zkoušky, např. 1 minutu).</p>
 <p class="jinak">„jak vysoké napětí bariéra unese“. Udává, před jak velkým napětím oddělení ještě chrání.</p><p class="slovnik-odkaz"><a href="19_galvanicke_oddeleni.html#def-izolacni-napeti">výklad v kapitole P9 →</a></p></div>
+<h2 id="kP10" class="slovnik-kap">P10 · Modulace a přenos signálu</h2>
+<div class="box definice" id="s-vlnova-delka"><div class="box-t">vlnová délka</div>
+<p><b>Vlnová délka</b> \(\lambda\) je vzdálenost, kterou vlna urazí za jednu periodu; pro elektromagnetické vlnění je dána podílem rychlosti šíření a frekvence: \[ \lambda = \frac{c}{f}\quad [\text{m}] \]</p>
+<p class="jinak">čím vyšší frekvence, tím kratší vlna. Podle vlnové délky (nebo frekvence) se celé elektromagnetické spektrum dělí na pásma – od dlouhých rádiových vln po záření gama.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-vlnova-delka">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-modulace"><div class="box-t">modulace</div>
+<p><b>Modulace</b> je nelineární proces, který mění charakter (amplitudu, frekvenci nebo fázi) <b>nosného signálu</b> pomocí <b>modulačního signálu</b>; výsledkem je <b>modulovaný signál</b> vhodný pro přenos.</p>
+<p class="jinak">modulační signál je pomocí nosného signálu „poslán“ pro RF přenos – nosná ho veze jako náklad. Na slidu je modulace nakreslená jako násobička: modulační × nosný = modulovaný.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-modulace">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-nosny-signal"><div class="box-t">nosný signál</div>
+<p><b>Nosný signál</b> (nosná) je harmonický signál o vysoké frekvenci \(f_n\), jehož parametr (amplituda, frekvence nebo fáze) se při modulaci mění podle modulačního signálu.</p>
+<p class="jinak">signál, který ponese energii a dá se vyzářit anténou. V rádiu je to frekvence, na kterou ladíš stanici. Jeho parametry musí přijímač znát i pro demodulaci.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-nosny-signal">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-modulacni-signal"><div class="box-t">modulační signál</div>
+<p><b>Modulační signál</b> \(m(t)\) je signál nesoucí přenášenou informaci (např. zvuk, biosignál nebo data), podle kterého se mění parametr nosného signálu.</p>
+<p class="jinak">„významově“ mění nosnou – to, co chceme přenést. Bývá mnohem pomalejší (nižší frekvence) než nosná.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-modulacni-signal">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-am"><div class="box-t">amplitudová modulace (AM)</div>
+<p><b>Amplitudová modulace</b> je modulace, při které se <b>amplituda</b> nosného signálu mění úměrně okamžité hodnotě modulačního signálu, zatímco frekvence a fáze nosné zůstávají stálé.</p>
+<p class="jinak">obálka (spojnice vrcholů) modulovaného signálu má tvar modulačního signálu. Nosná „dýchá“ v rytmu přenášeného zvuku.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-am">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-hloubka-modulace"><div class="box-t">hloubka modulace</div>
+<p><b>Hloubka modulace</b> \(m\) je poměr amplitudy modulačního signálu \(M\) k amplitudě nosného signálu \(A\), vyjádřený obvykle v procentech: \[ m = \frac{M}{A} \cdot 100\ \% \]</p>
+<p class="jinak">říká, jak moc je signál „promodulovaný“ – o kolik procent se amplituda nosné při modulaci zvětšuje a zmenšuje. Při \(m\) = 50 % kolísá mezi 0,5 A a 1,5 A.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-hloubka-modulace">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-demodulace"><div class="box-t">demodulace</div>
+<p><b>Demodulace</b> je opačný proces k modulaci: z přijatého modulovaného signálu se s využitím znalosti nosné a použitého způsobu modulace získá zpět původní modulační signál (nebo přenášené symboly).</p>
+<p class="jinak">„sundání nákladu z nosné“. U AM stačí vzít obálku, u FM převést frekvenci na napětí, u digitálních modulací rozhodnout, který symbol přišel.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-demodulace">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-postranni-pasmo"><div class="box-t">postranní pásmo</div>
+<p><b>Postranní pásmo</b> je část spektra modulovaného signálu ležící nad nosnou frekvencí (<b>horní</b>, USB, \(f_n + f_m\)) nebo pod ní (<b>dolní</b>, LSB, \(f_n - f_m\)); každé z nich nese celou informaci modulačního signálu.</p>
+<p class="jinak">modulace „posune“ spektrum modulačního signálu k nosné – frekvenční posun dvou signálů na jejich součet a rozdíl. Kolem nosné tak vzniknou dvě zrcadlové kopie.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-postranni-pasmo">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-derivat-modulace"><div class="box-t">derivát modulace</div>
+<p><b>Derivát modulace</b> je odvozená varianta základní modulace (AM, FM, PM), která základní princip zachovává, ale upravuje ho – vynechá část signálu, omezí modulační signál na několik diskrétních stavů nebo kombinuje více modulovaných parametrů najednou.</p>
+<p class="jinak">„vylepšená verze“ AM nebo PM. Slovo derivát tu nemá nic společného s derivací – znamená „odvozený od“. Vždy řeší nějakou slabinu základní modulace.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-derivat-modulace">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-ssb"><div class="box-t">SSB (Single Sideband)</div>
+<p><b>SSB</b> (jednopásmová modulace) je derivát AM, ve kterém se z modulovaného signálu odstraní jedno postranní pásmo; přenáší se jen nosná a jedno postranní pásmo (obvykle horní, USB). Ve variantě <b>s potlačenou nosnou</b> se odstraní i nosná a přenáší se pouze jedno postranní pásmo.</p>
+<p class="jinak">protože USB a LSB nesou totéž, stačí poslat jen jedno. Ušetří se polovina pásma, a když se vynechá i nosná, ušetří se i výkon, který by nesl „prázdnou“ nosnou.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-ssb">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-kodovani-zdroje"><div class="box-t">kódování zdroje</div>
+<p><b>Kódování zdroje</b> je převod dat ze zdroje do co nejúspornějšího tvaru (komprese) odstraněním nadbytečné informace před přenosem.</p>
+<p class="jinak">„zmenši, co se dá“ – např. MPEG u videa nebo Huffmanův kód, který častým znakům dá krátké kódy.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-kodovani-zdroje">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-kodovani-kanalu"><div class="box-t">kódování kanálu</div>
+<p><b>Kódování kanálu</b> je přidání řízené redundance (kontrolních bitů) k datům, které přijímači umožní odhalit a opravit chyby vzniklé v přenosovém kanále.</p>
+<p class="jinak">opak komprese: schválně přidám pár bitů navíc, aby se poznalo, že šum nějaký bit převrátil. Dekodér je pak zase odstraní.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-kodovani-kanalu">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-fm"><div class="box-t">frekvenční modulace (FM)</div>
+<p><b>Frekvenční modulace</b> je modulace, při které modulační signál ovlivňuje přímo <b>frekvenci</b> nosné vlny; amplituda nosné vlny je konstantní.</p>
+<p class="jinak">kladná hodnota modulačního signálu nosnou „zrychlí“ (kmity se zhustí), záporná „zpomalí“. Informace je v hustotě kmitů, ne v jejich výšce.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-fm">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-pm"><div class="box-t">fázová modulace (PM)</div>
+<p><b>Fázová modulace</b> je modulace, při které modulační signál mění <b>fázi</b> \(\varphi\) nosného signálu \(n(t) = A \sin(\omega_n t + \varphi)\), zatímco amplituda zůstává stálá.</p>
+<p class="jinak">průběh nosné se posouvá dopředu a dozadu v čase podle modulačního signálu. Na pohled je PM podobná FM – posun fáze krátce změní i hustotu kmitů.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-pm">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-psk"><div class="box-t">PSK (Phase Shift Keying)</div>
+<p><b>PSK</b> (klíčování fázovým posuvem) je derivát fázové modulace s diskrétním (digitálním) modulačním signálem: každému symbolu odpovídá jedna z konečného počtu předem daných fází nosné.</p>
+<p class="jinak">místo plynulého „kroucení“ fáze se fáze přepíná mezi několika pevnými polohami. Přijímač nemusí měřit fázi přesně, stačí rozhodnout, ke které poloze má nejblíž.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-psk">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-bit"><div class="box-t">bit</div>
+<p><b>Bit</b> (binary digit) je základní jednotka informace, která může nabývat jedné ze dvou hodnot, 0 nebo 1; \(n\) bitů dává \(2^n\) různých kombinací.</p>
+<p class="jinak">odpověď ano/ne. Dva bity rozliší 4 stavy (00, 01, 10, 11), tři bity 8 stavů, čtyři bity 16.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-bit">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-bitova-rychlost"><div class="box-t">přenosová (bitová) rychlost</div>
+<p><b>Přenosová rychlost</b> \(R\) je počet bitů přenesených za sekundu [bit/s]; doba trvání jednoho bitu je její převrácená hodnota: \[ T_b = \frac{1}{R} \]</p>
+<p class="jinak">„takt“ přenosu. Vysílač i přijímač se na něm musí dohodnout předem, jinak přijímač neví, kde jeden bit končí a další začíná.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-bitova-rychlost">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-bpsk"><div class="box-t">BPSK</div>
+<p><b>BPSK</b> (Binary Phase Shift Keying) je dvoustavová fázová modulace: modulátor kóduje postupně vždy jeden bit otočením fáze nosné, takže nosná má jen dvě možné fáze (0° a 180°).</p>
+<p class="jinak">jeden takt = jeden bit. Bit 1 pošle nosnou „normálně“, bit 0 obrácenou (vynásobenou −1).</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-bpsk">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-konstelacni-diagram"><div class="box-t">konstelační diagram</div>
+<p><b>Konstelační diagram</b> je zobrazení všech možných symbolů digitální modulace jako bodů v rovině, kde vodorovná osa (I) a svislá osa (Q) udávají amplitudy dvou navzájem kolmých složek nosné; vzdálenost bodu od počátku odpovídá amplitudě a jeho úhel fázi.</p>
+<p class="jinak">„mapa symbolů“. Každý bod je jeden stav, který vysílač umí poslat. Čím víc bodů, tím víc bitů v jednom taktu – ale tím blíž jsou u sebe.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-konstelacni-diagram">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-qam"><div class="box-t">QAM (kvadraturní amplitudová modulace)</div>
+<p><b>QAM</b> (Quadrature Amplitude Modulation) je modulace, která využívá amplitudovou i fázovou složku signálu: používá dvě nosné stejné frekvence posunuté o 90° (sin a cos), každou z nich amplitudově moduluje vlastním signálem a obě sečte.</p>
+<p class="jinak">dvě AM najednou na „kolmých“ nosných. Výsledek má podle kombinace jinou amplitudu i jinou fázi, takže jeden takt nese víc bitů. Dnes se využívá prakticky všude.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-qam">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-iq"><div class="box-t">složky I a Q</div>
+<p><b>Složka I</b> (in-phase, „ve fázi“) je část QAM signálu nesená nosnou \(\sin(\omega_n t)\), <b>složka Q</b> (quadrature, „kvadratura“) část nesená nosnou posunutou o 90°, \(\cos(\omega_n t)\); protože jsou nosné vůči sobě posunuté o 90°, jsou ve vzájemné <b>kvadratuře</b> a přijímač je dokáže od sebe oddělit.</p>
+<p class="jinak">I a Q jsou dvě nezávislé „kolejnice“ na jedné frekvenci. V konstelačním diagramu jsou to vodorovná a svislá osa.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-iq">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-symbol"><div class="box-t">symbol</div>
+<p><b>Symbol</b> je jeden stav modulovaného signálu (jeden bod konstelačního diagramu) vysílaný po dobu jednoho taktu; nese \(\log_2 M\) bitů, kde \(M\) je počet možných symbolů.</p>
+<p class="jinak">„písmeno“ abecedy, kterou si vysílač a přijímač domluvili. U QAM16 má abeceda 16 písmen, každé znamená 4 bity.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-symbol">výklad v kapitole P10 →</a></p></div>
+<div class="box definice" id="s-snr"><div class="box-t">odstup signálu od šumu (SNR)</div>
+<p><b>SNR</b> (Signal-to-Noise Ratio) je poměr výkonu užitečného signálu k výkonu šumu, obvykle v decibelech: \[ \text{SNR} = 10 \log \frac{P_\text{signál}}{P_\text{šum}}\ \ [\text{dB}] \]</p>
+<p class="jinak">jak moc je signál „nad“ šumem. Čím vyšší SNR, tím menší mračna kolem bodů konstelace a tím víc bodů se do ní dá natěsnat.</p><p class="slovnik-odkaz"><a href="20_modulace.html#def-snr">výklad v kapitole P10 →</a></p></div>
 
 <nav class="pager"><a class="prev" href="29_tahak.html"><small>← předchozí</small>Tahák ke zkoušce</a></nav>
 </main>
