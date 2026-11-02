@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tahák – MLR</title>
+<meta name="description" content="Vzorce, idiomy kódu a pasti na jedné stránce.">
+<link rel="alternate" hreflang="en" href="en/12_tahak.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css?v=b9a02598">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js?v=b9a02598"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">MLR – průběžný test 1<small>typové úlohy: výpočty na papíře a čtení kódu</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html#mlr" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <a class="iconbtn langbtn" href="en/12_tahak.html" hreflang="en" lang="en" title="English version">EN</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/12_tahak.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Jak se připravit</span></a></li>
+    <li><a href="01_numpy.html"><span class="n">1</span><span>Čtení kódu v NumPy</span></a></li>
+    <li><a href="02_knn.html"><span class="n">2</span><span>Vzdálenosti, k-NN a gradientní sestup</span></a></li>
+    <li><a href="03_metriky.html"><span class="n">3</span><span>Matice záměn a metriky</span></a></li>
+    <li><a href="04_predzpracovani.html"><span class="n">4</span><span>Předzpracování a únik dat</span></a></li>
+    <li><a href="05_vyber_priznaku.html"><span class="n">5</span><span>Výběr příznaků a PCA</span></a></li>
+    <li><a href="06_linearni_regrese.html"><span class="n">6</span><span>Lineární regrese ručně</span></a></li>
+    <li><a href="07_polynom_ridge.html"><span class="n">7</span><span>Polynomy, přeučení, ridge a jádra</span></a></li>
+    <li><a href="08_stromy_ansambly.html"><span class="n">8</span><span>Stromy, bagging a SVM</span></a></li>
+    <li><a href="09_agenti.html"><span class="n">9</span><span>AI agenti: skill a subagent</span></a></li>
+    <li><a href="10_ukazky.html"><span class="n">✎</span><span>Ukázky A a B s řešením</span></a></li>
+    <li><a href="11_cvicne_testy.html"><span class="n">✎</span><span>Cvičné testy C–F</span></a></li>
+    <li><a href="12_tahak.html" class="active"><span class="n">★</span><span>Tahák</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#vzorce">Vzorce</a></li>
+    <li><a href="#kod">Idiomy kódu</a></li>
+    <li><a href="#pasti">Pasti v ukázkách</a></li>
+    <li><a href="#vety">Věty, které se hodí</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – průběžný test 1 · Tahák – MLR · https://balnerm.github.io/pripravy/mlr/test1/12_tahak.html</p>
+
+<h1>Tahák</h1>
+<p class="lead">Všechno potřebné na jedné stránce na poslední opakování před testem. Na test sám si nic vzít nesmíš – tahle stránka je na čtení večer předtím.</p>
+
+<h2 id="vzorce">Vzorce</h2>
+<div class="box vzorec"><div class="box-t">Regrese</div>
+\[ \begin{aligned} &amp;\text{OLS:} \\ \mathbf w &amp;= (X^\top X)^{-1}X^\top\mathbf y \\ &amp;\text{ridge:} \\ \mathbf w &amp;= (X^\top X + \lambda I_d)^{-1}X^\top\mathbf y \\ &amp;\text{dual:} \\ \boldsymbol\alpha &amp;= (XX^\top + \lambda I_n)^{-1}\mathbf y \\ \mathbf w &amp;= X^\top\boldsymbol\alpha \\ &amp;\text{kernel ridge:} \\ \boldsymbol\alpha &amp;= (K + \lambda I)^{-1}\mathbf y \\ \hat{\mathbf y} &amp;= K_{\text{new}}\boldsymbol\alpha \end{aligned} \]
+\[ \begin{aligned} &amp;\text{inverze 2×2:} \\ \begin{bmatrix} a &amp; b \\ c &amp; d \end{bmatrix}^{-1} &amp;= \frac{1}{ad - bc}\begin{bmatrix} d &amp; -b \\ -c &amp; a \end{bmatrix} \end{aligned} \]
+<table class="vars">
+<tr><td>X</td><td>řádky = vzorky, první sloupec jedniček (intercept)</td></tr>
+<tr><td>\(I_d\)</td><td>jednotková matice velikosti počtu vah = <code>np.eye(X.shape[1])</code></td></tr>
+<tr><td>\(I_n\)</td><td>v duálu velikost počtu vzorků = <code>np.eye(X.shape[0])</code></td></tr>
+<tr><td>λ</td><td>síla penalizace: ↑λ = menší váhy, víc biasu, méně přeučení</td></tr>
+</table></div>
+<div class="box vzorec"><div class="box-t">Klasifikace a metriky (řádky = skutečnost)</div>
+\[ \begin{aligned} \text{accuracy} &amp;= \frac{TP + TN}{N} \\ \text{recall} &amp;= \frac{TP}{TP + FN} \\ \text{precision} &amp;= \frac{TP}{TP + FP} \\ \text{specificity} &amp;= \frac{TN}{TN + FP} \\ F_1 &amp;= \frac{2TP}{2TP + FP + FN} \\ \text{MSE} &amp;= \frac1n\sum(\hat y_i - y_i)^2 \\ \text{MAE} &amp;= \frac1n\sum|\hat y_i - y_i| \end{aligned} \]
+<table class="vars">
+<tr><td>FN</td><td>přehlédnutý pozitivní („missed“)</td></tr>
+<tr><td>FP</td><td>falešný poplach („incorrectly flagged“)</td></tr>
+</table></div>
+<div class="box vzorec"><div class="box-t">Předzpracování, sestup, filtry, stromy</div>
+\[ \begin{aligned} z &amp;= \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}} \\ x' &amp;= \frac{x - x_{\min}}{x_{\max} - x_{\min}} \\ w_{t+1} &amp;= w_t - \eta\,\nabla f(w_t) \\ H(X) &amp;= -\sum p\log_2 p \\ I(X; Y) &amp;= H(X) + H(Y) - H(X, Y) \\ G &amp;= \sum_y p(y)(1 - p(y)) \\ G_{\text{2 třídy}} &amp;= 2p(1 - p) \\ P(\text{OOB}) &amp;= (1 - 1/n)^n \\ &amp;\approx e^{-1} \approx 0{,}37 \end{aligned} \]
+<table class="vars">
+<tr><td>μ, σ, (x_{min}), (x_{max})</td><td>vždy z trénovacích dat</td></tr>
+<tr><td>η</td><td>krok učení; u \((w - a)^2\) konverguje pro \(0 &lt; \eta &lt; 1\)</td></tr>
+<tr><td>P(OOB)</td><td>pravděpodobnost, že řádek není v bootstrapovém vzorku (out-of-bag)</td></tr>
+<tr><td>G</td><td>0 čistý uzel, 0,5 půl na půl, 4 : 1 → 0,32</td></tr>
+</table></div>
+
+<h2 id="kod">Idiomy kódu</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>Kód</th><th>Význam</th></tr>
+<tr><td><code>np.column_stack([t ** j for j in range(3)])</code></td><td>sloupce 1, t, t²</td></tr>
+<tr><td><code>X @ w</code></td><td>predikce, jedna na řádek</td></tr>
+<tr><td><code>X.T @ X</code></td><td>(d, d)</td></tr>
+<tr><td><code>V.mean(axis=1)</code></td><td>průměr přes sloupce každého řádku (přes stromy)</td></tr>
+<tr><td><code>(p &gt; 0.5).astype(int)</code></td><td>práh, 0,5 → 0</td></tr>
+<tr><td><code>np.argmax(scores)</code></td><td>pozice (první maximum)</td></tr>
+<tr><td><code>remaining.pop(pos)</code></td><td>odebere a vrátí prvek na pozici</td></tr>
+<tr><td><code>np.argsort(d)[:k]</code></td><td>indexy k nejbližších</td></tr>
+<tr><td><code>np.unique(v, return_counts=True)</code></td><td>hlasování</td></tr>
+<tr><td><code>np.sum((y == 1) &amp; (p == 1))</code></td><td>TP</td></tr>
+<tr><td><code>rng.choice(n, size=n, replace=True)</code></td><td>bootstrap: opakování ano, ne všechny řádky</td></tr>
+<tr><td><code>scaler.fit_transform(train)</code> / <code>scaler.transform(valid)</code></td><td>správné škálování</td></tr>
+</table></div>
+
+<h2 id="pasti">Pasti v ukázkách</h2>
+<div class="box pozor"><div class="box-t">Na co si dát pozor</div>
+<ul>
+<li><code>fit_transform</code> na validaci → <code>transform</code>.</li>
+<li><code>np.eye(X.shape[0])</code> v primárním ridge → <code>shape[1]</code>.</li>
+<li><code>argmax</code> = pozice v <code>remaining</code>, příznak = <code>remaining[pos]</code>.</li>
+<li>„Strictly improves“: rovnost = stop.</li>
+<li>Stupeň, λ, k, příznaky – podle <b>validace</b>; test jednou.</li>
+<li>Orientace matice záměn; jmenovatele vždy napsat.</li>
+<li>Pořadí sloupců X podle zadání ([1, x] vs. [x, 1]).</li>
+<li>Generátor náhodných čísel jednou před smyčkou; stejné <code>idx</code> pro X i y.</li>
+</ul></div>
+
+<h2 id="vety">Věty, které se hodí</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>Téma</th><th>Věta</th></tr>
+<tr><td>sloupec jedniček</td><td>The column of ones multiplies the intercept b, so b is learned as an ordinary weight.</td></tr>
+<tr><td>linear in weights</td><td>The prediction is a weighted sum of fixed features 1, t, t²; only the features are nonlinear in t.</td></tr>
+<tr><td>ridge J</td><td>The first term measures the training fit, the second penalizes large weights; larger λ → smaller weights, more bias, less variance.</td></tr>
+<tr><td>over/underfit</td><td>Underfitting: high training and test error. Overfitting: low training error, much higher test error.</td></tr>
+<tr><td>výběr</td><td>Choose it on a validation split (or cross-validation); use the test set once at the end.</td></tr>
+<tr><td>leakage</td><td>The mean and standard deviation must be fitted on the training data only and applied with transform.</td></tr>
+<tr><td>recall</td><td>Recall for class 1 is the fraction of truly positive (faulty) items the model detects.</td></tr>
+<tr><td>bootstrap</td><td>Sampling with replacement: a row can repeat, and some rows are left out (out-of-bag).</td></tr>
+<tr><td>skill</td><td>A saved recipe (SKILL.md) that the agent loads only when the task needs it.</td></tr>
+<tr><td>subagent</td><td>A helper with its own fresh context that does a side task and returns a short summary.</td></tr>
+</table></div>
+
+<nav class="pager"><a class="prev" href="11_cvicne_testy.html"><small>← předchozí</small>Cvičné testy C–F</a><a class="next" href="99_slovnik.html"><small>další →</small>Slovník pojmů (definice)</a></nav>
+</main>
+</div>
+</body>
+</html>

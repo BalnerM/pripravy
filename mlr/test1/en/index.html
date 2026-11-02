@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MLR – practical test 1</title>
+<meta name="description" content="Test format, map of task types and a study plan.">
+<link rel="alternate" hreflang="cs" href="../index.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../../assets/style.css?v=b9a02598">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../../assets/app.js?v=b9a02598"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Contents">☰ Contents</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Hide the sidebar" data-show="Show the sidebar" title="Hide the sidebar">◧ Sidebar</button>
+  <a class="brand" href="index.html">MLR – practical test 1<small>task types: paper calculations and reading code</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../../index.html#mlr" title="All study notes">←<span> All study notes</span></a>
+  <a class="iconbtn langbtn" href="../index.html" hreflang="cs" lang="cs" title="Česká verze">CZ</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Smaller text" aria-label="Smaller text">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Default text size">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Larger text" aria-label="Larger text">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/skripta_vse.pdf" download title="All notes in one PDF" data-dl="All notes in one PDF" data-print="Print / save as PDF with the chosen font size">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Dark mode</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigation">
+  <h4>Chapters</h4>
+  <ol>
+    <li><a href="index.html" class="active"><span class="n"></span><span>How to prepare</span></a></li>
+    <li><a href="01_numpy.html"><span class="n">1</span><span>Reading NumPy code</span></a></li>
+    <li><a href="02_knn.html"><span class="n">2</span><span>Distances, k-NN and gradient descent</span></a></li>
+    <li><a href="03_metriky.html"><span class="n">3</span><span>Confusion matrix and metrics</span></a></li>
+    <li><a href="04_predzpracovani.html"><span class="n">4</span><span>Preprocessing and data leakage</span></a></li>
+    <li><a href="05_vyber_priznaku.html"><span class="n">5</span><span>Feature selection and PCA</span></a></li>
+    <li><a href="06_linearni_regrese.html"><span class="n">6</span><span>Linear regression by hand</span></a></li>
+    <li><a href="07_polynom_ridge.html"><span class="n">7</span><span>Polynomials, overfitting, ridge and kernels</span></a></li>
+    <li><a href="08_stromy_ansambly.html"><span class="n">8</span><span>Trees, bagging and SVM</span></a></li>
+    <li><a href="09_agenti.html"><span class="n">9</span><span>AI agents: skill and subagent</span></a></li>
+    <li><a href="10_ukazky.html"><span class="n">✎</span><span>Samples A and B solved</span></a></li>
+    <li><a href="11_cvicne_testy.html"><span class="n">✎</span><span>Practice tests C–F</span></a></li>
+    <li><a href="12_tahak.html"><span class="n">★</span><span>Cheat sheet</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Glossary (definitions)</span></a></li>
+  </ol>
+
+</nav>
+<main>
+<p class="printhead">MLR – practical test 1 · MLR – practical test 1 · https://balnerm.github.io/pripravy/mlr/test1/en/index.html</p>
+
+<h1>MLR – practical test 1</h1>
+<p class="lead">Notes for <b>Practical test 1 (computing)</b> in MPA-MLR: week 8 (3–5 November), at the start of the lab, 5 points. Content of <b>lectures and labs 1–6</b>. The chapters follow <b>task types</b> from sample tests A and B, not lectures; each has the original sample task, similar tasks from the labs and step-by-step solutions.</p>
+
+<h2 id="format">Test format</h2>
+<div class="box intuice"><div class="box-t">What to expect</div>
+<ul>
+<li><b>25 minutes · 5 points · paper only</b>, no notes, AI or calculator. Fractions are fine, show your reasoning.</li>
+<li>5 independent tasks worth 0.75–1.25 points, in <b>English</b>; short answers are enough.</li>
+<li>Code is <b>read, not run</b>: NumPy, indices from zero.</li>
+<li>Both samples had: one hand calculation with a matrix (linear regression / polynomial features), one code repair (standardization / ridge), one interpretation (plots / confusion matrix), one loop or vote (bagging / forward selection) and one question about agents (skill / subagent).</li>
+</ul></div>
+
+<h2 id="mapa">Map of task types</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>Task type</th><th>In the samples</th><th>In the labs</th><th>Chapter</th></tr>
+<tr><td>Reading code, shapes, axis</td><td>everywhere</td><td>1–6</td><td><a href="01_numpy.html">1</a></td></tr>
+<tr><td>k-NN by hand, gradient descent, k-means</td><td>–</td><td>1, 2</td><td><a href="02_knn.html">2</a></td></tr>
+<tr><td>Confusion matrix, metrics</td><td>B3, A5b</td><td>2</td><td><a href="03_metriky.html">3</a></td></tr>
+<tr><td>Standardization, leakage, red flags</td><td>A2</td><td>2, 3</td><td><a href="04_predzpracovani.html">4</a></td></tr>
+<tr><td>Filters, forward selection, PCA</td><td>B4</td><td>3</td><td><a href="05_vyber_priznaku.html">5</a></td></tr>
+<tr><td>Linear regression by hand</td><td>A1</td><td>4</td><td><a href="06_linearni_regrese.html">6</a></td></tr>
+<tr><td>Polynomials, overfitting, ridge, kernels</td><td>B1, B2, A4</td><td>4</td><td><a href="07_polynom_ridge.html">7</a></td></tr>
+<tr><td>Tree, bagging, bootstrap, SVM</td><td>A5</td><td>6</td><td><a href="08_stromy_ansambly.html">8</a></td></tr>
+<tr><td>Agents: skill, subagent, hook</td><td>A3, B5</td><td>5</td><td><a href="09_agenti.html">9</a></td></tr>
+</table></div>
+
+<h2 id="plan">How to prepare (1–2 days)</h2>
+<div class="box postup" id="postup-priprava"><div class="box-t">Plan</div>
+<ol>
+<li><b>Samples against the clock:</b> write <a href="10_ukazky.html">sample A</a> in 25 minutes on paper, correct it with the solutions. Where you lost points, open the chapter.</li>
+<li><b>Chapters 1, 6, 7</b> (code and matrices) – the most points in the test. For each task, solve it yourself first, then open the solution.</li>
+<li><b>Chapters 3, 4, 5, 8</b> – short calculations and “find the bug in the code”.</li>
+<li><b>Chapter 9</b> – learn the one-sentence definitions of skill / subagent / hook.</li>
+<li><b>Sample B</b> against the clock, then <a href="11_cvicne_testy.html">practice tests C–F</a>.</li>
+<li>The evening before the test: the <a href="12_tahak.html">cheat sheet</a>.</li>
+</ol></div>
+<div class="box zkouska"><div class="box-t">How to get full points</div>
+<ul>
+<li>“Show your reasoning”: write the matrix, the substitution, the fraction with its denominator – not just the result.</li>
+<li>For “explain”, one sentence with <i>because</i>; for code, say the <b>shape</b> and the <b>meaning</b>.</li>
+<li>For a code repair, write the repaired line.</li>
+<li>Simple English is fine; the chapters contain model sentences.</li>
+</ul></div>
+
+<h2 id="kapitoly">Chapters</h2>
+<div class="cards">
+<a class="card" href="01_numpy.html"><div class="n">Task type 1</div><div class="t">Reading NumPy code</div><div class="d">Array shapes, axis, @ and *, masks, argmax and argsort, unique, column_stack, rng.choice, lists.</div></a>
+<a class="card" href="02_knn.html"><div class="n">Task type 2</div><div class="t">Distances, k-NN and gradient descent</div><div class="d">d² and ranking, voting, training accuracy of 1-NN, a descent step, k-means.</div></a>
+<a class="card" href="03_metriky.html"><div class="n">Task type 3</div><div class="t">Confusion matrix and metrics</div><div class="d">B3, TP/FN/FP/TN, recall, precision, F1, balanced accuracy, MSE and MAE.</div></a>
+<a class="card" href="04_predzpracovani.html"><div class="n">Task type 4</div><div class="t">Preprocessing and data leakage</div><div class="d">A2, z-score, min-max, red flags A–D, filling missing values.</div></a>
+<a class="card" href="05_vyber_priznaku.html"><div class="n">Task type 5</div><div class="t">Feature selection and PCA</div><div class="d">B4, correlation, entropy, MI, forward selection, PCA on four points.</div></a>
+<a class="card" href="06_linearni_regrese.html"><div class="n">Task type 6</div><div class="t">Linear regression by hand</div><div class="d">A1, matrix X, normal equations, 2×2 inverse, ridge on the slope only.</div></a>
+<a class="card" href="07_polynom_ridge.html"><div class="n">Task type 7</div><div class="t">Polynomials, overfitting, ridge and kernels</div><div class="d">B1, B2, A4, a λ table, the dual form, the kernel trick, lasso.</div></a>
+<a class="card" href="08_stromy_ansambly.html"><div class="n">Task type 8</div><div class="t">Trees, bagging and SVM</div><div class="d">A5, a tree on paper, Gini, bootstrap, voting, C and γ.</div></a>
+<a class="card" href="09_agenti.html"><div class="n">Task type 9</div><div class="t">AI agents</div><div class="d">A3, B5, skill, subagent, hook, MCP, context, a good task.</div></a>
+<a class="card" href="10_ukazky.html"><div class="n">✎</div><div class="t">Samples A and B solved</div><div class="d">Both sample tests in the original wording with model answers.</div></a>
+<a class="card" href="11_cvicne_testy.html"><div class="n">✎</div><div class="t">Practice tests C–F</div><div class="d">Four new tests in the same format with solutions.</div></a>
+<a class="card" href="12_tahak.html"><div class="n">★</div><div class="t">Cheat sheet</div><div class="d">Formulas, code idioms, traps and useful sentences on one page.</div></a>
+</div>
+<p>The theory of all topics is in the <a href="../../en/index.html">main MLR notes</a> (lectures 1–7, glossary, parameter cheat sheet).</p>
+
+<nav class="pager"><a class="next" href="01_numpy.html"><small>next →</small>Reading NumPy code</a></nav>
+</main>
+</div>
+</body>
+</html>

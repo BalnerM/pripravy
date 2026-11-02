@@ -67,6 +67,54 @@ ALT = dict(
     ],
 )
 
+# Další samostatná skripta téhož předmětu ve vlastní podsložce (sdílí assets/ a figures/, mají vlastní slovník,
+# skripta_vse.html a pdf/). Fragmenty v _build/obsah_<DIR>/, jazyková verze v _build/obsah_<DIR>_<jazyk>/
+# (výstup <DIR>/<jazyk>/). KICKER = štítek nad nadpisem kapitoly místo „Přednáška“.
+#   test1/  příprava na Practical test 1 (computing): kapitoly podle typů úloh z ukázek A a B a z cvičení 1–6,
+#           zadání úloh anglicky jako v testu, řešené ukázky, cvičné testy, tahák.
+EDITIONS = [dict(
+    DIR="test1", BRAND="MLR – průběžný test 1", BRAND_SUB="typové úlohy: výpočty na papíře a čtení kódu",
+    KICKER="Typ úloh",
+    PAGES=[
+        ("index", "", "Jak se připravit", "Formát testu, mapa typů úloh a plán přípravy."),
+        ("01_numpy", "1", "Čtení kódu v NumPy", "Tvary polí, axis, @ a *, masky, argmax, column_stack, rng.choice."),
+        ("02_knn", "2", "Vzdálenosti, k-NN a gradientní sestup", "Nejbližší soused ručně, hlasování, krok sestupu."),
+        ("03_metriky", "3", "Matice záměn a metriky", "TP, FN, FP, TN, accuracy, recall, precision, F1, MSE a MAE."),
+        ("04_predzpracovani", "4", "Předzpracování a únik dat", "Standardizace, fit jen na trénovacích datech, red flags."),
+        ("05_vyber_priznaku", "5", "Výběr příznaků a PCA", "Korelace, entropie a MI ručně, dopředný výběr, PCA."),
+        ("06_linearni_regrese", "6", "Lineární regrese ručně", "Matice X, normální rovnice, inverze 2×2, predikce."),
+        ("07_polynom_ridge", "7", "Polynomy, přeučení, ridge a jádra",
+         "Polynomiální příznaky, under/overfitting, ridge, lasso, duální tvar a jádra."),
+        ("08_stromy_ansambly", "8", "Stromy, bagging a SVM", "Strom na papíře, Gini, bootstrap, hlasování, C a gamma."),
+        ("09_agenti", "9", "AI agenti: skill a subagent", "Pojmy z 5. přednášky a cvičení jednou větou."),
+        ("10_ukazky", "✎", "Ukázky A a B s řešením", "Oba ukázkové testy vyřešené tak, jak je napsat do testu."),
+        ("11_cvicne_testy", "✎", "Cvičné testy C–F", "Čtyři nové testy ve stejném formátu, s řešením."),
+        ("12_tahak", "★", "Tahák", "Vzorce, idiomy kódu a pasti na jedné stránce."),
+        ("99_slovnik", "Aa", "Slovník pojmů (definice)", "Všechny definice z těchto skript na jednom místě."),
+    ],
+    ALT=dict(
+        LANG="en", BRAND="MLR – practical test 1", BRAND_SUB="task types: paper calculations and reading code",
+        KICKER="Task type",
+        PAGES=[
+            ("index", "", "How to prepare", "Test format, map of task types and a study plan."),
+            ("01_numpy", "1", "Reading NumPy code", "Shapes, axis, @ and *, masks, argmax, column_stack, rng.choice."),
+            ("02_knn", "2", "Distances, k-NN and gradient descent", "Nearest neighbour by hand, voting, one descent step."),
+            ("03_metriky", "3", "Confusion matrix and metrics", "TP, FN, FP, TN, accuracy, recall, precision, F1, MSE, MAE."),
+            ("04_predzpracovani", "4", "Preprocessing and data leakage", "Standardization, fit on training data only, red flags."),
+            ("05_vyber_priznaku", "5", "Feature selection and PCA", "Correlation, entropy and MI by hand, forward selection, PCA."),
+            ("06_linearni_regrese", "6", "Linear regression by hand", "Matrix X, normal equation, 2×2 inverse, prediction."),
+            ("07_polynom_ridge", "7", "Polynomials, overfitting, ridge and kernels",
+             "Polynomial features, under/overfitting, ridge, lasso, dual form and kernels."),
+            ("08_stromy_ansambly", "8", "Trees, bagging and SVM", "Tree on paper, Gini, bootstrap, voting, C and gamma."),
+            ("09_agenti", "9", "AI agents: skill and subagent", "Terms from lecture and lab 5 in one sentence."),
+            ("10_ukazky", "✎", "Samples A and B solved", "Both sample tests solved the way you would write them."),
+            ("11_cvicne_testy", "✎", "Practice tests C–F", "Four new tests in the same format, with solutions."),
+            ("12_tahak", "★", "Cheat sheet", "Formulas, code idioms and traps on one page."),
+            ("99_slovnik", "Aa", "Glossary (definitions)", "All definitions from these notes in one place."),
+        ],
+    ),
+)]
+
 
 # =====================================================================================================================
 # Níže je společný „engine“ – stejný pro všechny předměty, obvykle se nemění.
@@ -135,8 +183,26 @@ def make_sites():
                           site=f"{SITE}{lang}/"))
         main["other"], sites[1]["other"] = sites[1], main
         main["switch"], sites[1]["switch"] = f"{lang}/", "../"
+    for e in EDITIONS:
+        # samostatná skripta v podsložce <DIR>/, případně s vlastní jazykovou verzí v <DIR>/<jazyk>/
+        d = e["DIR"]
+        ed = dict(lang=LANG, brand=e["BRAND"], brand_sub=e["BRAND_SUB"], pages=e["PAGES"],
+                  src=SRC.parent / f"obsah_{d}", out=ROOT / d, up="../", fig="../figures/",
+                  site=f"{SITE}{d}/", tag=f"{d}/", kicker=e.get("KICKER"))
+        sites.append(ed)
+        a = e.get("ALT")
+        if a:
+            lang = a["LANG"]
+            alt = dict(lang=lang, brand=a["BRAND"], brand_sub=a["BRAND_SUB"], pages=a["PAGES"],
+                       src=SRC.parent / f"obsah_{d}_{lang}", out=ROOT / d / lang, up="../../",
+                       fig=f"../../figures/{lang}/", site=f"{SITE}{d}/{lang}/", tag=f"{d}/{lang}/",
+                       kicker=a.get("KICKER"))
+            sites.append(alt)
+            ed["other"], alt["other"] = alt, ed
+            ed["switch"], alt["switch"] = f"{lang}/", "../"
     for s in sites:
         s["t"] = TEXTS[s["lang"]]
+        s.setdefault("tag", f'{s["lang"]}/' if s["up"] else "")
     return sites
 
 
@@ -246,6 +312,13 @@ def chrome(s, slug, page_title):
     return pdfbtn, printhead
 
 
+def kicker_html(s, num):
+    """Štítek nad nadpisem kapitoly („Přednáška 3“; samostatná skripta mohou mít vlastní, např. „Kapitola 3“)."""
+    if not num.isdigit():
+        return ""
+    return f'<p class="kicker">{s.get("kicker") or s["t"]["lecture"]} {num}</p>'
+
+
 def make_all(s, bodies, nav):
     """Všechny stránky za sebou na jedné stránce: id dostanou předponu kapitoly, odkazy mezi stránkami se
     přepíšou na kotvy, aby fungovaly i uvnitř jednoho PDF."""
@@ -264,7 +337,7 @@ def make_all(s, bodies, nav):
         body = body.replace('href="#', f'href="#{p}-').replace("url(#", f"url(#{p}-")
         body = link_re.sub(lambda m: f'href="#{pref(m.group(1))}' + (f'-{m.group(2)}' if m.group(2) else "") + '"',
                            body)
-        kicker = f'<p class="kicker">{T["lecture"]} {num}</p>' if num.isdigit() else ""
+        kicker = kicker_html(s, num)
         parts.append(f'<section class="kapitola" id="{p}">\n{kicker}\n{body}\n</section>')
     page_title = f'{T["all_title"]} – {SHORT}'
     pdfbtn, printhead = chrome(s, ALL, page_title)
@@ -275,7 +348,7 @@ def make_all(s, bodies, nav):
 def build_site(s):
     """Sestaví stránky jedné jazykové verze; vrací {slug: html} a počet definic ve slovníku."""
     T, pages = s["t"], s["pages"]
-    s["out"].mkdir(exist_ok=True)
+    s["out"].mkdir(parents=True, exist_ok=True)
     built = {}
     bodies = {}
     n_defs = make_glossary(s)
@@ -305,7 +378,7 @@ def build_site(s):
         if nxt:
             pager += f'<a class="next" href="{nxt[0]}.html"><small>{T["next"]}</small>{nxt[2]}</a>'
         pager += "</nav>"
-        kicker = f'<p class="kicker">{T["lecture"]} {num}</p>' if num.isdigit() else ""
+        kicker = kicker_html(s, num)
         page_title = f"{title} – {SHORT}" if slug != "index" else s["brand"]
         pdfbtn, printhead = chrome(s, slug, page_title)
         out = render(s, slug, title=page_title, desc=html.escape(desc), nav=nav, toc=toc, pdfbtn=pdfbtn,
@@ -323,7 +396,7 @@ def build_site(s):
 def check_site(s, built, errors):
     """Obrázky, odkazy a kotvy, povinné sekce kapitol, formát definic a duplicitní id."""
     lectures = {x for x, n, *_ in s["pages"] if n.isdigit()}
-    tag = f'{s["lang"]}/' if s["up"] else ""
+    tag = s["tag"]
     ids = {x: set(re.findall(r'id="([^"]+)"', h)) for x, h in built.items()}
     for slug, h in built.items():
         for src in re.findall(r'<img[^>]+src="([^"]+)"', h):
@@ -404,7 +477,7 @@ def build():
     results = [(s, *build_site(s)) for s in SITES]
     for s, built, n_defs in results:
         check_site(s, built, errors)
-        where = f" [{s['lang']}/]" if s["up"] else ""
+        where = f" [{s['tag']}]" if s["tag"] else ""
         print(f"sestaveno stránek{where}: {len(built)} (včetně {ALL}.html), definic ve slovníku: {n_defs}")
     if errors:
         print("CHYBY:")
@@ -414,7 +487,7 @@ def build():
     print("kontrola odkazů, obrázků a povinných sekcí: OK")
     for s in SITES:
         for w in check_math_layout(s["src"], skip={GLOSSARY}):
-            print(f"UPOZORNĚNÍ{' [' + s['lang'] + '/]' if s['up'] else ''}: {w}")
+            print(f"UPOZORNĚNÍ{' [' + s['tag'] + ']' if s['tag'] else ''}: {w}")
 
 
 if __name__ == "__main__":

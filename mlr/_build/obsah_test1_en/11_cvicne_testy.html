@@ -1,0 +1,217 @@
+<h1>Practice tests C–F</h1>
+<p class="lead">Four new tests in the same format as the samples: 5 tasks, 5 points, <b>25 minutes, paper, no calculator</b>. The numbers are chosen to work out in your head or as simple fractions; all of them were checked by a script. Keep the solutions closed while writing; after 25 minutes open them and score yourself by the points in brackets.</p>
+<p><b>Header:</b> 25 minutes · 5 points · paper only · no notes, AI or calculator. Show your reasoning; fractions are acceptable. All tasks are independent. Read code without running it. <code>np</code> is NumPy; indices start at zero.</p>
+
+<h2 id="test-c">Practice test C</h2>
+<div class="box uloha" id="c1"><div class="box-t">C1. Least squares by hand <span class="en">1.25 points</span></div>
+<p>Fit \(\hat y = b + wx\) to (0, 1), (1, 2), (2, 6). Columns of X are ordered [1, x], \(\mathbf w = [b, w]^\top\), \(\mathbf w = (X^\top X)^{-1}X^\top\mathbf y\).</p>
+<p>a) Write X, <b>y</b>, \(X^\top X\) and \(X^\top\mathbf y\). (0.5)<br>b) Compute \((X^\top X)^{-1}\) and <b>w</b>. (0.5)<br>c) Predict the response at x = 4. (0.25)</p>
+<details class="reseni"><summary>Solution</summary><div>
+\[ X = \begin{bmatrix} 1 &amp; 0 \\ 1 &amp; 1 \\ 1 &amp; 2 \end{bmatrix},\qquad \mathbf y = \begin{bmatrix} 1 \\ 2 \\ 6 \end{bmatrix} \]
+\[ X^\top X = \begin{bmatrix} 3 &amp; 3 \\ 3 &amp; 5 \end{bmatrix},\qquad X^\top\mathbf y = \begin{bmatrix} 9 \\ 14 \end{bmatrix} \]
+<p>Determinant 15 − 9 = 6:</p>
+\[ \begin{aligned} (X^\top X)^{-1} &amp;= \frac16\begin{bmatrix} 5 &amp; -3 \\ -3 &amp; 3 \end{bmatrix} \\ \mathbf w &amp;= \frac16\begin{bmatrix} 45 - 42 \\ -27 + 42 \end{bmatrix} = \begin{bmatrix} 1/2 \\ 5/2 \end{bmatrix} \end{aligned} \]
+<p>c) ŷ(4) = 1/2 + 5/2 · 4 = 21/2 = 10.5.</p>
+</div></details></div>
+
+<div class="box uloha" id="c2"><div class="box-t">C2. Repair imputation <span class="en">1 point</span></div>
+<pre class="code"><code>fill = pd.concat([train, valid])["age"].mean()
+train["age"] = train["age"].fillna(fill)
+valid["age"] = valid["age"].fillna(fill)</code></pre>
+<p>a) What is wrong, and how do you repair it? (0.75)<br>b) Training ages are 20, NaN, 40; validation ages are NaN, 60. Which value replaces the missing validation age after the repair? (0.25)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) The fill value is a learned parameter, but it is computed from training <i>and</i> validation rows – validation information leaks into preprocessing and the validation score becomes optimistic. Repair: <code>fill = train["age"].mean()</code> and use this same value for train, valid and test.</p>
+<p>b) (20 + 40)/2 = 30 (NaN is ignored by <code>mean</code>).</p>
+</div></details></div>
+
+<div class="box uloha" id="c3"><div class="box-t">C3. Hooks <span class="en">0.75 points</span></div>
+<p>a) What is a <b>hook</b> in a coding agent? One sentence. (0.25)<br>b) How does a hook differ from a rule written in AGENTS.md? Give an example. (0.5)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) A hook is a small script that the harness runs automatically at an event (for example before every file edit) and that can block the action.</p>
+<p>b) A rule in AGENTS.md only asks the model and can be ignored; a hook enforces the rule. Example: a hook that blocks every edit of <code>test_model.py</code> with “Tests are read-only.”</p>
+</div></details></div>
+
+<div class="box uloha" id="c4"><div class="box-t">C4. Spam filter metrics <span class="en">1 point</span></div>
+<p>Class 1 = spam, class 0 = legitimate e-mail. Rows are actual labels, columns are predicted labels:</p>
+<div class="tablewrap"><table class="compact">
+<tr><th></th><th>Predicted 0</th><th>Predicted 1</th></tr>
+<tr><th>Actual 0</th><td>50</td><td>5</td></tr>
+<tr><th>Actual 1</th><td>10</td><td>35</td></tr>
+</table></div>
+<p>a) How many spam e-mails reached the inbox? How many legitimate e-mails went to the spam folder? (0.25)<br>b) Calculate accuracy, precision and recall for class 1 with denominators. (0.5)<br>c) Explain precision for class 1 in words in this application. (0.25)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) Spam in inbox = FN = 10; legitimate e-mails in spam = FP = 5.</p>
+\[ \begin{aligned} \text{accuracy} &amp;= \frac{35 + 50}{100} = 0{,}85 \\ \text{precision}_1 &amp;= \frac{35}{35 + 5} = \frac78 \\ \text{recall}_1 &amp;= \frac{35}{35 + 10} = \frac79 \end{aligned} \]
+<p>c) Of all e-mails the filter moved to spam, 7/8 really are spam (1 in 8 is a legitimate e-mail lost in the spam folder).</p>
+</div></details></div>
+
+<div class="box uloha" id="c5"><div class="box-t">C5. Five voting trees <span class="en">1 point</span></div>
+\[ V = \begin{bmatrix} 1 &amp; 0 &amp; 1 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 &amp; 0 &amp; 1 \\ 1 &amp; 1 &amp; 1 &amp; 0 &amp; 0 \end{bmatrix},\qquad \mathbf y_{\text{val}} = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix} \]
+<pre class="code"><code>y_hat = (V.mean(axis=1) &gt; 0.5).astype(int)
+idx = rng.choice(4, size=4, replace=True)    # returned [3, 0, 3, 1]</code></pre>
+<p>a) Write <code>V.mean(axis=1)</code> and <code>y_hat</code>. (0.5)<br>b) Accuracy? (0.25)<br>c) For the bootstrap draw <code>idx</code>: how many distinct rows does the tree see, and which row is out-of-bag? (0.25)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) Row means [3/5, 2/5, 3/5] = [0.6, 0.4, 0.6] → <code>y_hat = [1, 0, 1]</code>.</p>
+<p>b) 2 of 3 correct → 2/3.</p>
+<p>c) Distinct rows {0, 1, 3} → 3; row 2 is out-of-bag (row 3 appears twice).</p>
+</div></details></div>
+
+<h2 id="test-d">Practice test D</h2>
+<div class="box uloha" id="d1"><div class="box-t">D1. Trace features without a constant <span class="en">1.25 points</span></div>
+<pre class="code"><code>t = np.array([-1., 1., 2.])
+X = np.column_stack([t ** j for j in range(1, 3)])
+w = np.array([3., 1.])
+y_pred = X @ w</code></pre>
+<p>a) Write <code>X</code> and <code>y_pred</code>. (0.75)<br>b) Write the prediction equation. What does this model always predict at t = 0, and how would you change the code to add an intercept? (0.5)</p>
+<details class="reseni"><summary>Solution</summary><div>
+\[ X = \begin{bmatrix} -1 &amp; 1 \\ 1 &amp; 1 \\ 2 &amp; 4 \end{bmatrix},\qquad \texttt{y\_pred} = \begin{bmatrix} -2 \\ 4 \\ 10 \end{bmatrix} \]
+<p>b) ŷ = 3t + t²; at t = 0 it always predicts 0 (no constant column). Use <code>range(3)</code> so that the first column is t⁰ = 1, and give w three entries [b, w₁, w₂].</p>
+</div></details></div>
+
+<div class="box uloha" id="d2"><div class="box-t">D2. Choosing k <span class="en">1 point</span></div>
+<pre class="code"><code>scores = []
+for k in [1, 3, 5, 7, 9]:
+    model = KNeighborsClassifier(n_neighbors=k).fit(X_train, y_train)
+    scores.append(accuracy_score(y_test, model.predict(X_test)))
+print("final accuracy:", max(scores))</code></pre>
+<p>a) Why is the printed number not an honest estimate? Describe the repair. (0.75)<br>b) 200 samples are split 60/20/20. How many are in each part? (0.25)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) k is chosen by looking at test accuracy, so the test set becomes part of model selection and the maximum is optimistically biased. Split off a validation part from the training data (or use cross-validation), choose k by validation accuracy, refit, and evaluate the chosen model once on the test set.</p>
+<p>b) 120 training, 40 validation, 40 test.</p>
+</div></details></div>
+
+<div class="box uloha" id="d3"><div class="box-t">D3. Counts from vectors <span class="en">1 point</span></div>
+<pre class="code"><code>y_true = np.array([1, 0, 1, 1, 0, 1])
+y_pred = np.array([1, 0, 0, 1, 1, 1])
+TP = np.sum((y_true == 1) &amp; (y_pred == 1))
+FP = np.sum((y_true == 0) &amp; (y_pred == 1))</code></pre>
+<p>a) Give TP, FN, FP, TN. (0.5)<br>b) Compute accuracy, specificity and F1 = 2TP/(2TP + FP + FN). (0.5)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) Pairs: (1,1) TP, (0,0) TN, (1,0) FN, (1,1) TP, (0,1) FP, (1,1) TP → TP = 3, FN = 1, FP = 1, TN = 1.</p>
+\[ \begin{aligned} \text{accuracy} &amp;= \frac{3 + 1}{6} = \frac23 \\ \text{specificity} &amp;= \frac{1}{1 + 1} = \frac12 \\ F_1 &amp;= \frac{6}{6 + 1 + 1} = \frac34 \end{aligned} \]
+</div></details></div>
+
+<div class="box uloha" id="d4"><div class="box-t">D4. Forward selection with a tie <span class="en">1 point</span></div>
+<pre class="code"><code>selected = [2]
+remaining = [0, 1, 4, 5]
+best_score = 0.70
+scores = [0.72, 0.68, 0.75, 0.75]
+best_position = int(np.argmax(scores))</code></pre>
+<p>Accept only a strict improvement.<br>a) Give <code>best_position</code> and the feature to add. (0.25)<br>b) Write the update and both lists. (0.5)<br>c) Next step scores are [0.74, 0.75, 0.73]. Accept? (0.25)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) <code>argmax</code> returns the first maximum → position 2 → feature <code>remaining[2] = 4</code>.</p>
+<p>b) <code>selected.append(remaining.pop(2)); best_score = 0.75</code> → <code>selected = [2, 4]</code>, <code>remaining = [0, 1, 5]</code>.</p>
+<p>c) No: 0.75 is not &gt; 0.75 → stop.</p>
+</div></details></div>
+
+<div class="box uloha" id="d5"><div class="box-t">D5. Context <span class="en">0.75 points</span></div>
+<p>a) What is the context window of a language model? One sentence. (0.25)<br>b) After a long session the agent repeats an error it already fixed. What do you do? (0.5)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) The context window is the maximum number of tokens the model can read at once – everything it sees before answering (messages, files read, tool output).</p>
+<p>b) The crowded context makes it forget decisions. Ask it to write what is done, what was checked and the next step into PLAN.md, run <code>/clear</code>, and let it reread SPEC.md and PLAN.md.</p>
+</div></details></div>
+
+<h2 id="test-e">Practice test E</h2>
+<div class="box uloha" id="e1"><div class="box-t">E1. Ridge by hand <span class="en">1.25 points</span></div>
+<p>Data (−1, 0), (0, 0), (1, 6), columns [1, x]. Ridge with λ = 1 penalizing both weights: \(\mathbf w = (X^\top X + \lambda I)^{-1}X^\top\mathbf y\).</p>
+<p>a) Write \(X^\top X + \lambda I\) and \(X^\top\mathbf y\). (0.5)<br>b) Compute <b>w</b>. (0.5)<br>c) Least squares gives w = [2, 3]. What did ridge do, and why? (0.25)</p>
+<details class="reseni"><summary>Solution</summary><div>
+\[ X^\top X + I = \begin{bmatrix} 4 &amp; 0 \\ 0 &amp; 3 \end{bmatrix},\qquad X^\top\mathbf y = \begin{bmatrix} 6 \\ 6 \end{bmatrix} \]
+\[ \mathbf w = \begin{bmatrix} 6/4 \\ 6/3 \end{bmatrix} = \begin{bmatrix} 3/2 \\ 2 \end{bmatrix} \]
+<p>c) Both weights shrank towards zero (2 → 1.5, 3 → 2) because the penalty λ‖w‖² makes large weights costly.</p>
+</div></details></div>
+
+<div class="box uloha" id="e2"><div class="box-t">E2. Shapes <span class="en">1 point</span></div>
+<p><code>X</code> has shape <code>(50, 4)</code>, <code>y</code> has shape <code>(50,)</code>.</p>
+<pre class="code"><code>w = LA.inv(X.T @ X) @ X.T @ y
+alpha = LA.inv(X @ X.T + lam * np.eye(X.shape[0])) @ y
+w_dual = X.T @ alpha</code></pre>
+<p>a) Give the shapes of <code>X.T @ X</code>, <code>X.T @ y</code>, <code>w</code> and <code>X @ w</code>. (0.5)<br>b) Is <code>np.eye(X.shape[0])</code> correct in the second line? Give the shapes of <code>alpha</code> and <code>w_dual</code>. (0.5)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) (4, 4), (4,), (4,), (50,).</p>
+<p>b) Yes – the dual form inverts <code>X @ X.T</code>, which is 50 × 50, so the identity must be 50 × 50 = <code>np.eye(X.shape[0])</code>. <code>alpha</code> has shape (50,) (one coefficient per sample), <code>w_dual</code> (4,).</p>
+</div></details></div>
+
+<div class="box uloha" id="e3"><div class="box-t">E3. Gini impurity <span class="en">1 point</span></div>
+<p>A node has 3 samples of class A and 3 of class B. A cut sends 2 A to the left and 1 A + 3 B to the right. Gini impurity: \(G = \sum_y p(y)(1 - p(y))\).</p>
+<p>a) Gini of the parent and of both children. (0.5)<br>b) Weighted Gini after the cut and the decrease. (0.5)</p>
+<details class="reseni"><summary>Solution</summary><div>
+\[ \begin{aligned} G_{\text{parent}} &amp;= 2\cdot\tfrac12\cdot\tfrac12 = \tfrac12 \\ G_{\text{left}} &amp;= 0 \\ G_{\text{right}} &amp;= 2\cdot\tfrac14\cdot\tfrac34 = \tfrac38 \\ G_{\text{cut}} &amp;= \tfrac26\cdot 0 + \tfrac46\cdot\tfrac38 = \tfrac14 \end{aligned} \]
+<p>Decrease: 1/2 − 1/4 = 1/4.</p>
+</div></details></div>
+
+<div class="box uloha" id="e4"><div class="box-t">E4. Choosing λ <span class="en">1 point</span></div>
+<p>Degree-15 polynomial with ridge, recorded results:</p>
+<div class="tablewrap"><table class="compact">
+<tr><th>λ</th><th>Training MSE</th><th>Test MSE</th></tr>
+<tr><td>0</td><td>0.045</td><td>10.716</td></tr>
+<tr><td>10⁻⁴</td><td>0.062</td><td>0.395</td></tr>
+<tr><td>1</td><td>0.124</td><td>0.151</td></tr>
+<tr><td>10⁴</td><td>0.561</td><td>0.634</td></tr>
+</table></div>
+<p>a) Which λ overfits and which underfits? Use the table. (0.5)<br>b) Why does the training error grow with λ, and which split should be used to choose λ? (0.5)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) λ = 0 overfits (lowest training MSE 0.045, huge test MSE 10.7). λ = 10⁴ underfits (both errors high, 0.56 and 0.63; the curve is almost flat). λ = 1 has the lowest test error.</p>
+<p>b) The penalty forces smaller weights, so the model can no longer fit the training points as closely. λ should be chosen on a validation split (or by cross-validation), keeping the test set for one final evaluation.</p>
+</div></details></div>
+
+<div class="box uloha" id="e5"><div class="box-t">E5. A good task for an agent <span class="en">0.75 points</span></div>
+<p>a) Name the four parts of a well-specified task. (0.25)<br>b) Rewrite “Make an HTML report from leaves.csv.” using them. (0.5)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) Goal · Context · Constraints · Done when.</p>
+<p>b) Goal: one HTML file to check the leaf data before training. Context: data/leaves.csv, 518 rows, height, width, tree type (3 classes). Constraints: do not change the CSV; one self-contained file; no internet. Done when: counts per class match the CSV and the class filter works in a browser.</p>
+</div></details></div>
+
+<h2 id="test-f">Practice test F</h2>
+<div class="box uloha" id="f1"><div class="box-t">F1. Different column order <span class="en">1.25 points</span></div>
+<p>Fit to (1, 1), (2, 2), (3, 6). Columns of X are ordered <b>[x, 1]</b> and \(\mathbf w = [w, b]^\top\).</p>
+<p>a) Write X and <b>y</b>. (0.25)<br>b) Compute \(X^\top X\), \(X^\top\mathbf y\) and <b>w</b>. (0.75)<br>c) Predict at x = 4. (0.25)</p>
+<details class="reseni"><summary>Solution</summary><div>
+\[ X = \begin{bmatrix} 1 &amp; 1 \\ 2 &amp; 1 \\ 3 &amp; 1 \end{bmatrix},\qquad \mathbf y = \begin{bmatrix} 1 \\ 2 \\ 6 \end{bmatrix} \]
+\[ X^\top X = \begin{bmatrix} 14 &amp; 6 \\ 6 &amp; 3 \end{bmatrix},\qquad X^\top\mathbf y = \begin{bmatrix} 23 \\ 9 \end{bmatrix} \]
+<p>Determinant 42 − 36 = 6:</p>
+\[ \begin{aligned} \mathbf w &amp;= \frac16\begin{bmatrix} 3 &amp; -6 \\ -6 &amp; 14 \end{bmatrix}\begin{bmatrix} 23 \\ 9 \end{bmatrix} \\ &amp;= \frac16\begin{bmatrix} 15 \\ -12 \end{bmatrix} = \begin{bmatrix} 5/2 \\ -2 \end{bmatrix} \end{aligned} \]
+<p>c) ŷ(4) = 5/2 · 4 − 2 = 8.</p>
+</div></details></div>
+
+<div class="box uloha" id="f2"><div class="box-t">F2. Gradient descent <span class="en">1 point</span></div>
+<p>Minimize \(f(w) = (w - 3)^2\) from \(w_0 = 0\).</p>
+<p>a) Write the update rule and compute \(w_1, w_2\) for η = 0.25. (0.5)<br>b) What happens for η = 1 and η = 1.25? (0.5)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) \(w_{t+1} = w_t - \eta\cdot 2(w_t - 3)\): w₁ = 0 + 0.25·6 = 1.5; w₂ = 1.5 + 0.25·3 = 2.25 (the distance to 3 halves each step).</p>
+<p>b) The error is multiplied by (1 − 2η): η = 1 → −1, w oscillates 0, 6, 0, 6, …; η = 1.25 → −1.5, it diverges (0, 7.5, −3.75, 13.125, …).</p>
+</div></details></div>
+
+<div class="box uloha" id="f3"><div class="box-t">F3. Transposed confusion matrix <span class="en">1 point</span></div>
+<p>Screening, class 1 = ill. <b>Rows are predicted labels, columns are actual labels:</b></p>
+<div class="tablewrap"><table class="compact">
+<tr><th></th><th>Actual 0</th><th>Actual 1</th></tr>
+<tr><th>Predicted 0</th><td>40</td><td>5</td></tr>
+<tr><th>Predicted 1</th><td>10</td><td>45</td></tr>
+</table></div>
+<p>a) Give TP, FN, FP, TN. (0.25)<br>b) Recall and precision for class 1. (0.5)<br>c) Which of the two matters more for screening, and why? (0.25)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) TP = 45, FN = 5 (predicted 0, actually 1), FP = 10, TN = 40.</p>
+<p>b) recall = 45/50 = 0.9; precision = 45/55 = 9/11.</p>
+<p>c) Recall – a missed ill patient (FN) is worse than a false alarm that a follow-up test will clear.</p>
+</div></details></div>
+
+<div class="box uloha" id="f4"><div class="box-t">F4. Find the bagging bug <span class="en">1 point</span></div>
+<pre class="code"><code>trees = []
+for m in range(11):
+    rng = np.random.default_rng(0)
+    idx = rng.choice(n_train, size=n_train, replace=True)
+    trees.append(DecisionTreeClassifier().fit(X_train[idx], y_train[idx]))
+votes = np.column_stack([t.predict(X_val) for t in trees])</code></pre>
+<p>a) Why will the ensemble not help? Repair it. (0.5)<br>b) X_val has 40 rows. What is the shape of <code>votes</code>, and how do you get the majority vote? (0.5)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) The generator is re-created with seed 0 in every iteration, so all 11 trees get the same bootstrap sample and make the same predictions. Create <code>rng</code> once before the loop.</p>
+<p>b) (40, 11): one row per sample, one column per tree. <code>y_hat = (votes.mean(axis=1) &gt; 0.5).astype(int)</code>.</p>
+</div></details></div>
+
+<div class="box uloha" id="f5"><div class="box-t">F5. Trust and evidence <span class="en">0.75 points</span></div>
+<p>a) What is prompt injection? One sentence. (0.25)<br>b) The agent reports “all tests pass, accuracy 0.99”. What do you ask for and check? (0.5)</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) Hidden instructions inside content the agent reads (a web page, a README) that try to make it do something the user did not ask for.</p>
+<p>b) “Run the tests and the evaluation and show the output”; check with git diff that no test was weakened, and that the split, preprocessing inside training folds and one-time test use are correct.</p>
+</div></details></div>

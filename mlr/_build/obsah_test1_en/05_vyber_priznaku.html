@@ -1,0 +1,173 @@
+<h1>Feature selection and PCA</h1>
+<p class="lead">Task B4 (“Select a feature, not a list position”) tests forward selection in code: <code>argmax</code> returns the <b>position in the list <code>remaining</code></b>, not the feature number, and a new feature is accepted only on a <b>strict improvement</b>. Lab 3 also computed correlation, entropy and mutual information by hand on a table of four students, and PCA on four points. All of these are short calculations without a calculator.</p>
+
+<h2 id="filtry">Filters: a score for one feature without a model</h2>
+<div class="box definice" id="def-filtr-wrapper"><div class="box-t">Definition: filter and wrapper</div>
+<p>A <b>filter</b> scores each feature on its own with a statistic against the label (correlation, mutual information) without training a model. A <b>wrapper</b> scores <b>subsets</b> of features by the performance of a trained model on validation data (forward selection, backward elimination).</p>
+<p class="jinak">a filter is fast and coarse (it knows nothing about the model or redundancy), a wrapper is slower but measures exactly what we care about – how well the model predicts with the given columns.</p></div>
+<div class="box vzorec"><div class="box-t">Correlation, entropy, mutual information</div>
+\[ \begin{aligned} \rho(x, y) &amp;= \frac{\sum_i (x_i - \bar x)(y_i - \bar y)}{\sqrt{\sum_i (x_i - \bar x)^2 \sum_i (y_i - \bar y)^2}} \\ H(X) &amp;= -\sum_x p(x)\log_2 p(x) \\ I(X; Y) &amp;= H(X) + H(Y) - H(X, Y) \end{aligned} \]
+<table class="vars">
+<tr><td>\(\bar x, \bar y\)</td><td>means of the feature and the label</td></tr>
+<tr><td>\(p(x)\)</td><td>relative frequency of value x; terms with \(p = 0\) are skipped</td></tr>
+<tr><td>\(H(X, Y)\)</td><td>entropy of the pairs (x, y) – joint entropy</td></tr>
+<tr><td>\(I(X; Y)\)</td><td>how many bits about the label the feature reveals; 0 = independent</td></tr>
+</table></div>
+
+<div class="box uloha" id="u-filter"><div class="box-t">Task 1: filter scores by hand (lab 3)</div>
+<div class="tablewrap"><table class="compact">
+<tr><th>#</th><th>effort</th><th>brno</th><th>passed</th></tr>
+<tr><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>2</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>3</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>4</td><td>1</td><td>1</td><td>1</td></tr>
+</table></div>
+<p>Compute ρ(effort, passed), H(passed), I(effort; passed) and I(brno; passed). Use \(\log_2(1/2) = -1\), \(\log_2(1/4) = -2\).</p>
+<p class="meta"><b>Result:</b> ρ = 1; H(passed) = 1 bit; I(effort; passed) = 1 bit; I(brno; passed) = 0.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>1. Correlation: both means are 0.5; the deviations of effort and passed are both \([-\tfrac12, -\tfrac12, \tfrac12, \tfrac12]\).</p>
+\[ \rho = \frac{4\cdot\tfrac14}{\sqrt{1\cdot 1}} = 1 \]
+<p>2. Label entropy: two zeros, two ones.</p>
+\[ H(\text{passed}) = -\left(\tfrac12\cdot(-1) + \tfrac12\cdot(-1)\right) = 1 \text{ bit} \]
+<p>3. Effort: pairs (0,0), (0,0), (1,1), (1,1) → two values with 1/2 each → \(H(\text{effort}, \text{passed}) = 1\).</p>
+\[ I = 1 + 1 - 1 = 1 \text{ bit} \]
+<p>4. Brno: pairs (0,0), (1,0), (0,1), (1,1) → four values with 1/4 each → \(H = -4\cdot\tfrac14\cdot(-2) = 2\).</p>
+\[ I = 1 + 1 - 2 = 0 \]
+<p>Effort determines the result completely, Brno says nothing about it.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-pearson"><div class="box-t">Task 2: correlation on three points</div>
+<p>\(x = [1, 2, 3]\), \(y = [1, 3, 2]\). Compute the Pearson correlation.</p>
+<p class="meta"><b>Result:</b> ρ = 1/2.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>Means 2 and 2; deviations \(x - \bar x = [-1, 0, 1]\), \(y - \bar y = [-1, 1, 0]\).</p>
+\[ \rho = \frac{(-1)(-1) + 0\cdot 1 + 1\cdot 0}{\sqrt{2\cdot 2}} = \frac12 \]
+</div></details></div>
+
+<h2 id="dopredny">Forward selection (wrapper)</h2>
+<div class="box definice" id="def-forward-sel"><div class="box-t">Definition: forward feature selection</div>
+<p><b>Forward selection</b> starts with an empty (or given) set of features; in each step it tries adding every remaining feature, measures the validation score and adds the best one – <b>only if the score increases</b>; otherwise it stops. It is a greedy algorithm and does not guarantee the best subset.</p>
+<p class="jinak">building a team one player at a time: always take the player with whom the team plays best, and stop when nobody helps any more. Backward elimination goes the other way – it starts with all and removes.</p></div>
+
+<div class="box postup" id="postup-forward"><div class="box-t">How to recognise it and what to do: B4 and similar</div>
+<ol>
+<li><code>best_position = argmax(scores)</code> = <b>position</b> in <code>remaining</code> (from zero; first on ties).</li>
+<li>Feature number = <code>remaining[best_position]</code>.</li>
+<li>Compare <code>scores[best_position]</code> with <code>best_score</code>: accept only if <b>strictly greater</b>.</li>
+<li>Update: <code>feature = remaining.pop(best_position)</code>, <code>selected.append(feature)</code>, <code>best_score = scores[best_position]</code>.</li>
+<li>Write both resulting lists.</li>
+</ol></div>
+
+<div class="box uloha" id="u-b4"><div class="box-t">Sample B, task 4: Select a feature, not a list position <span class="en">1 point</span></div>
+<p>Each score is the validation accuracy obtained by adding the corresponding feature in <code>remaining</code> to the already selected set.</p>
+<pre class="code"><code>selected = [0]
+remaining = [1, 3, 4]
+best_score = 0.75
+scores = [0.80, 0.90, 0.85]
+best_position = int(np.argmax(scores))
+# update selected and remaining here</code></pre>
+<p>The search accepts a new feature only if validation accuracy <b>strictly improves</b>.</p>
+<p>a) Give <code>best_position</code> and the original feature number to add. Explain the distinction. (0.25)<br>
+b) Replace the comment with an update that adds the correct feature and removes it from <code>remaining</code>. Give both resulting lists. Python or clear pseudocode is acceptable. (0.5)<br>
+c) After accepting this step and updating <code>best_score</code>, the best candidate in the next step again scores 0.90. Should the search accept it? Explain. (0.25)</p>
+<p class="meta"><b>Result:</b> position 1, feature 3; <code>selected = [0, 3]</code>, <code>remaining = [1, 4]</code>; 0.90 is not &gt; 0.90 → reject, the search stops.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>a) The highest score 0.90 is at index 1 of <code>scores</code> → <code>best_position = 1</code>. The scores correspond to the elements of <code>remaining</code> in the same order, so the feature to add is <code>remaining[1] = 3</code>. The position says <i>where</i> the candidate sits in the list, the feature number <i>which</i> data column it is.</p>
+<p>b) Update (0.90 &gt; 0.75, so it is accepted):</p>
+<pre class="code"><code>if scores[best_position] &gt; best_score:
+    feature = remaining.pop(best_position)   # 3
+    selected.append(feature)
+    best_score = scores[best_position]       # 0.90</code></pre>
+<p>Result: <code>selected = [0, 3]</code>, <code>remaining = [1, 4]</code>.</p>
+<p>c) No. The condition is a strict improvement: 0.90 is not greater than <code>best_score</code> = 0.90. Another feature brings nothing; the search ends with <code>[0, 3]</code> (a simpler model with the same score).</p>
+<p class="answer-en">best_position = 1 is the index in remaining; the feature to add is remaining[1] = 3. Using selected.append(best_position) would add the wrong column (feature 1).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-board"><div class="box-t">Task 3: forward selection from a table (lab 3)</div>
+<p>Baseline without features: 50 %. Validation accuracies: A 70 %, B 60 %, C 50 %; {A, B} 80 %, {A, C} 70 %; {A, B, C} 80 %. Which feature comes first, which next, and when do we stop?</p>
+<p class="meta"><b>Result:</b> first A (70 &gt; 50), then B (80 &gt; 70), do not add C (80 is not &gt; 80) → {A, B}.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<ol>
+<li>Step 1: candidates A 70, B 60, C 50; the best is A, 70 &gt; 50 → add A.</li>
+<li>Step 2: {A, B} 80, {A, C} 70; the best is B, 80 &gt; 70 → add B.</li>
+<li>Step 3: {A, B, C} 80, not strictly greater than 80 → stop.</li>
+</ol>
+</div></details></div>
+
+<div class="box uloha" id="u-forward-d"><div class="box-t">Task 4: tied scores and positions</div>
+<pre class="code"><code>selected = [2]
+remaining = [0, 1, 4, 5]
+best_score = 0.70
+scores = [0.72, 0.68, 0.75, 0.75]
+best_position = int(np.argmax(scores))</code></pre>
+<p>Give <code>best_position</code>, the feature added and both lists after the update. In the next step the scores are [0.74, 0.75, 0.73]. What happens?</p>
+<p class="meta"><b>Result:</b> position 2 (the first of two 0.75), feature 4; <code>[2, 4]</code> and <code>[0, 1, 5]</code>; next step: 0.75 is not &gt; 0.75 → stop.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>On ties <code>argmax</code> returns the first occurrence → position 2 → <code>remaining[2] = 4</code>. After <code>pop(2)</code>: <code>remaining = [0, 1, 5]</code>, <code>selected = [2, 4]</code>, <code>best_score = 0.75</code>. Next step: the best 0.75 (feature 1) is not strictly better → stop.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-loop"><div class="box-t">Task 5: the whole loop</div>
+<p>Write the forward-selection loop with a helper <code>knn_accuracy(columns)</code> that returns validation accuracy.</p>
+<details class="reseni"><summary>Solution</summary><div>
+<pre class="code"><code>selected, remaining = [], list(range(n_features))
+best_score = baseline
+while remaining:
+    scores = [knn_accuracy(selected + [j]) for j in remaining]
+    pos = int(np.argmax(scores))
+    if scores[pos] &lt;= best_score:          # no strict improvement
+        break
+    best_score = scores[pos]
+    selected.append(remaining.pop(pos))</code></pre>
+<p>The score is computed on the validation part; the test set is used once for the selected subset.</p>
+</div></details></div>
+
+<h2 id="pca">PCA on four points</h2>
+<div class="box definice" id="def-pca-kroky"><div class="box-t">Definition: principal components (PCA)</div>
+<p><b>PCA</b> creates new features as projections of centred data onto the eigenvectors of the covariance matrix \(S = \tfrac1n X_c^\top X_c\); the first component has the direction with the largest eigenvalue (largest variance). The fraction of variance kept is \(\lambda_1/\sum_j \lambda_j\).</p>
+<p class="jinak">PCA does not select features but <b>builds new ones</b> and does not use labels – keeping a lot of variance does not mean the information important for classification survived.</p></div>
+<div class="box uloha" id="u-pca"><div class="box-t">Task 6: PCA by hand</div>
+<p>\(X\) has rows (2, 1), (−2, −1), (1, 2), (−1, −2). Compute the covariance \(S = \frac1n X_c^\top X_c\), its eigenvalues, the first direction, the projections and the fraction of variance kept by one component.</p>
+<p class="meta"><b>Result:</b> \(S = \begin{bmatrix} 2.5 &amp; 2 \\ 2 &amp; 2.5 \end{bmatrix}\), λ = 4.5 and 0.5, \(\mathbf w_1 = (1, 1)/\sqrt2\), z = ±3/√2, 90 % kept.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>1. Both column means are 0, the data are already centred.</p>
+<p>2. Covariance:</p>
+\[ X^\top X = \begin{bmatrix} 10 &amp; 8 \\ 8 &amp; 10 \end{bmatrix},\qquad S = \frac14 X^\top X = \begin{bmatrix} 2.5 &amp; 2 \\ 2 &amp; 2.5 \end{bmatrix} \]
+<p>3. The eigenvalues of \(\begin{bmatrix} a &amp; b \\ b &amp; a \end{bmatrix}\) are \(a \pm b\): 4.5 (direction (1, 1)) and 0.5 (direction (1, −1)).</p>
+<p>4. Projection onto \(\mathbf w_1 = (1, 1)/\sqrt 2\): \(z = (3, -3, 3, -3)/\sqrt2\).</p>
+<p>5. Variance kept 4.5/5 = 0.9.</p>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Common traps</div>
+<ul>
+<li><code>selected.append(best_position)</code> adds the wrong column – it must be <code>remaining[best_position]</code>.</li>
+<li><code>remaining.remove(best_position)</code> removes a value, not a position.</li>
+<li>“Strictly improves”: equality is not enough.</li>
+<li>Features are selected on validation, not on test.</li>
+<li>A filter does not see redundancy – two identical good features get the same score.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">What to write for full points</div>
+<p>Distinguish “position in remaining” and “feature number”, write both lists after the update and justify stopping with the strict-improvement condition.</p>
+<p class="answer-en">No: 0.90 is not strictly greater than the current best 0.90, so the feature brings no improvement and the search stops.</p></div>
+
+<div class="box kostka"><div class="box-t">In a nutshell</div><p>Filter = score of one feature without a model; wrapper = validation score of a model on a subset. In the loop: position → <code>remaining[position]</code> → accept only on a strict improvement.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Summary</h2>
+<p>Filters (Pearson correlation, entropy, mutual information) score each feature on its own against the label; MI = H(X) + H(Y) − H(X, Y) is zero for independent variables. Forward selection is a wrapper: it adds, one at a time, the feature that raises the validation score most, and stops when the score does not strictly improve. In code you must tell the position in the candidate list from the feature number. PCA instead of selecting builds new axes from the eigenvectors of the covariance matrix.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li><code>argmax</code> → position; feature = <code>remaining[position]</code>.</li>
+<li><code>selected.append(remaining.pop(pos))</code>.</li>
+<li>Accept only if <code>score &gt; best_score</code>.</li>
+<li>MI(independent) = 0; MI(feature determines label) = H(label).</li>
+<li>PCA: eigenvalues of the covariance = variances of the components.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Test questions</h2>
+<details class="q"><summary>Why are features selected by validation, not by test?</summary><div><p>Selection is a decision based on data; if it were made on the test set, the test would no longer be independent and the reported number would be optimistic.</p></div></details>
+<details class="q"><summary>When does forward selection stop?</summary><div><p>When no remaining feature strictly improves the validation score (or none is left).</p></div></details>
+<details class="q"><summary>How do a filter and a wrapper differ?</summary><div><p>A filter scores features with a statistic without a model (fast, ignores redundancy), a wrapper trains a model on subsets and measures validation performance (slower, more accurate).</p></div></details>
+<details class="q"><summary>What does mutual information 0 mean?</summary><div><p>The feature and the label are independent – knowing the feature does not reduce uncertainty about the label.</p></div></details>
+<details class="q"><summary>Why can PCA keep 95 % of the variance and still hurt classification?</summary><div><p>PCA does not use labels; a direction with small variance may carry exactly the difference between classes.</p></div></details>
+<details class="q"><summary>Why is forward selection “greedy”?</summary><div><p>In each step it takes the locally best feature and never revisits the decision; the best pair need not contain the best single feature.</p></div></details>

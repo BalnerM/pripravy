@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ukázky A a B s řešením – MLR</title>
+<meta name="description" content="Oba ukázkové testy vyřešené tak, jak je napsat do testu.">
+<link rel="alternate" hreflang="en" href="en/10_ukazky.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css?v=b9a02598">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js?v=b9a02598"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">MLR – průběžný test 1<small>typové úlohy: výpočty na papíře a čtení kódu</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html#mlr" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <a class="iconbtn langbtn" href="en/10_ukazky.html" hreflang="en" lang="en" title="English version">EN</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/10_ukazky.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Jak se připravit</span></a></li>
+    <li><a href="01_numpy.html"><span class="n">1</span><span>Čtení kódu v NumPy</span></a></li>
+    <li><a href="02_knn.html"><span class="n">2</span><span>Vzdálenosti, k-NN a gradientní sestup</span></a></li>
+    <li><a href="03_metriky.html"><span class="n">3</span><span>Matice záměn a metriky</span></a></li>
+    <li><a href="04_predzpracovani.html"><span class="n">4</span><span>Předzpracování a únik dat</span></a></li>
+    <li><a href="05_vyber_priznaku.html"><span class="n">5</span><span>Výběr příznaků a PCA</span></a></li>
+    <li><a href="06_linearni_regrese.html"><span class="n">6</span><span>Lineární regrese ručně</span></a></li>
+    <li><a href="07_polynom_ridge.html"><span class="n">7</span><span>Polynomy, přeučení, ridge a jádra</span></a></li>
+    <li><a href="08_stromy_ansambly.html"><span class="n">8</span><span>Stromy, bagging a SVM</span></a></li>
+    <li><a href="09_agenti.html"><span class="n">9</span><span>AI agenti: skill a subagent</span></a></li>
+    <li><a href="10_ukazky.html" class="active"><span class="n">✎</span><span>Ukázky A a B s řešením</span></a></li>
+    <li><a href="11_cvicne_testy.html"><span class="n">✎</span><span>Cvičné testy C–F</span></a></li>
+    <li><a href="12_tahak.html"><span class="n">★</span><span>Tahák</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#sample-a">Practical test 1 — sample A</a></li>
+    <li><a href="#sample-b">Practical test 1 — sample B</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – průběžný test 1 · Ukázky A a B s řešením – MLR · https://balnerm.github.io/pripravy/mlr/test1/10_ukazky.html</p>
+
+<h1>Ukázky A a B s řešením</h1>
+<p class="lead">Oba ukázkové testy celé a v původním znění. Nejdřív si je zkus napsat <b>na čas (25 minut, papír, bez kalkulačky)</b>, pak rozbal vzorovou odpověď. Odpovědi jsou v angličtině tak, jak by stačily na plný počet bodů; podrobné vysvětlení a podobné úlohy najdeš v odkazované kapitole.</p>
+<p><b>Header of both tests:</b> 25 minutes · 5 points · paper only · no notes, AI or calculator. Show your reasoning; fractions are acceptable. All tasks are independent. Read code without running it. <code>np</code> is NumPy; indices start at zero.</p>
+
+<h2 id="sample-a">Practical test 1 — sample A</h2>
+
+<div class="box uloha" id="a1"><div class="box-t">1. Set up a linear fit <span class="en">1.25 points</span></div>
+<p>Fit \(\hat y = b + wx\) to (−1, 0), (0, 0), (1, 6). Rows are samples; columns of X are ordered [1, x], and \(\mathbf w = [b, w]^\top\). Use \(\mathbf w = (X^\top X)^{-1}X^\top\mathbf y\).</p>
+<p>a) Write X and <b>y</b>. Explain the column of ones. (0.5)<br>b) Substitute the numerical arrays into the supplied formula for <b>w</b>. Leave transposes, products and the inverse unevaluated. (0.5)<br>c) A computer returns b = 2 and w = 3. Predict the response at x = 2. (0.25)</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+\[ X = \begin{bmatrix} 1 &amp; -1 \\ 1 &amp; 0 \\ 1 &amp; 1 \end{bmatrix},\qquad \mathbf y = \begin{bmatrix} 0 \\ 0 \\ 6 \end{bmatrix} \]
+<p>The column of ones multiplies the intercept b, so b is learned as an ordinary weight: ŷᵢ = b·1 + w·xᵢ.</p>
+\[ \mathbf w = \left( \begin{bmatrix} 1 &amp; -1 \\ 1 &amp; 0 \\ 1 &amp; 1 \end{bmatrix}^{\!\top} \begin{bmatrix} 1 &amp; -1 \\ 1 &amp; 0 \\ 1 &amp; 1 \end{bmatrix} \right)^{-1} \begin{bmatrix} 1 &amp; -1 \\ 1 &amp; 0 \\ 1 &amp; 1 \end{bmatrix}^{\!\top} \begin{bmatrix} 0 \\ 0 \\ 6 \end{bmatrix} \]
+<p>ŷ(2) = 2 + 3·2 = 8. → <a href="06_linearni_regrese.html#u-a1">kapitola 6</a></p>
+</div></details></div>
+
+<div class="box uloha" id="a2"><div class="box-t">2. Repair preprocessing <span class="en">1 point</span></div>
+<p>Training and validation rows have already been split correctly. A k-NN model will use these transformed features:</p>
+<pre class="code"><code>scaler = StandardScaler()
+X_train = scaler.fit_transform(train)
+X_valid = scaler.fit_transform(valid)</code></pre>
+<p>a) Explain why the original code is wrong for distance-based prediction. Which data must determine the mean and standard deviation? (0.75)<br>b) The training mean is 1 and standard deviation is 1. Standardize a validation value of 4. (0.25)</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<p>a) The second line refits the scaler on the validation data, so validation features are scaled with a different mean and standard deviation than the training features. The two sets are then in different units, k-NN distances between a validation point and training points are distorted, and information from the validation data leaks into preprocessing. The mean and standard deviation must come from the training data only: <code>X_valid = scaler.transform(valid)</code>.</p>
+<p>b) z = (4 − 1)/1 = 3. → <a href="04_predzpracovani.html#u-a2">kapitola 4</a></p>
+</div></details></div>
+
+<div class="box uloha" id="a3"><div class="box-t">3. Create a reusable skill <span class="en">0.75 points</span></div>
+<p>a) What is a <b>skill</b> for an AI agent? Answer in one sentence. (0.25)<br>b) How would you go about creating a skill for an AI agent? Briefly describe your approach. (0.5)</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<p>a) A skill is a saved, reusable recipe (a SKILL.md file with a name, a description of when to use it and instructions) that the agent loads only when the task needs it.</p>
+<p>b) Do the task once with the agent and note the steps and the check that worked; write <code>.claude/skills/&lt;name&gt;/SKILL.md</code> with a name, a clear description of when to use it and short instructions (plus a script if needed); test it in a fresh session and refine. → <a href="09_agenti.html#u-a3">kapitola 9</a></p>
+</div></details></div>
+
+<div class="box uloha" id="a4"><div class="box-t">4. Interpret fitted curves <span class="en">1 point</span></div>
+<p>The plots show three polynomial fits to the same synthetic training data. Dots are training observations; lines are predictions. <b>Part of the degree-15 curve lies outside the displayed vertical range.</b> These are recorded lab results. \(\text{MSE} = \frac1n\sum_{i=1}^n(\hat y_i - y_i)^2\).</p>
+<figure><div class="paper"><img src="../figures/t1_sample_a4.png" alt="Polynomy stupně 1, 3 a 15 z ukázky A" loading="lazy"></div></figure>
+<div class="tablewrap"><table class="compact">
+<tr><th>Degree</th><th>Training MSE</th><th>Test MSE</th></tr>
+<tr><td>1</td><td>0.2270</td><td>0.2825</td></tr>
+<tr><td>3</td><td>0.0508</td><td>0.0851</td></tr>
+<tr><td>15</td><td>0.0404</td><td>10.3871</td></tr>
+</table></div>
+<p>a) Which fit underfits the curved trend, and which shows overfitting? Support your answer using the curves and the error table. (0.5)<br>b) Which has the lowest recorded test error? In a new experiment, which split should guide degree selection so that the final test stays independent? (0.5)</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<p>a) Degree 1 underfits: the straight line cannot follow the curve and has the highest training MSE (0.227) and a similar test MSE. Degree 15 overfits: it oscillates between points and shoots off at the edge; the lowest training MSE (0.040) but a huge test MSE (10.39).</p>
+<p>b) Degree 3 (test MSE 0.085). Degree should be chosen on a separate validation split (or by cross-validation on the training data); the test set is used only once at the end. → <a href="07_polynom_ridge.html#u-a4">kapitola 7</a></p>
+</div></details></div>
+
+<div class="box uloha" id="a5"><div class="box-t">5. Read votes and bootstrap sampling <span class="en">1 point</span></div>
+<p>Three trees predict labels 0 or 1. Each row of V is one validation sample; each column is one tree. The true labels are given in the same row order.</p>
+\[ V = \begin{bmatrix} 0 &amp; 1 &amp; 0 \\ 1 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \\ 1 &amp; 1 &amp; 1 \end{bmatrix},\qquad \mathbf y_{\text{val}} = \begin{bmatrix} 0 \\ 1 \\ 1 \\ 1 \end{bmatrix} \]
+<pre class="code"><code>y_hat = (V.mean(axis=1) &gt; 0.5).astype(int)</code></pre>
+<p>a) Explain <code>axis=1</code> and write all four predictions. (0.5)<br>b) Calculate the ensemble's validation accuracy. (0.25)<br>c) Each tree trains on n rows drawn using <code>rng.choice(n, size=n, replace=True)</code>. Can a row occur twice? Must every training row occur in each draw? (0.25)</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<p>a) <code>axis=1</code> takes the mean across the columns (trees) of each row, i.e. the fraction of trees voting 1 for each sample: [1/3, 2/3, 1/3, 1] → ŷ = [0, 1, 0, 1].</p>
+<p>b) Correct: samples 1, 2, 4 → accuracy = 3/4.</p>
+<p>c) Yes, a row can occur twice (sampling with replacement). No, not every row must occur; some rows are left out of each draw (out-of-bag, about 37 %). → <a href="08_stromy_ansambly.html#u-a5">kapitola 8</a></p>
+</div></details></div>
+
+<h2 id="sample-b">Practical test 1 — sample B</h2>
+
+<div class="box uloha" id="b1"><div class="box-t">1. Trace polynomial features <span class="en">1.25 points</span></div>
+<pre class="code"><code>t = np.array([-1., 0., 1.])
+X = np.column_stack([t ** j for j in range(3)])
+w = np.array([1., 2., 1.])
+y_pred = X @ w</code></pre>
+<p><code>np.column_stack</code> joins the supplied columns.</p>
+<p>a) Write the matrix <code>X</code> and <code>y_pred</code>. (0.75)<br>b) Write the prediction equation in terms of t from the code above. Why is this model called linear in its weights, although its curve is not a straight line? (0.5)</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+\[ X = \begin{bmatrix} 1 &amp; -1 &amp; 1 \\ 1 &amp; 0 &amp; 0 \\ 1 &amp; 1 &amp; 1 \end{bmatrix},\qquad \texttt{y\_pred} = \begin{bmatrix} 0 \\ 1 \\ 4 \end{bmatrix} \]
+<p>b) ŷ = 1 + 2t + t². The prediction is a weighted sum of fixed features 1, t, t² with weights w₀, w₁, w₂, so it is linear in the weights (they can be fitted by linear least squares); only the features are nonlinear in t. → <a href="07_polynom_ridge.html#u-b1">kapitola 7</a></p>
+</div></details></div>
+
+<div class="box uloha" id="b2"><div class="box-t">2. Repair ridge regression <span class="en">1 point</span></div>
+<p><code>X</code> has shape <code>(3, 2)</code> with columns <code>[1, x]</code>; <code>y</code> has shape <code>(3,)</code>. This implementation must penalize <b>both coefficients</b>, including the intercept. Use these formulas, with λ &gt; 0 and I an identity matrix:</p>
+\[ \begin{aligned} J(\mathbf w) &amp;= \|X\mathbf w - \mathbf y\|_2^2 + \lambda\|\mathbf w\|_2^2 \\ \mathbf w &amp;= (X^\top X + \lambda I)^{-1}X^\top\mathbf y \end{aligned} \]
+<p>Read the code only; do not calculate an inverse. <code>LA.inv</code> computes a matrix inverse; <code>np.eye(k)</code> creates a k × k identity.</p>
+<pre class="code"><code>def ridge_fit(X, y, lam):
+    return LA.inv(X.T @ X + lam * np.eye(X.shape[0])) @ X.T @ y</code></pre>
+<p>a) Explain the dimensional error and repair it. (0.5)<br>b) Explain what each term in J measures and how increasing λ changes the trade-off. (0.5)</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<p>a) <code>X.T @ X</code> is 2 × 2 (number of columns), but <code>np.eye(X.shape[0])</code> is 3 × 3 (number of rows), so they cannot be added. The identity must have one row per weight: <code>np.eye(X.shape[1])</code>.</p>
+<p>b) \(\|X\mathbf w - \mathbf y\|^2\) is the squared training error (how well the model fits the data); \(\lambda\|\mathbf w\|^2\) penalizes large weights (model complexity). Increasing λ puts more weight on small coefficients: the fit becomes smoother and less prone to overfitting, but the training error grows and a very large λ underfits (weights → 0). → <a href="07_polynom_ridge.html#u-b2">kapitola 7</a></p>
+</div></details></div>
+
+<div class="box uloha" id="b3"><div class="box-t">3. Read a confusion matrix <span class="en">1 point</span></div>
+<p>Class <b>1</b> means a faulty item; class <b>0</b> means a good item. Rows are actual labels and columns are predicted labels:</p>
+<div class="tablewrap"><table class="compact">
+<tr><th></th><th>Predicted 0</th><th>Predicted 1</th></tr>
+<tr><th>Actual 0</th><td>6</td><td>2</td></tr>
+<tr><th>Actual 1</th><td>1</td><td>3</td></tr>
+</table></div>
+<p>For recall, treat class 1 as positive (TP: true positives, FN: false negatives): \(\text{recall}_1 = \frac{TP}{TP + FN}\).</p>
+<p>a) How many faulty items were missed? How many good items were incorrectly flagged as faulty? (0.25)<br>b) Calculate accuracy and recall for class 1. Show the denominators. (0.5)<br>c) Explain recall for class 1 in words in this application. (0.25)</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<p>a) Missed faulty items: FN = 1. Good items flagged as faulty: FP = 2.</p>
+\[ \begin{aligned} \text{accuracy} &amp;= \frac{3 + 6}{6 + 2 + 1 + 3} = \frac{9}{12} = 0.75 \\ \text{recall}_1 &amp;= \frac{3}{3 + 1} = \frac34 \end{aligned} \]
+<p>c) Recall for class 1 is the share of truly faulty items that the model catches: 3 of the 4 faulty items were detected. → <a href="03_metriky.html#u-b3">kapitola 3</a></p>
+</div></details></div>
+
+<div class="box uloha" id="b4"><div class="box-t">4. Select a feature, not a list position <span class="en">1 point</span></div>
+<p>Each score is the validation accuracy obtained by adding the corresponding feature in <code>remaining</code> to the already selected set.</p>
+<pre class="code"><code>selected = [0]
+remaining = [1, 3, 4]
+best_score = 0.75
+scores = [0.80, 0.90, 0.85]
+best_position = int(np.argmax(scores))
+# update selected and remaining here</code></pre>
+<p>The search accepts a new feature only if validation accuracy <b>strictly improves</b>.</p>
+<p>a) Give <code>best_position</code> and the original feature number to add. Explain the distinction. (0.25)<br>b) Replace the comment with an update that adds the correct feature and removes it from <code>remaining</code>. Give both resulting lists. Python or clear pseudocode is acceptable. (0.5)<br>c) After accepting this step and updating <code>best_score</code>, the best candidate in the next step again scores 0.90. Should the search accept it? Explain. (0.25)</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<p>a) <code>best_position = 1</code> (index in <code>scores</code> and <code>remaining</code>); the feature is <code>remaining[1] = 3</code>. The position says where the candidate is in the list, the feature number which data column it is.</p>
+<pre class="code"><code>feature = remaining.pop(best_position)   # 3
+selected.append(feature)
+best_score = scores[best_position]       # 0.90</code></pre>
+<p>b) <code>selected = [0, 3]</code>, <code>remaining = [1, 4]</code>.</p>
+<p>c) No – 0.90 is not strictly greater than the current best 0.90, so the search stops. → <a href="05_vyber_priznaku.html#u-b4">kapitola 5</a></p>
+</div></details></div>
+
+<div class="box uloha" id="b5"><div class="box-t">5. Use a subagent <span class="en">0.75 points</span></div>
+<p>a) What is a <b>subagent</b>? Answer in one sentence. (0.25)<br>b) Give one simple task you could delegate to a subagent and say what it should return. One or two sentences are enough. (0.5)</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<p>a) A subagent is a helper that the main agent starts for a side task; it has its own fresh context and returns only a short summary.</p>
+<p>b) Read the long training log and return only the epoch with the lowest validation loss, its value and any error messages. → <a href="09_agenti.html#u-b5">kapitola 9</a></p>
+</div></details></div>
+
+<div class="box zkouska"><div class="box-t">Jak hospodařit s 25 minutami</div>
+<ul>
+<li>Pět úloh za ~5 minut. Nejdřív rychlé body (definice agentů, tvar matice, predikce), pak výpočty.</li>
+<li>Vždy napiš i mezikrok (matice, zlomek se jmenovatelem) – „show your reasoning“.</li>
+<li>Zlomky nech jako zlomky, kalkulačka není potřeba.</li>
+<li>U „explain“ jedna věta s důvodem: <i>because …</i></li>
+</ul></div>
+
+<nav class="pager"><a class="prev" href="09_agenti.html"><small>← předchozí</small>AI agenti: skill a subagent</a><a class="next" href="11_cvicne_testy.html"><small>další →</small>Cvičné testy C–F</a></nav>
+</main>
+</div>
+</body>
+</html>

@@ -917,11 +917,102 @@ def fig07_alpha():
     save(fig, "fig07_alpha")
 
 
+# =====================================================================  průběžný test 1 (mlr/test1/)
+def t1_ridge_lambda():
+    """Ridge na polynomu stupně 15 jako ve cvičení 4: šum. sinus, 40 trénovacích a 200 testovacích bodů,
+    x škálované do t ∈ [−1, 1], penalizují se všechny váhy (i intercept). Čtyři hodnoty λ, MSE v titulcích."""
+    R = np.random.default_rng(18)
+    x = R.uniform(0, 5, 40); y = np.sin(x) + 0.3 * R.normal(size=40)
+    xt = R.uniform(0, 5, 200); yt = np.sin(xt) + 0.3 * R.normal(size=200)
+    feat = lambda v: np.column_stack([(2 * v / 5 - 1) ** j for j in range(16)])
+    xs = np.linspace(0, 5, 400)
+    fig, axs = plt.subplots(1, 4, figsize=(13, 3.4), sharey=True)
+    rows = []
+    for ax, (lam, lab) in zip(axs, [(0, "0"), (1e-4, "10⁻⁴"), (1, "1"), (1e4, "10⁴")]):
+        X = feat(x)
+        w = np.linalg.lstsq(X.T @ X + lam * np.eye(16), X.T @ y, rcond=None)[0]
+        tr = np.mean((X @ w - y) ** 2); te = np.mean((feat(xt) @ w - yt) ** 2)
+        rows.append((lab, tr, te))
+        ax.scatter(x, y, s=14, c=C1, edgecolors=SURF, linewidths=0.5, zorder=3)
+        ax.plot(xs, feat(xs) @ w, color=C2)
+        ax.set_ylim(-2, 2); ax.set_xlabel("x")
+        ax.set_title(f"λ = {lab}\nMSE {T('trénink', 'train')} {cz(tr, 3)} · test {cz(te, 3)}", fontsize=10)
+    axs[0].set_ylabel("y")
+    save(fig, "t1_ridge_lambda")
+    for r in rows:
+        print("   lambda = %s: train %.3f, test %.3f" % r)
+
+
+def t1_standardizace():
+    """Jedna validační hodnota škálovaná správně (μ, σ z trénovacích dat) a špatně (vlastní μ, σ validace)."""
+    tr = np.array([2, 4, 4, 4, 5, 5, 7, 9.]); va = np.array([8, 10.])
+    mu, sd = tr.mean(), tr.std()
+    fig, axs = plt.subplots(3, 1, figsize=(8, 3.9), sharex=False)
+    rows = [(tr, va, T("surová data", "raw data"), (0, 11)),
+            ((tr - mu) / sd, (va - mu) / sd, T("správně: μ a σ z trénovacích dat (transform)",
+                                                 "correct: μ and σ from training data (transform)"), (-2.5, 3)),
+            ((tr - mu) / sd, (va - va.mean()) / va.std(), T("špatně: validace má vlastní μ a σ (fit_transform)",
+                                                             "wrong: validation uses its own μ and σ (fit_transform)"), (-2.5, 3))]
+    for ax, (a, b, ttl, lim) in zip(axs, rows):
+        ax.scatter(a, np.zeros_like(a) + np.array([0, 0, 0.18, -0.18, 0, 0.18, 0, 0])[:len(a)], s=40, c=C1, marker="o",
+                   edgecolors=SURF, zorder=3, label=T("trénovací", "training"))
+        ax.scatter(b, np.zeros_like(b), s=60, c=C2, marker="s", edgecolors=SURF, zorder=4, label=T("validační", "validation"))
+        for v in b:
+            ax.annotate(cz(v, 1), (v, 0), xytext=(0, 9), textcoords="offset points", ha="center", fontsize=8.5, color=C2)
+        ax.set_xlim(*lim); ax.set_ylim(-0.6, 0.7); ax.set_yticks([]); ax.grid(axis="y", visible=False)
+        ax.spines["left"].set_visible(False)
+        ax.set_title(ttl, fontsize=9.5, loc="left")
+    axs[0].legend(fontsize=8.5, loc="upper left", ncol=2)
+    save(fig, "t1_standardizace")
+
+
+def t1_strom():
+    """Šest bodů z papírového úkolu cvičení 6: tři kandidátní řezy a výsledný strom (x₁ ≤ 2,5, pak x₂ ≤ 1,5)."""
+    P = np.array([[1, 1], [2, 3], [3, 2], [4, 4], [5, 1], [6, 3.]]); cls = np.array([0, 0, 1, 1, 0, 1])
+    fig, axs = plt.subplots(1, 2, figsize=(10, 4), sharey=True)
+    for ax in axs:
+        scatter2(ax, P, cls, s=70)
+        for i, (a, b) in enumerate(P):
+            ax.annotate(str(i + 1), (a, b), xytext=(6, 5), textcoords="offset points", fontsize=9, color=INK2)
+        ax.set_xlim(0, 7); ax.set_ylim(0, 5); ax.set_xlabel("x₁")
+    axs[0].set_ylabel("x₂")
+    for v, lab, yy, ha, dx in [(1.5, "x₁ ≤ 1,5 → 4/6", 0.2, "right", -0.08), (2.5, "x₁ ≤ 2,5 → 5/6", 4.7, "left", 0.08)]:
+        axs[0].axvline(v, color=MUTED, ls="--", lw=1.3)
+        axs[0].text(v + dx, yy, lab if LANG == "cs" else lab.replace(",", "."), fontsize=8.5, color=INK2, ha=ha)
+    axs[0].axhline(2.5, color=MUTED, ls=":", lw=1.5)
+    axs[0].text(4.6, 2.6, "x₂ ≤ 2,5 → 4/6" if LANG == "cs" else "x₂ ≤ 2.5 → 4/6", fontsize=8.5, color=INK2)
+    axs[0].set_title(T("Kandidátní řezy a počet správně zařazených", "Candidate cuts and correctly classified points"))
+    axs[1].axvspan(0, 2.5, color="#d6e5f7", zorder=0); axs[1].axvspan(2.5, 7, color="#fbdccf", zorder=0)
+    axs[1].fill_between([2.5, 7], 0, 1.5, color="#d6e5f7", zorder=0)
+    axs[1].axvline(2.5, color=INK2, lw=1.2); axs[1].plot([2.5, 7], [1.5, 1.5], color=INK2, lw=1.2)
+    axs[1].text(0.2, 4.6, "A", fontsize=12, color=C1, weight="bold"); axs[1].text(6.5, 4.6, "B", fontsize=12, color=C2, weight="bold")
+    axs[1].text(6.5, 0.4, "A", fontsize=12, color=C1, weight="bold")
+    axs[1].set_title(T("Strom: x₁ ≤ 2,5 → A; jinak x₂ ≤ 1,5 → A, jinak B",
+                       "Tree: x₁ ≤ 2.5 → A; else x₂ ≤ 1.5 → A, else B"), fontsize=10)
+    save(fig, "t1_strom")
+
+
+def t1_parabola():
+    """Úloha B1: body (−1, 0), (0, 1), (1, 4) a model ŷ = 1 + 2t + t² (lineární ve vahách)."""
+    t = np.array([-1., 0., 1.]); ts = np.linspace(-1.6, 1.6, 200)
+    fig, ax = plt.subplots(figsize=(6, 3.4))
+    ax.plot(ts, 1 + 2 * ts + ts ** 2, color=C2, label="ŷ = 1 + 2t + t²")
+    ax.scatter(t, 1 + 2 * t + t ** 2, s=60, c=C1, edgecolors=SURF, zorder=3, label="y_pred = X @ w")
+    for a in t:
+        ax.annotate(f"({a:.0f}, {1 + 2 * a + a * a:.0f})", (a, 1 + 2 * a + a * a), xytext=(8, -12), textcoords="offset points",
+                    fontsize=9, color=INK2)
+    ax.set_xlabel("t"); ax.set_ylabel("ŷ"); ax.legend(fontsize=9, loc="upper left")
+    ax.set_title(T("Zakřivená křivka, a přesto lineární ve vahách", "A curve, yet linear in the weights"))
+    save(fig, "t1_parabola")
+
+
+T1 = [t1_ridge_lambda, t1_standardizace, t1_strom, t1_parabola]
+
 ALL = [fig01_gd_eta, fig01_knn_k, fig02_roc, fig02_kfold_var, fig03_hughes, fig03_pca_lda, fig03_tsne_perp,
        fig03_umap_params, fig04_poly, fig04_ridge_lasso, fig04_losses, fig04_svm_c, fig04_svm_rbf,
        fig06_terce, fig06_regimy, fig06_bias_variance, fig06_tree_depth, fig06_impurity, fig06_bagging, fig06_rf, fig06_adaboost,
        fig06_ada_kola, fig06_ada_silny,
-       fig07_activations, fig07_optimizers, fig07_early_stopping, fig07_alpha]
+       fig07_activations, fig07_optimizers, fig07_early_stopping, fig07_alpha] + T1
 
 if __name__ == "__main__":
     only = ARGS

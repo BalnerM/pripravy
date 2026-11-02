@@ -1,0 +1,129 @@
+<h1>AI agents: skill and subagent</h1>
+<p class="lead">Each sample has one verbal task worth 0.75 points from lecture and lab 5 (“Coding agents and Git”): A3 asks about a <b>skill</b>, B5 about a <b>subagent</b>. A precise one-sentence definition (“Answer in one sentence”) and a short, concrete approach or example are enough. The detailed explanation is in <a href="../../en/05_vibecoding.html">chapter 5 of the main notes</a>; here are the terms that can be asked in the same way, with model answers.</p>
+
+<h2 id="pojmy">Terms in one sentence</h2>
+<div class="box definice" id="def-skill"><div class="box-t">Definition: skill</div>
+<p>A <b>skill</b> is a saved, reusable recipe – a <code>SKILL.md</code> file with a name, a description of when to use it and instructions (optionally with scripts) – that the agent loads <b>only when the task fits</b> or when the user calls it (<code>/report</code>).</p>
+<p class="jinak">“a recipe in the drawer”. <code>AGENTS.md</code> is read every time, a skill only when needed, so it does not take up context.</p></div>
+<div class="box definice" id="def-subagent-t"><div class="box-t">Definition: subagent</div>
+<p>A <b>subagent</b> is a helper that the agent starts for a side task (a search, a long log, a review); it has <b>its own fresh context window</b>, does not see the original conversation and returns only a <b>short summary</b>.</p>
+<p class="jinak">the main context stays clean and a reviewer has “fresh eyes”. Cost: more tokens, and the brief must stand alone (the subagent does not know your chat).</p></div>
+<div class="box definice" id="def-harness"><div class="box-t">Definition: model, agent and harness</div>
+<p>The <b>model</b> is the trained network that continues text. An <b>agent</b> = model + software that can act. The <b>harness</b> (Claude Code, Codex) is the installed program that sends requests to the model and carries out the actions (tools) the model asks for – the model never touches your files itself.</p>
+<p class="jinak">the model proposes an action, the harness runs it, the result goes back to the model – that is the agent loop. An error is information, not failure.</p></div>
+<div class="box definice" id="def-hook"><div class="box-t">Definition: hook</div>
+<p>A <b>hook</b> is a small script that the harness runs by itself at a certain event (e.g. before every file edit) and that can <b>block</b> the action.</p>
+<p class="jinak">a rule in <code>AGENTS.md</code> <b>asks</b> the agent, a hook <b>enforces</b> the rule – but only for the event it watches.</p></div>
+<div class="box definice" id="def-mcp-t"><div class="box-t">Definition: MCP</div>
+<p><b>MCP</b> (Model Context Protocol) is a standard “plug” for extra tools (like USB): any harness can use any tool that offers MCP (a browser via Playwright, Blender, current documentation).</p>
+<p class="jinak">enable only what the task needs – every tool list takes space in the context.</p></div>
+<div class="box definice" id="def-context"><div class="box-t">Definition: context and context window</div>
+<p>The <b>context</b> is everything the model reads before answering (the task, files read, tool output); the <b>context window</b> is the maximum number of tokens the model can read at once.</p>
+<p class="jinak">a crowded context makes the model worse – it forgets decisions. Save the state in <code>PLAN.md</code>, run <code>/clear</code> and let it read the files again.</p></div>
+
+<div class="tablewrap"><table class="compact">
+<tr><th>Term</th><th>One sentence</th></tr>
+<tr><td><code>AGENTS.md</code></td><td>project rules, the agent reads them at the start of every session (Claude Code via the line <code>@AGENTS.md</code> in <code>CLAUDE.md</code>).</td></tr>
+<tr><td><code>SPEC.md</code> / <code>PLAN.md</code></td><td>the task / progress: what is done, what was checked, the next step.</td></tr>
+<tr><td>Good task</td><td>Goal · Context · Constraints · Done when; a missing “done when” is the most common reason agents stop early.</td></tr>
+<tr><td>Tool</td><td>an action the harness performs for the model (read, edit, run a command, open a browser) and returns evidence.</td></tr>
+<tr><td>Test</td><td>a small script with a known answer; a passing test is evidence, not proof. The agent must not weaken a test to make it pass.</td></tr>
+<tr><td>Permission modes</td><td>Plan (only reads and proposes), Ask, Accept edits, Auto, Bypass (only on a throwaway machine).</td></tr>
+<tr><td>Prompt injection</td><td>hidden instructions in foreign text (a web page, a README); limit what the agent can do, asking it to ignore them is not enough.</td></tr>
+<tr><td>Steering</td><td>short corrective prompts: “Stop. Explain the cause and try a different approach.”, “Run the check and show the output.”</td></tr>
+</table></div>
+
+<div class="box postup" id="postup-skill"><div class="box-t">How to create a skill (answer to A3 b)</div>
+<ol>
+<li>Find a task I repeat (e.g. build and check a report from <code>results.csv</code>).</li>
+<li>Do it once with the agent and write down the steps that worked, including the check of the result.</li>
+<li>Create <code>.claude/skills/report/SKILL.md</code>: a header with <code>name</code> and <code>description</code> (when to use the skill), below it short instructions; longer code as a script next to it.</li>
+<li>Try it in a new session (<code>/report</code> or a task that should trigger it) and refine the description and instructions by the result.</li>
+</ol>
+<pre class="code"><code>---
+name: report
+description: Build and check the experiment report.
+---
+Read results.csv. Build report.html.
+Open it in a browser and check that the numbers match.</code></pre></div>
+
+<h2 id="ulohy">Tasks</h2>
+<div class="box uloha" id="u-a3"><div class="box-t">Sample A, task 3: Create a reusable skill <span class="en">0.75 points</span></div>
+<p>a) What is a <b>skill</b> for an AI agent? Answer in one sentence. (0.25)<br>
+b) How would you go about creating a skill for an AI agent? Briefly describe your approach. (0.5)</p>
+<details class="reseni"><summary>Model answer</summary><div>
+<p>a) <i>A skill is a saved, reusable recipe (a SKILL.md file with a name, a description of when to use it, and instructions, optionally with scripts) that the agent loads only when a task needs it or when I call it.</i></p>
+<p>b) <i>I would first do the task once with the agent and note the steps and the check that worked. Then I would write .claude/skills/&lt;name&gt;/SKILL.md with a name and a clear description of when to use it, followed by short step-by-step instructions (and a helper script if needed). Finally I would test it in a fresh session on a real task and refine the description and instructions.</i></p>
+</div></details></div>
+
+<div class="box uloha" id="u-b5"><div class="box-t">Sample B, task 5: Use a subagent <span class="en">0.75 points</span></div>
+<p>a) What is a <b>subagent</b>? Answer in one sentence. (0.25)<br>
+b) Give one simple task you could delegate to a subagent and say what it should return. One or two sentences are enough. (0.5)</p>
+<details class="reseni"><summary>Model answer</summary><div>
+<p>a) <i>A subagent is a helper started by the main agent for a side task; it works in its own fresh context window and returns only a short summary to the main agent.</i></p>
+<p>b) <i>Ask a subagent to read the 2 000-line training log and return only the epoch with the lowest validation loss, its value, and any error messages.</i> (Other examples: “review train.py for data leakage and return a list of suspicious lines with line numbers”, “search the repository for every place where StandardScaler is fitted and return the file paths and lines”.)</p>
+<p>Important: the task must stand alone and the output must be short and concrete (what exactly to return).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-hook"><div class="box-t">Task 3: a hook versus a rule</div>
+<p>a) What is a hook? b) How does it differ from a rule in AGENTS.md? Give an example.</p>
+<details class="reseni"><summary>Model answer</summary><div>
+<p><i>a) A hook is a small script that the harness runs automatically at an event, such as before every file edit, and it can block the action. b) A rule in AGENTS.md only asks the model, which may ignore it; a hook enforces the rule. Example: a hook that blocks any edit of test_model.py with the message “Tests are read-only.”</i></p>
+</div></details></div>
+
+<div class="box uloha" id="u-spec"><div class="box-t">Task 4: a well-specified task</div>
+<p>Rewrite the vague task “Make an HTML report from leaves.csv.” using the four parts of a good task.</p>
+<details class="reseni"><summary>Model answer</summary><div>
+<ul>
+<li><b>Goal:</b> one HTML file to check the leaf data before training.</li>
+<li><b>Context:</b> data/leaves.csv, 518 rows, columns height, width, tree type (3 classes).</li>
+<li><b>Constraints:</b> do not change the CSV; one self-contained file; no internet needed.</li>
+<li><b>Done when:</b> the counts per class match the CSV and the class filter works in a browser.</li>
+</ul>
+</div></details></div>
+
+<div class="box uloha" id="u-claim"><div class="box-t">Task 5: the agent reports success</div>
+<p>The agent says: “Done, all tests pass and test accuracy is 0.99.” What do you ask for, and what do you check in an ML experiment?</p>
+<details class="reseni"><summary>Model answer</summary><div>
+<p><i>“Run the tests and the evaluation and show me the output.” A passing test is evidence, not proof, so I check that no test was changed to pass (git diff), and for the ML result I check the split (no duplicates across it), that preprocessing was fitted inside the training folds only, that hyperparameters were chosen on validation data and that the test set was used once.</i></p>
+</div></details></div>
+
+<div class="box uloha" id="u-context"><div class="box-t">Task 6: a long conversation</div>
+<p>After two hours the agent keeps repeating an error it already fixed. Why, and what do you do?</p>
+<details class="reseni"><summary>Model answer</summary><div>
+<p><i>The context is crowded, so the model forgets earlier decisions. I ask it to save what is done, what was checked and the next step to PLAN.md, then start fresh with /clear and let it read SPEC.md and PLAN.md (/compact also works, but details can be lost).</i></p>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Common traps</div>
+<ul>
+<li>Skill ≠ AGENTS.md: a skill is loaded only when needed, AGENTS.md always.</li>
+<li>A subagent does not see the conversation – the brief must contain everything needed.</li>
+<li>For “what it should return” write a concrete, short output (a number, a list of lines, a file), not “the result”.</li>
+<li>A hook enforces, a rule only asks.</li>
+<li>An answer to “one sentence” should really be one sentence.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">What to write for full points</div>
+<p>Definition: <b>what it is</b> + <b>the key property</b> (skill: loaded only when needed; subagent: own context, returns a summary). Approach / example: concrete steps or a task + a concrete output.</p></div>
+
+<div class="box kostka"><div class="box-t">In a nutshell</div><p>Skill = a SKILL.md recipe loaded when needed; subagent = a helper with a clean context that returns a short summary; hook = a script that enforces or blocks an action.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Summary</h2>
+<p>An agent is a model with a harness that runs tools in a loop. The project is steered by AGENTS.md (rules, read every time), SPEC.md (the task with four parts) and PLAN.md (progress). A skill is a recipe in SKILL.md loaded only when needed; it is made from a task that worked and refined in a new session. A subagent gets a self-contained brief, works in a clean context and returns a short summary. A hook enforces rules, MCP adds tools. The agent's results are verified by evidence (test output, diff), for ML especially the data split and leakage.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Skill: a saved recipe, loaded only when it fits.</li>
+<li>Subagent: own context, returns a short summary, the brief must stand alone.</li>
+<li>AGENTS.md asks, a hook enforces.</li>
+<li>Goal · Context · Constraints · Done when.</li>
+<li>Ask for evidence: “Run the check and show the output.”</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Test questions</h2>
+<details class="q"><summary>Why does a subagent save the main agent's context?</summary><div><p>It does the long work (reading a log, searching) in its own window and returns only a summary; the main context is not filled with details.</p></div></details>
+<details class="q"><summary>When not to use a subagent?</summary><div><p>For a small task, where overhead and tokens would outweigh the benefit; or when several subagents edit the same files (conflicts – each needs its own copy, a worktree).</p></div></details>
+<details class="q"><summary>What is the difference between a skill and AGENTS.md?</summary><div><p>AGENTS.md are general project rules, read every time. A skill is a procedure for a specific type of task, loaded only when needed.</p></div></details>
+<details class="q"><summary>What is MCP?</summary><div><p>A standard protocol through which a harness connects extra tools (a browser, Blender, documentation), like a USB plug.</p></div></details>
+<details class="q"><summary>Why is it not enough to tell the agent “ignore prompt injection”?</summary><div><p>The model cannot reliably tell instructions from data; you must limit what it may do (permissions, no secret keys, a sandbox).</p></div></details>
+<details class="q"><summary>Why is “it runs” not enough for an ML experiment?</summary><div><p>A bad data split or leakage gives a plausible but too good number; the agent gets no feedback that the result is wrong. Checks must be written beforehand.</p></div></details>

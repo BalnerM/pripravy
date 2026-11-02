@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slovník pojmů (definice) – MLR</title>
+<meta name="description" content="Všechny definice z těchto skript na jednom místě.">
+<link rel="alternate" hreflang="en" href="en/99_slovnik.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css?v=b9a02598">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js?v=b9a02598"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">MLR – průběžný test 1<small>typové úlohy: výpočty na papíře a čtení kódu</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html#mlr" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <a class="iconbtn langbtn" href="en/99_slovnik.html" hreflang="en" lang="en" title="English version">EN</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/99_slovnik.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Jak se připravit</span></a></li>
+    <li><a href="01_numpy.html"><span class="n">1</span><span>Čtení kódu v NumPy</span></a></li>
+    <li><a href="02_knn.html"><span class="n">2</span><span>Vzdálenosti, k-NN a gradientní sestup</span></a></li>
+    <li><a href="03_metriky.html"><span class="n">3</span><span>Matice záměn a metriky</span></a></li>
+    <li><a href="04_predzpracovani.html"><span class="n">4</span><span>Předzpracování a únik dat</span></a></li>
+    <li><a href="05_vyber_priznaku.html"><span class="n">5</span><span>Výběr příznaků a PCA</span></a></li>
+    <li><a href="06_linearni_regrese.html"><span class="n">6</span><span>Lineární regrese ručně</span></a></li>
+    <li><a href="07_polynom_ridge.html"><span class="n">7</span><span>Polynomy, přeučení, ridge a jádra</span></a></li>
+    <li><a href="08_stromy_ansambly.html"><span class="n">8</span><span>Stromy, bagging a SVM</span></a></li>
+    <li><a href="09_agenti.html"><span class="n">9</span><span>AI agenti: skill a subagent</span></a></li>
+    <li><a href="10_ukazky.html"><span class="n">✎</span><span>Ukázky A a B s řešením</span></a></li>
+    <li><a href="11_cvicne_testy.html"><span class="n">✎</span><span>Cvičné testy C–F</span></a></li>
+    <li><a href="12_tahak.html"><span class="n">★</span><span>Tahák</span></a></li>
+    <li><a href="99_slovnik.html" class="active"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#k1">1 · Čtení kódu v NumPy</a></li>
+    <li><a href="#k2">2 · Vzdálenosti, k-NN a gradientní sestup</a></li>
+    <li><a href="#k3">3 · Matice záměn a metriky</a></li>
+    <li><a href="#k4">4 · Předzpracování a únik dat</a></li>
+    <li><a href="#k5">5 · Výběr příznaků a PCA</a></li>
+    <li><a href="#k6">6 · Lineární regrese ručně</a></li>
+    <li><a href="#k7">7 · Polynomy, přeučení, ridge a jádra</a></li>
+    <li><a href="#k8">8 · Stromy, bagging a SVM</a></li>
+    <li><a href="#k9">9 · AI agenti: skill a subagent</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – průběžný test 1 · Slovník pojmů (definice) – MLR · https://balnerm.github.io/pripravy/mlr/test1/99_slovnik.html</p>
+
+<h1>Slovník pojmů</h1>
+<p class="lead">Všechny definice ze skript na jednom místě, seřazené podle kapitol. Hodí se na rychlé opakování: zakryj text, řekni definici nahlas a pak si ji zkontroluj. Odkaz „výklad“ vede k místu, kde je pojem vysvětlen podrobně.</p>
+<h2 id="k1" class="slovnik-kap">1 · Čtení kódu v NumPy</h2>
+<div class="box definice" id="s-shape"><div class="box-t">tvar pole (shape)</div>
+<p><b>Tvar</b> (<code>X.shape</code>) je n-tice s počtem prvků v každé ose pole. Datová matice má v kurzu vždy tvar <code>(n_samples, n_features)</code>: <b>řádek = vzorek</b>, <b>sloupec = příznak</b>. Vektor (1D pole) má tvar <code>(n,)</code> – není to řádek ani sloupec.</p>
+<p class="jinak">první číslo říká, kolik je měření (listů, pacientů), druhé, kolik veličin u každého měříme. Když zadání řekne „X has shape (3, 2)“, jsou to 3 vzorky a 2 sloupce.</p><p class="slovnik-odkaz"><a href="01_numpy.html#def-shape">výklad v kapitole 1 →</a></p></div>
+<div class="box definice" id="s-axis"><div class="box-t">osa (axis)</div>
+<p><b>Parametr <code>axis</code></b> určuje, podél které osy funkce (<code>sum</code>, <code>mean</code>, <code>argmax</code> …) počítá; tato osa ve výsledku <b>zmizí</b>. U matice <code>axis=0</code> prochází řádky (výsledek pro každý sloupec), <code>axis=1</code> prochází sloupce (výsledek pro každý řádek).</p>
+<p class="jinak"><code>axis=1</code> = „spočítej to v každém řádku zvlášť“ – např. průměr hlasů všech stromů pro jeden vzorek. <code>axis=0</code> = „v každém sloupci zvlášť“ – např. průměr jednoho příznaku přes všechny vzorky (to dělá standardizace).</p><p class="slovnik-odkaz"><a href="01_numpy.html#def-axis">výklad v kapitole 1 →</a></p></div>
+<h2 id="k2" class="slovnik-kap">2 · Vzdálenosti, k-NN a gradientní sestup</h2>
+<div class="box definice" id="s-euklid"><div class="box-t">eukleidovská vzdálenost</div>
+<p><b>Eukleidovská vzdálenost</b> dvou vzorků \(\mathbf a, \mathbf b\) s d příznaky je délka úsečky mezi nimi:
+\[ d(\mathbf a, \mathbf b) = \sqrt{\sum_{j=1}^{d} (a_j - b_j)^2} \]</p>
+<p class="jinak">„vzdálenost pravítkem“. Sčítají se čtverce rozdílů všech příznaků – proto příznak s velkými čísly (centimetry vs. desetiny centimetru) vzdálenost ovládne a před k-NN se standardizuje (kapitola 4).</p><p class="slovnik-odkaz"><a href="02_knn.html#def-euklid">výklad v kapitole 2 →</a></p></div>
+<div class="box definice" id="s-knn"><div class="box-t">k-NN klasifikátor</div>
+<p><b>k-NN</b> (k nejbližších sousedů) zařadí nový vzorek do třídy, která má <b>většinu mezi jeho k nejbližšími trénovacími vzorky</b>. Pro k = 1 je to pravidlo nejbližšího souseda \(\hat y(\mathbf x_\ast) = y_{(1)}\). Nemá trénovací fázi: <code>fit</code> si data jen zapamatuje („lazy learner“).</p>
+<p class="jinak">„řekni mi, kdo jsou tví sousedé“. Malé k = citlivé na jeden zatoulaný bod (šum), velké k = rozmazané hranice tříd. k je hyperparametr – vybírá se na validačních datech.</p><p class="slovnik-odkaz"><a href="02_knn.html#def-knn">výklad v kapitole 2 →</a></p></div>
+<div class="box definice" id="s-gd-krok"><div class="box-t">krok gradientního sestupu</div>
+<p><b>Gradientní sestup</b> hledá minimum funkce opakováním kroku proti gradientu:
+\[ \mathbf x^{(t+1)} = \mathbf x^{(t)} - \eta\, \nabla f(\mathbf x^{(t)}) \]
+kde \(\eta &gt; 0\) je <b>krok učení</b> (learning rate) a gradient \(\nabla f\) je vektor parciálních derivací.</p>
+<p class="jinak">gradient ukazuje do kopce, proto jdeme na opačnou stranu. Malé η = pomalé plížení, příliš velké η = přeskočení minima a rozkmit nebo divergence.</p><p class="slovnik-odkaz"><a href="02_knn.html#def-gd-krok">výklad v kapitole 2 →</a></p></div>
+<div class="box definice" id="s-kmeans-krok"><div class="box-t">krok algoritmu k-means</div>
+<p><b>k-means</b> střídá dva kroky: (1) <b>přiřazení</b> – každý bod patří k nejbližšímu středu \(\boldsymbol\mu_j\); (2) <b>aktualizace</b> – každý střed je průměr svých bodů. Končí, když se přiřazení nezmění.</p>
+<p class="jinak">body si vyberou nejbližší „vlajku“, vlajka se přesune doprostřed svých bodů, a znovu. Učení bez učitele – labely se nepoužijí.</p><p class="slovnik-odkaz"><a href="02_knn.html#def-kmeans-krok">výklad v kapitole 2 →</a></p></div>
+<h2 id="k3" class="slovnik-kap">3 · Matice záměn a metriky</h2>
+<div class="box definice" id="s-cm"><div class="box-t">matice záměn (confusion matrix)</div>
+<p><b>Matice záměn</b> je tabulka počtů, kde <b>řádky jsou skutečné třídy</b> a <b>sloupce predikované třídy</b> (tak to používá přednáška i <code>sklearn.metrics.confusion_matrix</code>). Pro binární úlohu s pozitivní třídou 1 obsahuje počty TN, FP (skutečně 0) a FN, TP (skutečně 1).</p>
+<p class="jinak">na diagonále jsou správné odpovědi, mimo ni chyby. FN = „přehlédli jsme pozitivní“, FP = „falešný poplach“. Vždy si nejdřív přečti, co jsou řádky a co sloupce – zadání to může otočit.</p><p class="slovnik-odkaz"><a href="03_metriky.html#def-cm">výklad v kapitole 3 →</a></p></div>
+<div class="box definice" id="s-recall"><div class="box-t">recall (sensitivita)</div>
+<p><b>Recall</b> pozitivní třídy je podíl skutečně pozitivních vzorků, které model správně označil jako pozitivní:
+\[ \text{recall} = \frac{TP}{TP + FN} \]</p>
+<p class="jinak">„kolik ze skutečně vadných kusů jsme našli“. Jmenovatel je <b>řádek</b> skutečných pozitivních. Vysoký recall = málo přehlédnutých.</p><p class="slovnik-odkaz"><a href="03_metriky.html#def-recall">výklad v kapitole 3 →</a></p></div>
+<div class="box definice" id="s-precision"><div class="box-t">precision (přesnost)</div>
+<p><b>Precision</b> je podíl vzorků označených jako pozitivní, které jsou opravdu pozitivní:
+\[ \text{precision} = \frac{TP}{TP + FP} \]</p>
+<p class="jinak">„když alarm zazvoní, jak často je to pravda“. Jmenovatel je <b>sloupec</b> predikovaných pozitivních.</p><p class="slovnik-odkaz"><a href="03_metriky.html#def-precision">výklad v kapitole 3 →</a></p></div>
+<div class="box definice" id="s-specificity"><div class="box-t">specificita</div>
+<p><b>Specificita</b> je recall negativní třídy, podíl skutečně negativních vzorků označených jako negativní: \(TN/(TN + FP)\).</p>
+<p class="jinak">kolik dobrých kusů jsme správně nechali projít.</p><p class="slovnik-odkaz"><a href="03_metriky.html#def-specificity">výklad v kapitole 3 →</a></p></div>
+<h2 id="k4" class="slovnik-kap">4 · Předzpracování a únik dat</h2>
+<div class="box definice" id="s-standardizace"><div class="box-t">standardizace (z-score)</div>
+<p><b>Standardizace</b> převede každý příznak na nulový průměr a jednotkovou směrodatnou odchylku pomocí <b>průměru a směrodatné odchylky trénovacích dat</b>:
+\[ x' = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}} \]</p>
+<p class="jinak">„o kolik směrodatných odchylek je hodnota nad trénovacím průměrem“. Po standardizaci mají všechny příznaky srovnatelné měřítko, takže ve vzdálenosti (k-NN) nepřeváží příznak s velkými čísly.</p><p class="slovnik-odkaz"><a href="04_predzpracovani.html#def-standardizace">výklad v kapitole 4 →</a></p></div>
+<div class="box definice" id="s-minmax"><div class="box-t">min-max normalizace</div>
+<p><b>Min-max normalizace</b> zobrazí příznak lineárně do intervalu [0, 1] podle minima a maxima trénovacích dat: \(x' = (x - \min_{\text{train}})/(\max_{\text{train}} - \min_{\text{train}})\).</p>
+<p class="jinak">nová data mohou vyjít mimo [0, 1] – to je v pořádku, nikdy se kvůli tomu „nepřefituje“.</p><p class="slovnik-odkaz"><a href="04_predzpracovani.html#def-minmax">výklad v kapitole 4 →</a></p></div>
+<div class="box definice" id="s-unik"><div class="box-t">únik dat (data leakage)</div>
+<p><b>Únik dat</b> nastane, když se do trénování nebo výběru modelu dostane informace z dat, na kterých se pak model hodnotí (validační nebo testovací), takže odhad výkonu je příliš optimistický.</p>
+<p class="jinak">model „viděl tahák“. Číslo pak neodpovídá tomu, co model udělá na opravdu nových datech.</p><p class="slovnik-odkaz"><a href="04_predzpracovani.html#def-unik">výklad v kapitole 4 →</a></p></div>
+<div class="box definice" id="s-split"><div class="box-t">trénovací, validační a testovací množina</div>
+<p><b>Trénovací množina</b> slouží k učení parametrů modelu a předzpracování, <b>validační</b> k výběru hyperparametrů, příznaků a modelu, <b>testovací</b> k jedinému závěrečnému odhadu výkonu na nových datech.</p>
+<p class="jinak">„fit the model | choose the hyperparameters | report once“. Typické dělení 60/20/20 nebo 70/15/15; při malých datech křížová validace na trénovací části.</p><p class="slovnik-odkaz"><a href="04_predzpracovani.html#def-split">výklad v kapitole 4 →</a></p></div>
+<h2 id="k5" class="slovnik-kap">5 · Výběr příznaků a PCA</h2>
+<div class="box definice" id="s-filtr-wrapper"><div class="box-t">filtr a wrapper</div>
+<p><b>Filtr</b> ohodnotí každý příznak samostatně statistikou vůči labelu (korelace, vzájemná informace) bez trénování modelu. <b>Wrapper</b> hodnotí <b>podmnožiny</b> příznaků výkonem natrénovaného modelu na validačních datech (dopředný výběr, zpětná eliminace).</p>
+<p class="jinak">filtr je rychlý a hrubý (neví o modelu ani o redundanci), wrapper je pomalejší, ale měří přesně to, co nás zajímá – jak dobře model s danými sloupci predikuje.</p><p class="slovnik-odkaz"><a href="05_vyber_priznaku.html#def-filtr-wrapper">výklad v kapitole 5 →</a></p></div>
+<div class="box definice" id="s-forward-sel"><div class="box-t">dopředný výběr příznaků</div>
+<p><b>Dopředný výběr</b> (forward selection) začne s prázdnou (nebo danou) množinou příznaků a v každém kroku zkusí přidat každý zbývající příznak, změří validační skóre a přidá ten nejlepší – <b>jen pokud skóre vzroste</b>; jinak skončí. Je to hladový (greedy) algoritmus, nezaručuje nejlepší podmnožinu.</p>
+<p class="jinak">stavíme tým po jednom hráči: vždy vezmeme toho, s kým tým hraje nejlépe, a přestaneme, když už nikdo nepomůže. Zpětná eliminace postupuje opačně – začne se všemi a odebírá.</p><p class="slovnik-odkaz"><a href="05_vyber_priznaku.html#def-forward-sel">výklad v kapitole 5 →</a></p></div>
+<div class="box definice" id="s-pca-kroky"><div class="box-t">hlavní komponenty (PCA)</div>
+<p><b>PCA</b> vytváří nové příznaky jako projekce centrovaných dat na vlastní vektory kovarianční matice \(S = \tfrac1n X_c^\top X_c\); první komponenta má směr s největším vlastním číslem (největším rozptylem). Podíl zachovaného rozptylu je \(\lambda_1/\sum_j \lambda_j\).</p>
+<p class="jinak">PCA příznaky nevybírá, ale <b>skládá nové</b> a labely nepoužívá – vysoký zachovaný rozptyl neznamená, že zůstala informace důležitá pro klasifikaci.</p><p class="slovnik-odkaz"><a href="05_vyber_priznaku.html#def-pca-kroky">výklad v kapitole 5 →</a></p></div>
+<h2 id="k6" class="slovnik-kap">6 · Lineární regrese ručně</h2>
+<div class="box definice" id="s-design"><div class="box-t">matice plánu (design matrix) a bias trick</div>
+<p><b>Matice plánu</b> \(X\) má jeden řádek na vzorek a jeden sloupec na příznak; pro přímku \(\hat y = b + wx\) se sloupce řadí \([1, x]\) a vektor vah je \(\mathbf w = [b, w]^\top\). <b>Sloupec jedniček</b> (bias trick) dovolí zapsat intercept jako obyčejnou váhu, takže \(\hat{\mathbf y} = X\mathbf w\).</p>
+<p class="jinak">jednička se v každém řádku vynásobí váhou b, takže b se přičte ke každé predikci. Bez sloupce jedniček by přímka musela procházet počátkem.</p><p class="slovnik-odkaz"><a href="06_linearni_regrese.html#def-design">výklad v kapitole 6 →</a></p></div>
+<div class="box definice" id="s-normalni-rovnice"><div class="box-t">metoda nejmenších čtverců (normální rovnice)</div>
+<p><b>Metoda nejmenších čtverců</b> hledá váhy minimalizující součet čtverců reziduí \(\|X\mathbf w - \mathbf y\|_2^2\); pokud je \(X^\top X\) invertovatelná, řešení je
+\[ \mathbf w^\ast = (X^\top X)^{-1} X^\top \mathbf y \]</p>
+<p class="jinak">tři body obvykle neleží na jedné přímce, takže \(X\mathbf w = \mathbf y\) nemá řešení – vezmeme přímku s nejmenší součtovou čtvercovou chybou. \(X^\top X\) je malá matice (počet příznaků × počet příznaků).</p><p class="slovnik-odkaz"><a href="06_linearni_regrese.html#def-normalni-rovnice">výklad v kapitole 6 →</a></p></div>
+<h2 id="k7" class="slovnik-kap">7 · Polynomy, přeučení, ridge a jádra</h2>
+<div class="box definice" id="s-poly-feat"><div class="box-t">polynomiální příznaky</div>
+<p><b>Polynomiální transformace</b> stupně m nahradí vstup x řádkem \(\Phi(x) = [1, x, x^2, \dots, x^m]\); model \(\hat y = \Phi(x)^\top\mathbf w = w_0 + w_1x + \dots + w_mx^m\) se pak učí stejným vzorcem jako přímka.</p>
+<p class="jinak">křivka vznikne z nových sloupců matice X, ne ze změny modelu. Ve cvičení se x nejdřív škáluje do t ∈ [−1, 1] (\(t = 2x/5 - 1\)), aby mocniny nebyly obrovské a inverze numericky stabilní.</p><p class="slovnik-odkaz"><a href="07_polynom_ridge.html#def-poly-feat">výklad v kapitole 7 →</a></p></div>
+<div class="box definice" id="s-linear-in-weights"><div class="box-t">model lineární ve vahách</div>
+<p>Model je <b>lineární ve vahách</b>, když je predikce lineární kombinací (pevných) příznaků s vahami \(\mathbf w\): \(\hat y = \sum_j w_j\,\phi_j(x)\). Na tvaru funkcí \(\phi_j\) nezáleží.</p>
+<p class="jinak">každá váha jen násobí svůj sloupec a výsledky se sčítají. Proto platí uzavřený vzorec \((X^\top X)^{-1}X^\top\mathbf y\) i pro parabolu – nelineární je jen závislost na x.</p><p class="slovnik-odkaz"><a href="07_polynom_ridge.html#def-linear-in-weights">výklad v kapitole 7 →</a></p></div>
+<div class="box definice" id="s-under-over"><div class="box-t">podučení a přeučení</div>
+<p><b>Podučení</b> (underfitting): model je příliš jednoduchý, má velkou chybu na trénovacích i testovacích datech. <b>Přeučení</b> (overfitting): model sleduje šum trénovacích dat – trénovací chyba je malá, testovací <b>výrazně větší</b>.</p>
+<p class="jinak">podučený model „nechápe tvar“, přeučený „se naučil data nazpaměť“. Rozhodující je mezera mezi trénovací a testovací (validační) chybou a vzhled křivky mezi body.</p><p class="slovnik-odkaz"><a href="07_polynom_ridge.html#def-under-over">výklad v kapitole 7 →</a></p></div>
+<div class="box definice" id="s-ridge-j"><div class="box-t">ridge regrese</div>
+<p><b>Ridge regrese</b> minimalizuje součet čtverců reziduí plus L2 penalizaci vah:
+\[ \begin{aligned} J(\mathbf w) &amp;= \|X\mathbf w - \mathbf y\|_2^2 + \lambda\|\mathbf w\|_2^2 \\ \mathbf w^\ast &amp;= (X^\top X + \lambda I)^{-1}X^\top\mathbf y \end{aligned} \]
+kde \(I\) je jednotková matice velikosti <b>počtu sloupců X</b> a \(\lambda &gt; 0\).</p>
+<p class="jinak">první člen chce sedět na data, druhý chce malé váhy (hladkou křivku). λ je kompromis: 0 = obyčejné nejmenší čtverce, velké λ = váhy skoro nulové, model plochý.</p><p class="slovnik-odkaz"><a href="07_polynom_ridge.html#def-ridge-j">výklad v kapitole 7 →</a></p></div>
+<div class="box definice" id="s-dual-ridge"><div class="box-t">duální tvar ridge</div>
+<p><b>Duální tvar</b> ridge regrese počítá jeden koeficient na trénovací vzorek:
+\[ \begin{aligned} \boldsymbol\alpha &amp;= (XX^\top + \lambda I_n)^{-1}\mathbf y \\ \mathbf w &amp;= X^\top\boldsymbol\alpha \end{aligned} \]
+Invertuje se matice \(n \times n\) (vzorky), v primárním tvaru \(d \times d\) (příznaky); výsledné váhy jsou stejné.</p>
+<p class="jinak">hodí se, když je příznaků víc než vzorků, a hlavně proto, že data v něm vystupují jen ve skalárních součinech \(\mathbf x_i^\top\mathbf x_j\) – ty lze nahradit jádrem.</p><p class="slovnik-odkaz"><a href="07_polynom_ridge.html#def-dual-ridge">výklad v kapitole 7 →</a></p></div>
+<div class="box definice" id="s-kernel-trick"><div class="box-t">jádrový trik a kernel ridge</div>
+<p><b>Jádro</b> \(k(\mathbf x_i, \mathbf x_j)\) spočítá skalární součin \(\Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\) v prostoru příznaků Φ bez výpočtu Φ. <b>Kernel ridge</b> nahradí \(XX^\top\) maticí jádra K s prvky \(k(\mathbf x_i, \mathbf x_j)\):
+\[ \begin{aligned} \boldsymbol\alpha &amp;= (K + \lambda I)^{-1}\mathbf y \\ \hat{\mathbf y}_{\text{new}} &amp;= K_{\text{new}}\boldsymbol\alpha \end{aligned} \]</p>
+<p class="jinak">RBF jádro \(\exp(-\gamma\|\mathbf x_i - \mathbf x_j\|^2)\) dělá z predikce součet gaussovských „hrbolů“ kolem trénovacích bodů; velké γ = úzké hrboly (přeučení), λ omezuje velikost α.</p><p class="slovnik-odkaz"><a href="07_polynom_ridge.html#def-kernel-trick">výklad v kapitole 7 →</a></p></div>
+<h2 id="k8" class="slovnik-kap">8 · Stromy, bagging a SVM</h2>
+<div class="box definice" id="s-tree-cut"><div class="box-t">rozhodovací strom a řez</div>
+<p><b>Rozhodovací strom</b> dělí prostor příznaků postupně řezy tvaru \(x_j \le s\) (svislá nebo vodorovná čára); každý list předpovídá <b>majoritní třídu</b> svých trénovacích bodů. Řez se volí tak, aby co nejvíc snížil nečistotu (ve cvičení zjednodušeně: maximalizoval počet správně zařazených).</p>
+<p class="jinak">dvacet otázek typu „je x₁ menší než 2,5?“. Proto stromy nepotřebují škálování – změna měřítka jen posune práh.</p><p class="slovnik-odkaz"><a href="08_stromy_ansambly.html#def-tree-cut">výklad v kapitole 8 →</a></p></div>
+<div class="box definice" id="s-gini"><div class="box-t">Giniho nečistota</div>
+<p><b>Giniho nečistota</b> uzlu je \(G = \sum_y p(y)\,(1 - p(y))\), kde \(p(y)\) je podíl třídy y v uzlu. Pro dvě třídy \(G = 2p(1 - p)\): 0 pro čistý uzel, 0,5 pro půl na půl.</p>
+<p class="jinak">pravděpodobnost, že se splete náhodný tip podle četností v uzlu. Kvalita řezu = vážený průměr nečistot potomků (váha = podíl bodů).</p><p class="slovnik-odkaz"><a href="08_stromy_ansambly.html#def-gini">výklad v kapitole 8 →</a></p></div>
+<div class="box definice" id="s-bootstrap-sample"><div class="box-t">bootstrapový vzorek</div>
+<p><b>Bootstrapový vzorek</b> vznikne n-násobným výběrem řádků trénovacích dat <b>s vracením</b>: má stejnou velikost n, některé řádky se opakují a jiné chybí. Pravděpodobnost, že konkrétní řádek nebude vybrán, je \((1 - 1/n)^n \approx e^{-1} \approx 0{,}37\).</p>
+<p class="jinak">každý strom vidí trochu jiná data (asi 63 % unikátních řádků), proto se stromy liší a jejich hlasování snižuje rozptyl. Vynechané řádky (out-of-bag) mohou sloužit jako validace toho stromu.</p><p class="slovnik-odkaz"><a href="08_stromy_ansambly.html#def-bootstrap-sample">výklad v kapitole 8 →</a></p></div>
+<div class="box definice" id="s-bagging-vote"><div class="box-t">bagging a většinové hlasování</div>
+<p><b>Bagging</b> (bootstrap aggregation) natrénuje M modelů, každý na vlastním bootstrapovém vzorku, a jejich predikce spojí: v klasifikaci <b>většinovým hlasováním</b>, v regresi průměrem. <b>Random forest</b> navíc v každém uzlu zkouší jen náhodnou podmnožinu příznaků (<code>max_features</code>), takže jsou stromy méně korelované.</p>
+<p class="jinak">„moudrost davu“: jeden hluboký strom je nestabilní, průměr mnoha různých stromů je stabilnější. Funguje jen tehdy, když se stromy liší.</p><p class="slovnik-odkaz"><a href="08_stromy_ansambly.html#def-bagging-vote">výklad v kapitole 8 →</a></p></div>
+<div class="box definice" id="s-svm-c-gamma"><div class="box-t">parametry C a γ u SVM</div>
+<p><b>C</b> je cena za porušení okraje: <b>malé C</b> = silnější regularizace, širší okraj, víc support vektorů, hladší hranice; <b>velké C</b> = méně tolerance chyb, užší okraj, riziko přeučení. <b>γ</b> u RBF jádra \(\exp(-\gamma\|\mathbf x - \mathbf x'\|^2)\) určuje šířku vlivu bodu: <b>velké γ</b> = úzké „hrboly“, hranice obtáčí jednotlivé body (přeučení), malé γ = hladká, skoro lineární hranice.</p>
+<p class="jinak">obě veličiny jdou stejným směrem: zvětšení = složitější model. SVM potřebuje škálování (pipeline se StandardScaler).</p><p class="slovnik-odkaz"><a href="08_stromy_ansambly.html#def-svm-c-gamma">výklad v kapitole 8 →</a></p></div>
+<h2 id="k9" class="slovnik-kap">9 · AI agenti: skill a subagent</h2>
+<div class="box definice" id="s-skill"><div class="box-t">skill</div>
+<p><b>Skill</b> je uložený, znovupoužitelný recept – soubor <code>SKILL.md</code> s názvem, popisem, kdy ho použít, a instrukcemi (případně se skripty) –, který si agent načte <b>jen když se úloha hodí</b> nebo když ho uživatel vyvolá (<code>/report</code>).</p>
+<p class="jinak">„návod v šuplíku“. <code>AGENTS.md</code> se čte vždy, skill jen v případě potřeby, takže nezabírá kontext.</p><p class="slovnik-odkaz"><a href="09_agenti.html#def-skill">výklad v kapitole 9 →</a></p></div>
+<div class="box definice" id="s-subagent-t"><div class="box-t">subagent</div>
+<p><b>Subagent</b> je pomocník, kterého agent spustí na vedlejší úkol (hledání, dlouhý log, revize); má <b>vlastní čisté kontextové okno</b>, nevidí původní konverzaci a vrátí jen <b>krátké shrnutí</b>.</p>
+<p class="jinak">hlavní kontext zůstane čistý a recenzent má „čerstvé oči“. Cena: víc tokenů a zadání musí být samostatně srozumitelné (subagent nezná váš chat).</p><p class="slovnik-odkaz"><a href="09_agenti.html#def-subagent-t">výklad v kapitole 9 →</a></p></div>
+<div class="box definice" id="s-harness"><div class="box-t">model, agent a harness</div>
+<p><b>Model</b> je natrénovaná síť, která pokračuje v textu. <b>Agent</b> = model + software, který umí jednat. <b>Harness</b> (Claude Code, Codex) je nainstalovaný program, který posílá požadavky modelu a provádí akce (nástroje), o které si model řekne – model sám soubory nikdy nemění.</p>
+<p class="jinak">model navrhne akci, harness ji provede, výsledek se vrátí modelu – to je smyčka agenta. Chyba je informace, ne konec.</p><p class="slovnik-odkaz"><a href="09_agenti.html#def-harness">výklad v kapitole 9 →</a></p></div>
+<div class="box definice" id="s-hook"><div class="box-t">hook</div>
+<p><b>Hook</b> je malý skript, který harness spustí sám při určité události (např. před každou úpravou souboru) a který může akci <b>zablokovat</b>.</p>
+<p class="jinak">pravidlo v <code>AGENTS.md</code> agenta <b>žádá</b>, hook pravidlo <b>vynutí</b> – ale jen u události, kterou hlídá.</p><p class="slovnik-odkaz"><a href="09_agenti.html#def-hook">výklad v kapitole 9 →</a></p></div>
+<div class="box definice" id="s-mcp-t"><div class="box-t">MCP</div>
+<p><b>MCP</b> (Model Context Protocol) je standardní „zástrčka“ pro další nástroje (jako USB): jakýkoli harness může použít jakýkoli nástroj, který MCP nabízí (prohlížeč přes Playwright, Blender, aktuální dokumentace).</p>
+<p class="jinak">zapínat jen to, co úloha potřebuje – každý seznam nástrojů zabírá místo v kontextu.</p><p class="slovnik-odkaz"><a href="09_agenti.html#def-mcp-t">výklad v kapitole 9 →</a></p></div>
+<div class="box definice" id="s-context"><div class="box-t">kontext a kontextové okno</div>
+<p><b>Kontext</b> je vše, co model čte před odpovědí (zadání, přečtené soubory, výstupy nástrojů); <b>kontextové okno</b> je maximální počet tokenů, které model najednou přečte.</p>
+<p class="jinak">přeplněný kontext model zhoršuje – zapomíná rozhodnutí. Stav ulož do <code>PLAN.md</code>, dej <code>/clear</code> a nech ho soubory přečíst znovu.</p><p class="slovnik-odkaz"><a href="09_agenti.html#def-context">výklad v kapitole 9 →</a></p></div>
+
+<nav class="pager"><a class="prev" href="12_tahak.html"><small>← předchozí</small>Tahák</a></nav>
+</main>
+</div>
+</body>
+</html>

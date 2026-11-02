@@ -1,0 +1,131 @@
+<h1>Glossary</h1>
+<p class="lead">All definitions from the notes in one place, ordered by chapter. Good for quick revision: cover the text, say the definition out loud, then check it. The link leads to the detailed explanation.</p>
+<h2 id="k1" class="slovnik-kap">1 · Reading NumPy code</h2>
+<div class="box definice" id="s-shape"><div class="box-t">array shape</div>
+<p>The <b>shape</b> (<code>X.shape</code>) is a tuple with the number of elements along each axis. In this course a data matrix always has shape <code>(n_samples, n_features)</code>: <b>row = sample</b>, <b>column = feature</b>. A vector (1D array) has shape <code>(n,)</code> – it is neither a row nor a column.</p>
+<p class="jinak">the first number says how many measurements (leaves, patients) there are, the second how many quantities we measure on each. “X has shape (3, 2)” means 3 samples and 2 columns.</p><p class="slovnik-odkaz"><a href="01_numpy.html#def-shape">explained in chapter 1 →</a></p></div>
+<div class="box definice" id="s-axis"><div class="box-t">axis</div>
+<p>The <b><code>axis</code> argument</b> selects the axis along which a function (<code>sum</code>, <code>mean</code>, <code>argmax</code> …) works; this axis <b>disappears</b> from the result. For a matrix, <code>axis=0</code> runs over the rows (one result per column) and <code>axis=1</code> runs over the columns (one result per row).</p>
+<p class="jinak"><code>axis=1</code> = “compute it in each row separately” – e.g. the mean vote of all trees for one sample. <code>axis=0</code> = “in each column separately” – e.g. the mean of one feature over all samples (what standardization does).</p><p class="slovnik-odkaz"><a href="01_numpy.html#def-axis">explained in chapter 1 →</a></p></div>
+<h2 id="k2" class="slovnik-kap">2 · Distances, k-NN and gradient descent</h2>
+<div class="box definice" id="s-euklid"><div class="box-t">Euclidean distance</div>
+<p>The <b>Euclidean distance</b> between two samples \(\mathbf a, \mathbf b\) with d features is the length of the segment between them:
+\[ d(\mathbf a, \mathbf b) = \sqrt{\sum_{j=1}^{d} (a_j - b_j)^2} \]</p>
+<p class="jinak">“distance with a ruler”. Squared differences of all features are added – that is why a feature with large numbers (centimetres vs. tenths of a centimetre) dominates the distance and why we standardize before k-NN (chapter 4).</p><p class="slovnik-odkaz"><a href="02_knn.html#def-euklid">explained in chapter 2 →</a></p></div>
+<div class="box definice" id="s-knn"><div class="box-t">k-NN classifier</div>
+<p><b>k-NN</b> (k nearest neighbours) assigns a new sample to the class that has the <b>majority among its k nearest training samples</b>. For k = 1 it is the nearest-neighbour rule \(\hat y(\mathbf x_\ast) = y_{(1)}\). There is no training phase: <code>fit</code> only stores the data (“lazy learner”).</p>
+<p class="jinak">“tell me who your neighbours are”. Small k = sensitive to one stray point (noise), large k = blurred class borders. k is a hyperparameter – it is chosen on validation data.</p><p class="slovnik-odkaz"><a href="02_knn.html#def-knn">explained in chapter 2 →</a></p></div>
+<div class="box definice" id="s-gd-krok"><div class="box-t">gradient descent step</div>
+<p><b>Gradient descent</b> looks for a minimum of a function by repeating a step against the gradient:
+\[ \mathbf x^{(t+1)} = \mathbf x^{(t)} - \eta\, \nabla f(\mathbf x^{(t)}) \]
+where \(\eta &gt; 0\) is the <b>learning rate</b> (step size) and the gradient \(\nabla f\) is the vector of partial derivatives.</p>
+<p class="jinak">the gradient points uphill, so we go the other way. Small η = slow creeping, too large η = overshooting the minimum and oscillation or divergence.</p><p class="slovnik-odkaz"><a href="02_knn.html#def-gd-krok">explained in chapter 2 →</a></p></div>
+<div class="box definice" id="s-kmeans-krok"><div class="box-t">k-means step</div>
+<p><b>k-means</b> alternates two steps: (1) <b>assignment</b> – every point belongs to the nearest centre \(\boldsymbol\mu_j\); (2) <b>update</b> – every centre becomes the mean of its points. It stops when the assignment no longer changes.</p>
+<p class="jinak">points pick the nearest “flag”, each flag moves to the middle of its points, and again. Unsupervised – labels are not used.</p><p class="slovnik-odkaz"><a href="02_knn.html#def-kmeans-krok">explained in chapter 2 →</a></p></div>
+<h2 id="k3" class="slovnik-kap">3 · Confusion matrix and metrics</h2>
+<div class="box definice" id="s-cm"><div class="box-t">confusion matrix</div>
+<p>A <b>confusion matrix</b> is a table of counts where <b>rows are the actual classes</b> and <b>columns the predicted classes</b> (as in the lecture and in <code>sklearn.metrics.confusion_matrix</code>). For a binary task with positive class 1 it contains the counts TN, FP (actually 0) and FN, TP (actually 1).</p>
+<p class="jinak">correct answers are on the diagonal, errors off it. FN = “we missed a positive”, FP = “false alarm”. Always read first what the rows and columns are – the task may flip it.</p><p class="slovnik-odkaz"><a href="03_metriky.html#def-cm">explained in chapter 3 →</a></p></div>
+<div class="box definice" id="s-recall"><div class="box-t">recall (sensitivity)</div>
+<p><b>Recall</b> of the positive class is the fraction of truly positive samples that the model correctly labels as positive:
+\[ \text{recall} = \frac{TP}{TP + FN} \]</p>
+<p class="jinak">“how many of the truly faulty items did we find”. The denominator is the <b>row</b> of actual positives. High recall = few missed.</p><p class="slovnik-odkaz"><a href="03_metriky.html#def-recall">explained in chapter 3 →</a></p></div>
+<div class="box definice" id="s-precision"><div class="box-t">precision</div>
+<p><b>Precision</b> is the fraction of samples labelled positive that really are positive:
+\[ \text{precision} = \frac{TP}{TP + FP} \]</p>
+<p class="jinak">“when the alarm rings, how often is it true”. The denominator is the <b>column</b> of predicted positives.</p><p class="slovnik-odkaz"><a href="03_metriky.html#def-precision">explained in chapter 3 →</a></p></div>
+<div class="box definice" id="s-specificity"><div class="box-t">specificity</div>
+<p><b>Specificity</b> is the recall of the negative class, the fraction of truly negative samples labelled negative: \(TN/(TN + FP)\).</p>
+<p class="jinak">how many good items we correctly let through.</p><p class="slovnik-odkaz"><a href="03_metriky.html#def-specificity">explained in chapter 3 →</a></p></div>
+<h2 id="k4" class="slovnik-kap">4 · Preprocessing and data leakage</h2>
+<div class="box definice" id="s-standardizace"><div class="box-t">standardization (z-score)</div>
+<p><b>Standardization</b> rescales each feature to zero mean and unit standard deviation using the <b>mean and standard deviation of the training data</b>:
+\[ x' = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}} \]</p>
+<p class="jinak">“how many standard deviations the value is above the training mean”. After standardization all features have a comparable scale, so in a distance (k-NN) the feature with large numbers does not dominate.</p><p class="slovnik-odkaz"><a href="04_predzpracovani.html#def-standardizace">explained in chapter 4 →</a></p></div>
+<div class="box definice" id="s-minmax"><div class="box-t">min-max normalization</div>
+<p><b>Min-max normalization</b> maps a feature linearly to [0, 1] using the minimum and maximum of the training data: \(x' = (x - \min_{\text{train}})/(\max_{\text{train}} - \min_{\text{train}})\).</p>
+<p class="jinak">new data may fall outside [0, 1] – that is fine, you never refit because of it.</p><p class="slovnik-odkaz"><a href="04_predzpracovani.html#def-minmax">explained in chapter 4 →</a></p></div>
+<div class="box definice" id="s-unik"><div class="box-t">data leakage</div>
+<p><b>Data leakage</b> happens when information from the data the model is evaluated on (validation or test) gets into training or model selection, so the performance estimate is too optimistic.</p>
+<p class="jinak">the model “saw the answer sheet”. The number then does not match what the model will do on truly new data.</p><p class="slovnik-odkaz"><a href="04_predzpracovani.html#def-unik">explained in chapter 4 →</a></p></div>
+<div class="box definice" id="s-split"><div class="box-t">training, validation and test set</div>
+<p>The <b>training set</b> is used to learn model parameters and preprocessing, the <b>validation set</b> to choose hyperparameters, features and the model, the <b>test set</b> for one final estimate of performance on new data.</p>
+<p class="jinak">“fit the model | choose the hyperparameters | report once”. Typical splits 60/20/20 or 70/15/15; with little data, cross-validation on the training part.</p><p class="slovnik-odkaz"><a href="04_predzpracovani.html#def-split">explained in chapter 4 →</a></p></div>
+<h2 id="k5" class="slovnik-kap">5 · Feature selection and PCA</h2>
+<div class="box definice" id="s-filtr-wrapper"><div class="box-t">filter and wrapper</div>
+<p>A <b>filter</b> scores each feature on its own with a statistic against the label (correlation, mutual information) without training a model. A <b>wrapper</b> scores <b>subsets</b> of features by the performance of a trained model on validation data (forward selection, backward elimination).</p>
+<p class="jinak">a filter is fast and coarse (it knows nothing about the model or redundancy), a wrapper is slower but measures exactly what we care about – how well the model predicts with the given columns.</p><p class="slovnik-odkaz"><a href="05_vyber_priznaku.html#def-filtr-wrapper">explained in chapter 5 →</a></p></div>
+<div class="box definice" id="s-forward-sel"><div class="box-t">forward feature selection</div>
+<p><b>Forward selection</b> starts with an empty (or given) set of features; in each step it tries adding every remaining feature, measures the validation score and adds the best one – <b>only if the score increases</b>; otherwise it stops. It is a greedy algorithm and does not guarantee the best subset.</p>
+<p class="jinak">building a team one player at a time: always take the player with whom the team plays best, and stop when nobody helps any more. Backward elimination goes the other way – it starts with all and removes.</p><p class="slovnik-odkaz"><a href="05_vyber_priznaku.html#def-forward-sel">explained in chapter 5 →</a></p></div>
+<div class="box definice" id="s-pca-kroky"><div class="box-t">principal components (PCA)</div>
+<p><b>PCA</b> creates new features as projections of centred data onto the eigenvectors of the covariance matrix \(S = \tfrac1n X_c^\top X_c\); the first component has the direction with the largest eigenvalue (largest variance). The fraction of variance kept is \(\lambda_1/\sum_j \lambda_j\).</p>
+<p class="jinak">PCA does not select features but <b>builds new ones</b> and does not use labels – keeping a lot of variance does not mean the information important for classification survived.</p><p class="slovnik-odkaz"><a href="05_vyber_priznaku.html#def-pca-kroky">explained in chapter 5 →</a></p></div>
+<h2 id="k6" class="slovnik-kap">6 · Linear regression by hand</h2>
+<div class="box definice" id="s-design"><div class="box-t">design matrix and the bias trick</div>
+<p>The <b>design matrix</b> \(X\) has one row per sample and one column per feature; for a line \(\hat y = b + wx\) the columns are ordered \([1, x]\) and the weight vector is \(\mathbf w = [b, w]^\top\). The <b>column of ones</b> (bias trick) lets us write the intercept as an ordinary weight, so \(\hat{\mathbf y} = X\mathbf w\).</p>
+<p class="jinak">the one in every row is multiplied by the weight b, so b is added to every prediction. Without the column of ones the line would have to go through the origin.</p><p class="slovnik-odkaz"><a href="06_linearni_regrese.html#def-design">explained in chapter 6 →</a></p></div>
+<div class="box definice" id="s-normalni-rovnice"><div class="box-t">least squares (normal equations)</div>
+<p>The <b>least-squares method</b> looks for weights minimizing the sum of squared residuals \(\|X\mathbf w - \mathbf y\|_2^2\); if \(X^\top X\) is invertible, the solution is
+\[ \mathbf w^\ast = (X^\top X)^{-1} X^\top \mathbf y \]</p>
+<p class="jinak">three points usually do not lie on one line, so \(X\mathbf w = \mathbf y\) has no solution – we take the line with the smallest total squared error. \(X^\top X\) is a small matrix (number of features × number of features).</p><p class="slovnik-odkaz"><a href="06_linearni_regrese.html#def-normalni-rovnice">explained in chapter 6 →</a></p></div>
+<h2 id="k7" class="slovnik-kap">7 · Polynomials, overfitting, ridge and kernels</h2>
+<div class="box definice" id="s-poly-feat"><div class="box-t">polynomial features</div>
+<p>A <b>polynomial transformation</b> of degree m replaces the input x by the row \(\Phi(x) = [1, x, x^2, \dots, x^m]\); the model \(\hat y = \Phi(x)^\top\mathbf w = w_0 + w_1x + \dots + w_mx^m\) is then learned with the same formula as a line.</p>
+<p class="jinak">the curve comes from new columns of X, not from a change of the model. In the lab x is first scaled to t ∈ [−1, 1] (\(t = 2x/5 - 1\)) so the powers are not huge and the inverse stays numerically stable.</p><p class="slovnik-odkaz"><a href="07_polynom_ridge.html#def-poly-feat">explained in chapter 7 →</a></p></div>
+<div class="box definice" id="s-linear-in-weights"><div class="box-t">model linear in its weights</div>
+<p>A model is <b>linear in its weights</b> when the prediction is a linear combination of (fixed) features with weights \(\mathbf w\): \(\hat y = \sum_j w_j\,\phi_j(x)\). The shape of the functions \(\phi_j\) does not matter.</p>
+<p class="jinak">each weight only multiplies its column and the results are added. That is why the closed form \((X^\top X)^{-1}X^\top\mathbf y\) works for a parabola too – only the dependence on x is nonlinear.</p><p class="slovnik-odkaz"><a href="07_polynom_ridge.html#def-linear-in-weights">explained in chapter 7 →</a></p></div>
+<div class="box definice" id="s-under-over"><div class="box-t">underfitting and overfitting</div>
+<p><b>Underfitting</b>: the model is too simple and has a large error on both training and test data. <b>Overfitting</b>: the model follows the noise of the training data – the training error is small, the test error <b>much larger</b>.</p>
+<p class="jinak">an underfitted model “does not get the shape”, an overfitted one “memorised the data”. What decides is the gap between training and test (validation) error and how the curve looks between the points.</p><p class="slovnik-odkaz"><a href="07_polynom_ridge.html#def-under-over">explained in chapter 7 →</a></p></div>
+<div class="box definice" id="s-ridge-j"><div class="box-t">ridge regression</div>
+<p><b>Ridge regression</b> minimizes the sum of squared residuals plus an L2 penalty on the weights:
+\[ \begin{aligned} J(\mathbf w) &amp;= \|X\mathbf w - \mathbf y\|_2^2 + \lambda\|\mathbf w\|_2^2 \\ \mathbf w^\ast &amp;= (X^\top X + \lambda I)^{-1}X^\top\mathbf y \end{aligned} \]
+where \(I\) is an identity matrix with the size of the <b>number of columns of X</b> and \(\lambda &gt; 0\).</p>
+<p class="jinak">the first term wants to fit the data, the second wants small weights (a smooth curve). λ is the compromise: 0 = ordinary least squares, large λ = weights almost zero, a flat model.</p><p class="slovnik-odkaz"><a href="07_polynom_ridge.html#def-ridge-j">explained in chapter 7 →</a></p></div>
+<div class="box definice" id="s-dual-ridge"><div class="box-t">dual form of ridge</div>
+<p>The <b>dual form</b> of ridge regression computes one coefficient per training sample:
+\[ \begin{aligned} \boldsymbol\alpha &amp;= (XX^\top + \lambda I_n)^{-1}\mathbf y \\ \mathbf w &amp;= X^\top\boldsymbol\alpha \end{aligned} \]
+It inverts an \(n \times n\) matrix (samples), the primal form a \(d \times d\) one (features); the resulting weights are the same.</p>
+<p class="jinak">useful when there are more features than samples, and mainly because the data appear only in dot products \(\mathbf x_i^\top\mathbf x_j\) – these can be replaced by a kernel.</p><p class="slovnik-odkaz"><a href="07_polynom_ridge.html#def-dual-ridge">explained in chapter 7 →</a></p></div>
+<div class="box definice" id="s-kernel-trick"><div class="box-t">kernel trick and kernel ridge</div>
+<p>A <b>kernel</b> \(k(\mathbf x_i, \mathbf x_j)\) computes the dot product \(\Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\) in the feature space Φ without computing Φ. <b>Kernel ridge</b> replaces \(XX^\top\) by the kernel matrix K with entries \(k(\mathbf x_i, \mathbf x_j)\):
+\[ \begin{aligned} \boldsymbol\alpha &amp;= (K + \lambda I)^{-1}\mathbf y \\ \hat{\mathbf y}_{\text{new}} &amp;= K_{\text{new}}\boldsymbol\alpha \end{aligned} \]</p>
+<p class="jinak">the RBF kernel \(\exp(-\gamma\|\mathbf x_i - \mathbf x_j\|^2)\) turns the prediction into a sum of Gaussian “bumps” around the training points; large γ = narrow bumps (overfitting), λ limits the size of α.</p><p class="slovnik-odkaz"><a href="07_polynom_ridge.html#def-kernel-trick">explained in chapter 7 →</a></p></div>
+<h2 id="k8" class="slovnik-kap">8 · Trees, bagging and SVM</h2>
+<div class="box definice" id="s-tree-cut"><div class="box-t">decision tree and a cut</div>
+<p>A <b>decision tree</b> splits the feature space step by step with cuts of the form \(x_j \le s\) (a vertical or horizontal line); each leaf predicts the <b>majority class</b> of its training points. A cut is chosen to reduce the impurity as much as possible (in the lab, simplified: to maximize the number of correctly classified points).</p>
+<p class="jinak">twenty questions like “is x₁ smaller than 2.5?”. That is why trees need no scaling – changing the scale only moves the threshold.</p><p class="slovnik-odkaz"><a href="08_stromy_ansambly.html#def-tree-cut">explained in chapter 8 →</a></p></div>
+<div class="box definice" id="s-gini"><div class="box-t">Gini impurity</div>
+<p>The <b>Gini impurity</b> of a node is \(G = \sum_y p(y)\,(1 - p(y))\), where \(p(y)\) is the share of class y in the node. For two classes \(G = 2p(1 - p)\): 0 for a pure node, 0.5 for half and half.</p>
+<p class="jinak">the probability that a random guess according to the class frequencies in the node is wrong. The quality of a cut = the weighted mean of the children's impurities (weight = share of points).</p><p class="slovnik-odkaz"><a href="08_stromy_ansambly.html#def-gini">explained in chapter 8 →</a></p></div>
+<div class="box definice" id="s-bootstrap-sample"><div class="box-t">bootstrap sample</div>
+<p>A <b>bootstrap sample</b> is made by drawing n rows of the training data <b>with replacement</b>: it has the same size n, some rows repeat and others are missing. The probability that a given row is not drawn is \((1 - 1/n)^n \approx e^{-1} \approx 0.37\).</p>
+<p class="jinak">each tree sees slightly different data (about 63 % unique rows), so the trees differ and their vote reduces variance. The left-out rows (out-of-bag) can serve as validation for that tree.</p><p class="slovnik-odkaz"><a href="08_stromy_ansambly.html#def-bootstrap-sample">explained in chapter 8 →</a></p></div>
+<div class="box definice" id="s-bagging-vote"><div class="box-t">bagging and majority voting</div>
+<p><b>Bagging</b> (bootstrap aggregation) trains M models, each on its own bootstrap sample, and combines their predictions: by <b>majority vote</b> in classification, by averaging in regression. A <b>random forest</b> additionally tries only a random subset of features in each node (<code>max_features</code>), so the trees are less correlated.</p>
+<p class="jinak">“wisdom of the crowd”: one deep tree is unstable, the average of many different trees is more stable. It works only when the trees differ.</p><p class="slovnik-odkaz"><a href="08_stromy_ansambly.html#def-bagging-vote">explained in chapter 8 →</a></p></div>
+<div class="box definice" id="s-svm-c-gamma"><div class="box-t">SVM parameters C and γ</div>
+<p><b>C</b> is the cost of violating the margin: <b>small C</b> = stronger regularization, a wider margin, more support vectors, a smoother border; <b>large C</b> = less tolerance of errors, a narrower margin, risk of overfitting. <b>γ</b> in the RBF kernel \(\exp(-\gamma\|\mathbf x - \mathbf x'\|^2)\) sets the width of a point's influence: <b>large γ</b> = narrow bumps, the border wraps around single points (overfitting), small γ = a smooth, almost linear border.</p>
+<p class="jinak">both go the same way: increasing = a more complex model. SVM needs scaling (a pipeline with StandardScaler).</p><p class="slovnik-odkaz"><a href="08_stromy_ansambly.html#def-svm-c-gamma">explained in chapter 8 →</a></p></div>
+<h2 id="k9" class="slovnik-kap">9 · AI agents: skill and subagent</h2>
+<div class="box definice" id="s-skill"><div class="box-t">skill</div>
+<p>A <b>skill</b> is a saved, reusable recipe – a <code>SKILL.md</code> file with a name, a description of when to use it and instructions (optionally with scripts) – that the agent loads <b>only when the task fits</b> or when the user calls it (<code>/report</code>).</p>
+<p class="jinak">“a recipe in the drawer”. <code>AGENTS.md</code> is read every time, a skill only when needed, so it does not take up context.</p><p class="slovnik-odkaz"><a href="09_agenti.html#def-skill">explained in chapter 9 →</a></p></div>
+<div class="box definice" id="s-subagent-t"><div class="box-t">subagent</div>
+<p>A <b>subagent</b> is a helper that the agent starts for a side task (a search, a long log, a review); it has <b>its own fresh context window</b>, does not see the original conversation and returns only a <b>short summary</b>.</p>
+<p class="jinak">the main context stays clean and a reviewer has “fresh eyes”. Cost: more tokens, and the brief must stand alone (the subagent does not know your chat).</p><p class="slovnik-odkaz"><a href="09_agenti.html#def-subagent-t">explained in chapter 9 →</a></p></div>
+<div class="box definice" id="s-harness"><div class="box-t">model, agent and harness</div>
+<p>The <b>model</b> is the trained network that continues text. An <b>agent</b> = model + software that can act. The <b>harness</b> (Claude Code, Codex) is the installed program that sends requests to the model and carries out the actions (tools) the model asks for – the model never touches your files itself.</p>
+<p class="jinak">the model proposes an action, the harness runs it, the result goes back to the model – that is the agent loop. An error is information, not failure.</p><p class="slovnik-odkaz"><a href="09_agenti.html#def-harness">explained in chapter 9 →</a></p></div>
+<div class="box definice" id="s-hook"><div class="box-t">hook</div>
+<p>A <b>hook</b> is a small script that the harness runs by itself at a certain event (e.g. before every file edit) and that can <b>block</b> the action.</p>
+<p class="jinak">a rule in <code>AGENTS.md</code> <b>asks</b> the agent, a hook <b>enforces</b> the rule – but only for the event it watches.</p><p class="slovnik-odkaz"><a href="09_agenti.html#def-hook">explained in chapter 9 →</a></p></div>
+<div class="box definice" id="s-mcp-t"><div class="box-t">MCP</div>
+<p><b>MCP</b> (Model Context Protocol) is a standard “plug” for extra tools (like USB): any harness can use any tool that offers MCP (a browser via Playwright, Blender, current documentation).</p>
+<p class="jinak">enable only what the task needs – every tool list takes space in the context.</p><p class="slovnik-odkaz"><a href="09_agenti.html#def-mcp-t">explained in chapter 9 →</a></p></div>
+<div class="box definice" id="s-context"><div class="box-t">context and context window</div>
+<p>The <b>context</b> is everything the model reads before answering (the task, files read, tool output); the <b>context window</b> is the maximum number of tokens the model can read at once.</p>
+<p class="jinak">a crowded context makes the model worse – it forgets decisions. Save the state in <code>PLAN.md</code>, run <code>/clear</code> and let it read the files again.</p><p class="slovnik-odkaz"><a href="09_agenti.html#def-context">explained in chapter 9 →</a></p></div>

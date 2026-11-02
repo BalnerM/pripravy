@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Předzpracování a únik dat – MLR</title>
+<meta name="description" content="Standardizace, fit jen na trénovacích datech, red flags.">
+<link rel="alternate" hreflang="en" href="en/04_predzpracovani.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css?v=b9a02598">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js?v=b9a02598"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">MLR – průběžný test 1<small>typové úlohy: výpočty na papíře a čtení kódu</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html#mlr" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <a class="iconbtn langbtn" href="en/04_predzpracovani.html" hreflang="en" lang="en" title="English version">EN</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/04_predzpracovani.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Jak se připravit</span></a></li>
+    <li><a href="01_numpy.html"><span class="n">1</span><span>Čtení kódu v NumPy</span></a></li>
+    <li><a href="02_knn.html"><span class="n">2</span><span>Vzdálenosti, k-NN a gradientní sestup</span></a></li>
+    <li><a href="03_metriky.html"><span class="n">3</span><span>Matice záměn a metriky</span></a></li>
+    <li><a href="04_predzpracovani.html" class="active"><span class="n">4</span><span>Předzpracování a únik dat</span></a></li>
+    <li><a href="05_vyber_priznaku.html"><span class="n">5</span><span>Výběr příznaků a PCA</span></a></li>
+    <li><a href="06_linearni_regrese.html"><span class="n">6</span><span>Lineární regrese ručně</span></a></li>
+    <li><a href="07_polynom_ridge.html"><span class="n">7</span><span>Polynomy, přeučení, ridge a jádra</span></a></li>
+    <li><a href="08_stromy_ansambly.html"><span class="n">8</span><span>Stromy, bagging a SVM</span></a></li>
+    <li><a href="09_agenti.html"><span class="n">9</span><span>AI agenti: skill a subagent</span></a></li>
+    <li><a href="10_ukazky.html"><span class="n">✎</span><span>Ukázky A a B s řešením</span></a></li>
+    <li><a href="11_cvicne_testy.html"><span class="n">✎</span><span>Cvičné testy C–F</span></a></li>
+    <li><a href="12_tahak.html"><span class="n">★</span><span>Tahák</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#pojmy">Pojmy</a></li>
+    <li><a href="#ulohy">Úlohy</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky k testu</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – průběžný test 1 · Předzpracování a únik dat – MLR · https://balnerm.github.io/pripravy/mlr/test1/04_predzpracovani.html</p>
+<p class="kicker">Typ úloh 4</p>
+<h1>Předzpracování a únik dat</h1>
+<p class="lead">Úloha A2 („Repair preprocessing“) je typický <b>red flag</b>: kód běží, vrátí číslo, ale je špatně. Ve cvičení 2 byly čtyři takové úryvky (A–D) a ve cvičení 3 doplňování chybějících hodnot. Všechny mají jedno pravidlo: <b>vše, co se učí z dat (μ, σ, min, max, průměr na doplnění, hyperparametr), se učí jen z trénovací části</b>; validace slouží k výběru, test se použije jednou na konci.</p>
+
+<h2 id="pojmy">Pojmy</h2>
+<div class="box definice" id="def-standardizace"><div class="box-t">Definice: standardizace (z-score)</div>
+<p><b>Standardizace</b> převede každý příznak na nulový průměr a jednotkovou směrodatnou odchylku pomocí <b>průměru a směrodatné odchylky trénovacích dat</b>:
+\[ x' = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}} \]</p>
+<p class="jinak">„o kolik směrodatných odchylek je hodnota nad trénovacím průměrem“. Po standardizaci mají všechny příznaky srovnatelné měřítko, takže ve vzdálenosti (k-NN) nepřeváží příznak s velkými čísly.</p></div>
+<div class="box definice" id="def-minmax"><div class="box-t">Definice: min-max normalizace</div>
+<p><b>Min-max normalizace</b> zobrazí příznak lineárně do intervalu [0, 1] podle minima a maxima trénovacích dat: \(x' = (x - \min_{\text{train}})/(\max_{\text{train}} - \min_{\text{train}})\).</p>
+<p class="jinak">nová data mohou vyjít mimo [0, 1] – to je v pořádku, nikdy se kvůli tomu „nepřefituje“.</p></div>
+<div class="box definice" id="def-unik"><div class="box-t">Definice: únik dat (data leakage)</div>
+<p><b>Únik dat</b> nastane, když se do trénování nebo výběru modelu dostane informace z dat, na kterých se pak model hodnotí (validační nebo testovací), takže odhad výkonu je příliš optimistický.</p>
+<p class="jinak">model „viděl tahák“. Číslo pak neodpovídá tomu, co model udělá na opravdu nových datech.</p></div>
+<div class="box definice" id="def-split"><div class="box-t">Definice: trénovací, validační a testovací množina</div>
+<p><b>Trénovací množina</b> slouží k učení parametrů modelu a předzpracování, <b>validační</b> k výběru hyperparametrů, příznaků a modelu, <b>testovací</b> k jedinému závěrečnému odhadu výkonu na nových datech.</p>
+<p class="jinak">„fit the model | choose the hyperparameters | report once“. Typické dělení 60/20/20 nebo 70/15/15; při malých datech křížová validace na trénovací části.</p></div>
+
+<div class="box vzorec"><div class="box-t">Správně ve scikit-learn</div>
+<pre class="code"><code>scaler = StandardScaler()
+X_train = scaler.fit_transform(train)   # μ, σ se naučí z train a hned se použijí
+X_valid = scaler.transform(valid)       # jen použití uloženého μ, σ
+X_test  = scaler.transform(test)</code></pre>
+<table class="vars">
+<tr><td><code>fit</code></td><td>spočítá a uloží parametry (<code>mean_</code>, <code>scale_</code>) z dat, která dostane</td></tr>
+<tr><td><code>transform</code></td><td>použije uložené parametry, nic nového se neučí</td></tr>
+<tr><td><code>fit_transform</code></td><td>obojí najednou – <b>jen na trénovací data</b></td></tr>
+</table></div>
+
+<figure><div class="paper"><img src="../figures/t1_standardizace.png" alt="Trénovací hodnoty 2 až 9 a validační hodnoty 8 a 10: správná standardizace je posune na 1,5 a 2,5, špatná (vlastní průměr validace) na −1 a 1" loading="lazy"></div>
+<figcaption>Trénovací data mají μ = 5, σ = 2. Validační hodnoty 8 a 10 se správně převedou na 1,5 a 2,5. Když validace dostane vlastní <code>fit_transform</code>, vyjdou −1 a 1, takže hodnota 8 se tváří jako podprůměrná.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div><p>Vlastní μ a σ validace <b>posunou validační body vůči trénovacím</b>. Pro k-NN se tím změní, kdo je čí soused – model dostává jinou souřadnicovou soustavu, než ve které se učil.</p></div>
+
+<div class="box postup" id="postup-leak"><div class="box-t">Jak poznat a jak postupovat: red flag v kódu</div>
+<p><b>Poznáš to:</b> <span class="kw">fit_transform(valid)</span>, scaler na celých datech před <span class="kw">train_test_split</span>, výběr k / λ / příznaků podle testu, accuracy na trénovacích datech, <span class="kw">fillna</span> s průměrem ze všech dat.</p>
+<ol>
+<li>Najdi každé místo, kde se něco <b>učí</b> (<code>fit</code>, <code>mean()</code>, <code>max(scores)</code>, <code>argmax</code>).</li>
+<li>Zeptej se, z jakých dat se to učí. Musí to být jen trénovací část (výběr hyperparametrů: validační).</li>
+<li>Vysvětli důsledek: optimistický odhad, nebo nekonzistentní měřítko.</li>
+<li>Napiš opravu (<code>transform</code> místo <code>fit_transform</code>, split před škálováním, výběr na validaci…).</li>
+</ol></div>
+
+<h2 id="ulohy">Úlohy</h2>
+<div class="box uloha" id="u-a2"><div class="box-t">Ukázka A, úloha 2: Repair preprocessing <span class="en">1 point</span></div>
+<p>Training and validation rows have already been split correctly. A k-NN model will use these transformed features:</p>
+<pre class="code"><code>scaler = StandardScaler()
+X_train = scaler.fit_transform(train)
+X_valid = scaler.fit_transform(valid)</code></pre>
+<p>a) Explain why the original code is wrong for distance-based prediction. Which data must determine the mean and standard deviation? (0.75)<br>
+b) The training mean is 1 and standard deviation is 1. Standardize a validation value of 4. (0.25)</p>
+<p class="meta"><b>Výsledek:</b> druhý řádek musí být <code>scaler.transform(valid)</code>; μ a σ jen z trénovacích dat; z = (4 − 1)/1 = 3.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>a) <code>fit_transform(valid)</code> přepočítá μ a σ z validačních dat a přepíše ty trénovací. Validační body jsou pak škálované jinak než trénovací, takže vzdálenosti mezi validačním a trénovacím bodem k-NN neodpovídají skutečnosti a sousedé se změní. Navíc se ze validačních dat něco učí (únik). Parametry musí určit <b>jen trénovací data</b>; oprava:</p>
+<pre class="code"><code>X_train = scaler.fit_transform(train)
+X_valid = scaler.transform(valid)</code></pre>
+<p>b) Dosazení trénovacích parametrů:</p>
+\[ z = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}} = \frac{4 - 1}{1} = 3 \]
+<p class="answer-en">The validation set is rescaled with its own mean and standard deviation, so training and validation points live in different coordinate systems and the k-NN distances become meaningless; it also learns from validation data. The mean and standard deviation must come from the training data only: use scaler.transform(valid). z = (4 − 1)/1 = 3.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-z"><div class="box-t">Úloha 2: standardizace a min-max ručně</div>
+<p>Training values of one feature: 2, 4, 4, 4, 5, 5, 7, 9. a) Compute μ and σ (population, as in <code>StandardScaler</code>). b) Standardize validation values 9 and 3. c) Min-max scale the value 8 using training min 2 and max 10, and the value 12.</p>
+<p class="meta"><b>Výsledek:</b> μ = 5, σ = 2; z(9) = 2, z(3) = −1; min-max: 0,75 a 1,25.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Průměr a rozptyl:</p>
+\[ \begin{aligned} \mu &amp;= \frac{2 + 4 + 4 + 4 + 5 + 5 + 7 + 9}{8} = \frac{40}{8} = 5 \\ \sigma^2 &amp;= \frac{9 + 1 + 1 + 1 + 0 + 0 + 4 + 16}{8} = \frac{32}{8} = 4 \end{aligned} \]
+<p>takže σ = 2.</p>
+<p>2. \(z(9) = (9 - 5)/2 = 2\), \(z(3) = (3 - 5)/2 = -1\).</p>
+<p>3. Min-max: \((8 - 2)/(10 - 2) = 0{,}75\); \((12 - 2)/8 = 1{,}25\) – mimo [0, 1], ale správně.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-rfa"><div class="box-t">Úloha 3: scaler na všech datech (red flag A)</div>
+<pre class="code"><code>scaler = MinMaxScaler()
+X_scaled = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, train_size=20)
+model = KNeighborsClassifier(n_neighbors=3).fit(X_train, y_train)
+print(accuracy_score(y_test, model.predict(X_test)))</code></pre>
+<p>What is wrong? Repair it.</p>
+<p class="meta"><b>Výsledek:</b> min a max se spočítají i z testovacích řádků (únik) → nejdřív split, pak <code>fit</code> na <code>X_train</code>, <code>transform</code> na obou.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>Scaler zná rozsah celých dat včetně testu, takže škálování „ví“, kde testovací body leží. Zvlášť při 20 trénovacích vzorcích je rozsah z trénovací části jiný než z celých dat. Oprava:</p>
+<pre class="code"><code>X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=20)
+scaler = MinMaxScaler().fit(X_train)
+X_train, X_test = scaler.transform(X_train), scaler.transform(X_test)</code></pre>
+</div></details></div>
+
+<div class="box uloha" id="u-rfb"><div class="box-t">Úloha 4: k vybrané podle testu (red flag B)</div>
+<pre class="code"><code>scores = []
+for k in range(1, 32, 2):
+    model = KNeighborsClassifier(n_neighbors=k).fit(X_train_s, y_train)
+    scores.append(accuracy_score(y_test, model.predict(X_test_s)))
+print("best accuracy:", max(scores))</code></pre>
+<p>The scaler was fitted on training data only. Why is the printed number still not an estimate of performance on new data?</p>
+<p class="meta"><b>Výsledek:</b> k se vybírá podle testu → test se stal součástí trénování; vybírat na validační části (nebo CV) a test použít jednou.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>Maximum z mnoha pokusů na testu je optimisticky vychýlené: vybrali jsme k, které na <b>těchto</b> testovacích datech náhodou vyšlo nejlépe. Správně: oddělit validační část z trénovacích dat (nebo použít křížovou validaci), k vybrat podle validace, model s vybraným k jednou vyhodnotit na testu.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-fill"><div class="box-t">Úloha 5: doplnění chybějících hodnot</div>
+<pre class="code"><code>fill = pd.concat([train, valid, test])["age"].mean()
+train["age"] = train["age"].fillna(fill)
+valid["age"] = valid["age"].fillna(fill)</code></pre>
+<p>a) What is wrong? b) Training ages are 20, NaN, 40; validation ages are NaN, 60. Which value replaces the missing validation age?</p>
+<p class="meta"><b>Výsledek:</b> průměr musí být jen z trénovacích dat; náhrada = (20 + 40)/2 = 30 i ve validaci (ne 60).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>Hodnota pro doplnění je naučený parametr, stejně jako μ u standardizace. Spočítá se z trénovací části (průměr ignoruje NaN): (20 + 40)/2 = 30. Stejné číslo 30 se pak použije pro validaci i test. Ve cvičení 3: <code>fill_values</code> z <code>train</code>, pak <code>fillna(fill_values)</code> na všech třech částech.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-split"><div class="box-t">Úloha 6: tři části dat</div>
+<p>You have 500 samples and want a 60/20/20 split. How many samples are in each part, and what is each part used for? Why not report the validation score as the final result?</p>
+<p class="meta"><b>Výsledek:</b> 300/100/100; validační skóre je zatížené výběrem (použili jsme ho k rozhodování).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>300 trénovacích (fit modelu, scaleru, imputace), 100 validačních (výběr k, λ, stupně, příznaků), 100 testovacích (jedno závěrečné měření). Validační skóre nejlepší varianty je optimistické, protože jsme podle něj vybírali – proto je potřeba nezávislý test.</p>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Časté pasti</div>
+<ul>
+<li><code>fit_transform</code> na validaci/testu – nejčastější chyba v ukázkách.</li>
+<li>Škálování <b>před</b> rozdělením dat.</li>
+<li>Výběr hyperparametru podle testu (a pak hlášení téhož testu).</li>
+<li>Trénovací accuracy jako výsledek (u 1-NN skoro vždy 1).</li>
+<li>V CV musí být škálování v <code>Pipeline</code>, aby se fitovalo v každém foldu znovu.</li>
+<li>Stromy a random forest škálování nepotřebují (řezy po jednom příznaku); k-NN, SVM, ridge ano.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">Co napsat za plné body</div>
+<p>Tři části: (1) co se naučí z jakých dat, (2) proč je to špatně pro danou metodu (vzdálenosti, optimismus), (3) opravený řádek kódu. U výpočtu vzorec s trénovacími parametry.</p>
+<p class="answer-en">Learned preprocessing (mean, standard deviation, min, max, fill values) must be fitted on the training data only and then applied with transform to validation and test data.</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Fit jen na train, transform všude; hyperparametry podle validace; test jednou.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Předzpracování, které se učí z dat (standardizace, min-max, doplnění chybějících hodnot), je součástí modelu: jeho parametry se odhadnou jen z trénovací části a na validační a testovací data se pouze aplikují (<code>transform</code>). Pro vzdálenostní metody je to dvojnásob důležité – jiné škálování validace mění sousedy. Únik dat vzniká také výběrem hyperparametrů podle testu nebo hlášením trénovací chyby. Validační část slouží k rozhodování, testovací k jedinému závěrečnému číslu.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>\(x' = (x - \mu_{\text{train}})/\sigma_{\text{train}}\).</li>
+<li><code>fit_transform(train)</code>, <code>transform(valid)</code>, <code>transform(test)</code>.</li>
+<li>Split před škálováním; v CV scaler uvnitř pipeline.</li>
+<li>k, λ, stupeň, příznaky – podle validace, nikdy podle testu.</li>
+<li>Trénovací accuracy není odhad výkonu.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky k testu</h2>
+<details class="q"><summary>Proč k-NN potřebuje standardizaci a strom ne?</summary><div><p>k-NN sčítá čtverce rozdílů všech příznaků; příznak s velkým rozsahem vzdálenost ovládne. Strom dělí podle jednoho příznaku prahem – změna měřítka jen posune práh.</p></div></details>
+<details class="q"><summary>Jaký je rozdíl mezi <code>fit_transform</code> a <code>transform</code>?</summary><div><p><code>fit_transform</code> parametry spočítá a použije, <code>transform</code> jen použije uložené. Na validaci a test se používá jen <code>transform</code>.</p></div></details>
+<details class="q"><summary>Co je únik dat? Uveď dva příklady.</summary><div><p>Informace z hodnoticích dat se dostane do učení. Např. scaler na celých datech před splitem; výběr k podle testovací accuracy; doplnění průměrem ze všech dat.</p></div></details>
+<details class="q"><summary>K čemu je validační a k čemu testovací množina?</summary><div><p>Validační: vybrat hyperparametry, příznaky a model. Testovací: jednou na konci odhadnout výkon vybraného modelu.</p></div></details>
+<details class="q"><summary>Proč může validační hodnota po min-max vyjít 1,25?</summary><div><p>Min a max jsou z trénovacích dat; nová hodnota může být mimo jejich rozsah. To je správně, nepřepočítává se.</p></div></details>
+<details class="q"><summary>Jak zařídit správné škálování v křížové validaci?</summary><div><p>Dát scaler a model do <code>Pipeline</code> a předat ji <code>cross_val_score</code>; scaler se fituje znovu v každém trénovacím foldu.</p></div></details>
+
+<nav class="pager"><a class="prev" href="03_metriky.html"><small>← předchozí</small>Matice záměn a metriky</a><a class="next" href="05_vyber_priznaku.html"><small>další →</small>Výběr příznaků a PCA</a></nav>
+</main>
+</div>
+</body>
+</html>

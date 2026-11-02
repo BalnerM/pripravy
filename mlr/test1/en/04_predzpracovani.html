@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preprocessing and data leakage – MLR</title>
+<meta name="description" content="Standardization, fit on training data only, red flags.">
+<link rel="alternate" hreflang="cs" href="../04_predzpracovani.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../../assets/style.css?v=b9a02598">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../../assets/app.js?v=b9a02598"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Contents">☰ Contents</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Hide the sidebar" data-show="Show the sidebar" title="Hide the sidebar">◧ Sidebar</button>
+  <a class="brand" href="index.html">MLR – practical test 1<small>task types: paper calculations and reading code</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../../index.html#mlr" title="All study notes">←<span> All study notes</span></a>
+  <a class="iconbtn langbtn" href="../04_predzpracovani.html" hreflang="cs" lang="cs" title="Česká verze">CZ</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Smaller text" aria-label="Smaller text">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Default text size">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Larger text" aria-label="Larger text">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/04_predzpracovani.pdf" download title="Download this page as PDF" data-dl="Download this page as PDF" data-print="Print / save as PDF with the chosen font size">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Dark mode</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigation">
+  <h4>Chapters</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>How to prepare</span></a></li>
+    <li><a href="01_numpy.html"><span class="n">1</span><span>Reading NumPy code</span></a></li>
+    <li><a href="02_knn.html"><span class="n">2</span><span>Distances, k-NN and gradient descent</span></a></li>
+    <li><a href="03_metriky.html"><span class="n">3</span><span>Confusion matrix and metrics</span></a></li>
+    <li><a href="04_predzpracovani.html" class="active"><span class="n">4</span><span>Preprocessing and data leakage</span></a></li>
+    <li><a href="05_vyber_priznaku.html"><span class="n">5</span><span>Feature selection and PCA</span></a></li>
+    <li><a href="06_linearni_regrese.html"><span class="n">6</span><span>Linear regression by hand</span></a></li>
+    <li><a href="07_polynom_ridge.html"><span class="n">7</span><span>Polynomials, overfitting, ridge and kernels</span></a></li>
+    <li><a href="08_stromy_ansambly.html"><span class="n">8</span><span>Trees, bagging and SVM</span></a></li>
+    <li><a href="09_agenti.html"><span class="n">9</span><span>AI agents: skill and subagent</span></a></li>
+    <li><a href="10_ukazky.html"><span class="n">✎</span><span>Samples A and B solved</span></a></li>
+    <li><a href="11_cvicne_testy.html"><span class="n">✎</span><span>Practice tests C–F</span></a></li>
+    <li><a href="12_tahak.html"><span class="n">★</span><span>Cheat sheet</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Glossary (definitions)</span></a></li>
+  </ol>
+  <h4>On this page</h4>
+  <ul class="toc">
+    <li><a href="#pojmy">Terms</a></li>
+    <li><a href="#ulohy">Tasks</a></li>
+    <li><a href="#shrnuti-h">Summary</a></li>
+    <li><a href="#otazky">Test questions</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – practical test 1 · Preprocessing and data leakage – MLR · https://balnerm.github.io/pripravy/mlr/test1/en/04_predzpracovani.html</p>
+<p class="kicker">Task type 4</p>
+<h1>Preprocessing and data leakage</h1>
+<p class="lead">Task A2 (“Repair preprocessing”) is a typical <b>red flag</b>: the code runs and returns a number, but it is wrong. Lab 2 had four such snippets (A–D) and lab 3 filled missing values. They all share one rule: <b>everything learned from data (μ, σ, min, max, the fill value, a hyperparameter) is learned from the training part only</b>; validation is for choosing, the test set is used once at the end.</p>
+
+<h2 id="pojmy">Terms</h2>
+<div class="box definice" id="def-standardizace"><div class="box-t">Definition: standardization (z-score)</div>
+<p><b>Standardization</b> rescales each feature to zero mean and unit standard deviation using the <b>mean and standard deviation of the training data</b>:
+\[ x' = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}} \]</p>
+<p class="jinak">“how many standard deviations the value is above the training mean”. After standardization all features have a comparable scale, so in a distance (k-NN) the feature with large numbers does not dominate.</p></div>
+<div class="box definice" id="def-minmax"><div class="box-t">Definition: min-max normalization</div>
+<p><b>Min-max normalization</b> maps a feature linearly to [0, 1] using the minimum and maximum of the training data: \(x' = (x - \min_{\text{train}})/(\max_{\text{train}} - \min_{\text{train}})\).</p>
+<p class="jinak">new data may fall outside [0, 1] – that is fine, you never refit because of it.</p></div>
+<div class="box definice" id="def-unik"><div class="box-t">Definition: data leakage</div>
+<p><b>Data leakage</b> happens when information from the data the model is evaluated on (validation or test) gets into training or model selection, so the performance estimate is too optimistic.</p>
+<p class="jinak">the model “saw the answer sheet”. The number then does not match what the model will do on truly new data.</p></div>
+<div class="box definice" id="def-split"><div class="box-t">Definition: training, validation and test set</div>
+<p>The <b>training set</b> is used to learn model parameters and preprocessing, the <b>validation set</b> to choose hyperparameters, features and the model, the <b>test set</b> for one final estimate of performance on new data.</p>
+<p class="jinak">“fit the model | choose the hyperparameters | report once”. Typical splits 60/20/20 or 70/15/15; with little data, cross-validation on the training part.</p></div>
+
+<div class="box vzorec"><div class="box-t">Correct in scikit-learn</div>
+<pre class="code"><code>scaler = StandardScaler()
+X_train = scaler.fit_transform(train)   # learn μ, σ from train and apply them
+X_valid = scaler.transform(valid)       # only apply the stored μ, σ
+X_test  = scaler.transform(test)</code></pre>
+<table class="vars">
+<tr><td><code>fit</code></td><td>computes and stores the parameters (<code>mean_</code>, <code>scale_</code>) from the data it gets</td></tr>
+<tr><td><code>transform</code></td><td>applies the stored parameters, learns nothing new</td></tr>
+<tr><td><code>fit_transform</code></td><td>both at once – <b>training data only</b></td></tr>
+</table></div>
+
+<figure><div class="paper"><img src="../../figures/en/t1_standardizace.png" alt="Training values 2 to 9 and validation values 8 and 10: correct standardization maps them to 1.5 and 2.5, the wrong one (validation's own mean) to −1 and 1" loading="lazy"></div>
+<figcaption>The training data have μ = 5, σ = 2. Validation values 8 and 10 correctly become 1.5 and 2.5. If validation gets its own <code>fit_transform</code>, they become −1 and 1, so the value 8 looks below average.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div><p>The validation set's own μ and σ <b>shift the validation points relative to the training points</b>. For k-NN this changes who is whose neighbour – the model gets a different coordinate system than the one it learned in.</p></div>
+
+<div class="box postup" id="postup-leak"><div class="box-t">How to recognise it and what to do: a red flag in code</div>
+<p><b>Recognise it by:</b> <span class="kw">fit_transform(valid)</span>, a scaler on the whole data before <span class="kw">train_test_split</span>, choosing k / λ / features by the test set, accuracy on training data, <span class="kw">fillna</span> with a mean of all data.</p>
+<ol>
+<li>Find every place where something is <b>learned</b> (<code>fit</code>, <code>mean()</code>, <code>max(scores)</code>, <code>argmax</code>).</li>
+<li>Ask from which data it is learned. It must be the training part only (hyperparameter choice: validation).</li>
+<li>Explain the consequence: optimistic estimate, or inconsistent scaling.</li>
+<li>Write the repair (<code>transform</code> instead of <code>fit_transform</code>, split before scaling, choose on validation…).</li>
+</ol></div>
+
+<h2 id="ulohy">Tasks</h2>
+<div class="box uloha" id="u-a2"><div class="box-t">Sample A, task 2: Repair preprocessing <span class="en">1 point</span></div>
+<p>Training and validation rows have already been split correctly. A k-NN model will use these transformed features:</p>
+<pre class="code"><code>scaler = StandardScaler()
+X_train = scaler.fit_transform(train)
+X_valid = scaler.fit_transform(valid)</code></pre>
+<p>a) Explain why the original code is wrong for distance-based prediction. Which data must determine the mean and standard deviation? (0.75)<br>
+b) The training mean is 1 and standard deviation is 1. Standardize a validation value of 4. (0.25)</p>
+<p class="meta"><b>Result:</b> the second line must be <code>scaler.transform(valid)</code>; μ and σ from training data only; z = (4 − 1)/1 = 3.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>a) <code>fit_transform(valid)</code> recomputes μ and σ from the validation data and overwrites the training ones. Validation points are then scaled differently from training points, so the k-NN distances between a validation point and training points do not reflect reality and the neighbours change. In addition something is learned from validation data (leakage). The parameters must come from <b>training data only</b>; the repair:</p>
+<pre class="code"><code>X_train = scaler.fit_transform(train)
+X_valid = scaler.transform(valid)</code></pre>
+<p>b) Substitute the training parameters:</p>
+\[ z = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}} = \frac{4 - 1}{1} = 3 \]
+</div></details></div>
+
+<div class="box uloha" id="u-z"><div class="box-t">Task 2: standardization and min-max by hand</div>
+<p>Training values of one feature: 2, 4, 4, 4, 5, 5, 7, 9. a) Compute μ and σ (population, as in <code>StandardScaler</code>). b) Standardize validation values 9 and 3. c) Min-max scale the value 8 using training min 2 and max 10, and the value 12.</p>
+<p class="meta"><b>Result:</b> μ = 5, σ = 2; z(9) = 2, z(3) = −1; min-max: 0.75 and 1.25.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>1. Mean and variance:</p>
+\[ \begin{aligned} \mu &amp;= \frac{2 + 4 + 4 + 4 + 5 + 5 + 7 + 9}{8} = \frac{40}{8} = 5 \\ \sigma^2 &amp;= \frac{9 + 1 + 1 + 1 + 0 + 0 + 4 + 16}{8} = \frac{32}{8} = 4 \end{aligned} \]
+<p>so σ = 2.</p>
+<p>2. \(z(9) = (9 - 5)/2 = 2\), \(z(3) = (3 - 5)/2 = -1\).</p>
+<p>3. Min-max: \((8 - 2)/(10 - 2) = 0.75\); \((12 - 2)/8 = 1.25\) – outside [0, 1], but correct.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-rfa"><div class="box-t">Task 3: a scaler on all data (red flag A)</div>
+<pre class="code"><code>scaler = MinMaxScaler()
+X_scaled = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, train_size=20)
+model = KNeighborsClassifier(n_neighbors=3).fit(X_train, y_train)
+print(accuracy_score(y_test, model.predict(X_test)))</code></pre>
+<p>What is wrong? Repair it.</p>
+<p class="meta"><b>Result:</b> min and max are computed also from the test rows (leakage) → split first, then <code>fit</code> on <code>X_train</code>, <code>transform</code> both.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>The scaler knows the range of all data including the test set, so the scaling “knows” where the test points lie. Especially with 20 training samples, the range from the training part differs from the range of all data. Repair:</p>
+<pre class="code"><code>X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=20)
+scaler = MinMaxScaler().fit(X_train)
+X_train, X_test = scaler.transform(X_train), scaler.transform(X_test)</code></pre>
+</div></details></div>
+
+<div class="box uloha" id="u-rfb"><div class="box-t">Task 4: k chosen on the test set (red flag B)</div>
+<pre class="code"><code>scores = []
+for k in range(1, 32, 2):
+    model = KNeighborsClassifier(n_neighbors=k).fit(X_train_s, y_train)
+    scores.append(accuracy_score(y_test, model.predict(X_test_s)))
+print("best accuracy:", max(scores))</code></pre>
+<p>The scaler was fitted on training data only. Why is the printed number still not an estimate of performance on new data?</p>
+<p class="meta"><b>Result:</b> k is chosen by the test set → the test set became part of training; choose on a validation part (or CV) and use the test once.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>The maximum over many tries on the test set is optimistically biased: we picked the k that happened to work best on <b>these</b> test data. Correct: split a validation part from the training data (or use cross-validation), choose k by validation, evaluate the model with the chosen k once on the test set.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-fill"><div class="box-t">Task 5: filling missing values</div>
+<pre class="code"><code>fill = pd.concat([train, valid, test])["age"].mean()
+train["age"] = train["age"].fillna(fill)
+valid["age"] = valid["age"].fillna(fill)</code></pre>
+<p>a) What is wrong? b) Training ages are 20, NaN, 40; validation ages are NaN, 60. Which value replaces the missing validation age?</p>
+<p class="meta"><b>Result:</b> the mean must come from training data only; replacement = (20 + 40)/2 = 30 also in validation (not 60).</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>The fill value is a learned parameter, just like μ in standardization. It is computed from the training part (the mean ignores NaN): (20 + 40)/2 = 30. The same number 30 is then used for validation and test. In lab 3: <code>fill_values</code> from <code>train</code>, then <code>fillna(fill_values)</code> on all three parts.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-split"><div class="box-t">Task 6: three parts of the data</div>
+<p>You have 500 samples and want a 60/20/20 split. How many samples are in each part, and what is each part used for? Why not report the validation score as the final result?</p>
+<p class="meta"><b>Result:</b> 300/100/100; the validation score is biased by selection (we used it to decide).</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>300 training (fit the model, scaler, imputation), 100 validation (choose k, λ, degree, features), 100 test (one final measurement). The validation score of the best variant is optimistic because we selected by it – that is why an independent test set is needed.</p>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Common traps</div>
+<ul>
+<li><code>fit_transform</code> on validation/test – the most common mistake in the samples.</li>
+<li>Scaling <b>before</b> splitting the data.</li>
+<li>Choosing a hyperparameter by the test set (and then reporting the same test).</li>
+<li>Training accuracy as the result (for 1-NN almost always 1).</li>
+<li>In CV the scaler must be inside a <code>Pipeline</code> so it is refitted in every fold.</li>
+<li>Trees and random forests do not need scaling (cuts on one feature); k-NN, SVM, ridge do.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">What to write for full points</div>
+<p>Three parts: (1) what is learned from which data, (2) why it is wrong for the given method (distances, optimism), (3) the repaired line of code. For a calculation, the formula with training parameters.</p>
+<p class="answer-en">Learned preprocessing (mean, standard deviation, min, max, fill values) must be fitted on the training data only and then applied with transform to validation and test data.</p></div>
+
+<div class="box kostka"><div class="box-t">In a nutshell</div><p>Fit on train only, transform everywhere; hyperparameters by validation; test once.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Summary</h2>
+<p>Preprocessing that learns from data (standardization, min-max, filling missing values) is part of the model: its parameters are estimated from the training part only and merely applied to validation and test data (<code>transform</code>). For distance-based methods this matters twice – different scaling of validation changes the neighbours. Leakage also comes from choosing hyperparameters by the test set or reporting the training error. The validation part is for decisions, the test part for one final number.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>\(x' = (x - \mu_{\text{train}})/\sigma_{\text{train}}\).</li>
+<li><code>fit_transform(train)</code>, <code>transform(valid)</code>, <code>transform(test)</code>.</li>
+<li>Split before scaling; in CV the scaler goes inside the pipeline.</li>
+<li>k, λ, degree, features – by validation, never by test.</li>
+<li>Training accuracy is not a performance estimate.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Test questions</h2>
+<details class="q"><summary>Why does k-NN need standardization and a tree does not?</summary><div><p>k-NN adds squared differences of all features; a feature with a large range dominates the distance. A tree splits one feature by a threshold – rescaling only moves the threshold.</p></div></details>
+<details class="q"><summary>What is the difference between <code>fit_transform</code> and <code>transform</code>?</summary><div><p><code>fit_transform</code> computes the parameters and applies them, <code>transform</code> only applies the stored ones. Validation and test data get only <code>transform</code>.</p></div></details>
+<details class="q"><summary>What is data leakage? Give two examples.</summary><div><p>Information from the evaluation data gets into learning. E.g. a scaler on all data before the split; choosing k by test accuracy; filling with the mean of all data.</p></div></details>
+<details class="q"><summary>What are the validation and the test set for?</summary><div><p>Validation: choose hyperparameters, features and the model. Test: estimate the performance of the chosen model once at the end.</p></div></details>
+<details class="q"><summary>Why can a validation value after min-max be 1.25?</summary><div><p>Min and max come from the training data; a new value can lie outside their range. That is correct, nothing is recomputed.</p></div></details>
+<details class="q"><summary>How do you scale correctly in cross-validation?</summary><div><p>Put the scaler and the model into a <code>Pipeline</code> and pass it to <code>cross_val_score</code>; the scaler is refitted in each training fold.</p></div></details>
+
+<nav class="pager"><a class="prev" href="03_metriky.html"><small>← previous</small>Confusion matrix and metrics</a><a class="next" href="05_vyber_priznaku.html"><small>next →</small>Feature selection and PCA</a></nav>
+</main>
+</div>
+</body>
+</html>

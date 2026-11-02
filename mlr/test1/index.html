@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MLR – průběžný test 1</title>
+<meta name="description" content="Formát testu, mapa typů úloh a plán přípravy.">
+<link rel="alternate" hreflang="en" href="en/index.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css?v=b9a02598">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js?v=b9a02598"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">MLR – průběžný test 1<small>typové úlohy: výpočty na papíře a čtení kódu</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html#mlr" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <a class="iconbtn langbtn" href="en/index.html" hreflang="en" lang="en" title="English version">EN</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/skripta_vse.pdf" download title="Celá skripta v jednom PDF" data-dl="Celá skripta v jednom PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html" class="active"><span class="n"></span><span>Jak se připravit</span></a></li>
+    <li><a href="01_numpy.html"><span class="n">1</span><span>Čtení kódu v NumPy</span></a></li>
+    <li><a href="02_knn.html"><span class="n">2</span><span>Vzdálenosti, k-NN a gradientní sestup</span></a></li>
+    <li><a href="03_metriky.html"><span class="n">3</span><span>Matice záměn a metriky</span></a></li>
+    <li><a href="04_predzpracovani.html"><span class="n">4</span><span>Předzpracování a únik dat</span></a></li>
+    <li><a href="05_vyber_priznaku.html"><span class="n">5</span><span>Výběr příznaků a PCA</span></a></li>
+    <li><a href="06_linearni_regrese.html"><span class="n">6</span><span>Lineární regrese ručně</span></a></li>
+    <li><a href="07_polynom_ridge.html"><span class="n">7</span><span>Polynomy, přeučení, ridge a jádra</span></a></li>
+    <li><a href="08_stromy_ansambly.html"><span class="n">8</span><span>Stromy, bagging a SVM</span></a></li>
+    <li><a href="09_agenti.html"><span class="n">9</span><span>AI agenti: skill a subagent</span></a></li>
+    <li><a href="10_ukazky.html"><span class="n">✎</span><span>Ukázky A a B s řešením</span></a></li>
+    <li><a href="11_cvicne_testy.html"><span class="n">✎</span><span>Cvičné testy C–F</span></a></li>
+    <li><a href="12_tahak.html"><span class="n">★</span><span>Tahák</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+
+</nav>
+<main>
+<p class="printhead">MLR – průběžný test 1 · MLR – průběžný test 1 · https://balnerm.github.io/pripravy/mlr/test1/index.html</p>
+
+<h1>MLR – příprava na průběžný test 1</h1>
+<p class="lead">Skripta k <b>Practical test 1 (computing)</b> z MPA-MLR: týden 8 (3.–5. 11.), na začátku cvičení, 5 bodů. Látka <b>přednášek a cvičení 1–6</b>. Kapitoly nejsou podle přednášek, ale <b>podle typů úloh</b> z ukázkových testů A a B; každá má původní úlohu z ukázky, podobné úlohy ze cvičení a řešení krok po kroku.</p>
+
+<h2 id="format">Formát testu</h2>
+<div class="box intuice"><div class="box-t">Co tě čeká</div>
+<ul>
+<li><b>25 minut · 5 bodů · jen papír</b>, bez poznámek, AI a kalkulačky. Zlomky stačí, ukaž postup.</li>
+<li>5 nezávislých úloh za 0,75–1,25 bodu, zadání <b>anglicky</b>; odpovídat se dá krátce.</li>
+<li>Kód se <b>čte, nespouští</b>: NumPy, indexy od nuly.</li>
+<li>V obou ukázkách byly: jeden ruční výpočet s maticí (lineární regrese / polynomiální příznaky), jedna oprava kódu (standardizace / ridge), jedna interpretace (grafy / matice záměn), jedna smyčka nebo hlasování (bagging / dopředný výběr) a jedna otázka o agentech (skill / subagent).</li>
+</ul></div>
+
+<h2 id="mapa">Mapa typů úloh</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>Typ úlohy</th><th>V ukázce</th><th>Ve cvičení</th><th>Kapitola</th></tr>
+<tr><td>Čtení kódu, tvary, axis</td><td>všude</td><td>1–6</td><td><a href="01_numpy.html">1</a></td></tr>
+<tr><td>k-NN ručně, gradientní sestup, k-means</td><td>–</td><td>1, 2</td><td><a href="02_knn.html">2</a></td></tr>
+<tr><td>Matice záměn, metriky</td><td>B3, A5b</td><td>2</td><td><a href="03_metriky.html">3</a></td></tr>
+<tr><td>Standardizace, únik dat, red flags</td><td>A2</td><td>2, 3</td><td><a href="04_predzpracovani.html">4</a></td></tr>
+<tr><td>Filtry, dopředný výběr, PCA</td><td>B4</td><td>3</td><td><a href="05_vyber_priznaku.html">5</a></td></tr>
+<tr><td>Lineární regrese ručně</td><td>A1</td><td>4</td><td><a href="06_linearni_regrese.html">6</a></td></tr>
+<tr><td>Polynomy, přeučení, ridge, jádra</td><td>B1, B2, A4</td><td>4</td><td><a href="07_polynom_ridge.html">7</a></td></tr>
+<tr><td>Strom, bagging, bootstrap, SVM</td><td>A5</td><td>6</td><td><a href="08_stromy_ansambly.html">8</a></td></tr>
+<tr><td>Agenti: skill, subagent, hook</td><td>A3, B5</td><td>5</td><td><a href="09_agenti.html">9</a></td></tr>
+</table></div>
+
+<h2 id="plan">Jak se připravit (1–2 dny)</h2>
+<div class="box postup" id="postup-priprava"><div class="box-t">Postup</div>
+<ol>
+<li><b>Ukázky na čas:</b> napiš <a href="10_ukazky.html">ukázku A</a> za 25 minut na papír, oprav se podle řešení. Kde jsi ztratil body, otevři kapitolu.</li>
+<li><b>Kapitoly 1, 6, 7</b> (kód a matice) – v testu za nejvíc bodů. U každé úlohy nejdřív řeš sám, pak rozbal řešení.</li>
+<li><b>Kapitoly 3, 4, 5, 8</b> – krátké výpočty a „najdi chybu v kódu“.</li>
+<li><b>Kapitola 9</b> – nauč se definice skill / subagent / hook jednou větou anglicky.</li>
+<li><b>Ukázka B</b> na čas, pak <a href="11_cvicne_testy.html">cvičné testy C–F</a>.</li>
+<li>Večer před testem <a href="12_tahak.html">tahák</a>.</li>
+</ol></div>
+<div class="box zkouska"><div class="box-t">Jak získat plné body</div>
+<ul>
+<li>„Show your reasoning“: napiš matici, dosazení, zlomek se jmenovatelem – ne jen výsledek.</li>
+<li>U „explain“ jedna věta s <i>because</i>; u kódu řekni <b>tvar</b> a <b>význam</b>.</li>
+<li>U opravy kódu napiš opravený řádek.</li>
+<li>Odpověď v angličtině může být jednoduchá; v kapitolách jsou vzorové věty (EN).</li>
+</ul></div>
+
+<h2 id="kapitoly">Kapitoly</h2>
+<div class="cards">
+<a class="card" href="01_numpy.html"><div class="n">Typ úloh 1</div><div class="t">Čtení kódu v NumPy</div><div class="d">Tvary polí, axis, @ a *, masky, argmax a argsort, unique, column_stack, rng.choice, seznamy.</div></a>
+<a class="card" href="02_knn.html"><div class="n">Typ úloh 2</div><div class="t">Vzdálenosti, k-NN a gradientní sestup</div><div class="d">d² a pořadí, hlasování, trénovací accuracy 1-NN, krok sestupu, k-means.</div></a>
+<a class="card" href="03_metriky.html"><div class="n">Typ úloh 3</div><div class="t">Matice záměn a metriky</div><div class="d">B3, TP/FN/FP/TN, recall, precision, F1, balanced accuracy, MSE a MAE.</div></a>
+<a class="card" href="04_predzpracovani.html"><div class="n">Typ úloh 4</div><div class="t">Předzpracování a únik dat</div><div class="d">A2, z-score, min-max, red flags A–D, doplnění chybějících hodnot.</div></a>
+<a class="card" href="05_vyber_priznaku.html"><div class="n">Typ úloh 5</div><div class="t">Výběr příznaků a PCA</div><div class="d">B4, korelace, entropie, MI, dopředný výběr, PCA na čtyřech bodech.</div></a>
+<a class="card" href="06_linearni_regrese.html"><div class="n">Typ úloh 6</div><div class="t">Lineární regrese ručně</div><div class="d">A1, matice X, normální rovnice, inverze 2×2, ridge jen na sklon.</div></a>
+<a class="card" href="07_polynom_ridge.html"><div class="n">Typ úloh 7</div><div class="t">Polynomy, přeučení, ridge a jádra</div><div class="d">B1, B2, A4, tabulka λ, duální tvar, jádrový trik, lasso.</div></a>
+<a class="card" href="08_stromy_ansambly.html"><div class="n">Typ úloh 8</div><div class="t">Stromy, bagging a SVM</div><div class="d">A5, strom na papíře, Gini, bootstrap, hlasování, C a γ.</div></a>
+<a class="card" href="09_agenti.html"><div class="n">Typ úloh 9</div><div class="t">AI agenti</div><div class="d">A3, B5, skill, subagent, hook, MCP, kontext, dobré zadání.</div></a>
+<a class="card" href="10_ukazky.html"><div class="n">✎</div><div class="t">Ukázky A a B s řešením</div><div class="d">Oba ukázkové testy v původním znění a vzorové odpovědi.</div></a>
+<a class="card" href="11_cvicne_testy.html"><div class="n">✎</div><div class="t">Cvičné testy C–F</div><div class="d">Čtyři nové testy ve stejném formátu s řešením.</div></a>
+<a class="card" href="12_tahak.html"><div class="n">★</div><div class="t">Tahák</div><div class="d">Vzorce, idiomy kódu, pasti a anglické věty na jedné stránce.</div></a>
+</div>
+<p>Teorie ke všem tématům je v <a href="../index.html">hlavních skriptech MLR</a> (přednášky 1–7, slovník, tahák parametrů).</p>
+
+<nav class="pager"><a class="next" href="01_numpy.html"><small>další →</small>Čtení kódu v NumPy</a></nav>
+</main>
+</div>
+</body>
+</html>

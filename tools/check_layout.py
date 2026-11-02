@@ -78,8 +78,10 @@ PROBE = r"""() => {
 def pages(subjects):
     for subj in subjects:
         d = ROOT / subj
-        # stránky předmětu a podsložek s další verzí (en/, zkouska/ …), ne zdroje v _build/
-        for f in sorted(d.glob("*.html")) + sorted(x for x in d.glob("*/*.html") if not x.parent.name.startswith("_")):
+        # stránky předmětu a podsložek s další verzí (en/, zkouska/, test1/en/ …), ne zdroje v _build/
+        sub = sorted(x for x in list(d.glob("*/*.html")) + list(d.glob("*/*/*.html"))
+                     if not any(part.startswith("_") for part in x.relative_to(d).parts))
+        for f in sorted(d.glob("*.html")) + sub:
             if f.name != "skripta_vse.html":
                 yield f.relative_to(ROOT).as_posix()
 

@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trees, bagging and SVM – MLR</title>
+<meta name="description" content="Tree on paper, Gini, bootstrap, voting, C and gamma.">
+<link rel="alternate" hreflang="cs" href="../08_stromy_ansambly.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../../assets/style.css?v=b9a02598">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../../assets/app.js?v=b9a02598"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Contents">☰ Contents</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Hide the sidebar" data-show="Show the sidebar" title="Hide the sidebar">◧ Sidebar</button>
+  <a class="brand" href="index.html">MLR – practical test 1<small>task types: paper calculations and reading code</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../../index.html#mlr" title="All study notes">←<span> All study notes</span></a>
+  <a class="iconbtn langbtn" href="../08_stromy_ansambly.html" hreflang="cs" lang="cs" title="Česká verze">CZ</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Smaller text" aria-label="Smaller text">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Default text size">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Larger text" aria-label="Larger text">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/08_stromy_ansambly.pdf" download title="Download this page as PDF" data-dl="Download this page as PDF" data-print="Print / save as PDF with the chosen font size">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Dark mode</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigation">
+  <h4>Chapters</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>How to prepare</span></a></li>
+    <li><a href="01_numpy.html"><span class="n">1</span><span>Reading NumPy code</span></a></li>
+    <li><a href="02_knn.html"><span class="n">2</span><span>Distances, k-NN and gradient descent</span></a></li>
+    <li><a href="03_metriky.html"><span class="n">3</span><span>Confusion matrix and metrics</span></a></li>
+    <li><a href="04_predzpracovani.html"><span class="n">4</span><span>Preprocessing and data leakage</span></a></li>
+    <li><a href="05_vyber_priznaku.html"><span class="n">5</span><span>Feature selection and PCA</span></a></li>
+    <li><a href="06_linearni_regrese.html"><span class="n">6</span><span>Linear regression by hand</span></a></li>
+    <li><a href="07_polynom_ridge.html"><span class="n">7</span><span>Polynomials, overfitting, ridge and kernels</span></a></li>
+    <li><a href="08_stromy_ansambly.html" class="active"><span class="n">8</span><span>Trees, bagging and SVM</span></a></li>
+    <li><a href="09_agenti.html"><span class="n">9</span><span>AI agents: skill and subagent</span></a></li>
+    <li><a href="10_ukazky.html"><span class="n">✎</span><span>Samples A and B solved</span></a></li>
+    <li><a href="11_cvicne_testy.html"><span class="n">✎</span><span>Practice tests C–F</span></a></li>
+    <li><a href="12_tahak.html"><span class="n">★</span><span>Cheat sheet</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Glossary (definitions)</span></a></li>
+  </ol>
+  <h4>On this page</h4>
+  <ul class="toc">
+    <li><a href="#strom">A decision tree on paper</a></li>
+    <li><a href="#bagging">Bootstrap and bagging</a></li>
+    <li><a href="#svm">SVM: C and γ</a></li>
+    <li><a href="#shrnuti-h">Summary</a></li>
+    <li><a href="#otazky">Test questions</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – practical test 1 · Trees, bagging and SVM – MLR · https://balnerm.github.io/pripravy/mlr/test1/en/08_stromy_ansambly.html</p>
+<p class="kicker">Task type 8</p>
+<h1>Trees, bagging and SVM</h1>
+<p class="lead">Task A5 (“Read votes and bootstrap sampling”) combines reading code (<code>V.mean(axis=1) &gt; 0.5</code>), accuracy and the question what <code>rng.choice(n, size=n, replace=True)</code> does. Lab 6 added a tree on paper (six points, three cuts), your own bagging with 11 trees, and an SVM with parameters C and γ. Lecture 6 computed the impurity of a 4 : 1 node (Gini 0.32, entropy 0.72 bit).</p>
+
+<h2 id="strom">A decision tree on paper</h2>
+<div class="box definice" id="def-tree-cut"><div class="box-t">Definition: decision tree and a cut</div>
+<p>A <b>decision tree</b> splits the feature space step by step with cuts of the form \(x_j \le s\) (a vertical or horizontal line); each leaf predicts the <b>majority class</b> of its training points. A cut is chosen to reduce the impurity as much as possible (in the lab, simplified: to maximize the number of correctly classified points).</p>
+<p class="jinak">twenty questions like “is x₁ smaller than 2.5?”. That is why trees need no scaling – changing the scale only moves the threshold.</p></div>
+<div class="box definice" id="def-gini"><div class="box-t">Definition: Gini impurity</div>
+<p>The <b>Gini impurity</b> of a node is \(G = \sum_y p(y)\,(1 - p(y))\), where \(p(y)\) is the share of class y in the node. For two classes \(G = 2p(1 - p)\): 0 for a pure node, 0.5 for half and half.</p>
+<p class="jinak">the probability that a random guess according to the class frequencies in the node is wrong. The quality of a cut = the weighted mean of the children's impurities (weight = share of points).</p></div>
+
+<figure><div class="paper"><img src="../../figures/en/t1_strom.png" alt="Six points (A: 1, 2, 5; B: 3, 4, 6), three candidate cuts and the final tree" loading="lazy"></div>
+<figcaption>Data of the paper task in lab 6. Left: candidate cuts and the number of correctly classified points; right: a tree with two cuts.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div><p>The best first cut x₁ ≤ 2.5 leaves a pure A region on the left and a single wrong point (5) on the right. A second cut x₂ ≤ 1.5 in the right region separates it → all 6 correct.</p></div>
+
+<div class="box uloha" id="u-tree"><div class="box-t">Task 1: a tree on paper (lab 6)</div>
+<div class="tablewrap"><table class="compact">
+<tr><th>Point</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+<tr><th>x₁</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+<tr><th>x₂</th><td>1</td><td>3</td><td>2</td><td>4</td><td>1</td><td>3</td></tr>
+<tr><th>Class</th><td>A</td><td>A</td><td>B</td><td>B</td><td>A</td><td>B</td></tr>
+</table></div>
+<p>Try the cuts x₁ ≤ 1.5, x₁ ≤ 2.5, x₂ ≤ 2.5. Assign each side its majority class and count correct predictions over all six points. Choose the best cut, split its impure region once more and trace point 5.</p>
+<p class="meta"><b>Result:</b> 4/6, 5/6, 4/6 → x₁ ≤ 2.5; on the right x₂ ≤ 1.5 → 6/6; point 5: x₁ = 5 &gt; 2.5 → x₂ = 1 ≤ 1.5 → A.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<ul>
+<li>x₁ ≤ 1.5: left {1} → A (1 correct); right {2, 3, 4, 5, 6} = A, B, B, A, B → B (3 correct). Total 4.</li>
+<li>x₁ ≤ 2.5: left {1, 2} → A (2); right {3, 4, 5, 6} = B, B, A, B → B (3). Total <b>5</b>.</li>
+<li>x₂ ≤ 2.5: below {1, 3, 5} = A, B, A → A (2); above {2, 4, 6} = A, B, B → B (2). Total 4.</li>
+</ul>
+<p>The best is x₁ ≤ 2.5. The impure region is the right one (point 5 is A). The cut x₂ ≤ 1.5 separates point 5 (x₂ = 1) from 3, 4, 6 (x₂ ≥ 2) → all 6 correct. Point 5: x₁ = 5 &gt; 2.5 → right; x₂ = 1 ≤ 1.5 → <b>A</b>.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-gini"><div class="box-t">Task 2: Gini before and after a cut</div>
+<p>Compute the Gini impurity of the root (3 A : 3 B), of a 4 : 1 leaf, and the weighted impurity after the cut x₁ ≤ 2.5 (left 2 A : 0 B, right 1 A : 3 B).</p>
+<p class="meta"><b>Result:</b> root 0.5; leaf 4 : 1 → 0.32; after the cut 4/6 · 3/8 = 0.25 (a decrease of 0.25).</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+\[ \begin{aligned} G_{\text{root}} &amp;= 2\cdot\tfrac12\cdot\tfrac12 = 0.5 \\ G_{4:1} &amp;= 2\cdot 0.8\cdot 0.2 = 0.32 \\ G_{\text{right}} &amp;= 2\cdot\tfrac34\cdot\tfrac14 = \tfrac38 \\ G_{\text{cut}} &amp;= \tfrac26\cdot 0 + \tfrac46\cdot\tfrac38 = 0.25 \end{aligned} \]
+<p>For comparison: the entropy of a 4 : 1 leaf is ≈ 0.72 bit, the error rate 0.2.</p>
+</div></details></div>
+
+<h2 id="bagging">Bootstrap and bagging</h2>
+<div class="box definice" id="def-bootstrap-sample"><div class="box-t">Definition: bootstrap sample</div>
+<p>A <b>bootstrap sample</b> is made by drawing n rows of the training data <b>with replacement</b>: it has the same size n, some rows repeat and others are missing. The probability that a given row is not drawn is \((1 - 1/n)^n \approx e^{-1} \approx 0.37\).</p>
+<p class="jinak">each tree sees slightly different data (about 63 % unique rows), so the trees differ and their vote reduces variance. The left-out rows (out-of-bag) can serve as validation for that tree.</p></div>
+<div class="box definice" id="def-bagging-vote"><div class="box-t">Definition: bagging and majority voting</div>
+<p><b>Bagging</b> (bootstrap aggregation) trains M models, each on its own bootstrap sample, and combines their predictions: by <b>majority vote</b> in classification, by averaging in regression. A <b>random forest</b> additionally tries only a random subset of features in each node (<code>max_features</code>), so the trees are less correlated.</p>
+<p class="jinak">“wisdom of the crowd”: one deep tree is unstable, the average of many different trees is more stable. It works only when the trees differ.</p></div>
+
+<div class="box uloha" id="u-a5"><div class="box-t">Sample A, task 5: Read votes and bootstrap sampling <span class="en">1 point</span></div>
+<p>Three trees predict labels 0 or 1. Each row of V is one validation sample; each column is one tree. The true labels are given in the same row order.</p>
+\[ V = \begin{bmatrix} 0 &amp; 1 &amp; 0 \\ 1 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 1 \\ 1 &amp; 1 &amp; 1 \end{bmatrix},\qquad \mathbf y_{\text{val}} = \begin{bmatrix} 0 \\ 1 \\ 1 \\ 1 \end{bmatrix} \]
+<pre class="code"><code>y_hat = (V.mean(axis=1) &gt; 0.5).astype(int)</code></pre>
+<p>a) Explain <code>axis=1</code> and write all four predictions. (0.5)<br>
+b) Calculate the ensemble's validation accuracy. (0.25)<br>
+c) Each tree trains on n rows drawn using <code>rng.choice(n, size=n, replace=True)</code>. Can a row occur twice? Must every training row occur in each draw? (0.25)</p>
+<p class="meta"><b>Result:</b> means 1/3, 2/3, 1/3, 1 → ŷ = [0, 1, 0, 1]; accuracy 3/4; yes it can; no, it need not.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>a) <code>axis=1</code> averages along the columns, i.e. over the trees in each row: for each sample the fraction of trees voting 1. The result has shape (4,).</p>
+\[ \text{mean} = \left[\tfrac13,\ \tfrac23,\ \tfrac13,\ 1\right] \;\Rightarrow\; \hat{\mathbf y} = [0, 1, 0, 1] \]
+<p>(&gt; 0.5 = the majority of trees votes 1.)</p>
+<p>b) Matches with [0, 1, 1, 1]: yes, yes, no (sample 3), yes → accuracy = 3/4 = 0.75.</p>
+<p>c) Yes – sampling is with replacement, the same index can come up more than once. No – some rows are missing from a given draw (about 37 % on average); they are that tree's out-of-bag rows.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-votes5"><div class="box-t">Task 4: five trees and a tie</div>
+<p>a) Five trees, rows [1, 0, 1, 1, 0], [0, 0, 1, 0, 1], [1, 1, 1, 0, 0], true labels [1, 1, 1]. Predictions and accuracy? b) With four trees a row [1, 1, 0, 0] has mean 0.5. What does the code predict, and why?</p>
+<p class="meta"><b>Result:</b> a) means 0.6; 0.4; 0.6 → [1, 0, 1], accuracy 2/3. b) 0 – the condition is strict (0.5 &gt; 0.5 is False).</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) 3/5 = 0.6 → 1; 2/5 = 0.4 → 0; 3/5 → 1. Matches with [1, 1, 1]: 2 of 3.</p>
+<p>b) A tie goes to 0 with a strict inequality. That is why bagging uses an odd number of trees (lab: 11).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-bag-code"><div class="box-t">Task 5: your own bagging (lab 6) – find the bug</div>
+<pre class="code"><code>trees = []
+for m in range(11):
+    rng = np.random.default_rng(0)
+    idx = rng.choice(n_train, size=n_train, replace=True)
+    tree = DecisionTreeClassifier(random_state=m).fit(X_train[idx], y_train[idx])
+    trees.append(tree)
+votes = np.column_stack([t.predict(X_val) for t in trees])
+y_hat = (votes.mean(axis=1) &gt; 0.5).astype(int)</code></pre>
+<p>a) What is wrong with the sampling? b) What is the shape of <code>votes</code> for 40 validation rows?</p>
+<p class="meta"><b>Result:</b> the generator is re-created with the same seed in each iteration → all 11 trees get the same sample; <code>votes</code> has shape (40, 11).</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>a) <code>default_rng(0)</code> inside the loop gives the same indices every time, the trees are (almost) identical and voting brings nothing. The generator must be created <b>once before the loop</b>. Correctly, <code>X_train[idx]</code> and <code>y_train[idx]</code> use the same <code>idx</code> (pairs stay together).</p>
+<p>b) Each tree gives a vector (40,), <code>column_stack</code> puts them into columns → (40, 11): row = sample, column = tree.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-oob"><div class="box-t">Task 6: how many rows are missing</div>
+<p>For n = 2, 10 and large n, what is the probability that a given row is not in a bootstrap sample?</p>
+<p class="meta"><b>Result:</b> n = 2: 1/4; n = 10: ≈ 0.35; large n: \(e^{-1} \approx 0.37\) → about 63 % of rows in the sample.</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>One draw misses the row with probability \(1 - 1/n\), n independent draws: \((1 - 1/n)^n\). For n = 2: \((1/2)^2 = 1/4\); n = 10: \(0.9^{10} \approx 0.349\); the limit \(e^{-1} \approx 0.368\).</p>
+</div></details></div>
+
+<h2 id="svm">SVM: C and γ</h2>
+<div class="box definice" id="def-svm-c-gamma"><div class="box-t">Definition: SVM parameters C and γ</div>
+<p><b>C</b> is the cost of violating the margin: <b>small C</b> = stronger regularization, a wider margin, more support vectors, a smoother border; <b>large C</b> = less tolerance of errors, a narrower margin, risk of overfitting. <b>γ</b> in the RBF kernel \(\exp(-\gamma\|\mathbf x - \mathbf x'\|^2)\) sets the width of a point's influence: <b>large γ</b> = narrow bumps, the border wraps around single points (overfitting), small γ = a smooth, almost linear border.</p>
+<p class="jinak">both go the same way: increasing = a more complex model. SVM needs scaling (a pipeline with StandardScaler).</p></div>
+<div class="box uloha" id="u-svm"><div class="box-t">Task 7: a C table (illustrative numbers)</div>
+<div class="tablewrap"><table class="compact">
+<tr><th>C</th><th>train acc</th><th>val acc</th><th>support vectors</th></tr>
+<tr><td>0.01</td><td>0.80</td><td>0.79</td><td>120</td></tr>
+<tr><td>1</td><td>0.93</td><td>0.92</td><td>40</td></tr>
+<tr><td>100</td><td>0.94</td><td>0.91</td><td>25</td></tr>
+</table></div>
+<p>Which C would you choose and why? What does the support-vector count tell you? What happens with an RBF kernel and gamma = 1000 on the circles data?</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>C = 1 – the highest validation accuracy. Small C: strong regularization, a wide margin, many points inside the band (120 SV), underfitting. Large C: training accuracy grows, validation drops – overfitting begins, fewer SV. RBF with γ = 1000: each point has a narrow influence, training accuracy ≈ 1, validation clearly lower (overfitting). Choose C and γ by validation / CV.</p>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Common traps</div>
+<ul>
+<li><code>axis=1</code> = over the trees (columns) for each sample.</li>
+<li>Strict inequality <code>&gt; 0.5</code>: a tie → 0.</li>
+<li>Bootstrap = with replacement and the same indices for X and y.</li>
+<li>Create the random number generator once before the loop.</li>
+<li>Gini from the lecture: \(\sum p(1 - p)\) = \(1 - \sum p^2\).</li>
+<li>Voting does not always help – the trees must differ and be better than chance.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">What to write for full points</div>
+<p>For voting: the meaning of the axis, the means as fractions, the predictions, the comparison with the labels. For bootstrap two “yes/no” answers with a reason (with replacement; out-of-bag rows).</p>
+<p class="answer-en">axis=1 averages over the columns (trees) within each row, giving the fraction of trees voting 1 for each sample: [1/3, 2/3, 1/3, 1] → predictions [0, 1, 0, 1]. Accuracy = 3/4. Yes, a row can appear more than once (sampling with replacement); no, some rows are usually missing from each draw (about 37 %).</p></div>
+
+<div class="box kostka"><div class="box-t">In a nutshell</div><p>Tree = cuts \(x_j \le s\) and the majority class in each leaf; bagging = bootstrap samples + voting; random forest adds random features; SVM: ↑C and ↑γ = a more complex border.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Summary</h2>
+<p>A decision tree chooses cuts on one feature so that the children are as pure as possible (Gini, entropy; in the lab the number of correct points). Bagging trains trees on bootstrap samples – drawn with replacement, so rows repeat and about 37 % are missing – and combines their predictions by voting; in NumPy this is the mean of the vote matrix over the tree axis and a 0.5 threshold. A random forest lowers the correlation of the trees by a random choice of features. In SVM the parameter C and the RBF width γ control the complexity of the border.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Cut: majority class on each side, count correct points or Gini.</li>
+<li>Gini \(2p(1 - p)\): 0 pure, 0.5 half and half, 4 : 1 → 0.32.</li>
+<li><code>(V.mean(axis=1) &gt; 0.5).astype(int)</code> = majority vote per sample.</li>
+<li>Bootstrap: repeats yes, all rows no (~63 % unique).</li>
+<li>↑C, ↑γ = a more complex SVM; choose by validation.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Test questions</h2>
+<details class="q"><summary>Why does bagging reduce variance?</summary><div><p>The average (vote) of many different, weakly correlated models fluctuates less than one model; bootstrap makes the trees differ.</p></div></details>
+<details class="q"><summary>What does a random forest add to bagging?</summary><div><p>In each node it chooses the cut only from a random subset of features (<code>max_features</code>), so the trees are less alike and averaging works better.</p></div></details>
+<details class="q"><summary>What are out-of-bag samples?</summary><div><p>Rows that did not get into a tree's bootstrap sample (~37 %); the tree can be evaluated on them without a separate validation set.</p></div></details>
+<details class="q"><summary>Why does a tree not need standardization?</summary><div><p>A cut \(x_j \le s\) depends only on the order of the values of one feature; rescaling moves the threshold but not the split of the points.</p></div></details>
+<details class="q"><summary>How does an SVM change when C increases?</summary><div><p>It tolerates fewer errors, the margin narrows, there are fewer support vectors, training accuracy grows and overfitting threatens.</p></div></details>
+<details class="q"><summary>Why does bagging use an odd number of trees?</summary><div><p>With two classes it avoids ties in the vote.</p></div></details>
+
+<nav class="pager"><a class="prev" href="07_polynom_ridge.html"><small>← previous</small>Polynomials, overfitting, ridge and kernels</a><a class="next" href="09_agenti.html"><small>next →</small>AI agents: skill and subagent</a></nav>
+</main>
+</div>
+</body>
+</html>

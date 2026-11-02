@@ -28,7 +28,7 @@
   function preparePrint() {
     themeBeforePrint = root.getAttribute("data-theme");
     root.setAttribute("data-theme", "light");
-    document.querySelectorAll("details.q").forEach(d => { d.open = true; });
+    document.querySelectorAll("details.q, details.reseni").forEach(d => { d.open = true; });
     document.querySelectorAll('img[loading="lazy"]').forEach(img => { img.loading = "eager"; });
   }
   window.addEventListener("beforeprint", preparePrint);

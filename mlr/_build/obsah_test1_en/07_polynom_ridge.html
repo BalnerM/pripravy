@@ -1,0 +1,197 @@
+<h1>Polynomials, overfitting, ridge and kernels</h1>
+<p class="lead">Three sample tasks belong here: B1 traces the code of polynomial features, B2 repairs the size of the identity matrix in ridge, and A4 reads plots of degree 1, 3 and 15 polynomials with an error table. Lab 4 adds the dual form, the kernel trick and lasso. The common idea: <b>the model is linear in its weights</b>, the curve comes from the features, and complexity is tuned by the degree or λ – <b>on validation data</b>.</p>
+
+<h2 id="polynom">Polynomial features</h2>
+<div class="box definice" id="def-poly-feat"><div class="box-t">Definition: polynomial features</div>
+<p>A <b>polynomial transformation</b> of degree m replaces the input x by the row \(\Phi(x) = [1, x, x^2, \dots, x^m]\); the model \(\hat y = \Phi(x)^\top\mathbf w = w_0 + w_1x + \dots + w_mx^m\) is then learned with the same formula as a line.</p>
+<p class="jinak">the curve comes from new columns of X, not from a change of the model. In the lab x is first scaled to t ∈ [−1, 1] (\(t = 2x/5 - 1\)) so the powers are not huge and the inverse stays numerically stable.</p></div>
+<div class="box definice" id="def-linear-in-weights"><div class="box-t">Definition: model linear in its weights</div>
+<p>A model is <b>linear in its weights</b> when the prediction is a linear combination of (fixed) features with weights \(\mathbf w\): \(\hat y = \sum_j w_j\,\phi_j(x)\). The shape of the functions \(\phi_j\) does not matter.</p>
+<p class="jinak">each weight only multiplies its column and the results are added. That is why the closed form \((X^\top X)^{-1}X^\top\mathbf y\) works for a parabola too – only the dependence on x is nonlinear.</p></div>
+
+<div class="box uloha" id="u-b1"><div class="box-t">Sample B, task 1: Trace polynomial features <span class="en">1.25 points</span></div>
+<pre class="code"><code>t = np.array([-1., 0., 1.])
+X = np.column_stack([t ** j for j in range(3)])
+w = np.array([1., 2., 1.])
+y_pred = X @ w</code></pre>
+<p><code>np.column_stack</code> joins the supplied columns.</p>
+<p>a) Write the matrix <code>X</code> and <code>y_pred</code>. (0.75)<br>
+b) Write the prediction equation in terms of t from the code above. Why is this model called linear in its weights, although its curve is not a straight line? (0.5)</p>
+<p class="meta"><b>Result:</b> columns \(t^0, t^1, t^2\); <code>y_pred = [0, 1, 4]</code>; \(\hat y = 1 + 2t + t^2\).</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>a) <code>range(3)</code> = 0, 1, 2 → three columns \(t^0 = [1, 1, 1]\), \(t^1 = [-1, 0, 1]\), \(t^2 = [1, 0, 1]\):</p>
+\[ X = \begin{bmatrix} 1 &amp; -1 &amp; 1 \\ 1 &amp; 0 &amp; 0 \\ 1 &amp; 1 &amp; 1 \end{bmatrix} \]
+<p>Prediction = row times \(\mathbf w = [1, 2, 1]\):</p>
+\[ \begin{aligned} \hat y_1 &amp;= 1 - 2 + 1 = 0 \\ \hat y_2 &amp;= 1 + 0 + 0 = 1 \\ \hat y_3 &amp;= 1 + 2 + 1 = 4 \end{aligned} \]
+<p>b) \(\hat y = 1 + 2t + t^2\) (= \((t + 1)^2\)). The prediction is a linear combination of the columns \(1, t, t^2\) with weights \(w_0, w_1, w_2\): doubling a weight doubles its contribution, and the weights can be found by linear least squares. Only the input transformation t → t² is nonlinear.</p>
+</div></details></div>
+
+<figure><div class="paper"><img src="figures/t1_parabola.png" alt="The three points of B1 and the parabola 1 + 2t + t²" loading="lazy"></div>
+<figcaption>Prediction from B1: the parabola \(1 + 2t + t^2\) passes through (−1, 0), (0, 1), (1, 4).</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div><p>A curved line, yet a linear model: the weights 1, 2, 1 only mix three fixed columns.</p></div>
+
+<div class="box uloha" id="u-poly-var"><div class="box-t">Task 2: a variant without the column of ones</div>
+<pre class="code"><code>t = np.array([-1., 1., 2.])
+X = np.column_stack([t ** j for j in range(1, 3)])
+w = np.array([3., 1.])
+y_pred = X @ w</code></pre>
+<p>Write <code>X</code>, <code>y_pred</code> and the equation. What is missing compared with B1, and how would you fix it?</p>
+<p class="meta"><b>Result:</b> columns t, t²; <code>y_pred = [-2, 4, 10]</code>; \(\hat y = 3t + t^2\) – the intercept is missing (<code>range(1, 3)</code> skips \(t^0\)).</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+\[ X = \begin{bmatrix} -1 &amp; 1 \\ 1 &amp; 1 \\ 2 &amp; 4 \end{bmatrix} \]
+\[ X\mathbf w = \begin{bmatrix} -3 + 1 \\ 3 + 1 \\ 6 + 4 \end{bmatrix} = \begin{bmatrix} -2 \\ 4 \\ 10 \end{bmatrix} \]
+<p>The curve must pass through the origin (for t = 0, ŷ = 0). Fix: <code>range(3)</code> and three weights.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-poly-scale"><div class="box-t">Task 3: the feature matrix with scaling (lab 4)</div>
+<p><code>t = 2*x/5 - 1</code>, degree 3, x = 0, 2.5, 5. Write t and the 3 × 4 matrix.</p>
+<p class="meta"><b>Result:</b> t = −1, 0, 1; rows [1, −1, 1, −1], [1, 0, 0, 0], [1, 1, 1, 1].</p>
+<details class="reseni"><summary>Solution</summary><div>
+\[ X = \begin{bmatrix} 1 &amp; -1 &amp; 1 &amp; -1 \\ 1 &amp; 0 &amp; 0 &amp; 0 \\ 1 &amp; 1 &amp; 1 &amp; 1 \end{bmatrix} \]
+<p>Without scaling, degree 15 would give \(5^{15} \approx 3\cdot 10^{10}\) and \(X^\top X\) would be numerically almost singular.</p>
+</div></details></div>
+
+<h2 id="overfit">Underfitting and overfitting</h2>
+<div class="box definice" id="def-under-over"><div class="box-t">Definition: underfitting and overfitting</div>
+<p><b>Underfitting</b>: the model is too simple and has a large error on both training and test data. <b>Overfitting</b>: the model follows the noise of the training data – the training error is small, the test error <b>much larger</b>.</p>
+<p class="jinak">an underfitted model “does not get the shape”, an overfitted one “memorised the data”. What decides is the gap between training and test (validation) error and how the curve looks between the points.</p></div>
+
+<div class="box uloha" id="u-a4"><div class="box-t">Sample A, task 4: Interpret fitted curves <span class="en">1 point</span></div>
+<p>The plots show three polynomial fits to the same synthetic training data. Dots are training observations; lines are predictions. <b>Part of the degree-15 curve lies outside the displayed vertical range.</b> These are recorded lab results. Mean squared error is \(\text{MSE} = \frac1n\sum_{i=1}^n(\hat y_i - y_i)^2\).</p>
+<figure><div class="paper"><img src="figures/t1_sample_a4.png" alt="Sample A4: polynomials of degree 1, 3 and 15 fitted to the same data; test MSE 0.283, 0.085 and 10.387" loading="lazy"></div>
+<figcaption>Plots from sample test A (degree 1, 3, 15).</figcaption></figure>
+<div class="tablewrap"><table class="compact">
+<tr><th>Degree</th><th>Training MSE</th><th>Test MSE</th></tr>
+<tr><td>1</td><td>0.2270</td><td>0.2825</td></tr>
+<tr><td>3</td><td>0.0508</td><td>0.0851</td></tr>
+<tr><td>15</td><td>0.0404</td><td>10.3871</td></tr>
+</table></div>
+<p>a) Which fit underfits the curved trend, and which shows overfitting? Support your answer using the curves and the error table. (0.5)<br>
+b) Which has the lowest recorded test error? In a new experiment, which split should guide degree selection so that the final test stays independent? (0.5)</p>
+<p class="meta"><b>Result:</b> degree 1 underfits, 15 overfits; lowest test MSE degree 3; choose by the <b>validation</b> split (or CV on the training data).</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>a) <b>Degree 1</b> is a straight line and cannot follow the arc of the data; it has the largest training error (0.2270) and a similar test error (0.2825) → underfitting. <b>Degree 15</b> oscillates between points and shoots off the plot at the edge; it has the smallest training error (0.0404) but a huge test error (10.3871) → overfitting (large train/test gap).</p>
+<p>b) The lowest recorded test error is <b>degree 3</b> (0.0851). In a new experiment the degree is chosen on a <b>validation set</b> (or by cross-validation on the training data); the test set is used only once at the end so that it stays independent. Choosing by the test set would “use it up”.</p>
+</div></details></div>
+
+<h2 id="ridge">Ridge regression</h2>
+<div class="box definice" id="def-ridge-j"><div class="box-t">Definition: ridge regression</div>
+<p><b>Ridge regression</b> minimizes the sum of squared residuals plus an L2 penalty on the weights:
+\[ \begin{aligned} J(\mathbf w) &amp;= \|X\mathbf w - \mathbf y\|_2^2 + \lambda\|\mathbf w\|_2^2 \\ \mathbf w^\ast &amp;= (X^\top X + \lambda I)^{-1}X^\top\mathbf y \end{aligned} \]
+where \(I\) is an identity matrix with the size of the <b>number of columns of X</b> and \(\lambda &gt; 0\).</p>
+<p class="jinak">the first term wants to fit the data, the second wants small weights (a smooth curve). λ is the compromise: 0 = ordinary least squares, large λ = weights almost zero, a flat model.</p></div>
+
+<div class="box uloha" id="u-b2"><div class="box-t">Sample B, task 2: Repair ridge regression <span class="en">1 point</span></div>
+<p><code>X</code> has shape <code>(3, 2)</code> with columns <code>[1, x]</code>; <code>y</code> has shape <code>(3,)</code>. This implementation must penalize <b>both coefficients</b>, including the intercept. Use these formulas, with λ &gt; 0 and I an identity matrix:</p>
+\[ \begin{aligned} J(\mathbf w) &amp;= \|X\mathbf w - \mathbf y\|_2^2 + \lambda\|\mathbf w\|_2^2 \\ \mathbf w &amp;= (X^\top X + \lambda I)^{-1}X^\top\mathbf y \end{aligned} \]
+<p>Read the code only; do not calculate an inverse. <code>LA.inv</code> computes a matrix inverse; <code>np.eye(k)</code> creates a k × k identity.</p>
+<pre class="code"><code>def ridge_fit(X, y, lam):
+    return LA.inv(X.T @ X + lam * np.eye(X.shape[0])) @ X.T @ y</code></pre>
+<p>a) Explain the dimensional error and repair it. (0.5)<br>
+b) Explain what each term in J measures and how increasing λ changes the trade-off. (0.5)</p>
+<p class="meta"><b>Result:</b> <code>X.T @ X</code> is 2 × 2, <code>np.eye(X.shape[0])</code> = 3 × 3 → cannot be added; fix <code>np.eye(X.shape[1])</code>.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>a) <code>X.T @ X</code> has shape <code>(2, 3) @ (3, 2)</code> = <code>(2, 2)</code> (number of columns). <code>X.shape[0]</code> = 3 is the number of rows (samples), so <code>np.eye(3)</code> is 3 × 3 and 2 × 2 + 3 × 3 cannot be added (a broadcasting error). The identity must have the size of the number of weights:</p>
+<pre class="code"><code>def ridge_fit(X, y, lam):
+    return LA.inv(X.T @ X + lam * np.eye(X.shape[1])) @ X.T @ y</code></pre>
+<p>The full <code>np.eye(2)</code> penalizes both weights including the intercept, as the task requires.</p>
+<p>b) \(\|X\mathbf w - \mathbf y\|_2^2\) measures how badly the model fits the training data (sum of squared residuals). \(\lambda\|\mathbf w\|_2^2\) measures the size of the weights (complexity). A larger λ puts more emphasis on small weights: the model gets simpler and more stable, the training error grows, the variance drops (less overfitting); a too large λ leads to underfitting (weights → 0). λ → 0 gives back ordinary least squares.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-ridge-num"><div class="box-t">Task 6: ridge on the data of A1</div>
+<p>Data of A1: (−1, 0), (0, 0), (1, 6), so \(X^\top X = \operatorname{diag}(3, 2)\), \(X^\top\mathbf y = [6, 6]^\top\). Compute ridge weights with λ = 1 (a) penalizing both weights, (b) penalizing only the slope. Compare with least squares w = [2, 3].</p>
+<p class="meta"><b>Result:</b> (a) [3/2, 2]; (b) [2, 2].</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+\[ \begin{aligned} \text{(a)}\quad \mathbf w &amp;= \operatorname{diag}(4, 3)^{-1}\begin{bmatrix} 6 \\ 6 \end{bmatrix} = \begin{bmatrix} 3/2 \\ 2 \end{bmatrix} \\ \text{(b)}\quad \mathbf w &amp;= \operatorname{diag}(3, 3)^{-1}\begin{bmatrix} 6 \\ 6 \end{bmatrix} = \begin{bmatrix} 2 \\ 2 \end{bmatrix} \end{aligned} \]
+<p>Penalized weights shrink; the unpenalized intercept stays 2.</p>
+</div></details></div>
+
+<figure><div class="paper"><img src="figures/t1_ridge_lambda.png" alt="Ridge on a degree-15 polynomial for λ = 0, 10⁻⁴, 1 and 10⁴ with training and test MSE" loading="lazy"></div>
+<figcaption>A degree-15 polynomial (noisy sine, 40 training points, as in lab 4) with ridge for four values of λ.</figcaption></figure>
+<div class="box odnes"><div class="box-t">What to take from the figure</div><p>λ = 0: the smallest training error (0.045), test 10.7 → overfitting. λ = 10⁴: almost a constant, both errors large (0.56 and 0.63) → underfitting. The lowest test error is at λ = 1 (0.151); in practice λ would be chosen by the validation error.</p></div>
+
+<div class="box uloha" id="u-lambda"><div class="box-t">Task 7: a λ table</div>
+<div class="tablewrap"><table class="compact">
+<tr><th>λ</th><th>Training MSE</th><th>Test MSE</th></tr>
+<tr><td>0</td><td>0.045</td><td>10.716</td></tr>
+<tr><td>10⁻⁴</td><td>0.062</td><td>0.395</td></tr>
+<tr><td>1</td><td>0.124</td><td>0.151</td></tr>
+<tr><td>10⁴</td><td>0.561</td><td>0.634</td></tr>
+</table></div>
+<p>Which λ overfits, which underfits? Why does the training error grow with λ?</p>
+<p class="meta"><b>Result:</b> λ = 0 overfits, λ = 10⁴ underfits, λ = 1 best test; the training error grows because the penalty prevents the closest possible fit.</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>λ = 0 (and 10⁻⁴) – small training error, much larger test error → overfitting. λ = 10⁴ – both errors large and similar, the curve is flat → underfitting. The training error grows monotonically with λ: we now optimize also the size of the weights, not only the fit. Choose λ by validation, use the test once.</p>
+</div></details></div>
+
+<h2 id="jadra">Dual form, kernels and lasso</h2>
+<div class="box definice" id="def-dual-ridge"><div class="box-t">Definition: dual form of ridge</div>
+<p>The <b>dual form</b> of ridge regression computes one coefficient per training sample:
+\[ \begin{aligned} \boldsymbol\alpha &amp;= (XX^\top + \lambda I_n)^{-1}\mathbf y \\ \mathbf w &amp;= X^\top\boldsymbol\alpha \end{aligned} \]
+It inverts an \(n \times n\) matrix (samples), the primal form a \(d \times d\) one (features); the resulting weights are the same.</p>
+<p class="jinak">useful when there are more features than samples, and mainly because the data appear only in dot products \(\mathbf x_i^\top\mathbf x_j\) – these can be replaced by a kernel.</p></div>
+<div class="box definice" id="def-kernel-trick"><div class="box-t">Definition: kernel trick and kernel ridge</div>
+<p>A <b>kernel</b> \(k(\mathbf x_i, \mathbf x_j)\) computes the dot product \(\Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\) in the feature space Φ without computing Φ. <b>Kernel ridge</b> replaces \(XX^\top\) by the kernel matrix K with entries \(k(\mathbf x_i, \mathbf x_j)\):
+\[ \begin{aligned} \boldsymbol\alpha &amp;= (K + \lambda I)^{-1}\mathbf y \\ \hat{\mathbf y}_{\text{new}} &amp;= K_{\text{new}}\boldsymbol\alpha \end{aligned} \]</p>
+<p class="jinak">the RBF kernel \(\exp(-\gamma\|\mathbf x_i - \mathbf x_j\|^2)\) turns the prediction into a sum of Gaussian “bumps” around the training points; large γ = narrow bumps (overfitting), λ limits the size of α.</p></div>
+
+<div class="box uloha" id="u-dual"><div class="box-t">Task 8: primal and dual form (lab 4)</div>
+<p>One feature, no intercept: \(X = [1, 2]^\top\), \(\mathbf y = [1, 3]^\top\), λ = 1. Compute w in the primal form, α in the dual form, check \(w = X^\top\boldsymbol\alpha\), and predict at x = 3.</p>
+<p class="meta"><b>Result:</b> w = 7/6; α = [−1/6, 2/3]; ŷ(3) = 3.5.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>1. Primal (1 × 1):</p>
+\[ w = \frac{X^\top\mathbf y}{X^\top X + \lambda} = \frac{1 + 6}{1 + 4 + 1} = \frac76 \]
+<p>2. Dual (2 × 2):</p>
+\[ XX^\top + I = \begin{bmatrix} 2 &amp; 2 \\ 2 &amp; 5 \end{bmatrix},\qquad \det = 6 \]
+\[ \boldsymbol\alpha = \frac16\begin{bmatrix} 5 &amp; -2 \\ -2 &amp; 2 \end{bmatrix}\begin{bmatrix} 1 \\ 3 \end{bmatrix} = \begin{bmatrix} -1/6 \\ 2/3 \end{bmatrix} \]
+<p>3. \(X^\top\boldsymbol\alpha = -\tfrac16 + 2\cdot\tfrac23 = \tfrac76\) ✓; prediction \(3\cdot\tfrac76 = 3.5\).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-kernel"><div class="box-t">Task 9: one number two ways</div>
+\[ \begin{aligned} \Phi(\mathbf x) &amp;= (x_1^2,\ x_2^2,\ \sqrt2\,x_1x_2) \\ \mathbf x_i &amp;= (1, 2),\quad \mathbf x_j = (3, 1) \end{aligned} \]
+<p>Compute \(\Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\) and \((\mathbf x_i^\top\mathbf x_j)^2\).</p>
+<p class="meta"><b>Result:</b> both 25.</p>
+<details class="reseni"><summary>Solution</summary><div>
+\[ \begin{aligned} \Phi(\mathbf x_i)^\top\Phi(\mathbf x_j) &amp;= 1\cdot 9 + 4\cdot 1 + 2\sqrt2\cdot 3\sqrt2 \\ &amp;= 9 + 4 + 12 = 25 \\ (\mathbf x_i^\top\mathbf x_j)^2 &amp;= (3 + 2)^2 = 25 \end{aligned} \]
+<p>The kernel gives the same result with one dot product in the original 2 dimensions.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-lasso"><div class="box-t">Task 10: lasso versus ridge</div>
+<p>Why does lasso set some weights exactly to zero while ridge only shrinks them? What is lasso good for?</p>
+<details class="reseni"><summary>Solution</summary><div>
+<p>Lasso penalizes \(\lambda\|\mathbf w\|_1 = \lambda\sum|w_j|\); \(|w|\) has a kink at zero, so for large enough λ the minimum lies exactly at zero. The square \(w^2\) is flat at zero, the minimum only approaches zero. Lasso therefore selects features (an embedded method); ridge shrinks all weights and has a closed form, lasso does not.</p>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Common traps</div>
+<ul>
+<li><code>np.eye(X.shape[1])</code> in the primal, <code>np.eye(X.shape[0])</code> in the dual (\(XX^\top\) is n × n).</li>
+<li>“Linear in weights” does not mean a straight line.</li>
+<li>The lowest training error ≠ the best model.</li>
+<li>Degree and λ are chosen on validation (or in CV), not on the test set.</li>
+<li>In the lab: task 1b penalizes only the slope, <code>ridge_fit</code> both weights – read the task.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">What to write for full points</div>
+<p>For code: the shapes of both summands and the repaired line. For plots: degree/λ + evidence from the plot and from the table (train/test gap). For selection: “validation split / cross-validation, test used once”.</p></div>
+
+<div class="box kostka"><div class="box-t">In a nutshell</div><p>Polynomial = new columns, the model stays linear in its weights; ridge \((X^\top X + \lambda I)^{-1}X^\top\mathbf y\) with I of the size of the number of weights; overfitting = small training and large test error; choose by validation.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Summary</h2>
+<p>Polynomial regression adds columns of powers to X, so the model stays linear in its weights and is solved with the same formula. A low degree underfits, a high one overfits – we see it from the gap between training and test error and from the oscillating curve. Ridge adds the penalty \(\lambda\|\mathbf w\|^2\) and in closed form \(\lambda I\) of the size of the number of weights; larger λ = smaller weights, more bias, less variance. The dual form works with an n × n matrix of dot products that a kernel can replace, and lasso sets some weights to zero thanks to L1. Degree and λ are chosen by validation.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li><code>column_stack([t**j for j in range(m+1)])</code> = columns \(1, t, \dots, t^m\).</li>
+<li>Linear in weights = a weighted sum of fixed features.</li>
+<li>Ridge: I has the size <code>X.shape[1]</code>.</li>
+<li>↑λ: smaller weights, higher training error, less overfitting; too large = underfitting.</li>
+<li>Degree 1 underfits, 15 overfits; choose by validation, test once.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Test questions</h2>
+<details class="q"><summary>Why is polynomial regression a linear model?</summary><div><p>The prediction is a linear combination of fixed features \(1, x, x^2, \dots\) with weights; only the input transformation is nonlinear.</p></div></details>
+<details class="q"><summary>What shape must I have in ridge for X of shape (n, d)?</summary><div><p>(d, d) – the same as \(X^\top X\), i.e. <code>np.eye(X.shape[1])</code>.</p></div></details>
+<details class="q"><summary>What happens to the weights and errors as λ grows?</summary><div><p>The weights shrink towards zero, the training error grows, the test error first drops (less overfitting), then grows (underfitting).</p></div></details>
+<details class="q"><summary>How do you recognise overfitting from an error table?</summary><div><p>The smallest training error and a large test (validation) error – a big gap between them.</p></div></details>
+<details class="q"><summary>Why is the degree not chosen by the test error?</summary><div><p>The test set would become part of selection and its number would be optimistic; choose on validation or in CV, use the test once.</p></div></details>
+<details class="q"><summary>When is the dual form worth it?</summary><div><p>When there are many more features than samples, or when we want kernels (infinite-dimensional Φ for RBF).</p></div></details>

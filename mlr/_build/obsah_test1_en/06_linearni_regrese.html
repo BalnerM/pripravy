@@ -1,0 +1,138 @@
+<h1>Linear regression by hand</h1>
+<p class="lead">Task A1 (“Set up a linear fit”) is worth 1.25 points – the most in the test. It wants the matrix \(X\) with a column of ones, the vector \(\mathbf y\), the substitution into \(\mathbf w = (X^\top X)^{-1}X^\top\mathbf y\) <b>without evaluating</b>, and a prediction from given weights. Lab 4 computed the same all the way, including the 2 × 2 inverse, residuals and ridge on the slope only. If you can do these three steps, the points are safe.</p>
+
+<h2 id="pojmy">Terms</h2>
+<div class="box definice" id="def-design"><div class="box-t">Definition: design matrix and the bias trick</div>
+<p>The <b>design matrix</b> \(X\) has one row per sample and one column per feature; for a line \(\hat y = b + wx\) the columns are ordered \([1, x]\) and the weight vector is \(\mathbf w = [b, w]^\top\). The <b>column of ones</b> (bias trick) lets us write the intercept as an ordinary weight, so \(\hat{\mathbf y} = X\mathbf w\).</p>
+<p class="jinak">the one in every row is multiplied by the weight b, so b is added to every prediction. Without the column of ones the line would have to go through the origin.</p></div>
+<div class="box definice" id="def-normalni-rovnice"><div class="box-t">Definition: least squares (normal equations)</div>
+<p>The <b>least-squares method</b> looks for weights minimizing the sum of squared residuals \(\|X\mathbf w - \mathbf y\|_2^2\); if \(X^\top X\) is invertible, the solution is
+\[ \mathbf w^\ast = (X^\top X)^{-1} X^\top \mathbf y \]</p>
+<p class="jinak">three points usually do not lie on one line, so \(X\mathbf w = \mathbf y\) has no solution – we take the line with the smallest total squared error. \(X^\top X\) is a small matrix (number of features × number of features).</p></div>
+
+<div class="box vzorec"><div class="box-t">Inverse of a 2 × 2 matrix</div>
+\[ \begin{bmatrix} a &amp; b \\ c &amp; d \end{bmatrix}^{-1} = \frac{1}{ad - bc}\begin{bmatrix} d &amp; -b \\ -c &amp; a \end{bmatrix} \]
+<table class="vars">
+<tr><td>\(ad - bc\)</td><td>determinant; if it is 0, the inverse does not exist</td></tr>
+<tr><td>\(d, a\)</td><td>the diagonal is swapped</td></tr>
+<tr><td>\(-b, -c\)</td><td>off the diagonal the sign changes</td></tr>
+</table>
+<p>A diagonal matrix is inverted element by element: \(\operatorname{diag}(3, 2)^{-1} = \operatorname{diag}(1/3, 1/2)\).</p></div>
+
+<div class="box postup" id="postup-ols"><div class="box-t">How to recognise it and what to do</div>
+<p><b>Recognise it by:</b> <span class="kw">Fit ŷ = b + wx to (…)</span>, <span class="kw">columns of X are ordered [1, x]</span>, <span class="kw">substitute the numerical arrays</span>, <span class="kw">leave … unevaluated</span>.</p>
+<ol>
+<li>X: each point = row \([1, x_i]\) (in the column order of the task!). \(\mathbf y\) = column of values \(y_i\).</li>
+<li>Explain the column of ones: intercept b.</li>
+<li>Substitution: write the formula with the <b>whole matrices</b>; compute nothing if the task does not ask for it.</li>
+<li>If you must compute: \(X^\top X\), \(X^\top\mathbf y\), the 2 × 2 inverse, the product.</li>
+<li>Prediction: \(\hat y = b + w\,x_{\text{new}}\).</li>
+</ol></div>
+
+<h2 id="ulohy">Tasks</h2>
+<div class="box uloha" id="u-a1"><div class="box-t">Sample A, task 1: Set up a linear fit <span class="en">1.25 points</span></div>
+<p>Fit \(\hat y = b + wx\) to (−1, 0), (0, 0), (1, 6). Rows are samples; columns of \(X\) are ordered \([1, x]\), and \(\mathbf w = [b, w]^\top\). Use \(\mathbf w = (X^\top X)^{-1}X^\top\mathbf y\).</p>
+<p>a) Write \(X\) and \(\mathbf y\). Explain the column of ones. (0.5)<br>
+b) Substitute the numerical arrays into the supplied formula for \(\mathbf w\). Leave transposes, products and the inverse unevaluated. (0.5)<br>
+c) A computer returns b = 2 and w = 3. Predict the response at x = 2. (0.25)</p>
+<p class="meta"><b>Result:</b> X has rows [1, −1], [1, 0], [1, 1]; y = [0, 0, 6]ᵀ; ŷ(2) = 2 + 3·2 = 8.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>a) Matrix and vector:</p>
+\[ X = \begin{bmatrix} 1 &amp; -1 \\ 1 &amp; 0 \\ 1 &amp; 1 \end{bmatrix},\qquad \mathbf y = \begin{bmatrix} 0 \\ 0 \\ 6 \end{bmatrix} \]
+<p>The column of ones multiplies the weight b, so every prediction is \(b\cdot 1 + w\,x_i\): the intercept is just another weight (bias trick) and the same matrix formula estimates both b and w.</p>
+<p>b) Substitution without evaluating:</p>
+\[ \mathbf w = \left( \begin{bmatrix} 1 &amp; -1 \\ 1 &amp; 0 \\ 1 &amp; 1 \end{bmatrix}^{\!\top} \begin{bmatrix} 1 &amp; -1 \\ 1 &amp; 0 \\ 1 &amp; 1 \end{bmatrix} \right)^{-1} \begin{bmatrix} 1 &amp; -1 \\ 1 &amp; 0 \\ 1 &amp; 1 \end{bmatrix}^{\!\top} \begin{bmatrix} 0 \\ 0 \\ 6 \end{bmatrix} \]
+<p>c) Prediction:</p>
+\[ \hat y(2) = b + w\cdot 2 = 2 + 3\cdot 2 = 8 \]
+<p><i>Check (beyond the task):</i></p>
+\[ \begin{aligned} X^\top X &amp;= \operatorname{diag}(3, 2) \\ X^\top\mathbf y &amp;= \begin{bmatrix} 6 \\ 6 \end{bmatrix} \\ \mathbf w &amp;= \begin{bmatrix} 6/3 \\ 6/2 \end{bmatrix} = \begin{bmatrix} 2 \\ 3 \end{bmatrix} \end{aligned} \]
+<p>This matches the computer.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-three"><div class="box-t">Task 2: three points all the way (lab 4)</div>
+<p>Points (1, 2), (2, 3), (3, 5). Compute \(X^\top X\), \(X^\top\mathbf y\), the inverse, \(\mathbf w\), the predictions, the residuals and their sum of squares.</p>
+<p class="meta"><b>Result:</b> \(\mathbf w = [1/3,\ 3/2]\); predictions 11/6, 10/3, 29/6; residuals 1/6, −1/3, 1/6; SSE = 1/6.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>1. Products (the rows of X are [1, 1], [1, 2], [1, 3]):</p>
+\[ X^\top X = \begin{bmatrix} 3 &amp; 6 \\ 6 &amp; 14 \end{bmatrix},\qquad X^\top\mathbf y = \begin{bmatrix} 10 \\ 23 \end{bmatrix} \]
+<p>2. Inverse: determinant \(3\cdot 14 - 6\cdot 6 = 6\).</p>
+\[ (X^\top X)^{-1} = \frac16\begin{bmatrix} 14 &amp; -6 \\ -6 &amp; 3 \end{bmatrix} \]
+<p>3. Weights:</p>
+\[ \begin{aligned} \mathbf w &amp;= \frac16\begin{bmatrix} 14\cdot 10 - 6\cdot 23 \\ -6\cdot 10 + 3\cdot 23 \end{bmatrix} \\ &amp;= \frac16\begin{bmatrix} 2 \\ 9 \end{bmatrix} = \begin{bmatrix} 1/3 \\ 3/2 \end{bmatrix} \end{aligned} \]
+<p>4. Predictions \(\hat y = \tfrac13 + \tfrac32 x\): 11/6, 10/3, 29/6. Residuals \(y - \hat y\): 1/6, −1/3, 1/6 (they sum to 0 – thanks to the intercept).</p>
+\[ \text{SSE} = \frac{1}{36} + \frac{4}{36} + \frac{1}{36} = \frac16 \]
+</div></details></div>
+
+<div class="box uloha" id="u-ridge-slope"><div class="box-t">Task 3: ridge on the slope only (lab 4)</div>
+<p>Same three points, ridge with λ = 1 on the slope only (intercept not penalized):</p>
+\[ \mathbf w = (X^\top X + \operatorname{diag}(0, \lambda))^{-1}X^\top\mathbf y \]
+<p class="meta"><b>Result:</b> \(\mathbf w = [4/3,\ 1]\) – the slope dropped from 1.5 to 1.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+\[ X^\top X + \begin{bmatrix} 0 &amp; 0 \\ 0 &amp; 1 \end{bmatrix} = \begin{bmatrix} 3 &amp; 6 \\ 6 &amp; 15 \end{bmatrix} \]
+<p>Determinant \(3\cdot 15 - 6\cdot 6 = 9\):</p>
+\[ \begin{aligned} \mathbf w &amp;= \frac19\begin{bmatrix} 15 &amp; -6 \\ -6 &amp; 3 \end{bmatrix}\begin{bmatrix} 10 \\ 23 \end{bmatrix} \\ &amp;= \frac19\begin{bmatrix} 12 \\ 9 \end{bmatrix} = \begin{bmatrix} 4/3 \\ 1 \end{bmatrix} \end{aligned} \]
+<p>The penalty shrank the slope; the intercept moved so that the line still passes through the centre of the data.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-two"><div class="box-t">Task 4: two points – exact solution</div>
+<p>Points (1, 1) and (3, 5). Here \(X\) is square: \(\mathbf w = X^{-1}\mathbf y\). Find b and w.</p>
+<p class="meta"><b>Result:</b> b = −1, w = 2 (the line passes through both points).</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+\[ X = \begin{bmatrix} 1 &amp; 1 \\ 1 &amp; 3 \end{bmatrix},\qquad X^{-1} = \frac12\begin{bmatrix} 3 &amp; -1 \\ -1 &amp; 1 \end{bmatrix} \]
+\[ \mathbf w = \frac12\begin{bmatrix} 3 - 5 \\ -1 + 5 \end{bmatrix} = \begin{bmatrix} -1 \\ 2 \end{bmatrix} \]
+<p>Check: −1 + 2·1 = 1, −1 + 2·3 = 5.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-order"><div class="box-t">Task 5: a different column order</div>
+<p>Fit to (1, 1), (2, 2), (3, 6) with columns of \(X\) ordered \([x, 1]\) and \(\mathbf w = [w, b]^\top\). Write \(X\), compute \(\mathbf w\) and predict at x = 4.</p>
+<p class="meta"><b>Trap:</b> the one is the second column. <b>Result:</b> w = 5/2, b = −2; ŷ(4) = 8.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+\[ X = \begin{bmatrix} 1 &amp; 1 \\ 2 &amp; 1 \\ 3 &amp; 1 \end{bmatrix} \]
+\[ X^\top X = \begin{bmatrix} 14 &amp; 6 \\ 6 &amp; 3 \end{bmatrix},\qquad X^\top\mathbf y = \begin{bmatrix} 23 \\ 9 \end{bmatrix} \]
+<p>Determinant \(42 - 36 = 6\):</p>
+\[ \begin{aligned} \mathbf w &amp;= \frac16\begin{bmatrix} 3 &amp; -6 \\ -6 &amp; 14 \end{bmatrix}\begin{bmatrix} 23 \\ 9 \end{bmatrix} \\ &amp;= \frac16\begin{bmatrix} 15 \\ -12 \end{bmatrix} = \begin{bmatrix} 5/2 \\ -2 \end{bmatrix} \end{aligned} \]
+<p>\(\hat y(4) = \tfrac52\cdot 4 - 2 = 8\).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-a1v"><div class="box-t">Task 6: a variant of A1</div>
+<p>Fit \(\hat y = b + wx\) to (−1, 1), (0, 2), (1, 6), columns [1, x]. Compute \(\mathbf w\) and predict at x = 2.</p>
+<p class="meta"><b>Result:</b> w = [3, 5/2], ŷ(2) = 8 (X<sup>⊤</sup>X = diag(3, 2), X<sup>⊤</sup>y = [9, 5]).</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>Symmetric x (−1, 0, 1) give a diagonal \(X^\top X\), the inverse is element by element:</p>
+\[ \begin{aligned} X^\top\mathbf y &amp;= \begin{bmatrix} 1 + 2 + 6 \\ -1 + 0 + 6 \end{bmatrix} = \begin{bmatrix} 9 \\ 5 \end{bmatrix} \\ \mathbf w &amp;= \begin{bmatrix} 9/3 \\ 5/2 \end{bmatrix} = \begin{bmatrix} 3 \\ 5/2 \end{bmatrix} \end{aligned} \]
+<p>\(\hat y(2) = 3 + \tfrac52\cdot 2 = 8\).</p>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Common traps</div>
+<ul>
+<li><b>Column order</b> as in the task: \([1, x]\) ↔ \(\mathbf w = [b, w]\).</li>
+<li>“Leave unevaluated” = do not compute, just substitute. Extra computation earns nothing, a mistake in it can cost points.</li>
+<li>\(\mathbf y\) is a column, \(X\) has as many rows as there are points.</li>
+<li>2 × 2 inverse: swap the diagonal, change the signs off it, divide by the determinant.</li>
+<li>\((X^\top X)^{-1} \ne X^{-1}(X^\top)^{-1}\) – \(X\) is not square.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">What to write for full points</div>
+<p>Whole matrices in square brackets, one sentence explaining the ones, the substitution exactly in the form of the formula. The prediction with substitution, not just the number.</p>
+<p class="answer-en">The column of ones multiplies the intercept b, so b is estimated like any other weight and every prediction is b·1 + w·x. ŷ(2) = b + w·2 = 2 + 3·2 = 8.</p></div>
+
+<div class="box kostka"><div class="box-t">In a nutshell</div><p>Row of X = \([1, x_i]\); \(\mathbf w = (X^\top X)^{-1}X^\top\mathbf y\); 2 × 2 inverse via the determinant; prediction \(b + wx\).</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Summary</h2>
+<p>Linear regression in matrix form needs a design matrix with a column of ones (the intercept as a weight) and a response vector. The least-squares solution is \((X^\top X)^{-1}X^\top\mathbf y\); for one feature \(X^\top X\) is a 2 × 2 matrix inverted via the determinant. Ridge adds λ to the diagonal (possibly only for the slope) and shrinks the weights. A prediction is the dot product of the row \([1, x]\) with the weights.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Column of ones = the intercept b is just another weight.</li>
+<li>\(X^\top X\) has the size of the number of columns of X.</li>
+<li>2 × 2 inverse: \(\frac{1}{ad - bc}\begin{bmatrix} d &amp; -b \\ -c &amp; a \end{bmatrix}\).</li>
+<li>Residuals with an intercept sum to 0 – a good check.</li>
+<li>Ridge: \(X^\top X + \lambda I\); slope only: \(\operatorname{diag}(0, \lambda)\).</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Test questions</h2>
+<details class="q"><summary>Why do we add a column of ones to X?</summary><div><p>So that the intercept b is the weight of a constant feature 1; then \(\hat{\mathbf y} = X\mathbf w\) and the least-squares formula estimates b and w together.</p></div></details>
+<details class="q"><summary>What does least squares minimize?</summary><div><p>The sum of squared residuals \(\sum_i (y_i - \hat y_i)^2 = \|X\mathbf w - \mathbf y\|_2^2\).</p></div></details>
+<details class="q"><summary>When is \(X^\top X\) not invertible?</summary><div><p>When the columns of X are linearly dependent (e.g. all x equal or two identical features), or there are more features than samples. Ridge fixes this by adding λI.</p></div></details>
+<details class="q"><summary>Why is \(X^{-1}\mathbf y\) enough for two points?</summary><div><p>X is square 2 × 2 and the line can pass exactly through both points; least squares gives the same.</p></div></details>
+<details class="q"><summary>How does the solution change if the columns of X are swapped to [x, 1]?</summary><div><p>The model is the same, only the order of the weights is [w, b]; the numbers do not change, only their positions in the vector.</p></div></details>

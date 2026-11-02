@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cheat sheet – MLR</title>
+<meta name="description" content="Formulas, code idioms and traps on one page.">
+<link rel="alternate" hreflang="cs" href="../12_tahak.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../../assets/style.css?v=b9a02598">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../../assets/app.js?v=b9a02598"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Contents">☰ Contents</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Hide the sidebar" data-show="Show the sidebar" title="Hide the sidebar">◧ Sidebar</button>
+  <a class="brand" href="index.html">MLR – practical test 1<small>task types: paper calculations and reading code</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../../index.html#mlr" title="All study notes">←<span> All study notes</span></a>
+  <a class="iconbtn langbtn" href="../12_tahak.html" hreflang="cs" lang="cs" title="Česká verze">CZ</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Smaller text" aria-label="Smaller text">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Default text size">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Larger text" aria-label="Larger text">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/12_tahak.pdf" download title="Download this page as PDF" data-dl="Download this page as PDF" data-print="Print / save as PDF with the chosen font size">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Dark mode</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigation">
+  <h4>Chapters</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>How to prepare</span></a></li>
+    <li><a href="01_numpy.html"><span class="n">1</span><span>Reading NumPy code</span></a></li>
+    <li><a href="02_knn.html"><span class="n">2</span><span>Distances, k-NN and gradient descent</span></a></li>
+    <li><a href="03_metriky.html"><span class="n">3</span><span>Confusion matrix and metrics</span></a></li>
+    <li><a href="04_predzpracovani.html"><span class="n">4</span><span>Preprocessing and data leakage</span></a></li>
+    <li><a href="05_vyber_priznaku.html"><span class="n">5</span><span>Feature selection and PCA</span></a></li>
+    <li><a href="06_linearni_regrese.html"><span class="n">6</span><span>Linear regression by hand</span></a></li>
+    <li><a href="07_polynom_ridge.html"><span class="n">7</span><span>Polynomials, overfitting, ridge and kernels</span></a></li>
+    <li><a href="08_stromy_ansambly.html"><span class="n">8</span><span>Trees, bagging and SVM</span></a></li>
+    <li><a href="09_agenti.html"><span class="n">9</span><span>AI agents: skill and subagent</span></a></li>
+    <li><a href="10_ukazky.html"><span class="n">✎</span><span>Samples A and B solved</span></a></li>
+    <li><a href="11_cvicne_testy.html"><span class="n">✎</span><span>Practice tests C–F</span></a></li>
+    <li><a href="12_tahak.html" class="active"><span class="n">★</span><span>Cheat sheet</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Glossary (definitions)</span></a></li>
+  </ol>
+  <h4>On this page</h4>
+  <ul class="toc">
+    <li><a href="#vzorce">Formulas</a></li>
+    <li><a href="#kod">Code idioms</a></li>
+    <li><a href="#pasti">Traps in the samples</a></li>
+    <li><a href="#vety">Useful sentences</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – practical test 1 · Cheat sheet – MLR · https://balnerm.github.io/pripravy/mlr/test1/en/12_tahak.html</p>
+
+<h1>Cheat sheet</h1>
+<p class="lead">Everything you need on one page for a last revision before the test. You may not bring anything to the test itself – this page is for reading the evening before.</p>
+
+<h2 id="vzorce">Formulas</h2>
+<div class="box vzorec"><div class="box-t">Regression</div>
+\[ \begin{aligned} &amp;\text{OLS:} \\ \mathbf w &amp;= (X^\top X)^{-1}X^\top\mathbf y \\ &amp;\text{ridge:} \\ \mathbf w &amp;= (X^\top X + \lambda I_d)^{-1}X^\top\mathbf y \\ &amp;\text{dual:} \\ \boldsymbol\alpha &amp;= (XX^\top + \lambda I_n)^{-1}\mathbf y \\ \mathbf w &amp;= X^\top\boldsymbol\alpha \\ &amp;\text{kernel ridge:} \\ \boldsymbol\alpha &amp;= (K + \lambda I)^{-1}\mathbf y \\ \hat{\mathbf y} &amp;= K_{\text{new}}\boldsymbol\alpha \end{aligned} \]
+\[ \begin{aligned} &amp;\text{2×2 inverse:} \\ \begin{bmatrix} a &amp; b \\ c &amp; d \end{bmatrix}^{-1} &amp;= \frac{1}{ad - bc}\begin{bmatrix} d &amp; -b \\ -c &amp; a \end{bmatrix} \end{aligned} \]
+<table class="vars">
+<tr><td>X</td><td>rows = samples, first column of ones (intercept)</td></tr>
+<tr><td>\(I_d\)</td><td>identity with the size of the number of weights = <code>np.eye(X.shape[1])</code></td></tr>
+<tr><td>\(I_n\)</td><td>in the dual, the size of the number of samples = <code>np.eye(X.shape[0])</code></td></tr>
+<tr><td>λ</td><td>penalty strength: ↑λ = smaller weights, more bias, less overfitting</td></tr>
+</table></div>
+<div class="box vzorec"><div class="box-t">Classification and metrics (rows = actual)</div>
+\[ \begin{aligned} \text{accuracy} &amp;= \frac{TP + TN}{N} \\ \text{recall} &amp;= \frac{TP}{TP + FN} \\ \text{precision} &amp;= \frac{TP}{TP + FP} \\ \text{specificity} &amp;= \frac{TN}{TN + FP} \\ F_1 &amp;= \frac{2TP}{2TP + FP + FN} \\ \text{MSE} &amp;= \frac1n\sum(\hat y_i - y_i)^2 \\ \text{MAE} &amp;= \frac1n\sum|\hat y_i - y_i| \end{aligned} \]
+<table class="vars">
+<tr><td>FN</td><td>a missed positive (“missed”)</td></tr>
+<tr><td>FP</td><td>a false alarm (“incorrectly flagged”)</td></tr>
+</table></div>
+<div class="box vzorec"><div class="box-t">Preprocessing, descent, filters, trees</div>
+\[ \begin{aligned} z &amp;= \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}} \\ x' &amp;= \frac{x - x_{\min}}{x_{\max} - x_{\min}} \\ w_{t+1} &amp;= w_t - \eta\,\nabla f(w_t) \\ H(X) &amp;= -\sum p\log_2 p \\ I(X; Y) &amp;= H(X) + H(Y) - H(X, Y) \\ G &amp;= \sum_y p(y)(1 - p(y)) \\ G_{\text{2 classes}} &amp;= 2p(1 - p) \\ P(\text{OOB}) &amp;= (1 - 1/n)^n \\ &amp;\approx e^{-1} \approx 0.37 \end{aligned} \]
+<table class="vars">
+<tr><td>μ, σ, (x_{min}), (x_{max})</td><td>always from the training data</td></tr>
+<tr><td>η</td><td>learning rate; for \((w - a)^2\) it converges for \(0 &lt; \eta &lt; 1\)</td></tr>
+<tr><td>P(OOB)</td><td>probability that a row is not in the bootstrap sample (out-of-bag)</td></tr>
+<tr><td>G</td><td>0 pure node, 0.5 half and half, 4 : 1 → 0.32</td></tr>
+</table></div>
+
+<h2 id="kod">Code idioms</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>Code</th><th>Meaning</th></tr>
+<tr><td><code>np.column_stack([t ** j for j in range(3)])</code></td><td>columns 1, t, t²</td></tr>
+<tr><td><code>X @ w</code></td><td>predictions, one per row</td></tr>
+<tr><td><code>X.T @ X</code></td><td>(d, d)</td></tr>
+<tr><td><code>V.mean(axis=1)</code></td><td>mean over the columns of each row (over the trees)</td></tr>
+<tr><td><code>(p &gt; 0.5).astype(int)</code></td><td>threshold, 0.5 → 0</td></tr>
+<tr><td><code>np.argmax(scores)</code></td><td>position (first maximum)</td></tr>
+<tr><td><code>remaining.pop(pos)</code></td><td>removes and returns the element at a position</td></tr>
+<tr><td><code>np.argsort(d)[:k]</code></td><td>indices of the k nearest</td></tr>
+<tr><td><code>np.unique(v, return_counts=True)</code></td><td>voting</td></tr>
+<tr><td><code>np.sum((y == 1) &amp; (p == 1))</code></td><td>TP</td></tr>
+<tr><td><code>rng.choice(n, size=n, replace=True)</code></td><td>bootstrap: repeats yes, not all rows</td></tr>
+<tr><td><code>scaler.fit_transform(train)</code> / <code>scaler.transform(valid)</code></td><td>correct scaling</td></tr>
+</table></div>
+
+<h2 id="pasti">Traps in the samples</h2>
+<div class="box pozor"><div class="box-t">Watch out for</div>
+<ul>
+<li><code>fit_transform</code> on validation → <code>transform</code>.</li>
+<li><code>np.eye(X.shape[0])</code> in primal ridge → <code>shape[1]</code>.</li>
+<li><code>argmax</code> = position in <code>remaining</code>, feature = <code>remaining[pos]</code>.</li>
+<li>“Strictly improves”: equality = stop.</li>
+<li>Degree, λ, k, features – by <b>validation</b>; test once.</li>
+<li>Orientation of the confusion matrix; always write the denominators.</li>
+<li>Column order of X as in the task ([1, x] vs. [x, 1]).</li>
+<li>Random number generator once before the loop; the same <code>idx</code> for X and y.</li>
+</ul></div>
+
+<h2 id="vety">Useful sentences</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>Topic</th><th>Sentence</th></tr>
+<tr><td>column of ones</td><td>The column of ones multiplies the intercept b, so b is learned as an ordinary weight.</td></tr>
+<tr><td>linear in weights</td><td>The prediction is a weighted sum of fixed features 1, t, t²; only the features are nonlinear in t.</td></tr>
+<tr><td>ridge J</td><td>The first term measures the training fit, the second penalizes large weights; larger λ → smaller weights, more bias, less variance.</td></tr>
+<tr><td>over/underfit</td><td>Underfitting: high training and test error. Overfitting: low training error, much higher test error.</td></tr>
+<tr><td>selection</td><td>Choose it on a validation split (or cross-validation); use the test set once at the end.</td></tr>
+<tr><td>leakage</td><td>The mean and standard deviation must be fitted on the training data only and applied with transform.</td></tr>
+<tr><td>recall</td><td>Recall for class 1 is the fraction of truly positive (faulty) items the model detects.</td></tr>
+<tr><td>bootstrap</td><td>Sampling with replacement: a row can repeat, and some rows are left out (out-of-bag).</td></tr>
+<tr><td>skill</td><td>A saved recipe (SKILL.md) that the agent loads only when the task needs it.</td></tr>
+<tr><td>subagent</td><td>A helper with its own fresh context that does a side task and returns a short summary.</td></tr>
+</table></div>
+
+<nav class="pager"><a class="prev" href="11_cvicne_testy.html"><small>← previous</small>Practice tests C–F</a><a class="next" href="99_slovnik.html"><small>next →</small>Glossary (definitions)</a></nav>
+</main>
+</div>
+</body>
+</html>

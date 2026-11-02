@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vzdálenosti, k-NN a gradientní sestup – MLR</title>
+<meta name="description" content="Nejbližší soused ručně, hlasování, krok sestupu.">
+<link rel="alternate" hreflang="en" href="en/02_knn.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css?v=b9a02598">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js?v=b9a02598"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">MLR – průběžný test 1<small>typové úlohy: výpočty na papíře a čtení kódu</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html#mlr" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <a class="iconbtn langbtn" href="en/02_knn.html" hreflang="en" lang="en" title="English version">EN</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/02_knn.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Jak se připravit</span></a></li>
+    <li><a href="01_numpy.html"><span class="n">1</span><span>Čtení kódu v NumPy</span></a></li>
+    <li><a href="02_knn.html" class="active"><span class="n">2</span><span>Vzdálenosti, k-NN a gradientní sestup</span></a></li>
+    <li><a href="03_metriky.html"><span class="n">3</span><span>Matice záměn a metriky</span></a></li>
+    <li><a href="04_predzpracovani.html"><span class="n">4</span><span>Předzpracování a únik dat</span></a></li>
+    <li><a href="05_vyber_priznaku.html"><span class="n">5</span><span>Výběr příznaků a PCA</span></a></li>
+    <li><a href="06_linearni_regrese.html"><span class="n">6</span><span>Lineární regrese ručně</span></a></li>
+    <li><a href="07_polynom_ridge.html"><span class="n">7</span><span>Polynomy, přeučení, ridge a jádra</span></a></li>
+    <li><a href="08_stromy_ansambly.html"><span class="n">8</span><span>Stromy, bagging a SVM</span></a></li>
+    <li><a href="09_agenti.html"><span class="n">9</span><span>AI agenti: skill a subagent</span></a></li>
+    <li><a href="10_ukazky.html"><span class="n">✎</span><span>Ukázky A a B s řešením</span></a></li>
+    <li><a href="11_cvicne_testy.html"><span class="n">✎</span><span>Cvičné testy C–F</span></a></li>
+    <li><a href="12_tahak.html"><span class="n">★</span><span>Tahák</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#knn">Nejbližší soused a k-NN</a></li>
+    <li><a href="#gd">Gradientní sestup</a></li>
+    <li><a href="#kmeans">k-means: jeden krok</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky k testu</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – průběžný test 1 · Vzdálenosti, k-NN a gradientní sestup – MLR · https://balnerm.github.io/pripravy/mlr/test1/02_knn.html</p>
+<p class="kicker">Typ úloh 2</p>
+<h1>Vzdálenosti, k-NN a gradientní sestup</h1>
+<p class="lead">První dvě cvičení počítala nejbližšího souseda <b>nejdřív na papíře</b>, pak v NumPy. Na papíře se počítá s kvadrátem vzdálenosti \(d^2\) – odmocnina pořadí nemění, takže stačí celá čísla. K tomu krok gradientního sestupu a k-means z 1. přednášky: krátké výpočty, které se dají spočítat bez kalkulačky.</p>
+
+<h2 id="knn">Nejbližší soused a k-NN</h2>
+<div class="box definice" id="def-euklid"><div class="box-t">Definice: eukleidovská vzdálenost</div>
+<p><b>Eukleidovská vzdálenost</b> dvou vzorků \(\mathbf a, \mathbf b\) s d příznaky je délka úsečky mezi nimi:
+\[ d(\mathbf a, \mathbf b) = \sqrt{\sum_{j=1}^{d} (a_j - b_j)^2} \]</p>
+<p class="jinak">„vzdálenost pravítkem“. Sčítají se čtverce rozdílů všech příznaků – proto příznak s velkými čísly (centimetry vs. desetiny centimetru) vzdálenost ovládne a před k-NN se standardizuje (kapitola 4).</p></div>
+<div class="box definice" id="def-knn"><div class="box-t">Definice: k-NN klasifikátor</div>
+<p><b>k-NN</b> (k nejbližších sousedů) zařadí nový vzorek do třídy, která má <b>většinu mezi jeho k nejbližšími trénovacími vzorky</b>. Pro k = 1 je to pravidlo nejbližšího souseda \(\hat y(\mathbf x_\ast) = y_{(1)}\). Nemá trénovací fázi: <code>fit</code> si data jen zapamatuje („lazy learner“).</p>
+<p class="jinak">„řekni mi, kdo jsou tví sousedé“. Malé k = citlivé na jeden zatoulaný bod (šum), velké k = rozmazané hranice tříd. k je hyperparametr – vybírá se na validačních datech.</p></div>
+
+<div class="box postup" id="postup-knn"><div class="box-t">Jak poznat a jak postupovat: k-NN ručně</div>
+<ol>
+<li>Pro každý trénovací bod spočítej \(d^2 = (x_1 - x_{1\ast})^2 + (x_2 - x_{2\ast})^2\) – bez odmocniny.</li>
+<li>Přiřaď pořadí: 1 = nejbližší.</li>
+<li>Vezmi k nejmenších a spočítej hlasy tříd. Vyhrává většina.</li>
+<li>Napiš, jak se predikce mění s k, a upozorni na remízu (sudé k, stejné vzdálenosti).</li>
+</ol></div>
+
+<div class="box uloha" id="u-knn-flip"><div class="box-t">Úloha 1: změna třídy s rostoucím k</div>
+<p>Training points: A at (2, 3), (1, 1), (0, 0); B at (4, 4), (5, 3), (3, 6). Classify the new point (3, 3) with 1-NN, 3-NN and 5-NN. Use squared Euclidean distance.</p>
+<p class="meta"><b>Výsledek:</b> k = 1 → A, k = 3 → B (A : B = 1 : 2), k = 5 → B (2 : 3).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<div class="tablewrap"><table class="compact">
+<tr><th>bod</th><th>třída</th><th>\(d^2\) k (3, 3)</th><th>pořadí</th></tr>
+<tr><td>(2, 3)</td><td>A</td><td>1 + 0 = 1</td><td>1</td></tr>
+<tr><td>(4, 4)</td><td>B</td><td>1 + 1 = 2</td><td>2</td></tr>
+<tr><td>(5, 3)</td><td>B</td><td>4 + 0 = 4</td><td>3</td></tr>
+<tr><td>(1, 1)</td><td>A</td><td>4 + 4 = 8</td><td>4</td></tr>
+<tr><td>(3, 6)</td><td>B</td><td>0 + 9 = 9</td><td>5</td></tr>
+<tr><td>(0, 0)</td><td>A</td><td>9 + 9 = 18</td><td>6</td></tr>
+</table></div>
+<ul>
+<li>k = 1: nejbližší je (2, 3) → <b>A</b>.</li>
+<li>k = 3: A, B, B → <b>B</b> (2 : 1).</li>
+<li>k = 5: A, B, B, A, B → <b>B</b> (3 : 2).</li>
+</ul>
+<p>Jediný blízký bod A „přehlasují“ sousedé B, jakmile k vzroste – stejný jev jako ve cvičení 2 s velkou třešní mezi ořešáky.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-knn-code"><div class="box-t">Úloha 2: k-NN v kódu</div>
+<pre class="code"><code>distances = np.array([2.0, 0.5, 1.5, 0.7, 3.0])
+labels = np.array(["cherry", "maple", "walnut", "walnut", "maple"])
+order = np.argsort(distances)
+nearest = labels[order[:3]]
+values, counts = np.unique(nearest, return_counts=True)
+prediction = values[np.argmax(counts)]</code></pre>
+<p>Write <code>order</code>, <code>nearest</code>, <code>values</code>, <code>counts</code> and <code>prediction</code>.</p>
+<p class="meta"><b>Výsledek:</b> <code>order = [1, 3, 2, 0, 4]</code>, <code>nearest = ['maple', 'walnut', 'walnut']</code>, <code>values = ['maple', 'walnut']</code>, <code>counts = [1, 2]</code>, <code>prediction = 'walnut'</code>.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<ol>
+<li>Vzdálenosti vzestupně: 0,5 (index 1), 0,7 (3), 1,5 (2), 2,0 (0), 3,0 (4) → <code>order = [1, 3, 2, 0, 4]</code>.</li>
+<li><code>order[:3]</code> = <code>[1, 3, 2]</code> → labely maple, walnut, walnut.</li>
+<li><code>unique</code> (abecedně): maple 1×, walnut 2× → <code>argmax(counts)</code> = 1 → <b>walnut</b>.</li>
+</ol>
+</div></details></div>
+
+<div class="box uloha" id="u-knn-train"><div class="box-t">Úloha 3: trénovací accuracy 1-NN</div>
+<p>A 1-NN model is fitted on all 518 leaves and evaluated with <code>accuracy_score(y, model.predict(X))</code> on the same rows. It reports 0.99. Why is this number useless? How do you fix it?</p>
+<p class="meta"><b>Výsledek:</b> každý trénovací bod je sám sobě nejbližším sousedem (vzdálenost 0) → téměř 100 % vždy; hodnotit na odložených datech.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>U 1-NN je každý trénovací vzorek svým vlastním nejbližším sousedem, takže predikce na trénovacích datech je správně skoro vždy (chybí jen tam, kde dvě stejná měření mají různé labely). Číslo neříká nic o nových datech. Oprava: rozdělit data (např. 70/30, <code>stratify=y</code>), <code>fit</code> jen na trénovací části, accuracy měřit na testovací části. Ve cvičení vyšlo poctivě asi 0,92 místo 0,99.</p>
+</div></details></div>
+
+<h2 id="gd">Gradientní sestup</h2>
+<div class="box definice" id="def-gd-krok"><div class="box-t">Definice: krok gradientního sestupu</div>
+<p><b>Gradientní sestup</b> hledá minimum funkce opakováním kroku proti gradientu:
+\[ \mathbf x^{(t+1)} = \mathbf x^{(t)} - \eta\, \nabla f(\mathbf x^{(t)}) \]
+kde \(\eta &gt; 0\) je <b>krok učení</b> (learning rate) a gradient \(\nabla f\) je vektor parciálních derivací.</p>
+<p class="jinak">gradient ukazuje do kopce, proto jdeme na opačnou stranu. Malé η = pomalé plížení, příliš velké η = přeskočení minima a rozkmit nebo divergence.</p></div>
+
+<div class="box uloha" id="u-gd"><div class="box-t">Úloha 4: dva kroky gradientního sestupu</div>
+<p>Minimize \(f(w) = (w - 3)^2\) by gradient descent from \(w_0 = 0\). a) Write the update rule. b) Compute \(w_1, w_2\) for \(\eta = 0.25\). c) What happens for \(\eta = 1\) and \(\eta = 1.25\)?</p>
+<p class="meta"><b>Výsledek:</b> \(w_1 = 1{,}5\), \(w_2 = 2{,}25\) (chyba se každým krokem půlí); η = 1: 0 → 6 → 0 → 6 (kmitá); η = 1,25: 0 → 7,5 → −3,75 → 13,125 (diverguje).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Derivace a pravidlo:</p>
+\[ \begin{aligned} f'(w) &amp;= 2(w - 3) \\ w_{t+1} &amp;= w_t - 2\eta\,(w_t - 3) \end{aligned} \]
+<p>2. η = 0,25:</p>
+\[ \begin{aligned} w_1 &amp;= 0 - 0{,}25\cdot(-6) = 1{,}5 \\ w_2 &amp;= 1{,}5 - 0{,}25\cdot(-3) = 2{,}25 \end{aligned} \]
+<p>3. Vzdálenost od minima \(e_t = w_t - 3\) se násobí \((1 - 2\eta)\): pro η = 0,25 je to 0,5 (konverguje), pro η = 1 je to −1 (kmitá mezi 0 a 6), pro η = 1,25 je to −1,5 (každý krok o polovinu dál – diverguje). Konvergence nastane přesně pro \(|1 - 2\eta| &lt; 1\), tj. \(0 &lt; \eta &lt; 1\).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-gd2"><div class="box-t">Úloha 5: krok ve dvou proměnných</div>
+<p>\(f(\mathbf x) = \tfrac12(x_1^2 + 5x_2^2)\). Compute the gradient and one step from \(\mathbf x = (2, 1)\) with \(\eta = 0.1\).</p>
+<p class="meta"><b>Výsledek:</b> \(\nabla f = (x_1, 5x_2) = (2, 5)\); nový bod \((1{,}8;\ 0{,}5)\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+\[ \begin{aligned} \nabla f(2, 1) &amp;= (2,\ 5\cdot 1) = (2, 5) \\ \mathbf x_1 &amp;= (2, 1) - 0{,}1\cdot(2, 5) = (1{,}8;\ 0{,}5) \end{aligned} \]
+<p>Ve strmém směru \(x_2\) se bod posunul víc. Kdyby η bylo větší než 2/5, ve směru \(x_2\) by sestup divergoval (podmínka z přednášky \(\eta &lt; 2/L\), tady L = 5).</p>
+</div></details></div>
+
+<h2 id="kmeans">k-means: jeden krok</h2>
+<div class="box definice" id="def-kmeans-krok"><div class="box-t">Definice: krok algoritmu k-means</div>
+<p><b>k-means</b> střídá dva kroky: (1) <b>přiřazení</b> – každý bod patří k nejbližšímu středu \(\boldsymbol\mu_j\); (2) <b>aktualizace</b> – každý střed je průměr svých bodů. Končí, když se přiřazení nezmění.</p>
+<p class="jinak">body si vyberou nejbližší „vlajku“, vlajka se přesune doprostřed svých bodů, a znovu. Učení bez učitele – labely se nepoužijí.</p></div>
+<div class="box uloha" id="u-kmeans"><div class="box-t">Úloha 6: k-means v 1D</div>
+<p>Points 1, 2, 4, 8, 9; k = 2; initial means \(\mu_1 = 1\), \(\mu_2 = 4\). Run k-means until it stops.</p>
+<p class="meta"><b>Výsledek:</b> 1. kolo {1, 2} a {4, 8, 9} → μ = 1,5 a 7; 2. kolo {1, 2, 4} a {8, 9} → μ = 7/3 a 8,5; 3. kolo beze změny.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<ol>
+<li>Přiřazení k (1, 4): 1 → μ₁, 2 → μ₁ (vzdálenosti 1 a 2), 4, 8, 9 → μ₂.</li>
+<li>Aktualizace: μ₁ = (1 + 2)/2 = 1,5; μ₂ = (4 + 8 + 9)/3 = 7.</li>
+<li>Přiřazení k (1,5; 7): bod 4 má vzdálenosti 2,5 a 3 → přejde k μ₁.</li>
+<li>Aktualizace: μ₁ = (1 + 2 + 4)/3 = 7/3; μ₂ = (8 + 9)/2 = 8,5.</li>
+<li>Přiřazení se už nemění → konec.</li>
+</ol>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Časté pasti</div>
+<ul>
+<li>Odmocninu při porovnávání vzdáleností nepočítej – pořadí \(d\) a \(d^2\) je stejné.</li>
+<li>Remíza: při sudém k nebo stejných vzdálenostech napiš, jak ji řešíš (každá implementace jinak).</li>
+<li>Gradientní sestup jde <b>minus</b> gradient; znaménko je nejčastější chyba.</li>
+<li>k-NN potřebuje škálované příznaky – jinak rozhoduje příznak s největšími čísly.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">Co napsat za plné body</div>
+<p>Tabulku \(d^2\) s pořadím, jasně vyznačené hlasy a výsledek pro každé k. U sestupu vzorec, dosazení a hodnoty po krocích.</p>
+<p class="answer-en">With k = 1 the nearest point (distance² = 1) is class A, so we predict A. With k = 3 the votes are A, B, B, so the majority is B.</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>k-NN: spočítej \(d^2\), seřaď, nech hlasovat k nejbližších. Gradientní sestup: \(w \leftarrow w - \eta f'(w)\); velikost η rozhoduje mezi plížením, rychlou konvergencí a divergencí.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Na papíře se k-NN počítá přes kvadrát vzdálenosti a pořadí sousedů; predikce je většina mezi k nejbližšími. V kódu to dělá <code>np.argsort</code> a <code>np.unique(..., return_counts=True)</code>. Trénovací accuracy 1-NN je bezcenná, protože každý bod je sám sobě sousedem. Gradientní sestup posouvá parametr proti derivaci o krok η; u kvadratické funkce se chyba každým krokem násobí \(1 - 2\eta\), takže je jasně vidět konvergence, kmitání i divergence. k-means střídá přiřazení k nejbližšímu středu a přepočet středů.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Porovnávej \(d^2\), odmocnina pořadí nemění.</li>
+<li>k-NN predikce se může s rostoucím k změnit – vždy napiš hlasy.</li>
+<li>Trénovací accuracy 1-NN ≈ 100 % a nic neznamená.</li>
+<li>\(w_{t+1} = w_t - \eta \nabla f(w_t)\); příliš velké η diverguje.</li>
+<li>k-means: přiřaď → přepočítej průměry → opakuj, dokud se nic nemění.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky k testu</h2>
+<details class="q"><summary>Proč stačí porovnávat \(d^2\) místo \(d\)?</summary><div><p>Odmocnina je rostoucí funkce, takže pořadí vzdáleností se nezmění a nejbližší soused je stejný.</p></div></details>
+<details class="q"><summary>Co dělá <code>fit</code> u k-NN?</summary><div><p>Jen si uloží trénovací data a labely. Veškerá práce (vzdálenosti, hlasování) proběhne až v <code>predict</code>.</p></div></details>
+<details class="q"><summary>Jak se mění k-NN s rostoucím k?</summary><div><p>Malé k sleduje jednotlivé body (šum, přeučení), velké k vyhlazuje hranici a pro k = n předpovídá vždy majoritní třídu (podučení).</p></div></details>
+<details class="q"><summary>Napiš krok gradientního sestupu a vysvětli roli η.</summary><div><p>\(\mathbf w \leftarrow \mathbf w - \eta \nabla f(\mathbf w)\). η určuje délku kroku: malé = pomalá konvergence, velké = přestřelení, kmitání nebo divergence.</p></div></details>
+<details class="q"><summary>Kdy se gradientní sestup zastaví?</summary><div><p>Když je gradient malý, změna parametrů nebo hodnoty funkce je malá, po maximálním počtu iterací, nebo (při trénování) když přestane klesat validační chyba. Malý gradient znamená jen stacionární bod.</p></div></details>
+<details class="q"><summary>Čím se liší k-NN a k-means?</summary><div><p>k-NN je klasifikátor s učitelem (používá labely sousedů), k je počet sousedů. k-means je shlukování bez učitele, k je počet shluků a labely se nepoužijí.</p></div></details>
+
+<nav class="pager"><a class="prev" href="01_numpy.html"><small>← předchozí</small>Čtení kódu v NumPy</a><a class="next" href="03_metriky.html"><small>další →</small>Matice záměn a metriky</a></nav>
+</main>
+</div>
+</body>
+</html>

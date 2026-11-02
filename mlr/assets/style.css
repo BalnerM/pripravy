@@ -211,6 +211,29 @@ table.compact th, table.compact td { padding: 6px 7px; }
 .box.definice .jinak { color: var(--ink-2); border-top: 1px dashed var(--line-strong); padding-top: 8px; }
 .box.definice .jinak::before { content: "Jinými slovy: "; font-weight: 600; color: var(--ink); }
 :lang(en) .box.definice .jinak::before { content: "In other words: "; }
+/* test1: úlohy s rozbalovacím řešením (vzor pso/), bloky kódu, anglický termín v nadpisu rámečku */
+.box-t .en { text-transform: none; letter-spacing: 0; font-weight: 600; font-style: italic; color: var(--ink-2); }
+.box-t .en::before { content: "· "; font-style: normal; }
+.box.uloha { --fill: var(--surface); --edge: var(--box-priklad-edge); border: 1px solid var(--line-strong); border-left: 4px solid var(--edge); }
+.uloha .meta { font-size: 14.5px; color: var(--ink-2); margin: 6px 0; }
+.uloha .meta b { color: var(--ink); }
+.kw { font-style: italic; background: var(--surface-2); border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; }
+details.reseni { margin: 10px 0 0; border-top: 1px dashed var(--line-strong); }
+details.reseni > summary {
+  cursor: pointer; padding: 9px 0 4px; font-weight: 650; color: var(--accent-ink); list-style: none;
+}
+details.reseni > summary::-webkit-details-marker { display: none; }
+details.reseni > summary::before { content: "▸ "; }
+details.reseni[open] > summary::before { content: "▾ "; }
+details.reseni > div > :last-child { margin-bottom: 0; }
+pre.code { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px;
+  margin: 10px 0 14px; font-size: 13.5px; line-height: 1.5; overflow-x: auto; white-space: pre; max-width: 100%; }
+pre.code code { background: none; padding: 0; border-radius: 0; font-size: inherit; }
+@media (max-width: 700px) { pre.code { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12.5px; padding: 8px 10px; } }
+.answer-en { border-left: 3px solid var(--line-strong); padding-left: 10px; color: var(--ink-2); font-style: italic; }
+.answer-en::before { content: "EN: "; font-style: normal; font-weight: 650; color: var(--ink); }
+:lang(en) .answer-en::before { content: "Model answer: "; }
+.body-pts { color: var(--ink-2); font-weight: 600; white-space: nowrap; }
 /* rámeček „Parametry“: co hyperparametr znamená a co udělá jeho zvětšení / zmenšení */
 .box.parametry { --fill: var(--surface); --edge: var(--box-postup-edge); border: 1px solid var(--line-strong); border-left: 4px solid var(--box-postup-edge); }
 .box.parametry .tablewrap { margin: 4px 0 10px; }
@@ -371,10 +394,11 @@ details.q > div > :last-child { margin-bottom: 0; }
   .printhead { display: block; font-size: 8.5pt; color: var(--muted); margin: 0 0 10px;
     padding-bottom: 6px; border-bottom: 1px solid var(--line); }
   .kapitola + .kapitola { break-before: page; margin-top: 0; padding-top: 0; border-top: 0; }
-  details.q > div { display: block !important; }
+  details.q > div, details.reseni > div { display: block !important; }
+  pre.code { white-space: pre-wrap; overflow: visible; }
   details.q summary { font-weight: 650; }
   .katex-display, table.vars, .tablewrap { overflow: visible !important; }
-  .box, figure, .schema, .tablewrap, details.q, .takehome, table { break-inside: avoid; }
+  .box:not(.uloha), figure, .schema, .tablewrap, details.q, .takehome, table, pre.code { break-inside: avoid; }
   h1, h2, h3, .box-t, summary { break-after: avoid; }
   a { text-decoration: none; }
 }

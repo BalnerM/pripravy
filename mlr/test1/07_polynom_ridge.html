@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polynomy, přeučení, ridge a jádra – MLR</title>
+<meta name="description" content="Polynomiální příznaky, under/overfitting, ridge, lasso, duální tvar a jádra.">
+<link rel="alternate" hreflang="en" href="en/07_polynom_ridge.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css?v=b9a02598">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js?v=b9a02598"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">MLR – průběžný test 1<small>typové úlohy: výpočty na papíře a čtení kódu</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html#mlr" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <a class="iconbtn langbtn" href="en/07_polynom_ridge.html" hreflang="en" lang="en" title="English version">EN</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/07_polynom_ridge.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Jak se připravit</span></a></li>
+    <li><a href="01_numpy.html"><span class="n">1</span><span>Čtení kódu v NumPy</span></a></li>
+    <li><a href="02_knn.html"><span class="n">2</span><span>Vzdálenosti, k-NN a gradientní sestup</span></a></li>
+    <li><a href="03_metriky.html"><span class="n">3</span><span>Matice záměn a metriky</span></a></li>
+    <li><a href="04_predzpracovani.html"><span class="n">4</span><span>Předzpracování a únik dat</span></a></li>
+    <li><a href="05_vyber_priznaku.html"><span class="n">5</span><span>Výběr příznaků a PCA</span></a></li>
+    <li><a href="06_linearni_regrese.html"><span class="n">6</span><span>Lineární regrese ručně</span></a></li>
+    <li><a href="07_polynom_ridge.html" class="active"><span class="n">7</span><span>Polynomy, přeučení, ridge a jádra</span></a></li>
+    <li><a href="08_stromy_ansambly.html"><span class="n">8</span><span>Stromy, bagging a SVM</span></a></li>
+    <li><a href="09_agenti.html"><span class="n">9</span><span>AI agenti: skill a subagent</span></a></li>
+    <li><a href="10_ukazky.html"><span class="n">✎</span><span>Ukázky A a B s řešením</span></a></li>
+    <li><a href="11_cvicne_testy.html"><span class="n">✎</span><span>Cvičné testy C–F</span></a></li>
+    <li><a href="12_tahak.html"><span class="n">★</span><span>Tahák</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#polynom">Polynomiální příznaky</a></li>
+    <li><a href="#overfit">Podučení a přeučení</a></li>
+    <li><a href="#ridge">Ridge regrese</a></li>
+    <li><a href="#jadra">Duální tvar, jádra a lasso</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky k testu</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – průběžný test 1 · Polynomy, přeučení, ridge a jádra – MLR · https://balnerm.github.io/pripravy/mlr/test1/07_polynom_ridge.html</p>
+<p class="kicker">Typ úloh 7</p>
+<h1>Polynomy, přeučení, ridge a jádra</h1>
+<p class="lead">Tři úlohy z ukázek patří sem: B1 trasuje kód polynomiálních příznaků, B2 opravuje rozměr jednotkové matice v ridge a A4 čte grafy polynomů stupně 1, 3 a 15 s tabulkou chyb. Cvičení 4 k tomu přidává duální tvar, jádrový trik a lasso. Společná myšlenka: <b>model je lineární ve vahách</b>, křivku dělají příznaky a složitost se ladí stupněm nebo λ – <b>podle validace</b>.</p>
+
+<h2 id="polynom">Polynomiální příznaky</h2>
+<div class="box definice" id="def-poly-feat"><div class="box-t">Definice: polynomiální příznaky</div>
+<p><b>Polynomiální transformace</b> stupně m nahradí vstup x řádkem \(\Phi(x) = [1, x, x^2, \dots, x^m]\); model \(\hat y = \Phi(x)^\top\mathbf w = w_0 + w_1x + \dots + w_mx^m\) se pak učí stejným vzorcem jako přímka.</p>
+<p class="jinak">křivka vznikne z nových sloupců matice X, ne ze změny modelu. Ve cvičení se x nejdřív škáluje do t ∈ [−1, 1] (\(t = 2x/5 - 1\)), aby mocniny nebyly obrovské a inverze numericky stabilní.</p></div>
+<div class="box definice" id="def-linear-in-weights"><div class="box-t">Definice: model lineární ve vahách</div>
+<p>Model je <b>lineární ve vahách</b>, když je predikce lineární kombinací (pevných) příznaků s vahami \(\mathbf w\): \(\hat y = \sum_j w_j\,\phi_j(x)\). Na tvaru funkcí \(\phi_j\) nezáleží.</p>
+<p class="jinak">každá váha jen násobí svůj sloupec a výsledky se sčítají. Proto platí uzavřený vzorec \((X^\top X)^{-1}X^\top\mathbf y\) i pro parabolu – nelineární je jen závislost na x.</p></div>
+
+<div class="box uloha" id="u-b1"><div class="box-t">Ukázka B, úloha 1: Trace polynomial features <span class="en">1.25 points</span></div>
+<pre class="code"><code>t = np.array([-1., 0., 1.])
+X = np.column_stack([t ** j for j in range(3)])
+w = np.array([1., 2., 1.])
+y_pred = X @ w</code></pre>
+<p><code>np.column_stack</code> joins the supplied columns.</p>
+<p>a) Write the matrix <code>X</code> and <code>y_pred</code>. (0.75)<br>
+b) Write the prediction equation in terms of t from the code above. Why is this model called linear in its weights, although its curve is not a straight line? (0.5)</p>
+<p class="meta"><b>Výsledek:</b> sloupce \(t^0, t^1, t^2\); <code>y_pred = [0, 1, 4]</code>; \(\hat y = 1 + 2t + t^2\).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>a) <code>range(3)</code> = 0, 1, 2 → tři sloupce \(t^0 = [1, 1, 1]\), \(t^1 = [-1, 0, 1]\), \(t^2 = [1, 0, 1]\):</p>
+\[ X = \begin{bmatrix} 1 &amp; -1 &amp; 1 \\ 1 &amp; 0 &amp; 0 \\ 1 &amp; 1 &amp; 1 \end{bmatrix} \]
+<p>Predikce = řádek krát \(\mathbf w = [1, 2, 1]\):</p>
+\[ \begin{aligned} \hat y_1 &amp;= 1 - 2 + 1 = 0 \\ \hat y_2 &amp;= 1 + 0 + 0 = 1 \\ \hat y_3 &amp;= 1 + 2 + 1 = 4 \end{aligned} \]
+<p>b) \(\hat y = 1 + 2t + t^2\) (= \((t + 1)^2\)). Predikce je lineární kombinace sloupců \(1, t, t^2\) s vahami \(w_0, w_1, w_2\): když zdvojnásobím váhu, zdvojnásobí se její příspěvek, a váhy se dají najít lineárními nejmenšími čtverci. Nelineární je jen transformace vstupu t → t².</p>
+<p class="answer-en">ŷ = 1 + 2t + t². It is linear in the weights because ŷ is a weighted sum of fixed features 1, t, t²; only the features are nonlinear in t, so the same least-squares formula applies.</p>
+</div></details></div>
+
+<figure><div class="paper"><img src="../figures/t1_parabola.png" alt="Tři body B1 a parabola 1 + 2t + t²" loading="lazy"></div>
+<figcaption>Predikce z B1: parabola \(1 + 2t + t^2\) prochází body (−1, 0), (0, 1), (1, 4).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div><p>Zakřivená čára, a přesto lineární model: váhy 1, 2, 1 jen míchají tři pevné sloupce.</p></div>
+
+<div class="box uloha" id="u-poly-var"><div class="box-t">Úloha 2: varianta bez sloupce jedniček</div>
+<pre class="code"><code>t = np.array([-1., 1., 2.])
+X = np.column_stack([t ** j for j in range(1, 3)])
+w = np.array([3., 1.])
+y_pred = X @ w</code></pre>
+<p>Write <code>X</code>, <code>y_pred</code> and the equation. What is missing compared with B1, and how would you fix it?</p>
+<p class="meta"><b>Výsledek:</b> sloupce t, t²; <code>y_pred = [-2, 4, 10]</code>; \(\hat y = 3t + t^2\) – chybí intercept (<code>range(1, 3)</code> vynechá \(t^0\)).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+\[ X = \begin{bmatrix} -1 &amp; 1 \\ 1 &amp; 1 \\ 2 &amp; 4 \end{bmatrix} \]
+\[ X\mathbf w = \begin{bmatrix} -3 + 1 \\ 3 + 1 \\ 6 + 4 \end{bmatrix} = \begin{bmatrix} -2 \\ 4 \\ 10 \end{bmatrix} \]
+<p>Křivka musí projít počátkem (pro t = 0 je ŷ = 0). Oprava: <code>range(3)</code> a tři váhy.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-poly-scale"><div class="box-t">Úloha 3: matice příznaků se škálováním (cvičení 4)</div>
+<p><code>t = 2*x/5 - 1</code>, degree 3, x = 0, 2.5, 5. Write t and the 3 × 4 matrix.</p>
+<p class="meta"><b>Výsledek:</b> t = −1, 0, 1; řádky [1, −1, 1, −1], [1, 0, 0, 0], [1, 1, 1, 1].</p>
+<details class="reseni"><summary>Řešení</summary><div>
+\[ X = \begin{bmatrix} 1 &amp; -1 &amp; 1 &amp; -1 \\ 1 &amp; 0 &amp; 0 &amp; 0 \\ 1 &amp; 1 &amp; 1 &amp; 1 \end{bmatrix} \]
+<p>Bez škálování by stupeň 15 dal \(5^{15} \approx 3\cdot 10^{10}\) a \(X^\top X\) by byla numericky skoro singulární.</p>
+</div></details></div>
+
+<h2 id="overfit">Podučení a přeučení</h2>
+<div class="box definice" id="def-under-over"><div class="box-t">Definice: podučení a přeučení</div>
+<p><b>Podučení</b> (underfitting): model je příliš jednoduchý, má velkou chybu na trénovacích i testovacích datech. <b>Přeučení</b> (overfitting): model sleduje šum trénovacích dat – trénovací chyba je malá, testovací <b>výrazně větší</b>.</p>
+<p class="jinak">podučený model „nechápe tvar“, přeučený „se naučil data nazpaměť“. Rozhodující je mezera mezi trénovací a testovací (validační) chybou a vzhled křivky mezi body.</p></div>
+
+<div class="box uloha" id="u-a4"><div class="box-t">Ukázka A, úloha 4: Interpret fitted curves <span class="en">1 point</span></div>
+<p>The plots show three polynomial fits to the same synthetic training data. Dots are training observations; lines are predictions. <b>Part of the degree-15 curve lies outside the displayed vertical range.</b> These are recorded lab results. Mean squared error is \(\text{MSE} = \frac1n\sum_{i=1}^n(\hat y_i - y_i)^2\).</p>
+<figure><div class="paper"><img src="../figures/t1_sample_a4.png" alt="Ukázka A4: polynomy stupně 1, 3 a 15 proložené stejnými daty; testovací MSE 0,283, 0,085 a 10,387" loading="lazy"></div>
+<figcaption>Grafy z ukázkového testu A (stupeň 1, 3, 15).</figcaption></figure>
+<div class="tablewrap"><table class="compact">
+<tr><th>Degree</th><th>Training MSE</th><th>Test MSE</th></tr>
+<tr><td>1</td><td>0.2270</td><td>0.2825</td></tr>
+<tr><td>3</td><td>0.0508</td><td>0.0851</td></tr>
+<tr><td>15</td><td>0.0404</td><td>10.3871</td></tr>
+</table></div>
+<p>a) Which fit underfits the curved trend, and which shows overfitting? Support your answer using the curves and the error table. (0.5)<br>
+b) Which has the lowest recorded test error? In a new experiment, which split should guide degree selection so that the final test stays independent? (0.5)</p>
+<p class="meta"><b>Výsledek:</b> stupeň 1 podučený, 15 přeučený; nejnižší test MSE stupeň 3; vybírat podle <b>validační</b> části (nebo CV na trénovacích datech).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>a) <b>Stupeň 1</b> je přímka, oblouk dat nezachytí; má největší trénovací chybu (0,2270) a podobnou testovací (0,2825) → podučení. <b>Stupeň 15</b> kmitá mezi body a na kraji ujede mimo graf; má nejmenší trénovací chybu (0,0404), ale obrovskou testovací (10,3871) → přeučení (velká mezera train/test).</p>
+<p>b) Nejnižší zaznamenaná testovací chyba je u <b>stupně 3</b> (0,0851). V novém experimentu se stupeň vybírá podle <b>validační množiny</b> (nebo křížové validace na trénovacích datech); testovací množina se použije jen jednou na konci, aby zůstala nezávislá. Volba podle testu by test „spotřebovala“.</p>
+<p class="answer-en">Degree 1 underfits: a straight line misses the curve and both errors are high. Degree 15 overfits: lowest training MSE but a huge test MSE and wild oscillation. Degree 3 has the lowest test error. The degree should be chosen on a validation split (or cross-validation on the training data), and the test set used once at the end.</p>
+</div></details></div>
+
+<h2 id="ridge">Ridge regrese</h2>
+<div class="box definice" id="def-ridge-j"><div class="box-t">Definice: ridge regrese</div>
+<p><b>Ridge regrese</b> minimalizuje součet čtverců reziduí plus L2 penalizaci vah:
+\[ \begin{aligned} J(\mathbf w) &amp;= \|X\mathbf w - \mathbf y\|_2^2 + \lambda\|\mathbf w\|_2^2 \\ \mathbf w^\ast &amp;= (X^\top X + \lambda I)^{-1}X^\top\mathbf y \end{aligned} \]
+kde \(I\) je jednotková matice velikosti <b>počtu sloupců X</b> a \(\lambda &gt; 0\).</p>
+<p class="jinak">první člen chce sedět na data, druhý chce malé váhy (hladkou křivku). λ je kompromis: 0 = obyčejné nejmenší čtverce, velké λ = váhy skoro nulové, model plochý.</p></div>
+
+<div class="box uloha" id="u-b2"><div class="box-t">Ukázka B, úloha 2: Repair ridge regression <span class="en">1 point</span></div>
+<p><code>X</code> has shape <code>(3, 2)</code> with columns <code>[1, x]</code>; <code>y</code> has shape <code>(3,)</code>. This implementation must penalize <b>both coefficients</b>, including the intercept. Use these formulas, with λ &gt; 0 and I an identity matrix:</p>
+\[ \begin{aligned} J(\mathbf w) &amp;= \|X\mathbf w - \mathbf y\|_2^2 + \lambda\|\mathbf w\|_2^2 \\ \mathbf w &amp;= (X^\top X + \lambda I)^{-1}X^\top\mathbf y \end{aligned} \]
+<p>Read the code only; do not calculate an inverse. <code>LA.inv</code> computes a matrix inverse; <code>np.eye(k)</code> creates a k × k identity.</p>
+<pre class="code"><code>def ridge_fit(X, y, lam):
+    return LA.inv(X.T @ X + lam * np.eye(X.shape[0])) @ X.T @ y</code></pre>
+<p>a) Explain the dimensional error and repair it. (0.5)<br>
+b) Explain what each term in J measures and how increasing λ changes the trade-off. (0.5)</p>
+<p class="meta"><b>Výsledek:</b> <code>X.T @ X</code> je 2 × 2, <code>np.eye(X.shape[0])</code> = 3 × 3 → součet nejde; oprava <code>np.eye(X.shape[1])</code>.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>a) <code>X.T @ X</code> má tvar <code>(2, 3) @ (3, 2)</code> = <code>(2, 2)</code> (počet sloupců). <code>X.shape[0]</code> = 3 je počet řádků (vzorků), takže <code>np.eye(3)</code> je 3 × 3 a sčítat 2 × 2 + 3 × 3 nejde (chyba broadcastingu). Jednotková matice musí mít velikost počtu vah:</p>
+<pre class="code"><code>def ridge_fit(X, y, lam):
+    return LA.inv(X.T @ X + lam * np.eye(X.shape[1])) @ X.T @ y</code></pre>
+<p>Plná <code>np.eye(2)</code> penalizuje obě váhy včetně interceptu, jak zadání chce.</p>
+<p>b) \(\|X\mathbf w - \mathbf y\|_2^2\) měří, jak špatně model sedí na trénovací data (součet čtverců reziduí). \(\lambda\|\mathbf w\|_2^2\) měří velikost vah (složitost). Větší λ klade větší důraz na malé váhy: model je jednodušší a stabilnější, trénovací chyba roste, rozptyl klesá (méně přeučení); příliš velké λ vede k podučení (váhy → 0). λ → 0 vrací obyčejné nejmenší čtverce.</p>
+<p class="answer-en">X.T @ X is 2×2 but np.eye(X.shape[0]) is 3×3, so they cannot be added; the identity must match the number of weights: np.eye(X.shape[1]). The first term of J is the squared training error (data fit), the second penalizes large weights; a larger λ shrinks the weights, increasing bias and reducing variance (overfitting).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-ridge-num"><div class="box-t">Úloha 6: ridge na datech A1</div>
+<p>Data of A1: (−1, 0), (0, 0), (1, 6), so \(X^\top X = \operatorname{diag}(3, 2)\), \(X^\top\mathbf y = [6, 6]^\top\). Compute ridge weights with λ = 1 (a) penalizing both weights, (b) penalizing only the slope. Compare with least squares w = [2, 3].</p>
+<p class="meta"><b>Výsledek:</b> (a) [3/2, 2]; (b) [2, 2].</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+\[ \begin{aligned} \text{(a)}\quad \mathbf w &amp;= \operatorname{diag}(4, 3)^{-1}\begin{bmatrix} 6 \\ 6 \end{bmatrix} = \begin{bmatrix} 3/2 \\ 2 \end{bmatrix} \\ \text{(b)}\quad \mathbf w &amp;= \operatorname{diag}(3, 3)^{-1}\begin{bmatrix} 6 \\ 6 \end{bmatrix} = \begin{bmatrix} 2 \\ 2 \end{bmatrix} \end{aligned} \]
+<p>Penalizované váhy se zmenší; nepenalizovaný intercept zůstane 2.</p>
+</div></details></div>
+
+<figure><div class="paper"><img src="../figures/t1_ridge_lambda.png" alt="Ridge na polynomu stupně 15 pro λ = 0, 10⁻⁴, 1 a 10⁴ s trénovacím a testovacím MSE" loading="lazy"></div>
+<figcaption>Polynom stupně 15 (šumový sinus, 40 trénovacích bodů, jako ve cvičení 4) s ridge pro čtyři λ.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div><p>λ = 0: nejmenší trénovací chyba (0,045), test 10,7 → přeučení. λ = 10⁴: skoro konstanta, obě chyby velké (0,56 a 0,63) → podučení. Nejnižší test je u λ = 1 (0,151); v praxi by se λ vybralo podle validační chyby.</p></div>
+
+<div class="box uloha" id="u-lambda"><div class="box-t">Úloha 7: tabulka λ</div>
+<div class="tablewrap"><table class="compact">
+<tr><th>λ</th><th>Training MSE</th><th>Test MSE</th></tr>
+<tr><td>0</td><td>0.045</td><td>10.716</td></tr>
+<tr><td>10⁻⁴</td><td>0.062</td><td>0.395</td></tr>
+<tr><td>1</td><td>0.124</td><td>0.151</td></tr>
+<tr><td>10⁴</td><td>0.561</td><td>0.634</td></tr>
+</table></div>
+<p>Which λ overfits, which underfits? Why does the training error grow with λ?</p>
+<p class="meta"><b>Výsledek:</b> λ = 0 přeučení, λ = 10⁴ podučení, λ = 1 nejlepší test; trénovací chyba roste, protože penalizace brání co nejlepšímu proložení.</p>
+<details class="reseni"><summary>Řešení</summary><div>
+<p>λ = 0 (a 10⁻⁴) – malá trénovací, výrazně větší testovací chyba → přeučení. λ = 10⁴ – obě chyby velké a podobné, křivka je plochá → podučení. Trénovací chyba s λ monotónně roste: optimalizujeme už i velikost vah, ne jen proložení. Výběr λ podle validace, test jednou.</p>
+</div></details></div>
+
+<h2 id="jadra">Duální tvar, jádra a lasso</h2>
+<div class="box definice" id="def-dual-ridge"><div class="box-t">Definice: duální tvar ridge</div>
+<p><b>Duální tvar</b> ridge regrese počítá jeden koeficient na trénovací vzorek:
+\[ \begin{aligned} \boldsymbol\alpha &amp;= (XX^\top + \lambda I_n)^{-1}\mathbf y \\ \mathbf w &amp;= X^\top\boldsymbol\alpha \end{aligned} \]
+Invertuje se matice \(n \times n\) (vzorky), v primárním tvaru \(d \times d\) (příznaky); výsledné váhy jsou stejné.</p>
+<p class="jinak">hodí se, když je příznaků víc než vzorků, a hlavně proto, že data v něm vystupují jen ve skalárních součinech \(\mathbf x_i^\top\mathbf x_j\) – ty lze nahradit jádrem.</p></div>
+<div class="box definice" id="def-kernel-trick"><div class="box-t">Definice: jádrový trik a kernel ridge</div>
+<p><b>Jádro</b> \(k(\mathbf x_i, \mathbf x_j)\) spočítá skalární součin \(\Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\) v prostoru příznaků Φ bez výpočtu Φ. <b>Kernel ridge</b> nahradí \(XX^\top\) maticí jádra K s prvky \(k(\mathbf x_i, \mathbf x_j)\):
+\[ \begin{aligned} \boldsymbol\alpha &amp;= (K + \lambda I)^{-1}\mathbf y \\ \hat{\mathbf y}_{\text{new}} &amp;= K_{\text{new}}\boldsymbol\alpha \end{aligned} \]</p>
+<p class="jinak">RBF jádro \(\exp(-\gamma\|\mathbf x_i - \mathbf x_j\|^2)\) dělá z predikce součet gaussovských „hrbolů“ kolem trénovacích bodů; velké γ = úzké hrboly (přeučení), λ omezuje velikost α.</p></div>
+
+<div class="box uloha" id="u-dual"><div class="box-t">Úloha 8: primární a duální tvar (cvičení 4)</div>
+<p>One feature, no intercept: \(X = [1, 2]^\top\), \(\mathbf y = [1, 3]^\top\), λ = 1. Compute w in the primal form, α in the dual form, check \(w = X^\top\boldsymbol\alpha\), and predict at x = 3.</p>
+<p class="meta"><b>Výsledek:</b> w = 7/6; α = [−1/6, 2/3]; ŷ(3) = 3,5.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Primár (1 × 1):</p>
+\[ w = \frac{X^\top\mathbf y}{X^\top X + \lambda} = \frac{1 + 6}{1 + 4 + 1} = \frac76 \]
+<p>2. Duál (2 × 2):</p>
+\[ XX^\top + I = \begin{bmatrix} 2 &amp; 2 \\ 2 &amp; 5 \end{bmatrix},\qquad \det = 6 \]
+\[ \boldsymbol\alpha = \frac16\begin{bmatrix} 5 &amp; -2 \\ -2 &amp; 2 \end{bmatrix}\begin{bmatrix} 1 \\ 3 \end{bmatrix} = \begin{bmatrix} -1/6 \\ 2/3 \end{bmatrix} \]
+<p>3. \(X^\top\boldsymbol\alpha = -\tfrac16 + 2\cdot\tfrac23 = \tfrac76\) ✓; predikce \(3\cdot\tfrac76 = 3{,}5\).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-kernel"><div class="box-t">Úloha 9: jedno číslo dvěma cestami</div>
+\[ \begin{aligned} \Phi(\mathbf x) &amp;= (x_1^2,\ x_2^2,\ \sqrt2\,x_1x_2) \\ \mathbf x_i &amp;= (1, 2),\quad \mathbf x_j = (3, 1) \end{aligned} \]
+<p>Compute \(\Phi(\mathbf x_i)^\top\Phi(\mathbf x_j)\) and \((\mathbf x_i^\top\mathbf x_j)^2\).</p>
+<p class="meta"><b>Výsledek:</b> obojí 25.</p>
+<details class="reseni"><summary>Řešení</summary><div>
+\[ \begin{aligned} \Phi(\mathbf x_i)^\top\Phi(\mathbf x_j) &amp;= 1\cdot 9 + 4\cdot 1 + 2\sqrt2\cdot 3\sqrt2 \\ &amp;= 9 + 4 + 12 = 25 \\ (\mathbf x_i^\top\mathbf x_j)^2 &amp;= (3 + 2)^2 = 25 \end{aligned} \]
+<p>Jádro dá stejný výsledek jedním skalárním součinem v původních 2 rozměrech.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-lasso"><div class="box-t">Úloha 10: lasso versus ridge</div>
+<p>Why does lasso set some weights exactly to zero while ridge only shrinks them? What is lasso good for?</p>
+<details class="reseni"><summary>Řešení</summary><div>
+<p>Lasso penalizuje \(\lambda\|\mathbf w\|_1 = \lambda\sum|w_j|\); \(|w|\) má v nule zlom, takže pro dost velké λ leží minimum přesně v nule. Čtverec \(w^2\) je v nule plochý, minimum se k nule jen blíží. Lasso tak vybírá příznaky (embedded metoda); ridge zmenšuje všechny váhy a má uzavřený vzorec, lasso ne.</p>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Časté pasti</div>
+<ul>
+<li><code>np.eye(X.shape[1])</code> v primáru, <code>np.eye(X.shape[0])</code> v duálu (\(XX^\top\) je n × n).</li>
+<li>„Linear in weights“ neznamená přímku.</li>
+<li>Nejnižší trénovací chyba ≠ nejlepší model.</li>
+<li>Stupeň i λ se vybírají na validaci (nebo v CV), ne na testu.</li>
+<li>V cvičení: v úloze 1b se penalizuje jen sklon, v <code>ridge_fit</code> obě váhy – čti zadání.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">Co napsat za plné body</div>
+<p>U kódu: tvary obou sčítanců a opravený řádek. U grafů: stupeň/λ + důkaz z grafu i z tabulky (mezera train/test). U výběru: „validation split / cross-validation, test used once“.</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Polynom = nové sloupce, model dál lineární ve vahách; ridge \((X^\top X + \lambda I)^{-1}X^\top\mathbf y\) s I o velikosti počtu vah; přeučení = malá trénovací a velká testovací chyba; volba podle validace.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Polynomiální regrese přidá do X sloupce mocnin, takže model zůstává lineární ve vahách a řeší se stejným vzorcem. Nízký stupeň podučí, vysoký přeučí – poznáme to podle mezery mezi trénovací a testovací chybou a podle kmitání křivky. Ridge přidá penalizaci \(\lambda\|\mathbf w\|^2\) a v uzavřeném tvaru \(\lambda I\) velikosti počtu vah; větší λ = menší váhy, víc biasu, méně rozptylu. Duální tvar pracuje s maticí n × n skalárních součinů, které jádro nahradí, a lasso díky L1 vynuluje některé váhy. Stupeň a λ se volí podle validace.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li><code>column_stack([t**j for j in range(m+1)])</code> = sloupce \(1, t, \dots, t^m\).</li>
+<li>Lineární ve vahách = vážený součet pevných příznaků.</li>
+<li>Ridge: I má velikost <code>X.shape[1]</code>.</li>
+<li>↑λ: menší váhy, vyšší trénovací chyba, méně přeučení; příliš velké = podučení.</li>
+<li>Stupeň 1 podučí, 15 přeučí; volit podle validace, test jednou.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky k testu</h2>
+<details class="q"><summary>Proč je polynomiální regrese lineární model?</summary><div><p>Predikce je lineární kombinace pevných příznaků \(1, x, x^2, \dots\) s vahami; nelineární je jen vstupní transformace.</p></div></details>
+<details class="q"><summary>Jaký tvar musí mít I v ridge pro X tvaru (n, d)?</summary><div><p>(d, d) – stejný jako \(X^\top X\), tedy <code>np.eye(X.shape[1])</code>.</p></div></details>
+<details class="q"><summary>Co se stane s váhami a chybami, když λ roste?</summary><div><p>Váhy se zmenšují k nule, trénovací chyba roste, testovací nejdřív klesá (méně přeučení), pak roste (podučení).</p></div></details>
+<details class="q"><summary>Jak poznáš přeučení z tabulky chyb?</summary><div><p>Nejmenší trénovací chyba a velká testovací (validační) – velká mezera mezi nimi.</p></div></details>
+<details class="q"><summary>Proč se stupeň nevybírá podle testovací chyby?</summary><div><p>Test by se stal součástí výběru a jeho číslo by bylo optimistické; vybírá se na validaci nebo v CV, test se použije jednou.</p></div></details>
+<details class="q"><summary>Kdy se vyplatí duální tvar?</summary><div><p>Když je příznaků mnohem víc než vzorků, nebo když chceme jádra (nekonečně rozměrné Φ u RBF).</p></div></details>
+
+<nav class="pager"><a class="prev" href="06_linearni_regrese.html"><small>← předchozí</small>Lineární regrese ručně</a><a class="next" href="08_stromy_ansambly.html"><small>další →</small>Stromy, bagging a SVM</a></nav>
+</main>
+</div>
+</body>
+</html>

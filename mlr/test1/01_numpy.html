@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Čtení kódu v NumPy – MLR</title>
+<meta name="description" content="Tvary polí, axis, @ a *, masky, argmax, column_stack, rng.choice.">
+<link rel="alternate" hreflang="en" href="en/01_numpy.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css?v=b9a02598">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js?v=b9a02598"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">MLR – průběžný test 1<small>typové úlohy: výpočty na papíře a čtení kódu</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html#mlr" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <a class="iconbtn langbtn" href="en/01_numpy.html" hreflang="en" lang="en" title="English version">EN</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/01_numpy.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Jak se připravit</span></a></li>
+    <li><a href="01_numpy.html" class="active"><span class="n">1</span><span>Čtení kódu v NumPy</span></a></li>
+    <li><a href="02_knn.html"><span class="n">2</span><span>Vzdálenosti, k-NN a gradientní sestup</span></a></li>
+    <li><a href="03_metriky.html"><span class="n">3</span><span>Matice záměn a metriky</span></a></li>
+    <li><a href="04_predzpracovani.html"><span class="n">4</span><span>Předzpracování a únik dat</span></a></li>
+    <li><a href="05_vyber_priznaku.html"><span class="n">5</span><span>Výběr příznaků a PCA</span></a></li>
+    <li><a href="06_linearni_regrese.html"><span class="n">6</span><span>Lineární regrese ručně</span></a></li>
+    <li><a href="07_polynom_ridge.html"><span class="n">7</span><span>Polynomy, přeučení, ridge a jádra</span></a></li>
+    <li><a href="08_stromy_ansambly.html"><span class="n">8</span><span>Stromy, bagging a SVM</span></a></li>
+    <li><a href="09_agenti.html"><span class="n">9</span><span>AI agenti: skill a subagent</span></a></li>
+    <li><a href="10_ukazky.html"><span class="n">✎</span><span>Ukázky A a B s řešením</span></a></li>
+    <li><a href="11_cvicne_testy.html"><span class="n">✎</span><span>Cvičné testy C–F</span></a></li>
+    <li><a href="12_tahak.html"><span class="n">★</span><span>Tahák</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#tvary">Tvar pole a konvence dat</a></li>
+    <li><a href="#idiomy">Idiomy, které se v testu opakují</a></li>
+    <li><a href="#ulohy">Úlohy</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky k testu</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – průběžný test 1 · Čtení kódu v NumPy – MLR · https://balnerm.github.io/pripravy/mlr/test1/01_numpy.html</p>
+<p class="kicker">Typ úloh 1</p>
+<h1>Čtení kódu v NumPy</h1>
+<p class="lead">V testu se kód <b>čte, nespouští</b>: „Read code without running it. np is NumPy; indices start at zero.“ Skoro každá úloha (polynomiální příznaky, ridge, hlasování stromů, dopředný výběr) stojí na několika řádcích NumPy. Kdo umí z hlavy říct <b>tvar výsledku</b> a <b>co dělá osa</b>, má polovinu bodů jistou. Tahle kapitola je slovníček idiomů, které se objevují v ukázkách a ve cvičeních 1–6, a postup, jak kód krokovat na papíře.</p>
+
+<h2 id="tvary">Tvar pole a konvence dat</h2>
+<div class="box definice" id="def-shape"><div class="box-t">Definice: tvar pole (shape)</div>
+<p><b>Tvar</b> (<code>X.shape</code>) je n-tice s počtem prvků v každé ose pole. Datová matice má v kurzu vždy tvar <code>(n_samples, n_features)</code>: <b>řádek = vzorek</b>, <b>sloupec = příznak</b>. Vektor (1D pole) má tvar <code>(n,)</code> – není to řádek ani sloupec.</p>
+<p class="jinak">první číslo říká, kolik je měření (listů, pacientů), druhé, kolik veličin u každého měříme. Když zadání řekne „X has shape (3, 2)“, jsou to 3 vzorky a 2 sloupce.</p></div>
+<div class="box definice" id="def-axis"><div class="box-t">Definice: osa (axis)</div>
+<p><b>Parametr <code>axis</code></b> určuje, podél které osy funkce (<code>sum</code>, <code>mean</code>, <code>argmax</code> …) počítá; tato osa ve výsledku <b>zmizí</b>. U matice <code>axis=0</code> prochází řádky (výsledek pro každý sloupec), <code>axis=1</code> prochází sloupce (výsledek pro každý řádek).</p>
+<p class="jinak"><code>axis=1</code> = „spočítej to v každém řádku zvlášť“ – např. průměr hlasů všech stromů pro jeden vzorek. <code>axis=0</code> = „v každém sloupci zvlášť“ – např. průměr jednoho příznaku přes všechny vzorky (to dělá standardizace).</p></div>
+
+<div class="box intuice"><div class="box-t">Jak si zapamatovat axis</div>
+<p>Matice <code>(4, 3)</code>: <code>mean(axis=1)</code> zruší osu 1 (sloupce) → zbude tvar <code>(4,)</code>, jedno číslo na řádek. <code>mean(axis=0)</code> zruší osu 0 (řádky) → tvar <code>(3,)</code>, jedno číslo na sloupec. Stačí se podívat, <b>které číslo z tvaru zmizí</b>.</p></div>
+
+<h2 id="idiomy">Idiomy, které se v testu opakují</h2>
+<div class="tablewrap"><table class="compact">
+<tr><th>Kód</th><th>Co dělá</th><th>Příklad / výsledek</th></tr>
+<tr><td><code>A * B</code></td><td>násobení <b>po prvcích</b> (stejné tvary)</td><td><code>[1,2]*[3,4]</code> → <code>[3,8]</code></td></tr>
+<tr><td><code>A @ B</code></td><td><b>maticový součin</b>; vnitřní rozměry se musí shodovat</td><td><code>(3,2) @ (2,)</code> → <code>(3,)</code></td></tr>
+<tr><td><code>X.T</code></td><td>transpozice: <code>(n, d)</code> → <code>(d, n)</code></td><td><code>X.T @ X</code> má tvar <code>(d, d)</code></td></tr>
+<tr><td><code>t ** j</code></td><td>umocnění po prvcích</td><td><code>t**0</code> = samé jedničky</td></tr>
+<tr><td><code>range(3)</code></td><td>čísla 0, 1, 2 (konec se nepočítá)</td><td><code>range(1, 3)</code> → 1, 2</td></tr>
+<tr><td><code>np.column_stack([a, b])</code></td><td>poskládá 1D pole jako <b>sloupce</b> matice</td><td>3 vektory délky 3 → <code>(3, 3)</code></td></tr>
+<tr><td><code>np.eye(k)</code></td><td>jednotková matice <code>k × k</code></td><td><code>np.eye(X.shape[1])</code> = počet sloupců</td></tr>
+<tr><td><code>X.shape[0]</code>, <code>X.shape[1]</code></td><td>počet řádků (vzorků), počet sloupců (příznaků)</td><td><code>(3, 2)</code> → 3, 2</td></tr>
+<tr><td><code>X[:, 1]</code>, <code>X[1]</code></td><td>sloupec 1 (druhý!), řádek 1 (druhý!)</td><td>indexy od nuly</td></tr>
+<tr><td><code>X[mask]</code></td><td>výběr prvků, kde je maska <code>True</code></td><td><code>a[a &gt; 2]</code></td></tr>
+<tr><td><code>a &gt; 0.5</code></td><td>porovnání po prvcích → pole <code>True/False</code></td><td><code>.astype(int)</code> → 1/0</td></tr>
+<tr><td><code>np.argmax(s)</code></td><td><b>pozice</b> (index) největšího prvku; při shodě první</td><td><code>[.8,.9,.85]</code> → 1</td></tr>
+<tr><td><code>np.argsort(d)</code></td><td>indexy seřazené od nejmenší hodnoty</td><td><code>[3,1,2]</code> → <code>[1,2,0]</code></td></tr>
+<tr><td><code>np.unique(v, return_counts=True)</code></td><td>různé hodnoty (seřazené) a jejich počty</td><td>hlasování k-NN</td></tr>
+<tr><td><code>np.mean(y_true == y_pred)</code></td><td>podíl shod = accuracy</td><td>True = 1, False = 0</td></tr>
+<tr><td><code>rng.choice(n, size=n, replace=True)</code></td><td><code>n</code> indexů z 0…n−1 <b>s vracením</b> (bootstrap)</td><td>opakování možné</td></tr>
+<tr><td><code>lst.pop(i)</code></td><td>odebere ze seznamu prvek na <b>pozici</b> i a vrátí ho</td><td><code>[1,3,4].pop(1)</code> → 3</td></tr>
+<tr><td><code>lst.remove(x)</code></td><td>odebere první prvek s <b>hodnotou</b> x</td><td><code>[1,3,4].remove(3)</code></td></tr>
+</table></div>
+
+<div class="box postup" id="postup-trasovani"><div class="box-t">Jak poznat a jak postupovat: trasování kódu na papíře</div>
+<p><b>Poznáš to:</b> <span class="kw">Write the matrix X</span>, <span class="kw">give both resulting lists</span>, <span class="kw">explain axis=1</span>, <span class="kw">explain the dimensional error</span>.</p>
+<ol>
+<li>U každé proměnné si poznamenej <b>tvar</b> (<code>(3,)</code>, <code>(3, 2)</code>…). Tvar řekne víc než hodnoty.</li>
+<li>Řádek po řádku napiš skutečné hodnoty – u malých polí celé, u velkých jen tvar.</li>
+<li>U <code>@</code> zkontroluj vnitřní rozměry: <code>(a, b) @ (b, c)</code> → <code>(a, c)</code>. Nesedí-li, je to „dimensional error“.</li>
+<li>U <code>axis</code> řekni, která osa zmizí, a co tedy výsledek znamená („jedno číslo na vzorek“).</li>
+<li>Pozor na index od nuly: „pozice 1“ je <b>druhý</b> prvek.</li>
+</ol></div>
+
+<h2 id="ulohy">Úlohy</h2>
+<div class="box uloha" id="u-axis"><div class="box-t">Úloha 1: axis a maska</div>
+<pre class="code"><code>a = np.array([[1, 2, 3],
+              [4, 5, 6]])
+print(a.shape)
+print(a.sum(axis=0))
+print(a.mean(axis=1))
+print(a[:, 1], a[1])
+print(a[a &gt; 2])</code></pre>
+<p>Write every printed value.</p>
+<p class="meta"><b>V zadání:</b> tvar 2 × 3, dvě různé osy, maska. <b>Výsledek:</b> <code>(2, 3)</code>; <code>[5 7 9]</code>; <code>[2. 5.]</code>; <code>[2 5]</code> a <code>[4 5 6]</code>; <code>[3 4 5 6]</code>.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<ol>
+<li><code>a.shape</code> = <code>(2, 3)</code> – dva řádky, tři sloupce.</li>
+<li><code>sum(axis=0)</code> zruší řádky → součet každého sloupce: 1+4, 2+5, 3+6 = <code>[5, 7, 9]</code>.</li>
+<li><code>mean(axis=1)</code> zruší sloupce → průměr každého řádku: (1+2+3)/3 = 2, (4+5+6)/3 = 5 → <code>[2., 5.]</code> (průměr je vždy desetinné číslo).</li>
+<li><code>a[:, 1]</code> = všechny řádky, sloupec s indexem 1 (druhý) → <code>[2, 5]</code>; <code>a[1]</code> = druhý řádek <code>[4, 5, 6]</code>.</li>
+<li><code>a &gt; 2</code> dá masku <code>[[F, F, T], [T, T, T]]</code>; <code>a[mask]</code> vybere hodnoty po řádcích: <code>[3, 4, 5, 6]</code>.</li>
+</ol>
+</div></details></div>
+
+<div class="box uloha" id="u-matmul"><div class="box-t">Úloha 2: <code>*</code> versus <code>@</code></div>
+<pre class="code"><code>A = np.array([[1, 2], [3, 4]])
+B = np.array([[0, 1], [1, 0]])
+P = A * B
+Q = A @ B</code></pre>
+<p>Write <code>P</code> and <code>Q</code>.</p>
+<p class="meta"><b>Výsledek:</b> \(P = \begin{bmatrix} 0 &amp; 2 \\ 3 &amp; 0 \end{bmatrix}\), \(Q = \begin{bmatrix} 2 &amp; 1 \\ 4 &amp; 3 \end{bmatrix}\) (Q má prohozené sloupce A).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Po prvcích: násobí se čísla na stejném místě.</p>
+\[ P = \begin{bmatrix} 1\cdot 0 &amp; 2\cdot 1 \\ 3\cdot 1 &amp; 4\cdot 0 \end{bmatrix} = \begin{bmatrix} 0 &amp; 2 \\ 3 &amp; 0 \end{bmatrix} \]
+<p>2. Maticově: prvek (i, j) = řádek i matice A krát sloupec j matice B.</p>
+\[ Q = \begin{bmatrix} 1\cdot 0 + 2\cdot 1 &amp; 1\cdot 1 + 2\cdot 0 \\ 3\cdot 0 + 4\cdot 1 &amp; 3\cdot 1 + 4\cdot 0 \end{bmatrix} = \begin{bmatrix} 2 &amp; 1 \\ 4 &amp; 3 \end{bmatrix} \]
+</div></details></div>
+
+<div class="box uloha" id="u-shapes"><div class="box-t">Úloha 3: tvary v lineární regresi</div>
+<p><code>X</code> has shape <code>(100, 3)</code> (rows are samples), <code>y</code> has shape <code>(100,)</code>, <code>w</code> has shape <code>(3,)</code>. Give the shapes of <code>X.T</code>, <code>X.T @ X</code>, <code>X.T @ y</code>, <code>X @ w</code>, <code>X @ X.T</code> and <code>np.eye(X.shape[1])</code>.</p>
+<p class="meta"><b>Výsledek:</b> <code>(3, 100)</code>, <code>(3, 3)</code>, <code>(3,)</code>, <code>(100,)</code>, <code>(100, 100)</code>, <code>(3, 3)</code>.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<ul>
+<li><code>X.T</code>: rozměry se prohodí → <code>(3, 100)</code>.</li>
+<li><code>X.T @ X</code> = <code>(3, 100) @ (100, 3)</code> → <code>(3, 3)</code>: velikost dává <b>počet příznaků</b>, ne počet vzorků.</li>
+<li><code>X.T @ y</code> = <code>(3, 100) @ (100,)</code> → <code>(3,)</code>.</li>
+<li><code>X @ w</code> = <code>(100, 3) @ (3,)</code> → <code>(100,)</code>: jedna predikce na vzorek.</li>
+<li><code>X @ X.T</code> = <code>(100, 3) @ (3, 100)</code> → <code>(100, 100)</code> – to je matice z duálního tvaru (jeden řádek na vzorek).</li>
+<li><code>np.eye(X.shape[1])</code> = <code>np.eye(3)</code> → <code>(3, 3)</code>, sedí k <code>X.T @ X</code>.</li>
+</ul>
+</div></details></div>
+
+<div class="box uloha" id="u-argmax"><div class="box-t">Úloha 4: argmax, argsort, unique</div>
+<pre class="code"><code>s = np.array([0.3, 0.9, 0.1, 0.9])
+print(np.argmax(s), np.argsort(s))
+labels = np.array(["b", "a", "b", "c", "b"])
+values, counts = np.unique(labels, return_counts=True)
+print(values, counts, values[np.argmax(counts)])</code></pre>
+<p>Write the printed values.</p>
+<p class="meta"><b>Past:</b> argmax vrací <b>pozici</b>, při shodě tu první. <b>Výsledek:</b> <code>1</code>, <code>[2 0 1 3]</code>; <code>['a' 'b' 'c']</code>, <code>[1 3 1]</code>, <code>'b'</code>.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<ol>
+<li>Maximum 0,9 je na pozicích 1 a 3; <code>argmax</code> vrátí první → <code>1</code>.</li>
+<li><code>argsort</code> seřadí indexy podle hodnot vzestupně: 0,1 (index 2), 0,3 (index 0), 0,9 (index 1), 0,9 (index 3) → <code>[2, 0, 1, 3]</code>.</li>
+<li><code>unique</code> vrátí seřazené různé hodnoty <code>['a', 'b', 'c']</code> a počty <code>[1, 3, 1]</code>.</li>
+<li><code>argmax(counts)</code> = 1 → <code>values[1]</code> = <code>'b'</code>. Takhle se ve cvičení 2 hlasuje v k-NN.</li>
+</ol>
+</div></details></div>
+
+<div class="box uloha" id="u-lists"><div class="box-t">Úloha 5: seznamy, pop a remove</div>
+<pre class="code"><code>remaining = [1, 3, 4]
+selected = [0]
+f = remaining.pop(1)
+selected.append(f)
+print(f, selected, remaining)</code></pre>
+<p>Write the printed values. Then rewrite the update using <code>remove</code> instead of <code>pop</code>.</p>
+<p class="meta"><b>Výsledek:</b> <code>3 [0, 3] [1, 4]</code>. Varianta: <code>f = remaining[1]; selected.append(f); remaining.remove(f)</code>.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p><code>pop(1)</code> odebere prvek na <b>pozici</b> 1 (hodnotu 3) a vrátí ho. <code>remove(3)</code> by odebral prvek s <b>hodnotou</b> 3 – je potřeba ji nejdřív zjistit indexem <code>remaining[1]</code>. Chyba typu <code>remaining.remove(1)</code> by odebrala hodnotu 1, tedy úplně jiný příznak. Přesně tohle testuje úloha B4 (kapitola 5).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-bool"><div class="box-t">Úloha 6: porovnání, astype a accuracy</div>
+<pre class="code"><code>p = np.array([0.2, 0.5, 0.7, 0.9])
+y_hat = (p &gt; 0.5).astype(int)
+y_true = np.array([0, 1, 1, 1])
+acc = np.mean(y_hat == y_true)</code></pre>
+<p>Write <code>y_hat</code> and <code>acc</code>.</p>
+<p class="meta"><b>Past:</b> 0,5 &gt; 0,5 je <code>False</code>. <b>Výsledek:</b> <code>y_hat = [0, 0, 1, 1]</code>, <code>acc = 0.75</code>.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<ol>
+<li><code>p &gt; 0.5</code> → <code>[False, False, True, True]</code> (ostrá nerovnost, 0,5 neprojde).</li>
+<li><code>astype(int)</code> → <code>[0, 0, 1, 1]</code>.</li>
+<li>Shody s <code>[0, 1, 1, 1]</code>: <code>[T, F, T, T]</code>; průměr = 3/4 = 0,75.</li>
+</ol>
+</div></details></div>
+
+<div class="box uloha" id="u-choice"><div class="box-t">Úloha 7: <code>rng.choice</code> s vracením a bez</div>
+<pre class="code"><code>rng = np.random.default_rng(0)
+idx = rng.choice(6, size=6, replace=True)   # returned [2, 0, 2, 5, 1, 2]
+X_b, y_b = X[idx], y[idx]</code></pre>
+<p>a) Which rows of <code>X</code> are in the sample, and how many times? b) Which rows are left out? c) What would change with <code>replace=False</code>?</p>
+<p class="meta"><b>Výsledek:</b> řádek 2 třikrát, 0, 1, 5 jednou; vynechané 3 a 4; bez vracení by to byla jen permutace všech šesti řádků.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<ol>
+<li><code>np.unique(idx)</code> = <code>[0, 1, 2, 5]</code> – čtyři různé řádky, řádek 2 je tam třikrát.</li>
+<li>Vynechané (out-of-bag) jsou řádky 3 a 4.</li>
+<li>S <code>replace=False</code> a <code>size=6</code> se každý index vybere právě jednou – vznikne jen zamíchané pořadí, žádná rozmanitost pro bagging.</li>
+<li>Stejné <code>idx</code> pro <code>X</code> i <code>y</code> drží páry příznak–label pohromadě.</li>
+</ol>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Časté pasti</div>
+<ul>
+<li><b>Index od nuly:</b> „pozice 1“ je druhý prvek, <code>X[:, 1]</code> je druhý sloupec.</li>
+<li><b><code>*</code> není maticový součin.</b> Pro součin matic je <code>@</code>.</li>
+<li><b><code>shape[0]</code> vs. <code>shape[1]</code>:</b> řádky (vzorky) vs. sloupce (příznaky). Ridge potřebuje <code>np.eye(X.shape[1])</code>.</li>
+<li><b><code>argmax</code> vrací pozici, ne hodnotu</b> – a pozici v tom seznamu, na který byl zavolán.</li>
+<li><b>Ostrá nerovnost:</b> <code>&gt; 0.5</code> pro přesně 0,5 dává <code>False</code> (remíza při sudém počtu hlasujících).</li>
+<li><b>Průměr je float:</b> <code>mean</code> vrací <code>2.</code>, ne <code>2</code>.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">Co napsat za plné body</div>
+<p>Vždy uveď <b>tvar</b> a <b>význam</b>: „<code>axis=1</code> averages across the columns (trees) of each row, so the result has one value per sample, shape (4,).“ Matici napiš celou, ne jen pár prvků; u seznamů obě výsledné hodnoty.</p>
+<p class="answer-en">axis=1 means the mean is taken along each row, over the columns; the output has one number per row.</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Řádek = vzorek, sloupec = příznak; <code>axis</code> je osa, která zmizí; <code>@</code> násobí matice, <code>*</code> prvky; <code>argmax</code> dává pozici.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Datová matice má tvar <code>(n_samples, n_features)</code>. Funkce s <code>axis</code> počítají podél zvolené osy a ta z výsledku zmizí: <code>axis=0</code> dá hodnotu pro každý sloupec, <code>axis=1</code> pro každý řádek. Maticový součin <code>@</code> vyžaduje shodné vnitřní rozměry, <code>*</code> násobí po prvcích. <code>argmax</code> a <code>argsort</code> vracejí indexy, <code>np.unique(..., return_counts=True)</code> slouží k hlasování, <code>rng.choice(..., replace=True)</code> k bootstrapu. Při trasování kódu piš ke každé proměnné tvar a hodnoty.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Napiš si tvar každé proměnné dřív, než počítáš hodnoty.</li>
+<li><code>axis</code> = osa, která ve výsledku zmizí.</li>
+<li><code>(a, b) @ (b, c)</code> → <code>(a, c)</code>; <code>X.T @ X</code> má velikost počtu příznaků.</li>
+<li><code>argmax</code> = pozice (první při shodě), ne hodnota ani původní číslo příznaku.</li>
+<li>Indexy od nuly, <code>range(3)</code> = 0, 1, 2.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky k testu</h2>
+<details class="q"><summary>Matice hlasů V má tvar (4, 3) – řádky vzorky, sloupce stromy. Jaký tvar má <code>V.mean(axis=1)</code> a co znamená?</summary><div>
+<p>Tvar <code>(4,)</code>: pro každý vzorek průměr hlasů tří stromů, tedy podíl stromů, které hlasují pro třídu 1.</p></div></details>
+<details class="q"><summary>Proč je <code>X.T @ X</code> malá matice i pro milion vzorků?</summary><div>
+<p>Má tvar <code>(d, d)</code>, kde d je počet sloupců (příznaků). Počet vzorků se „sečte“ ve vnitřním rozměru.</p></div></details>
+<details class="q"><summary>Co vrátí <code>np.argmax([0.7, 0.9, 0.9])</code> a proč?</summary><div>
+<p>1 – pozici prvního maxima. Při shodě vyhrává první výskyt.</p></div></details>
+<details class="q"><summary>Jaký je rozdíl mezi <code>lst.pop(1)</code> a <code>lst.remove(1)</code>?</summary><div>
+<p><code>pop(1)</code> odebere prvek na pozici 1 a vrátí ho; <code>remove(1)</code> odebere první prvek s hodnotou 1 a nic nevrací.</p></div></details>
+<details class="q"><summary>Co dělá <code>np.column_stack([np.ones(3), x])</code> pro <code>x = [1, 2, 3]</code>?</summary><div>
+<p>Vytvoří matici <code>(3, 2)</code> se sloupcem jedniček a sloupcem x: řádky <code>[1, 1], [1, 2], [1, 3]</code> – matici plánu pro přímku s interceptem.</p></div></details>
+<details class="q"><summary>Kdy je <code>(a &gt; 0.5).astype(int)</code> rovno 1 a kdy 0?</summary><div>
+<p>1 jen pro hodnoty ostře větší než 0,5; přesně 0,5 dává 0.</p></div></details>
+
+<nav class="pager"><a class="prev" href="index.html"><small>← předchozí</small>Jak se připravit</a><a class="next" href="02_knn.html"><small>další →</small>Vzdálenosti, k-NN a gradientní sestup</a></nav>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<h1>Confusion matrix and metrics</h1>
+<p class="lead">Task B3 gives a confusion matrix and asks for the number of errors, accuracy, recall with <b>denominators</b> and an explanation of recall in words in the context (“faulty items”). Lab 2 did the same for maples (TP 15, FN 5, FP 10, TN 70) and from label vectors in NumPy. Points are lost mainly by swapping rows and columns or by missing the meaning in words.</p>
+
+<h2 id="matice">Confusion matrix</h2>
+<div class="box definice" id="def-cm"><div class="box-t">Definition: confusion matrix</div>
+<p>A <b>confusion matrix</b> is a table of counts where <b>rows are the actual classes</b> and <b>columns the predicted classes</b> (as in the lecture and in <code>sklearn.metrics.confusion_matrix</code>). For a binary task with positive class 1 it contains the counts TN, FP (actually 0) and FN, TP (actually 1).</p>
+<p class="jinak">correct answers are on the diagonal, errors off it. FN = “we missed a positive”, FP = “false alarm”. Always read first what the rows and columns are – the task may flip it.</p></div>
+<div class="tablewrap"><table class="compact">
+<tr><th></th><th>predicted 0</th><th>predicted 1</th></tr>
+<tr><th>actual 0</th><td>TN</td><td>FP</td></tr>
+<tr><th>actual 1</th><td>FN</td><td>TP</td></tr>
+</table></div>
+
+<div class="box definice" id="def-recall"><div class="box-t">Definition: recall (sensitivity)</div>
+<p><b>Recall</b> of the positive class is the fraction of truly positive samples that the model correctly labels as positive:
+\[ \text{recall} = \frac{TP}{TP + FN} \]</p>
+<p class="jinak">“how many of the truly faulty items did we find”. The denominator is the <b>row</b> of actual positives. High recall = few missed.</p></div>
+<div class="box definice" id="def-precision"><div class="box-t">Definition: precision</div>
+<p><b>Precision</b> is the fraction of samples labelled positive that really are positive:
+\[ \text{precision} = \frac{TP}{TP + FP} \]</p>
+<p class="jinak">“when the alarm rings, how often is it true”. The denominator is the <b>column</b> of predicted positives.</p></div>
+<div class="box definice" id="def-specificity"><div class="box-t">Definition: specificity</div>
+<p><b>Specificity</b> is the recall of the negative class, the fraction of truly negative samples labelled negative: \(TN/(TN + FP)\).</p>
+<p class="jinak">how many good items we correctly let through.</p></div>
+
+<div class="box vzorec"><div class="box-t">Metrics from the confusion matrix</div>
+\[ \begin{aligned} \text{accuracy} &amp;= \frac{TP + TN}{TP + TN + FP + FN} \\ F_1 &amp;= \frac{2\,TP}{2\,TP + FP + FN} \\ \text{balanced accuracy} &amp;= \frac{\text{recall} + \text{specificity}}{2} \end{aligned} \]
+<table class="vars">
+<tr><td>TP</td><td>actually 1, predicted 1 (correct alarm)</td></tr>
+<tr><td>TN</td><td>actually 0, predicted 0</td></tr>
+<tr><td>FP</td><td>actually 0, predicted 1 (false alarm)</td></tr>
+<tr><td>FN</td><td>actually 1, predicted 0 (missed)</td></tr>
+</table></div>
+
+<div class="box postup" id="postup-cm"><div class="box-t">How to recognise it and what to do</div>
+<p><b>Recognise it by:</b> <span class="kw">rows are actual labels</span>, <span class="kw">treat class 1 as positive</span>, <span class="kw">how many … were missed</span>, <span class="kw">incorrectly flagged</span>, <span class="kw">show the denominators</span>.</p>
+<ol>
+<li>Read the orientation (rows = actual?) and which class is positive.</li>
+<li>Write TP, TN, FP, FN with their meaning in context (“missed faulty items = FN”).</li>
+<li>Write the metric as a fraction with its denominator, then the value.</li>
+<li>In words: “Out of all actually faulty items, the model detected …”.</li>
+</ol></div>
+
+<h2 id="ulohy">Tasks</h2>
+<div class="box uloha" id="u-b3"><div class="box-t">Sample B, task 3: Read a confusion matrix <span class="en">1 point</span></div>
+<p>Class <b>1</b> means a faulty item; class <b>0</b> means a good item. Rows are actual labels and columns are predicted labels:</p>
+<div class="tablewrap"><table class="compact">
+<tr><th></th><th>Predicted 0</th><th>Predicted 1</th></tr>
+<tr><th>Actual 0</th><td>6</td><td>2</td></tr>
+<tr><th>Actual 1</th><td>1</td><td>3</td></tr>
+</table></div>
+<p>For recall, treat class 1 as positive (TP: true positives, FN: false negatives): \(\text{recall}_1 = \frac{TP}{TP + FN}\).</p>
+<p>a) How many faulty items were missed? How many good items were incorrectly flagged as faulty? (0.25)<br>
+b) Calculate accuracy and recall for class 1. Show the denominators. (0.5)<br>
+c) Explain recall for class 1 in words in this application. (0.25)</p>
+<p class="meta"><b>Result:</b> missed = FN = 1, flagged = FP = 2; accuracy = 9/12 = 0.75; recall = 3/4 = 0.75.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>1. Reading the matrix: TN = 6, FP = 2, FN = 1, TP = 3, 12 items in total.</p>
+<p>a) Missed faulty items = actually 1, predicted 0 = <b>FN = 1</b>. Good items flagged as faulty = actually 0, predicted 1 = <b>FP = 2</b>.</p>
+<p>b) Accuracy and recall:</p>
+\[ \begin{aligned} \text{accuracy} &amp;= \frac{TP + TN}{12} = \frac{3 + 6}{12} = \frac{9}{12} = 0.75 \\ \text{recall}_1 &amp;= \frac{TP}{TP + FN} = \frac{3}{3 + 1} = \frac34 = 0.75 \end{aligned} \]
+<p>c) Recall for class 1 is the fraction of truly faulty items that the model flags as faulty: 3 of the 4 faulty items were detected, 1 was missed.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-maple"><div class="box-t">Task 2: all metrics (lab 2)</div>
+<p>100 leaves, positive class = maple (20 real maples). TP = 15, FN = 5, FP = 10, TN = 70. Compute accuracy, sensitivity, specificity, precision, F1 and balanced accuracy. Then compute accuracy and balanced accuracy of the constant classifiers “always maple” and “never maple”.</p>
+<p class="meta"><b>Result:</b> 0.85; 0.75; 0.875; 0.6; 2/3; 0.8125. “Always maple”: acc 0.2, bal. 0.5; “never maple”: acc 0.8, bal. 0.5.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+\[ \begin{aligned} \text{accuracy} &amp;= \frac{15 + 70}{100} = 0.85 \\ \text{sensitivity} &amp;= \frac{15}{15 + 5} = 0.75 \\ \text{specificity} &amp;= \frac{70}{70 + 10} = 0.875 \\ \text{precision} &amp;= \frac{15}{15 + 10} = 0.6 \\ F_1 &amp;= \frac{2\cdot 15}{2\cdot 15 + 10 + 5} = \frac{30}{45} = \frac23 \\ \text{bal. acc.} &amp;= \frac{0.75 + 0.875}{2} = 0.8125 \end{aligned} \]
+<p>“Always maple”: TP = 20, FP = 80 → accuracy 0.2, sensitivity 1, specificity 0 → balanced 0.5. “Never maple”: TN = 80, FN = 20 → accuracy 0.8 (looks good!), sensitivity 0, specificity 1 → balanced 0.5. Balanced accuracy reveals that a constant model knows nothing.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-vectors"><div class="box-t">Task 3: TP, FN, FP, TN from vectors in NumPy</div>
+<pre class="code"><code>labels = np.array([0, 1, 1, 1, 0, 0, 1, 1, 1, 1])
+preds  = np.array([0, 0, 1, 1, 0, 1, 1, 1, 1, 0])
+TP = np.sum((labels == 1) &amp; (preds == 1))
+FN = np.sum((labels == 1) &amp; (preds == 0))
+FP = np.sum((labels == 0) &amp; (preds == 1))
+TN = np.sum((labels == 0) &amp; (preds == 0))
+sensitivity = TP / (TP + FN)</code></pre>
+<p>Give the four counts and the sensitivity. What does <code>&amp;</code> do here?</p>
+<p class="meta"><b>Result:</b> TP = 5, FN = 2, FP = 1, TN = 2; sensitivity = 5/7.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>Go through the pairs (label, pred): (0,0) TN, (1,0) FN, (1,1) TP, (1,1) TP, (0,0) TN, (0,1) FP, (1,1) TP, (1,1) TP, (1,1) TP, (1,0) FN. Totals: TP 5, FN 2, FP 1, TN 2 (10 in all). <code>&amp;</code> is an element-wise logical AND of two boolean arrays; <code>np.sum</code> counts the <code>True</code> values. Sensitivity = 5/(5 + 2) = 5/7 ≈ 0.71.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-orient"><div class="box-t">Task 4: flipped orientation</div>
+<p>Disease screening, class 1 = ill. <b>Rows are predicted labels and columns are actual labels:</b></p>
+<div class="tablewrap"><table class="compact">
+<tr><th></th><th>Actual 0</th><th>Actual 1</th></tr>
+<tr><th>Predicted 0</th><td>40</td><td>5</td></tr>
+<tr><th>Predicted 1</th><td>10</td><td>45</td></tr>
+</table></div>
+<p>Compute recall and precision for class 1.</p>
+<p class="meta"><b>Trap:</b> here the rows are predictions. <b>Result:</b> TP = 45, FN = 5, FP = 10, TN = 40; recall = 45/50 = 0.9; precision = 45/55 = 9/11.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>FN = predicted 0, actually 1 = 5 (row Predicted 0, column Actual 1). FP = predicted 1, actually 0 = 10.</p>
+\[ \begin{aligned} \text{recall} &amp;= \frac{45}{45 + 5} = \frac{45}{50} = 0.9 \\ \text{precision} &amp;= \frac{45}{45 + 10} = \frac{9}{11} \approx 0.82 \end{aligned} \]
+</div></details></div>
+
+<div class="box uloha" id="u-reg"><div class="box-t">Task 5: MSE and MAE</div>
+<p>True values \(y = [2, 4, 6]\), predictions \(\hat y = [3, 4, 4]\). Compute MSE and MAE. Which is more sensitive to one large error?</p>
+<p class="meta"><b>Result:</b> MSE = 5/3, MAE = 1; MSE (squaring enlarges a big error).</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>Errors \(\hat y - y = [1, 0, -2]\).</p>
+\[ \begin{aligned} \text{MSE} &amp;= \frac{1^2 + 0^2 + (-2)^2}{3} = \frac53 \\ \text{MAE} &amp;= \frac{1 + 0 + 2}{3} = 1 \end{aligned} \]
+<p>MSE is in squared units and one large error (2 → 4) weighs more.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-imb"><div class="box-t">Task 6: imbalanced data</div>
+<p>A dataset contains 95 % maples. A 3-NN model reports test accuracy 0.95. What would you check before believing it?</p>
+<p class="meta"><b>Result:</b> the “always majority class” baseline also has 0.95 → compare with it; recall of each class, balanced accuracy, confusion matrix.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>The constant model “always maple” (<code>DummyClassifier(strategy="most_frequent")</code>) has accuracy 0.95 and does not find a single non-maple. Compare with this baseline and report recall of both classes, balanced accuracy or macro F1, and the confusion matrix.</p>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Common traps</div>
+<ul>
+<li><b>Orientation:</b> in the course rows = actual; when the task says the opposite, rewrite TP/FP/FN/TN before computing.</li>
+<li><b>Recall vs. precision:</b> recall divides by the row of actual positives (TP + FN), precision by the column of predicted positives (TP + FP).</li>
+<li><b>Explain in context:</b> “faulty items”, not “positives”.</li>
+<li><b>Accuracy on imbalanced data</b> lies – compare with the majority baseline.</li>
+<li>In <code>sklearn</code> binary metrics depend on <code>pos_label</code>; <code>recall_score(..., pos_label=0)</code> = specificity.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">What to write for full points</div>
+<p>List the four numbers with their meaning, the formula, the substituted fraction and the result. In the verbal part use the domain of the task.</p>
+<p class="answer-en">FN = 1 faulty item was missed; FP = 2 good items were wrongly flagged. Accuracy = (3 + 6)/12 = 0.75. Recall₁ = 3/(3 + 1) = 0.75.</p></div>
+
+<div class="box kostka"><div class="box-t">In a nutshell</div><p>Row = actual, column = predicted; recall = TP/(TP + FN) “how many positives we found”, precision = TP/(TP + FP) “how many alarms are real”.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Summary</h2>
+<p>A confusion matrix summarises binary classification in four numbers TP, TN, FP, FN. Accuracy is the fraction correct, recall (sensitivity) the fraction of positives found, specificity the fraction of negatives correctly recognised, precision the fraction of true alarms, and F1 their harmonic mean. On imbalanced data accuracy is misleading; compare with the majority baseline and report balanced accuracy. For regression we use MSE (squares, sensitive to large errors) and MAE (absolute values).</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>First the matrix orientation and the positive class.</li>
+<li>FN = missed positives, FP = false alarm.</li>
+<li>Recall divides by actual positives, precision by predicted positives.</li>
+<li>Always show the denominator.</li>
+<li>Accuracy 0.95 means nothing if the majority class has 95 %.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Test questions</h2>
+<details class="q"><summary>What does FN mean in the application “class 1 = faulty item”?</summary><div><p>A faulty item the model labelled as good – a missed defect.</p></div></details>
+<details class="q"><summary>What is the difference between recall and precision?</summary><div><p>Recall: of the items that are actually positive, how many we flagged (TP/(TP + FN)). Precision: of the items we flagged, how many are actually positive (TP/(TP + FP)).</p></div></details>
+<details class="q"><summary>When do you prefer high recall?</summary><div><p>When a miss is expensive: faulty parts, a disease in screening. Better more false alarms than a missed defect.</p></div></details>
+<details class="q"><summary>Why is the balanced accuracy of a constant classifier 0.5?</summary><div><p>One class has recall 1, the other 0; the mean is 0.5 whatever the class ratio.</p></div></details>
+<details class="q"><summary>How do you count TP from vectors <code>y</code> and <code>p</code> in NumPy?</summary><div><p><code>np.sum((y == 1) &amp; (p == 1))</code> – AND of two masks and the number of True values.</p></div></details>
+<details class="q"><summary>Why does MSE have different units than MAE?</summary><div><p>MSE averages squared errors (cm²), MAE absolute values (cm).</p></div></details>

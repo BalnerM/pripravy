@@ -29,6 +29,13 @@ druhém jazyce. Zdroje jsou v `_build/obsah_en/` (stejné názvy souborů a stej
 to kontroluje), grafy s anglickými popisky v `figures/en/` (`make_figures.py --lang en`), texty interaktivních
 ukázek v `assets/app.js` (funkce `i18n`). Při úpravě české kapitoly je potřeba upravit i anglickou.
 
+## Průběžný test 1 (`test1/`)
+Samostatná skripta k Practical test 1 (computing) – `EDITIONS` v `_build/build.py`, zdroje v `_build/obsah_test1/`
+a `_build/obsah_test1_en/` (stejná id, výstup `test1/` a `test1/en/`, sdílí `assets/` a `figures/`). Kapitoly jsou
+podle typů úloh z ukázkových testů A a B (zadání A a B jsou převzatá doslova – s výslovným souhlasem uživatele)
+a z papírových úloh cvičení 1–6; grafy `t1_*` v `make_figures.py`, `t1_sample_a4.png` je výřez grafu z ukázky A.
+Čísla ve všech úlohách a cvičných testech C–F jsou přepočítaná skriptem.
+
 ## Jak skripta upravit
 HTML stránky v této složce se **generují** – edituj zdroje v `_build/obsah/*.html` a seznam stránek
 v `_build/build.py`. Z kořene repozitáře `pripravy`:

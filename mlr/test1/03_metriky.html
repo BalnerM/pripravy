@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matice záměn a metriky – MLR</title>
+<meta name="description" content="TP, FN, FP, TN, accuracy, recall, precision, F1, MSE a MAE.">
+<link rel="alternate" hreflang="en" href="en/03_metriky.html">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f);if(localStorage.getItem("vmm-side")==="0")document.documentElement.classList.add("side-hidden")}catch(e){}</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="../assets/style.css?v=b9a02598">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="../assets/app.js?v=b9a02598"></script>
+</head>
+<body>
+<header class="topbar">
+  <button class="iconbtn" id="menuBtn" aria-label="Obsah">☰ Obsah</button>
+  <button class="iconbtn" id="sideBtn" type="button" aria-pressed="false" data-hide="Skrýt postranní panel" data-show="Zobrazit postranní panel" title="Skrýt postranní panel">◧ Panel</button>
+  <a class="brand" href="index.html">MLR – průběžný test 1<small>typové úlohy: výpočty na papíře a čtení kódu</small></a>
+  <span class="spacer"></span>
+  <a class="iconbtn back" href="../../index.html#mlr" title="Všechny přípravy">←<span> Všechny přípravy</span></a>
+  <a class="iconbtn langbtn" href="en/03_metriky.html" hreflang="en" lang="en" title="English version">EN</a>
+  <span class="fsgroup">
+    <button class="iconbtn" id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button class="iconbtn" id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button class="iconbtn" id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <a class="iconbtn" id="pdfBtn" href="pdf/03_metriky.pdf" download title="Stáhnout tuto stránku jako PDF" data-dl="Stáhnout tuto stránku jako PDF" data-print="Vytisknout / uložit jako PDF s nastavenou velikostí písma">PDF</a>
+  <button class="iconbtn" id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<div class="layout">
+<nav class="sidebar" aria-label="Navigace">
+  <h4>Kapitoly</h4>
+  <ol>
+    <li><a href="index.html"><span class="n"></span><span>Jak se připravit</span></a></li>
+    <li><a href="01_numpy.html"><span class="n">1</span><span>Čtení kódu v NumPy</span></a></li>
+    <li><a href="02_knn.html"><span class="n">2</span><span>Vzdálenosti, k-NN a gradientní sestup</span></a></li>
+    <li><a href="03_metriky.html" class="active"><span class="n">3</span><span>Matice záměn a metriky</span></a></li>
+    <li><a href="04_predzpracovani.html"><span class="n">4</span><span>Předzpracování a únik dat</span></a></li>
+    <li><a href="05_vyber_priznaku.html"><span class="n">5</span><span>Výběr příznaků a PCA</span></a></li>
+    <li><a href="06_linearni_regrese.html"><span class="n">6</span><span>Lineární regrese ručně</span></a></li>
+    <li><a href="07_polynom_ridge.html"><span class="n">7</span><span>Polynomy, přeučení, ridge a jádra</span></a></li>
+    <li><a href="08_stromy_ansambly.html"><span class="n">8</span><span>Stromy, bagging a SVM</span></a></li>
+    <li><a href="09_agenti.html"><span class="n">9</span><span>AI agenti: skill a subagent</span></a></li>
+    <li><a href="10_ukazky.html"><span class="n">✎</span><span>Ukázky A a B s řešením</span></a></li>
+    <li><a href="11_cvicne_testy.html"><span class="n">✎</span><span>Cvičné testy C–F</span></a></li>
+    <li><a href="12_tahak.html"><span class="n">★</span><span>Tahák</span></a></li>
+    <li><a href="99_slovnik.html"><span class="n">Aa</span><span>Slovník pojmů (definice)</span></a></li>
+  </ol>
+  <h4>Na této stránce</h4>
+  <ul class="toc">
+    <li><a href="#matice">Matice záměn</a></li>
+    <li><a href="#ulohy">Úlohy</a></li>
+    <li><a href="#shrnuti-h">Shrnutí</a></li>
+    <li><a href="#otazky">Otázky k testu</a></li>
+  </ul>
+</nav>
+<main>
+<p class="printhead">MLR – průběžný test 1 · Matice záměn a metriky – MLR · https://balnerm.github.io/pripravy/mlr/test1/03_metriky.html</p>
+<p class="kicker">Typ úloh 3</p>
+<h1>Matice záměn a metriky</h1>
+<p class="lead">Úloha B3 dá matici záměn a chce počty chyb, accuracy, recall se <b>jmenovateli</b> a vysvětlení recallu slovy v kontextu („faulty items“). Ve cvičení 2 se totéž počítalo pro javory (TP 15, FN 5, FP 10, TN 70) a z vektorů labelů v NumPy. Body se ztrácejí hlavně tím, že se přehodí řádky a sloupce, nebo že chybí slovní význam.</p>
+
+<h2 id="matice">Matice záměn</h2>
+<div class="box definice" id="def-cm"><div class="box-t">Definice: matice záměn (confusion matrix)</div>
+<p><b>Matice záměn</b> je tabulka počtů, kde <b>řádky jsou skutečné třídy</b> a <b>sloupce predikované třídy</b> (tak to používá přednáška i <code>sklearn.metrics.confusion_matrix</code>). Pro binární úlohu s pozitivní třídou 1 obsahuje počty TN, FP (skutečně 0) a FN, TP (skutečně 1).</p>
+<p class="jinak">na diagonále jsou správné odpovědi, mimo ni chyby. FN = „přehlédli jsme pozitivní“, FP = „falešný poplach“. Vždy si nejdřív přečti, co jsou řádky a co sloupce – zadání to může otočit.</p></div>
+<div class="tablewrap"><table class="compact">
+<tr><th></th><th>predicted 0</th><th>predicted 1</th></tr>
+<tr><th>actual 0</th><td>TN</td><td>FP</td></tr>
+<tr><th>actual 1</th><td>FN</td><td>TP</td></tr>
+</table></div>
+
+<div class="box definice" id="def-recall"><div class="box-t">Definice: recall (sensitivita)</div>
+<p><b>Recall</b> pozitivní třídy je podíl skutečně pozitivních vzorků, které model správně označil jako pozitivní:
+\[ \text{recall} = \frac{TP}{TP + FN} \]</p>
+<p class="jinak">„kolik ze skutečně vadných kusů jsme našli“. Jmenovatel je <b>řádek</b> skutečných pozitivních. Vysoký recall = málo přehlédnutých.</p></div>
+<div class="box definice" id="def-precision"><div class="box-t">Definice: precision (přesnost)</div>
+<p><b>Precision</b> je podíl vzorků označených jako pozitivní, které jsou opravdu pozitivní:
+\[ \text{precision} = \frac{TP}{TP + FP} \]</p>
+<p class="jinak">„když alarm zazvoní, jak často je to pravda“. Jmenovatel je <b>sloupec</b> predikovaných pozitivních.</p></div>
+<div class="box definice" id="def-specificity"><div class="box-t">Definice: specificita</div>
+<p><b>Specificita</b> je recall negativní třídy, podíl skutečně negativních vzorků označených jako negativní: \(TN/(TN + FP)\).</p>
+<p class="jinak">kolik dobrých kusů jsme správně nechali projít.</p></div>
+
+<div class="box vzorec"><div class="box-t">Metriky z matice záměn</div>
+\[ \begin{aligned} \text{accuracy} &amp;= \frac{TP + TN}{TP + TN + FP + FN} \\ F_1 &amp;= \frac{2\,TP}{2\,TP + FP + FN} \\ \text{balanced accuracy} &amp;= \frac{\text{recall} + \text{specificity}}{2} \end{aligned} \]
+<table class="vars">
+<tr><td>TP</td><td>skutečně 1, predikce 1 (správný poplach)</td></tr>
+<tr><td>TN</td><td>skutečně 0, predikce 0</td></tr>
+<tr><td>FP</td><td>skutečně 0, predikce 1 (falešný poplach)</td></tr>
+<tr><td>FN</td><td>skutečně 1, predikce 0 (přehlédnuto)</td></tr>
+</table></div>
+
+<div class="box postup" id="postup-cm"><div class="box-t">Jak poznat a jak postupovat</div>
+<p><b>Poznáš to:</b> <span class="kw">rows are actual labels</span>, <span class="kw">treat class 1 as positive</span>, <span class="kw">how many … were missed</span>, <span class="kw">incorrectly flagged</span>, <span class="kw">show the denominators</span>.</p>
+<ol>
+<li>Přečti orientaci (řádky = skutečnost?) a která třída je pozitivní.</li>
+<li>Vypiš TP, TN, FP, FN s významem v kontextu („missed faulty items = FN“).</li>
+<li>Metriku napiš jako zlomek se jmenovatelem, teprve pak hodnotu.</li>
+<li>Slovně: „Out of all actually faulty items, the model detected …“.</li>
+</ol></div>
+
+<h2 id="ulohy">Úlohy</h2>
+<div class="box uloha" id="u-b3"><div class="box-t">Ukázka B, úloha 3: Read a confusion matrix <span class="en">1 point</span></div>
+<p>Class <b>1</b> means a faulty item; class <b>0</b> means a good item. Rows are actual labels and columns are predicted labels:</p>
+<div class="tablewrap"><table class="compact">
+<tr><th></th><th>Predicted 0</th><th>Predicted 1</th></tr>
+<tr><th>Actual 0</th><td>6</td><td>2</td></tr>
+<tr><th>Actual 1</th><td>1</td><td>3</td></tr>
+</table></div>
+<p>For recall, treat class 1 as positive (TP: true positives, FN: false negatives): \(\text{recall}_1 = \frac{TP}{TP + FN}\).</p>
+<p>a) How many faulty items were missed? How many good items were incorrectly flagged as faulty? (0.25)<br>
+b) Calculate accuracy and recall for class 1. Show the denominators. (0.5)<br>
+c) Explain recall for class 1 in words in this application. (0.25)</p>
+<p class="meta"><b>Výsledek:</b> missed = FN = 1, flagged = FP = 2; accuracy = 9/12 = 0,75; recall = 3/4 = 0,75.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>1. Čtení matice: TN = 6, FP = 2, FN = 1, TP = 3, celkem 12 kusů.</p>
+<p>a) Přehlédnuté vadné kusy = skutečně 1, predikce 0 = <b>FN = 1</b>. Dobré kusy označené jako vadné = skutečně 0, predikce 1 = <b>FP = 2</b>.</p>
+<p>b) Accuracy a recall:</p>
+\[ \begin{aligned} \text{accuracy} &amp;= \frac{TP + TN}{12} = \frac{3 + 6}{12} = \frac{9}{12} = 0{,}75 \\ \text{recall}_1 &amp;= \frac{TP}{TP + FN} = \frac{3}{3 + 1} = \frac34 = 0{,}75 \end{aligned} \]
+<p>c) Recall pro třídu 1 = podíl skutečně vadných kusů, které model odhalil: ze 4 vadných kusů zachytil 3, jeden propustil.</p>
+<p class="answer-en">Recall for class 1 is the fraction of truly faulty items that the model flags as faulty: 3 of the 4 faulty items were detected, 1 was missed.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-maple"><div class="box-t">Úloha 2: všechny metriky (cvičení 2)</div>
+<p>100 leaves, positive class = maple (20 real maples). TP = 15, FN = 5, FP = 10, TN = 70. Compute accuracy, sensitivity, specificity, precision, F1 and balanced accuracy. Then compute accuracy and balanced accuracy of the constant classifiers “always maple” and “never maple”.</p>
+<p class="meta"><b>Výsledek:</b> 0,85; 0,75; 0,875; 0,6; 2/3; 0,8125. „Always maple“: acc 0,2, bal. 0,5; „never maple“: acc 0,8, bal. 0,5.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+\[ \begin{aligned} \text{accuracy} &amp;= \frac{15 + 70}{100} = 0{,}85 \\ \text{sensitivity} &amp;= \frac{15}{15 + 5} = 0{,}75 \\ \text{specificity} &amp;= \frac{70}{70 + 10} = 0{,}875 \\ \text{precision} &amp;= \frac{15}{15 + 10} = 0{,}6 \\ F_1 &amp;= \frac{2\cdot 15}{2\cdot 15 + 10 + 5} = \frac{30}{45} = \frac23 \\ \text{bal. acc.} &amp;= \frac{0{,}75 + 0{,}875}{2} = 0{,}8125 \end{aligned} \]
+<p>„Always maple“: TP = 20, FP = 80 → accuracy 0,2, sensitivity 1, specificity 0 → balanced 0,5. „Never maple“: TN = 80, FN = 20 → accuracy 0,8 (vypadá dobře!), sensitivity 0, specificity 1 → balanced 0,5. Balanced accuracy odhalí, že konstantní model nic neumí.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-vectors"><div class="box-t">Úloha 3: TP, FN, FP, TN z vektorů v NumPy</div>
+<pre class="code"><code>labels = np.array([0, 1, 1, 1, 0, 0, 1, 1, 1, 1])
+preds  = np.array([0, 0, 1, 1, 0, 1, 1, 1, 1, 0])
+TP = np.sum((labels == 1) &amp; (preds == 1))
+FN = np.sum((labels == 1) &amp; (preds == 0))
+FP = np.sum((labels == 0) &amp; (preds == 1))
+TN = np.sum((labels == 0) &amp; (preds == 0))
+sensitivity = TP / (TP + FN)</code></pre>
+<p>Give the four counts and the sensitivity. What does <code>&amp;</code> do here?</p>
+<p class="meta"><b>Výsledek:</b> TP = 5, FN = 2, FP = 1, TN = 2; sensitivity = 5/7.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>Projdi dvojice (label, pred): (0,0) TN, (1,0) FN, (1,1) TP, (1,1) TP, (0,0) TN, (0,1) FP, (1,1) TP, (1,1) TP, (1,1) TP, (1,0) FN. Součet: TP 5, FN 2, FP 1, TN 2 (celkem 10). <code>&amp;</code> je logické AND po prvcích dvou booleovských polí; <code>np.sum</code> spočítá hodnoty <code>True</code>. Sensitivity = 5/(5 + 2) = 5/7 ≈ 0,71.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-orient"><div class="box-t">Úloha 4: otočená orientace</div>
+<p>Disease screening, class 1 = ill. <b>Rows are predicted labels and columns are actual labels:</b></p>
+<div class="tablewrap"><table class="compact">
+<tr><th></th><th>Actual 0</th><th>Actual 1</th></tr>
+<tr><th>Predicted 0</th><td>40</td><td>5</td></tr>
+<tr><th>Predicted 1</th><td>10</td><td>45</td></tr>
+</table></div>
+<p>Compute recall and precision for class 1.</p>
+<p class="meta"><b>Past:</b> řádky jsou tady predikce. <b>Výsledek:</b> TP = 45, FN = 5, FP = 10, TN = 40; recall = 45/50 = 0,9; precision = 45/55 = 9/11.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>FN = predikce 0, skutečnost 1 = 5 (řádek Predicted 0, sloupec Actual 1). FP = predikce 1, skutečnost 0 = 10.</p>
+\[ \begin{aligned} \text{recall} &amp;= \frac{45}{45 + 5} = \frac{45}{50} = 0{,}9 \\ \text{precision} &amp;= \frac{45}{45 + 10} = \frac{9}{11} \approx 0{,}82 \end{aligned} \]
+</div></details></div>
+
+<div class="box uloha" id="u-reg"><div class="box-t">Úloha 5: MSE a MAE</div>
+<p>True values \(y = [2, 4, 6]\), predictions \(\hat y = [3, 4, 4]\). Compute MSE and MAE. Which is more sensitive to one large error?</p>
+<p class="meta"><b>Výsledek:</b> MSE = 5/3, MAE = 1; MSE (čtverec zvětší velkou chybu).</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>Chyby \(\hat y - y = [1, 0, -2]\).</p>
+\[ \begin{aligned} \text{MSE} &amp;= \frac{1^2 + 0^2 + (-2)^2}{3} = \frac53 \\ \text{MAE} &amp;= \frac{1 + 0 + 2}{3} = 1 \end{aligned} \]
+<p>MSE je ve čtverečních jednotkách a jedna velká chyba (2 → 4) má větší váhu.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-imb"><div class="box-t">Úloha 6: nevyvážená data</div>
+<p>A dataset contains 95 % maples. A 3-NN model reports test accuracy 0.95. What would you check before believing it?</p>
+<p class="meta"><b>Výsledek:</b> baseline „vždy majoritní třída“ má také 0,95 → porovnat s ní; recall každé třídy, balanced accuracy, matici záměn.</p>
+<details class="reseni"><summary>Řešení krok po kroku</summary><div>
+<p>Konstantní model „vždy javor“ (<code>DummyClassifier(strategy="most_frequent")</code>) má accuracy 0,95 a přitom nenajde jediný ne-javor. Je nutné porovnat s touto baseline a uvést recall obou tříd, balanced accuracy nebo macro F1 a matici záměn.</p>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Časté pasti</div>
+<ul>
+<li><b>Orientace:</b> v kurzu řádky = skutečnost; když zadání řekne opak, přepiš si TP/FP/FN/TN dřív, než počítáš.</li>
+<li><b>Recall vs. precision:</b> recall dělí řádkem skutečných pozitivních (TP + FN), precision sloupcem predikovaných (TP + FP).</li>
+<li><b>Slovní vysvětlení v kontextu:</b> „faulty items“, ne „positives“.</li>
+<li><b>Accuracy na nevyvážených datech</b> lže – srovnej s majoritní baseline.</li>
+<li>V <code>sklearn</code> u binárních metrik záleží na <code>pos_label</code>; <code>recall_score(..., pos_label=0)</code> = specificita.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">Co napsat za plné body</div>
+<p>Vypiš čtyři čísla s významem, vzorec, dosazený zlomek a výsledek. U slovní části použij doménu úlohy.</p>
+<p class="answer-en">FN = 1 faulty item was missed; FP = 2 good items were wrongly flagged. Accuracy = (3 + 6)/12 = 0.75. Recall₁ = 3/(3 + 1) = 0.75.</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Řádek = skutečnost, sloupec = predikce; recall = TP/(TP + FN) „kolik pozitivních jsme našli“, precision = TP/(TP + FP) „kolik poplachů je pravých“.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Matice záměn shrnuje binární klasifikaci do čtyř čísel TP, TN, FP, FN. Accuracy je podíl správných, recall (sensitivita) podíl nalezených pozitivních, specificita podíl správně rozpoznaných negativních, precision podíl pravdivých poplachů a F1 jejich harmonický průměr. Na nevyvážených datech je accuracy zavádějící; porovnává se s majoritní baseline a uvádí se balanced accuracy. Pro regresi se používá MSE (čtverce, citlivé na velké chyby) a MAE (absolutní hodnoty).</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Nejdřív orientace matice a pozitivní třída.</li>
+<li>FN = přehlédnuté pozitivní, FP = falešný poplach.</li>
+<li>Recall dělí skutečnými pozitivními, precision predikovanými pozitivními.</li>
+<li>Vždy ukaž jmenovatel.</li>
+<li>Accuracy 0,95 nic neznamená, pokud má majoritní třída 95 %.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky k testu</h2>
+<details class="q"><summary>Co znamená FN v aplikaci „class 1 = faulty item“?</summary><div><p>Vadný kus, který model označil jako dobrý – přehlédnutá vada.</p></div></details>
+<details class="q"><summary>Jaký je rozdíl mezi recall a precision?</summary><div><p>Recall: z kusů, které jsou skutečně pozitivní, kolik jsme označili (TP/(TP + FN)). Precision: z kusů, které jsme označili, kolik je skutečně pozitivních (TP/(TP + FP)).</p></div></details>
+<details class="q"><summary>Kdy preferovat vysoký recall?</summary><div><p>Když je přehlédnutí drahé: vadné díly, nemoc při screeningu. Raději víc falešných poplachů než propuštěná vada.</p></div></details>
+<details class="q"><summary>Proč je balanced accuracy konstantního klasifikátoru 0,5?</summary><div><p>Jedna třída má recall 1, druhá 0; průměr je 0,5 bez ohledu na poměr tříd.</p></div></details>
+<details class="q"><summary>Jak spočítat TP z vektorů <code>y</code> a <code>p</code> v NumPy?</summary><div><p><code>np.sum((y == 1) &amp; (p == 1))</code> – AND dvou masek a počet hodnot True.</p></div></details>
+<details class="q"><summary>Proč má MSE jiné jednotky než MAE?</summary><div><p>MSE průměruje čtverce chyb (cm²), MAE absolutní hodnoty (cm).</p></div></details>
+
+<nav class="pager"><a class="prev" href="02_knn.html"><small>← předchozí</small>Vzdálenosti, k-NN a gradientní sestup</a><a class="next" href="04_predzpracovani.html"><small>další →</small>Předzpracování a únik dat</a></nav>
+</main>
+</div>
+</body>
+</html>

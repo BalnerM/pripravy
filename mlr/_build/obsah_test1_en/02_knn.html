@@ -1,0 +1,141 @@
+<h1>Distances, k-NN and gradient descent</h1>
+<p class="lead">The first two labs computed the nearest neighbour <b>on paper first</b>, then in NumPy. On paper you work with the squared distance \(d^2\) – the square root does not change the order, so whole numbers are enough. Add one gradient-descent step and k-means from lecture 1: short calculations that work without a calculator.</p>
+
+<h2 id="knn">Nearest neighbour and k-NN</h2>
+<div class="box definice" id="def-euklid"><div class="box-t">Definition: Euclidean distance</div>
+<p>The <b>Euclidean distance</b> between two samples \(\mathbf a, \mathbf b\) with d features is the length of the segment between them:
+\[ d(\mathbf a, \mathbf b) = \sqrt{\sum_{j=1}^{d} (a_j - b_j)^2} \]</p>
+<p class="jinak">“distance with a ruler”. Squared differences of all features are added – that is why a feature with large numbers (centimetres vs. tenths of a centimetre) dominates the distance and why we standardize before k-NN (chapter 4).</p></div>
+<div class="box definice" id="def-knn"><div class="box-t">Definition: k-NN classifier</div>
+<p><b>k-NN</b> (k nearest neighbours) assigns a new sample to the class that has the <b>majority among its k nearest training samples</b>. For k = 1 it is the nearest-neighbour rule \(\hat y(\mathbf x_\ast) = y_{(1)}\). There is no training phase: <code>fit</code> only stores the data (“lazy learner”).</p>
+<p class="jinak">“tell me who your neighbours are”. Small k = sensitive to one stray point (noise), large k = blurred class borders. k is a hyperparameter – it is chosen on validation data.</p></div>
+
+<div class="box postup" id="postup-knn"><div class="box-t">How to recognise it and what to do: k-NN by hand</div>
+<ol>
+<li>For every training point compute \(d^2 = (x_1 - x_{1\ast})^2 + (x_2 - x_{2\ast})^2\) – no square root.</li>
+<li>Assign ranks: 1 = nearest.</li>
+<li>Take the k smallest and count the votes per class. The majority wins.</li>
+<li>Write how the prediction changes with k and mention ties (even k, equal distances).</li>
+</ol></div>
+
+<div class="box uloha" id="u-knn-flip"><div class="box-t">Task 1: the class flips as k grows</div>
+<p>Training points: A at (2, 3), (1, 1), (0, 0); B at (4, 4), (5, 3), (3, 6). Classify the new point (3, 3) with 1-NN, 3-NN and 5-NN. Use squared Euclidean distance.</p>
+<p class="meta"><b>Result:</b> k = 1 → A, k = 3 → B (A : B = 1 : 2), k = 5 → B (2 : 3).</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<div class="tablewrap"><table class="compact">
+<tr><th>point</th><th>class</th><th>\(d^2\) to (3, 3)</th><th>rank</th></tr>
+<tr><td>(2, 3)</td><td>A</td><td>1 + 0 = 1</td><td>1</td></tr>
+<tr><td>(4, 4)</td><td>B</td><td>1 + 1 = 2</td><td>2</td></tr>
+<tr><td>(5, 3)</td><td>B</td><td>4 + 0 = 4</td><td>3</td></tr>
+<tr><td>(1, 1)</td><td>A</td><td>4 + 4 = 8</td><td>4</td></tr>
+<tr><td>(3, 6)</td><td>B</td><td>0 + 9 = 9</td><td>5</td></tr>
+<tr><td>(0, 0)</td><td>A</td><td>9 + 9 = 18</td><td>6</td></tr>
+</table></div>
+<ul>
+<li>k = 1: the nearest is (2, 3) → <b>A</b>.</li>
+<li>k = 3: A, B, B → <b>B</b> (2 : 1).</li>
+<li>k = 5: A, B, B, A, B → <b>B</b> (3 : 2).</li>
+</ul>
+<p>The single close A point is outvoted by B neighbours as soon as k grows – the same effect as the large cherry among walnuts in lab 2.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-knn-code"><div class="box-t">Task 2: k-NN in code</div>
+<pre class="code"><code>distances = np.array([2.0, 0.5, 1.5, 0.7, 3.0])
+labels = np.array(["cherry", "maple", "walnut", "walnut", "maple"])
+order = np.argsort(distances)
+nearest = labels[order[:3]]
+values, counts = np.unique(nearest, return_counts=True)
+prediction = values[np.argmax(counts)]</code></pre>
+<p>Write <code>order</code>, <code>nearest</code>, <code>values</code>, <code>counts</code> and <code>prediction</code>.</p>
+<p class="meta"><b>Result:</b> <code>order = [1, 3, 2, 0, 4]</code>, <code>nearest = ['maple', 'walnut', 'walnut']</code>, <code>values = ['maple', 'walnut']</code>, <code>counts = [1, 2]</code>, <code>prediction = 'walnut'</code>.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<ol>
+<li>Distances in ascending order: 0.5 (index 1), 0.7 (3), 1.5 (2), 2.0 (0), 3.0 (4) → <code>order = [1, 3, 2, 0, 4]</code>.</li>
+<li><code>order[:3]</code> = <code>[1, 3, 2]</code> → labels maple, walnut, walnut.</li>
+<li><code>unique</code> (alphabetical): maple 1×, walnut 2× → <code>argmax(counts)</code> = 1 → <b>walnut</b>.</li>
+</ol>
+</div></details></div>
+
+<div class="box uloha" id="u-knn-train"><div class="box-t">Task 3: training accuracy of 1-NN</div>
+<p>A 1-NN model is fitted on all 518 leaves and evaluated with <code>accuracy_score(y, model.predict(X))</code> on the same rows. It reports 0.99. Why is this number useless? How do you fix it?</p>
+<p class="meta"><b>Result:</b> every training point is its own nearest neighbour (distance 0) → almost 100 % always; evaluate on held-out data.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>In 1-NN each training sample is its own nearest neighbour, so predictions on the training data are almost always correct (wrong only where two identical measurements have different labels). The number says nothing about new data. Fix: split the data (e.g. 70/30, <code>stratify=y</code>), <code>fit</code> on the training part only, measure accuracy on the test part. In the lab the honest value was about 0.92 instead of 0.99.</p>
+</div></details></div>
+
+<h2 id="gd">Gradient descent</h2>
+<div class="box definice" id="def-gd-krok"><div class="box-t">Definition: gradient descent step</div>
+<p><b>Gradient descent</b> looks for a minimum of a function by repeating a step against the gradient:
+\[ \mathbf x^{(t+1)} = \mathbf x^{(t)} - \eta\, \nabla f(\mathbf x^{(t)}) \]
+where \(\eta &gt; 0\) is the <b>learning rate</b> (step size) and the gradient \(\nabla f\) is the vector of partial derivatives.</p>
+<p class="jinak">the gradient points uphill, so we go the other way. Small η = slow creeping, too large η = overshooting the minimum and oscillation or divergence.</p></div>
+
+<div class="box uloha" id="u-gd"><div class="box-t">Task 4: two gradient descent steps</div>
+<p>Minimize \(f(w) = (w - 3)^2\) by gradient descent from \(w_0 = 0\). a) Write the update rule. b) Compute \(w_1, w_2\) for \(\eta = 0.25\). c) What happens for \(\eta = 1\) and \(\eta = 1.25\)?</p>
+<p class="meta"><b>Result:</b> \(w_1 = 1.5\), \(w_2 = 2.25\) (the error halves every step); η = 1: 0 → 6 → 0 → 6 (oscillates); η = 1.25: 0 → 7.5 → −3.75 → 13.125 (diverges).</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<p>1. Derivative and rule:</p>
+\[ \begin{aligned} f'(w) &amp;= 2(w - 3) \\ w_{t+1} &amp;= w_t - 2\eta\,(w_t - 3) \end{aligned} \]
+<p>2. η = 0.25:</p>
+\[ \begin{aligned} w_1 &amp;= 0 - 0.25\cdot(-6) = 1.5 \\ w_2 &amp;= 1.5 - 0.25\cdot(-3) = 2.25 \end{aligned} \]
+<p>3. The distance from the minimum \(e_t = w_t - 3\) is multiplied by \((1 - 2\eta)\): for η = 0.25 it is 0.5 (converges), for η = 1 it is −1 (oscillates between 0 and 6), for η = 1.25 it is −1.5 (each step 50 % further – diverges). It converges exactly when \(|1 - 2\eta| &lt; 1\), i.e. \(0 &lt; \eta &lt; 1\).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-gd2"><div class="box-t">Task 5: a step in two variables</div>
+<p>\(f(\mathbf x) = \tfrac12(x_1^2 + 5x_2^2)\). Compute the gradient and one step from \(\mathbf x = (2, 1)\) with \(\eta = 0.1\).</p>
+<p class="meta"><b>Result:</b> \(\nabla f = (x_1, 5x_2) = (2, 5)\); new point \((1.8,\ 0.5)\).</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+\[ \begin{aligned} \nabla f(2, 1) &amp;= (2,\ 5\cdot 1) = (2, 5) \\ \mathbf x_1 &amp;= (2, 1) - 0.1\cdot(2, 5) = (1.8,\ 0.5) \end{aligned} \]
+<p>The point moved more in the steep direction \(x_2\). If η were larger than 2/5, the descent would diverge in the \(x_2\) direction (the lecture condition \(\eta &lt; 2/L\), here L = 5).</p>
+</div></details></div>
+
+<h2 id="kmeans">k-means: one step</h2>
+<div class="box definice" id="def-kmeans-krok"><div class="box-t">Definition: k-means step</div>
+<p><b>k-means</b> alternates two steps: (1) <b>assignment</b> – every point belongs to the nearest centre \(\boldsymbol\mu_j\); (2) <b>update</b> – every centre becomes the mean of its points. It stops when the assignment no longer changes.</p>
+<p class="jinak">points pick the nearest “flag”, each flag moves to the middle of its points, and again. Unsupervised – labels are not used.</p></div>
+<div class="box uloha" id="u-kmeans"><div class="box-t">Task 6: k-means in 1D</div>
+<p>Points 1, 2, 4, 8, 9; k = 2; initial means \(\mu_1 = 1\), \(\mu_2 = 4\). Run k-means until it stops.</p>
+<p class="meta"><b>Result:</b> round 1 {1, 2} and {4, 8, 9} → μ = 1.5 and 7; round 2 {1, 2, 4} and {8, 9} → μ = 7/3 and 8.5; round 3 no change.</p>
+<details class="reseni"><summary>Step-by-step solution</summary><div>
+<ol>
+<li>Assign to (1, 4): 1 → μ₁, 2 → μ₁ (distances 1 and 2), 4, 8, 9 → μ₂.</li>
+<li>Update: μ₁ = (1 + 2)/2 = 1.5; μ₂ = (4 + 8 + 9)/3 = 7.</li>
+<li>Assign to (1.5, 7): point 4 has distances 2.5 and 3 → moves to μ₁.</li>
+<li>Update: μ₁ = (1 + 2 + 4)/3 = 7/3; μ₂ = (8 + 9)/2 = 8.5.</li>
+<li>The assignment does not change any more → stop.</li>
+</ol>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Common traps</div>
+<ul>
+<li>Do not take the square root when comparing distances – the order of \(d\) and \(d^2\) is the same.</li>
+<li>Ties: with even k or equal distances, say how you break them (each implementation does it differently).</li>
+<li>Gradient descent goes <b>minus</b> the gradient; the sign is the most common mistake.</li>
+<li>k-NN needs scaled features – otherwise the feature with the largest numbers decides.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">What to write for full points</div>
+<p>A table of \(d^2\) with ranks, clearly marked votes and the result for each k. For descent: the formula, the substitution and the values step by step.</p>
+<p class="answer-en">With k = 1 the nearest point (distance² = 1) is class A, so we predict A. With k = 3 the votes are A, B, B, so the majority is B.</p></div>
+
+<div class="box kostka"><div class="box-t">In a nutshell</div><p>k-NN: compute \(d^2\), sort, let the k nearest vote. Gradient descent: \(w \leftarrow w - \eta f'(w)\); the size of η decides between creeping, fast convergence and divergence.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Summary</h2>
+<p>On paper k-NN is computed with squared distances and the ranking of neighbours; the prediction is the majority of the k nearest. In code this is <code>np.argsort</code> and <code>np.unique(..., return_counts=True)</code>. The training accuracy of 1-NN is worthless because every point is its own neighbour. Gradient descent moves the parameter against the derivative by a step η; for a quadratic function the error is multiplied by \(1 - 2\eta\) every step, which shows convergence, oscillation and divergence clearly. k-means alternates assignment to the nearest centre and recomputing the centres.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Compare \(d^2\); the square root does not change the order.</li>
+<li>The k-NN prediction can change as k grows – always write the votes.</li>
+<li>Training accuracy of 1-NN ≈ 100 % and means nothing.</li>
+<li>\(w_{t+1} = w_t - \eta \nabla f(w_t)\); a too large η diverges.</li>
+<li>k-means: assign → recompute means → repeat until nothing changes.</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Test questions</h2>
+<details class="q"><summary>Why is comparing \(d^2\) instead of \(d\) enough?</summary><div><p>The square root is an increasing function, so the order of distances does not change and the nearest neighbour stays the same.</p></div></details>
+<details class="q"><summary>What does <code>fit</code> do in k-NN?</summary><div><p>It only stores the training data and labels. All the work (distances, voting) happens in <code>predict</code>.</p></div></details>
+<details class="q"><summary>How does k-NN change as k grows?</summary><div><p>Small k follows individual points (noise, overfitting), large k smooths the border and for k = n always predicts the majority class (underfitting).</p></div></details>
+<details class="q"><summary>Write the gradient descent step and explain the role of η.</summary><div><p>\(\mathbf w \leftarrow \mathbf w - \eta \nabla f(\mathbf w)\). η sets the step length: small = slow convergence, large = overshooting, oscillation or divergence.</p></div></details>
+<details class="q"><summary>When does gradient descent stop?</summary><div><p>When the gradient is small, the change of the parameters or of the function value is small, after a maximum number of iterations, or (when training) when the validation error stops decreasing. A small gradient only means a stationary point.</p></div></details>
+<details class="q"><summary>How do k-NN and k-means differ?</summary><div><p>k-NN is a supervised classifier (it uses the neighbours' labels), k is the number of neighbours. k-means is unsupervised clustering, k is the number of clusters and no labels are used.</p></div></details>

@@ -1,0 +1,130 @@
+<h1>AI agenti: skill a subagent</h1>
+<p class="lead">Každá ukázka má jednu slovní úlohu za 0,75 bodu z 5. přednášky a cvičení („Coding agents and Git“): A3 se ptá na <b>skill</b>, B5 na <b>subagenta</b>. Stačí přesná věta definice („Answer in one sentence“) a krátký, konkrétní postup nebo příklad. Podrobný výklad je ve <a href="../05_vibecoding.html">kapitole 5 hlavních skript</a>; tady jsou pojmy, které se dají zeptat stejně, a vzorové odpovědi.</p>
+
+<h2 id="pojmy">Pojmy jednou větou</h2>
+<div class="box definice" id="def-skill"><div class="box-t">Definice: skill</div>
+<p><b>Skill</b> je uložený, znovupoužitelný recept – soubor <code>SKILL.md</code> s názvem, popisem, kdy ho použít, a instrukcemi (případně se skripty) –, který si agent načte <b>jen když se úloha hodí</b> nebo když ho uživatel vyvolá (<code>/report</code>).</p>
+<p class="jinak">„návod v šuplíku“. <code>AGENTS.md</code> se čte vždy, skill jen v případě potřeby, takže nezabírá kontext.</p></div>
+<div class="box definice" id="def-subagent-t"><div class="box-t">Definice: subagent</div>
+<p><b>Subagent</b> je pomocník, kterého agent spustí na vedlejší úkol (hledání, dlouhý log, revize); má <b>vlastní čisté kontextové okno</b>, nevidí původní konverzaci a vrátí jen <b>krátké shrnutí</b>.</p>
+<p class="jinak">hlavní kontext zůstane čistý a recenzent má „čerstvé oči“. Cena: víc tokenů a zadání musí být samostatně srozumitelné (subagent nezná váš chat).</p></div>
+<div class="box definice" id="def-harness"><div class="box-t">Definice: model, agent a harness</div>
+<p><b>Model</b> je natrénovaná síť, která pokračuje v textu. <b>Agent</b> = model + software, který umí jednat. <b>Harness</b> (Claude Code, Codex) je nainstalovaný program, který posílá požadavky modelu a provádí akce (nástroje), o které si model řekne – model sám soubory nikdy nemění.</p>
+<p class="jinak">model navrhne akci, harness ji provede, výsledek se vrátí modelu – to je smyčka agenta. Chyba je informace, ne konec.</p></div>
+<div class="box definice" id="def-hook"><div class="box-t">Definice: hook</div>
+<p><b>Hook</b> je malý skript, který harness spustí sám při určité události (např. před každou úpravou souboru) a který může akci <b>zablokovat</b>.</p>
+<p class="jinak">pravidlo v <code>AGENTS.md</code> agenta <b>žádá</b>, hook pravidlo <b>vynutí</b> – ale jen u události, kterou hlídá.</p></div>
+<div class="box definice" id="def-mcp-t"><div class="box-t">Definice: MCP</div>
+<p><b>MCP</b> (Model Context Protocol) je standardní „zástrčka“ pro další nástroje (jako USB): jakýkoli harness může použít jakýkoli nástroj, který MCP nabízí (prohlížeč přes Playwright, Blender, aktuální dokumentace).</p>
+<p class="jinak">zapínat jen to, co úloha potřebuje – každý seznam nástrojů zabírá místo v kontextu.</p></div>
+<div class="box definice" id="def-context"><div class="box-t">Definice: kontext a kontextové okno</div>
+<p><b>Kontext</b> je vše, co model čte před odpovědí (zadání, přečtené soubory, výstupy nástrojů); <b>kontextové okno</b> je maximální počet tokenů, které model najednou přečte.</p>
+<p class="jinak">přeplněný kontext model zhoršuje – zapomíná rozhodnutí. Stav ulož do <code>PLAN.md</code>, dej <code>/clear</code> a nech ho soubory přečíst znovu.</p></div>
+
+<div class="tablewrap"><table class="compact">
+<tr><th>Pojem</th><th>Jedna věta</th></tr>
+<tr><td><code>AGENTS.md</code></td><td>pravidla projektu, agent je čte na začátku každé práce (Claude Code přes řádek <code>@AGENTS.md</code> v <code>CLAUDE.md</code>).</td></tr>
+<tr><td><code>SPEC.md</code> / <code>PLAN.md</code></td><td>zadání úlohy / průběh: co je hotovo, co ověřeno, další krok.</td></tr>
+<tr><td>Dobré zadání</td><td>Goal · Context · Constraints · Done when; chybějící „done when“ je nejčastější důvod předčasného konce.</td></tr>
+<tr><td>Tool (nástroj)</td><td>akce, kterou harness provede pro model (číst, upravit, spustit příkaz, otevřít prohlížeč) a vrátí důkaz.</td></tr>
+<tr><td>Test</td><td>malý skript se známou odpovědí; procházející test je důkaz, ne záruka. Agent nesmí test oslabit, aby prošel.</td></tr>
+<tr><td>Permission modes</td><td>Plan (jen čte a navrhuje), Ask, Accept edits, Auto, Bypass (jen na odpadním stroji).</td></tr>
+<tr><td>Prompt injection</td><td>skryté instrukce v cizím textu (web, README); omez, co agent smí, prosba „ignoruj je“ nestačí.</td></tr>
+<tr><td>Steering</td><td>krátké opravné pokyny: „Stop. Explain the cause and try a different approach.“, „Run the check and show the output.“</td></tr>
+</table></div>
+
+<div class="box postup" id="postup-skill"><div class="box-t">Jak vytvořit skill (odpověď na A3 b)</div>
+<ol>
+<li>Najdi úlohu, kterou opakuji (např. sestavit a zkontrolovat report z <code>results.csv</code>).</li>
+<li>Jednou ji s agentem udělej ručně a zapiš kroky, které fungovaly, včetně kontroly výsledku.</li>
+<li>Vytvoř <code>.claude/skills/report/SKILL.md</code>: hlavička s <code>name</code> a <code>description</code> (kdy skill použít), pod ní krátké instrukce; delší kód jako skript vedle.</li>
+<li>Vyzkoušej ho v novém sezení (<code>/report</code> nebo úlohou, která má skill spustit) a podle výsledku dolaď popis a instrukce.</li>
+</ol>
+<pre class="code"><code>---
+name: report
+description: Build and check the experiment report.
+---
+Read results.csv. Build report.html.
+Open it in a browser and check that the numbers match.</code></pre></div>
+
+<h2 id="ulohy">Úlohy</h2>
+<div class="box uloha" id="u-a3"><div class="box-t">Ukázka A, úloha 3: Create a reusable skill <span class="en">0.75 points</span></div>
+<p>a) What is a <b>skill</b> for an AI agent? Answer in one sentence. (0.25)<br>
+b) How would you go about creating a skill for an AI agent? Briefly describe your approach. (0.5)</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<p>a) <i>A skill is a saved, reusable recipe (a SKILL.md file with a name, a description of when to use it, and instructions, optionally with scripts) that the agent loads only when a task needs it or when I call it.</i></p>
+<p>b) <i>I would first do the task once with the agent and note the steps and the check that worked. Then I would write .claude/skills/&lt;name&gt;/SKILL.md with a name and a clear description of when to use it, followed by short step-by-step instructions (and a helper script if needed). Finally I would test it in a fresh session on a real task and refine the description and instructions.</i></p>
+<p>Česky: skill = uložený recept, který agent načte jen při potřebě. Postup: udělat jednou ručně → zapsat SKILL.md (name, description, kroky, kontrola) → vyzkoušet v novém sezení a doladit.</p>
+</div></details></div>
+
+<div class="box uloha" id="u-b5"><div class="box-t">Ukázka B, úloha 5: Use a subagent <span class="en">0.75 points</span></div>
+<p>a) What is a <b>subagent</b>? Answer in one sentence. (0.25)<br>
+b) Give one simple task you could delegate to a subagent and say what it should return. One or two sentences are enough. (0.5)</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<p>a) <i>A subagent is a helper started by the main agent for a side task; it works in its own fresh context window and returns only a short summary to the main agent.</i></p>
+<p>b) <i>Ask a subagent to read the 2 000-line training log and return only the epoch with the lowest validation loss, its value, and any error messages. </i> (Další příklady: „review train.py for data leakage and return a list of suspicious lines with line numbers“, „search the repository for every place where StandardScaler is fitted and return the file paths and lines“.)</p>
+<p>Důležité: úkol musí být samostatně srozumitelný a výstup krátký a konkrétní (co přesně vrátit).</p>
+</div></details></div>
+
+<div class="box uloha" id="u-hook"><div class="box-t">Úloha 3: hook versus pravidlo</div>
+<p>a) What is a hook? b) How does it differ from a rule in AGENTS.md? Give an example.</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<p><i>a) A hook is a small script that the harness runs automatically at an event, such as before every file edit, and it can block the action. b) A rule in AGENTS.md only asks the model, which may ignore it; a hook enforces the rule. Example: a hook that blocks any edit of test_model.py with the message “Tests are read-only.”</i></p>
+</div></details></div>
+
+<div class="box uloha" id="u-spec"><div class="box-t">Úloha 4: dobře zadaný úkol</div>
+<p>Rewrite the vague task “Make an HTML report from leaves.csv.” using the four parts of a good task.</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<ul>
+<li><b>Goal:</b> one HTML file to check the leaf data before training.</li>
+<li><b>Context:</b> data/leaves.csv, 518 rows, columns height, width, tree type (3 classes).</li>
+<li><b>Constraints:</b> do not change the CSV; one self-contained file; no internet needed.</li>
+<li><b>Done when:</b> the counts per class match the CSV and the class filter works in a browser.</li>
+</ul>
+</div></details></div>
+
+<div class="box uloha" id="u-claim"><div class="box-t">Úloha 5: agent hlásí úspěch</div>
+<p>The agent says: “Done, all tests pass and test accuracy is 0.99.” What do you ask for, and what do you check in an ML experiment?</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<p><i>“Run the tests and the evaluation and show me the output.” A passing test is evidence, not proof, so I check that no test was changed to pass (git diff), and for the ML result I check the split (no duplicates across it), that preprocessing was fitted inside the training folds only, that hyperparameters were chosen on validation data and that the test set was used once.</i></p>
+</div></details></div>
+
+<div class="box uloha" id="u-context"><div class="box-t">Úloha 6: dlouhá konverzace</div>
+<p>After two hours the agent keeps repeating an error it already fixed. Why, and what do you do?</p>
+<details class="reseni"><summary>Vzorová odpověď</summary><div>
+<p><i>The context is crowded, so the model forgets earlier decisions. I ask it to save what is done, what was checked and the next step to PLAN.md, then start fresh with /clear and let it read SPEC.md and PLAN.md (/compact also works, but details can be lost).</i></p>
+</div></details></div>
+
+<div class="box pozor"><div class="box-t">Časté pasti</div>
+<ul>
+<li>Skill ≠ AGENTS.md: skill se načte jen při potřebě, AGENTS.md vždy.</li>
+<li>Subagent nevidí konverzaci – zadání musí obsahovat vše potřebné.</li>
+<li>U „what it should return“ napiš konkrétní a krátký výstup (číslo, seznam řádků, soubor), ne „výsledek“.</li>
+<li>Hook vynucuje, pravidlo jen žádá.</li>
+<li>Odpověď na „one sentence“ má být opravdu jedna věta.</li>
+</ul></div>
+
+<div class="box zkouska"><div class="box-t">Co napsat za plné body</div>
+<p>Definice: <b>co to je</b> + <b>klíčová vlastnost</b> (skill: načte se jen při potřebě; subagent: vlastní kontext, vrátí shrnutí). Postup / příklad: konkrétní kroky nebo úkol + konkrétní výstup.</p></div>
+
+<div class="box kostka"><div class="box-t">V kostce</div><p>Skill = recept SKILL.md načtený při potřebě; subagent = pomocník s čistým kontextem, vrací krátké shrnutí; hook = skript, který akci vynutí nebo zablokuje.</p></div>
+
+<section class="souhrn" id="shrnuti">
+<h2 id="shrnuti-h">Shrnutí</h2>
+<p>Agent je model s harnessem, který provádí nástroje ve smyčce. Projekt řídí soubory AGENTS.md (pravidla, čtou se vždy), SPEC.md (zadání se čtyřmi částmi) a PLAN.md (průběh). Skill je recept v SKILL.md, který se načte jen při potřebě; vytváří se z úlohy, která se osvědčila, a ladí se v novém sezení. Subagent dostane samostatné zadání, pracuje v čistém kontextu a vrátí krátké shrnutí. Hook pravidla vynucuje, MCP přidává nástroje. Výsledky agenta se ověřují důkazy (výstup testů, diff), u ML zvlášť dělení dat a únik.</p>
+<div class="takehome"><h3>Take-home messages</h3><ol>
+<li>Skill: uložený recept, načte se jen když se hodí.</li>
+<li>Subagent: vlastní kontext, vrací krátké shrnutí, zadání musí stát samo.</li>
+<li>AGENTS.md žádá, hook vynucuje.</li>
+<li>Goal · Context · Constraints · Done when.</li>
+<li>Chtěj důkaz: „Run the check and show the output.“</li>
+</ol></div>
+</section>
+
+<h2 id="otazky">Otázky k testu</h2>
+<details class="q"><summary>Proč subagent šetří kontext hlavního agenta?</summary><div><p>Dlouhou práci (čtení logu, hledání) dělá ve vlastním okně a vrátí jen shrnutí; hlavní kontext se nezaplní detaily.</p></div></details>
+<details class="q"><summary>Kdy subagenta nepoužít?</summary><div><p>Pro malý úkol, kde by režie a tokeny převážily; nebo když několik subagentů upravuje stejné soubory (konflikty – každý potřebuje vlastní kopii, worktree).</p></div></details>
+<details class="q"><summary>Jaký je rozdíl mezi skillem a AGENTS.md?</summary><div><p>AGENTS.md jsou obecná pravidla projektu, čtou se pokaždé. Skill je postup pro konkrétní typ úlohy, načte se jen když je potřeba.</p></div></details>
+<details class="q"><summary>Co je MCP?</summary><div><p>Standardní protokol, kterým harness připojí další nástroje (prohlížeč, Blender, dokumentace), jako USB zástrčka.</p></div></details>
+<details class="q"><summary>Proč nestačí agentovi napsat „ignoruj prompt injection“?</summary><div><p>Model nedokáže spolehlivě rozlišit instrukce od dat; je nutné omezit, co smí dělat (oprávnění, žádné tajné klíče, sandbox).</p></div></details>
+<details class="q"><summary>Proč u ML experimentu nestačí, že „to běží“?</summary><div><p>Špatné dělení dat nebo únik dá věrohodné, ale příliš dobré číslo; agent nedostane zpětnou vazbu, že je výsledek špatně. Kontroly je nutné napsat předem.</p></div></details>
