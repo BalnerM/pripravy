@@ -77,6 +77,13 @@ kde \(\eta \gt 0\) je <b>krok učení</b> (learning rate).</p>
 \[ R(\theta) = \mathbb E_{(\mathbf x, y)\sim P}[L(f_\theta(\mathbf x), y)] \]
 <b>Empirické riziko</b> je průměrná ztráta na konečném vzorku dat, např. na trénovací množině:
 \[ \hat R_{\text{train}}(\theta) = \frac{1}{n}\sum_{i} L(f_\theta(\mathbf x_i), y_i) \]</p>
+<p><b>Slovy:</b> \(R(\theta)\) čti „jak velkou ztrátu bude model s parametry \(\theta\) dělat v průměru na všech budoucích datech“:</p>
+<ul>
+<li>\(\theta\) – parametry modelu (např. váhy), \(f_\theta(\mathbf x)\) – predikce modelu pro vstup \(\mathbf x\);</li>
+<li>\(L(f_\theta(\mathbf x), y)\) – ztráta jednoho vzorku: jak moc se predikce liší od správné odpovědi \(y\);</li>
+<li>\(\mathbb E_{(\mathbf x, y)\sim P}\) – průměr přes všechny dvojice (vstup, label), které mohou ze skutečného rozdělení \(P\) přijít, vážený tím, jak často přicházejí.</li>
+</ul>
+<p>Rozdělení \(P\) neznáme, proto ho nahradíme vzorkem: \(\hat R\) (stříška = odhad) je obyčejný aritmetický průměr ztrát přes \(n\) vzorků, které máme. Na trénovacích datech je tento odhad přehnaně optimistický (model je viděl), na odložených testovacích nestranný – pokud testovací data pocházejí ze stejného rozdělení jako budoucí data.</p>
 <p class="jinak">trénujeme minimalizací empirického rizika na trénovacích datech, ale záleží nám na populačním riziku. Odhadujeme ho průměrnou ztrátou na odložené testovací množině: \(\hat R_{\text{test}} \approx R(\theta)\). Celý vývoj modelu je optimalizace <b>zobecnění</b>.</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-riziko">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="s-loss-metrika"><div class="box-t">ztrátová funkce vs. metrika</div>
 <p><b>Ztrátová funkce</b> (loss) je číslo, které při trénování minimalizuje optimalizátor v každém kroku; musí být diferencovatelná a počítá se po vzorcích (křížová entropie, MSE, hinge). <b>Metrika</b> je číslo, kterým výsledek hodnotíme my na validačních/testovacích datech a které vyjadřuje, na čem úloze záleží (accuracy, F1, AUC, Dice, MAE).</p>
@@ -85,28 +92,44 @@ kde \(\eta \gt 0\) je <b>krok učení</b> (learning rate).</p>
 <p><b>Matice záměn</b> je tabulka počtů, která pro binární klasifikaci křížově třídí skutečnou a předpovězenou třídu: <b>TP</b> (skutečně pozitivní, předpovězeno pozitivní), <b>FN</b> (pozitivní, předpovězeno negativní – chyba II. druhu), <b>FP</b> (negativní, předpovězeno pozitivní – chyba I. druhu) a <b>TN</b> (negativní, předpovězeno negativní).</p>
 <p class="jinak">přehled, kde přesně se model plete. Všechny běžné klasifikační metriky jsou poměry čísel z této tabulky.</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-matice-zamen">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="s-precision-recall"><div class="box-t">senzitivita (recall) a přesnost (precision)</div>
-<p><b>Senzitivita (recall, TPR)</b> je podíl skutečně pozitivních vzorků, které model označil jako pozitivní: TP/(TP+FN). <b>Přesnost (precision, PPV)</b> je podíl vzorků označených jako pozitivní, které jsou opravdu pozitivní: TP/(TP+FP). <b>Specificita</b> je podíl skutečně negativních označených jako negativní: TN/(TN+FP).</p>
+<p><b>Senzitivita (recall, TPR)</b> je podíl skutečně pozitivních vzorků, které model označil jako pozitivní. <b>Přesnost (precision, PPV)</b> je podíl vzorků označených jako pozitivní, které jsou opravdu pozitivní. <b>Specificita</b> je podíl skutečně negativních označených jako negativní:
+\[ \text{recall} = \frac{TP}{TP + FN} \]
+\[ \text{precision} = \frac{TP}{TP + FP} \]
+\[ \text{specificita} = \frac{TN}{TN + FP} \]</p>
+<p><b>Slovy:</b> v čitateli jsou vždy správné zásahy, jmenovatel říká, <i>z koho</i> podíl počítám. U recall a specificity je to celý řádek matice záměn (všichni skutečně nemocní, resp. všichni zdraví), u precision celý sloupec (všichni, komu model řekl „nemocný“). Recall a precision se liší jediným členem ve jmenovateli: recall trestá přehlédnuté (FN), precision falešné poplachy (FP).</p>
 <p class="jinak">recall: „kolik nemocných jsem našel?“; precision: „když řeknu nemocný, kolikrát mám pravdu?“; specificita: „kolik zdravých jsem nechal na pokoji?“ Žádná z nich sama nestačí – model, který řekne každému „pozitivní“, má senzitivitu 1.</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-precision-recall">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="s-f1"><div class="box-t">F1 skóre (Dice)</div>
 <p><b>F1 skóre</b> je harmonický průměr přesnosti a senzitivity:
-\[ F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision} + \text{recall}} = \frac{2TP}{2TP + FP + FN} \]
-Je totožné s Diceovým koeficientem \(2|X\cap Y|/(|X| + |Y|)\) množiny předpovězených a skutečných pozitiv.</p>
+\[ \begin{aligned} F_1 &= 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision} + \text{recall}} \\ &= \frac{2TP}{2TP + FP + FN} \end{aligned} \]
+Je totožné s Diceovým koeficientem množiny předpovězených a skutečných pozitiv:
+\[ \text{Dice} = \frac{2|X\cap Y|}{|X| + |Y|} \]</p>
+<p><b>Slovy:</b> harmonický průměr dvou čísel leží vždy blíž k <i>menšímu</i> z nich, takže F1 nejde „ošidit“ jednou vysokou hodnotou: precision 1,0 a recall 0,1 dají aritmetický průměr 0,55, ale \(F_1 = 0{,}18\). Pravý tvar vzorce porovnává správné zásahy se všemi chybami – FP i FN se počítají stejně, správně negativní (TN) vůbec. U Diceova koeficientu je \(X\) množina vzorků (v segmentaci pixelů), které model označil jako pozitivní, \(Y\) množina skutečně pozitivních a jejich průnik \(X\cap Y\) jsou právě TP; \(|X| = TP + FP\) a \(|Y| = TP + FN\).</p>
 <p class="jinak">jedno číslo, které je vysoké jen tehdy, když model zároveň málo přehlíží i málo plaše poplašuje. Nezávisí na TN, proto je užitečné, když je pozitivních vzorků málo.</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-f1">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="s-roc"><div class="box-t">ROC křivka</div>
 <p><b>ROC křivka</b> (receiver operating characteristic) je křivka bodů \((\text{FPR}, \text{TPR})\), které dostaneme, když postupně posouváme rozhodovací práh přes všechny hodnoty skóre:
 \[ \text{TPR} = \frac{TP}{TP+FN} \]
 \[ \text{FPR} = \frac{FP}{FP+TN} = 1 - \text{specificita} \]</p>
+<p><b>Slovy:</b> TPR je podíl <i>pozitivních</i> vzorků, jejichž skóre je nad prahem (kolik nemocných zachytím); FPR je podíl <i>negativních</i> vzorků nad prahem (kolik zdravých falešně poplaším). Na obr. 2.1 jsou to vybarvené plochy napravo od prahu. Každý z obou podílů se počítá jen v rámci své třídy, proto ROC křivka nezávisí na tom, kolik je v datech pozitivních (na prevalenci).</p>
 <p class="jinak">celý klasifikátor v jednom obrázku: každý práh je jeden bod, volba prahu jen vybírá bod na křivce. Vysoký práh ⇒ skoro nic není pozitivní, bod (0, 0); nízký práh ⇒ vše pozitivní, (1, 1). Dokonalý klasifikátor se dotkne (0, 1), náhodný leží na diagonále.</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-roc">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="s-auc"><div class="box-t">AUC (plocha pod ROC křivkou)</div>
-<p><b>ROC AUC</b> je plocha pod ROC křivkou, \(\text{AUC} = \int_0^1 \text{TPR}\,d(\text{FPR})\). Rovná se pravděpodobnosti, že náhodně vybraný pozitivní vzorek dostane vyšší skóre než náhodně vybraný negativní: \(\text{AUC} = P(s(\mathbf x^+) \gt s(\mathbf x^-))\).</p>
+<p><b>ROC AUC</b> je plocha pod ROC křivkou:
+\[ \text{AUC} = \int_0^1 \text{TPR}\,d(\text{FPR}) \]
+Rovná se pravděpodobnosti, že náhodně vybraný pozitivní vzorek dostane vyšší skóre než náhodně vybraný negativní:
+\[ \text{AUC} = P\big(s(\mathbf x^+) \gt s(\mathbf x^-)\big) \]</p>
+<p><b>Slovy:</b> integrál je jen zápis plochy – sčítá výšku křivky (TPR) přes všechny hodnoty FPR od 0 do 1. Druhý zápis jde spočítat ručně: \(\mathbf x^+\) je náhodný pozitivní vzorek, \(\mathbf x^-\) náhodný negativní a \(s(\cdot)\) skóre modelu. Vezmi všechny dvojice (jeden pozitivní, jeden negativní) a spočítej, v jakém podílu z nich má pozitivní vyšší skóre.</p>
 <p class="jinak">jak dobře model <b>seřadí</b> pozitivní nad negativní, nezávisle na prahu. 0,5 = náhoda, 1 = dokonalé seřazení. AUC ale neříká nic o tom, jestli jsou skóre dobré pravděpodobnosti (kalibrace).</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-auc">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="s-kalibrace"><div class="box-t">kalibrace a Brierovo skóre</div>
-<p>Klasifikátor je <b>kalibrovaný</b>, pokud jeho výstup lze číst jako pravděpodobnost: mezi vzorky s \(\hat p = 0{,}8\) je asi 80 % pozitivních (kontroluje se po intervalech v reliability diagramu). <b>Brierovo skóre</b> \(\frac1n\sum_i(\hat p_i - y_i)^2\) je MSE pravděpodobností a kalibraci zachytí.</p>
+<p>Klasifikátor je <b>kalibrovaný</b>, pokud jeho výstup lze číst jako pravděpodobnost: mezi vzorky s \(\hat p = 0{,}8\) je asi 80 % pozitivních (kontroluje se po intervalech v reliability diagramu). <b>Brierovo skóre</b> je MSE pravděpodobností a kalibraci zachytí:
+\[ \text{Brier} = \frac1n\sum_i(\hat p_i - y_i)^2 \]</p>
+<p><b>Slovy:</b> \(\hat p_i\) je předpovězená pravděpodobnost pozitivní třídy, \(y_i\) skutečný label (1 = pozitivní, 0 = negativní). U každého vzorku se změří, jak daleko byla předpověď od skutečnosti, umocní se to a zprůměruje – stejně jako u MSE. Předpověď \(\hat p = 0{,}8\) stojí:</p>
+\[ \begin{aligned} y = 1&:\ (0{,}8 - 1)^2 = 0{,}04 \\ y = 0&:\ (0{,}8 - 0)^2 = 0{,}64 \end{aligned} \]
+<p>Sebejistý omyl je tedy drahý, a proto Brier kalibraci vidí; 0 = dokonalé, nižší je lepší.</p>
 <p class="jinak">monotónní transformace skóre zachová pořadí, ROC i AUC – a přitom může zničit pravděpodobnosti. AUC kalibraci nevidí; Brier ano (v přednášce 0,133 vs. 0,153 pro stejné AUC).</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-kalibrace">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="s-r2"><div class="box-t">koeficient determinace R²</div>
 <p><b>Koeficient determinace</b> udává, o kolik je model lepší než predikce průměrem:
 \[ R^2 = 1 - \frac{\sum_i(y_i - \hat y_i)^2}{\sum_i(y_i - \bar y)^2} = 1 - \frac{\text{SSE}}{\text{SST}} \]
 \[ R^2 \in (-\infty, 1] \]</p>
+<p><b>Slovy:</b> SST (jmenovatel) je chyba „hloupého“ modelu, který vždy předpoví průměr \(\bar y\); SSE (čitatel) je chyba našeho modelu. Jejich podíl říká, jaká část rozptylu \(y\) zůstala modelem <i>nevysvětlená</i>, a \(R^2\) je zbytek, tedy vysvětlená část. V regresním příkladu výše je podíl 1,64/30,59 = 0,054: model nevysvětlil 5,4 % rozptylu, \(R^2 = 0{,}946\). Záporné \(R^2\) vyjde, když SSE &gt; SST – model chybuje víc než pouhý průměr (typicky přeučený model na testovacích datech).</p>
 <p class="jinak">1 = dokonalá shoda, 0 = model není lepší než „vždy průměr“, záporné = je ještě horší. Čitatel je součet čtverců reziduí (SSE), jmenovatel celkový součet čtverců (SST).</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-r2">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="s-multiclass"><div class="box-t">multiclass a multilabel klasifikace</div>
 <p><b>Multiclass</b> (jeden label): každý vzorek patří právě do jedné z \(K\) tříd, \(y \in \{1,\dots,K\}\) nebo one-hot vektor se součtem 1 (typ nádoru na MRI, stupeň diabetické retinopatie). <b>Multilabel</b>: vzorek může mít žádný, jeden i více labelů současně, \(\mathbf y \in \{0,1\}^K\) (multi-hot; tagy obrázku, komorbidity pacienta).</p>
@@ -133,7 +156,10 @@ Je totožné s Diceovým koeficientem \(2|X\cap Y|/(|X| + |Y|)\) množiny předp
 <p><b>Imputace</b> je nahrazení chybějící hodnoty odhadem – statistikou sloupce (průměr, medián, nejčastější hodnota) nebo hodnotou odvozenou z ostatních příznaků (kNN imputer, iterativní MICE).</p>
 <p class="jinak">díru zalepíme „nejrozumnějším tipem“. Tip je ale vymyšlený, ne naměřený: jedna hodnota pro celý sloupec ho „zploští“ (v přednášce sd 0,96 → 0,77) a oslabí vztahy (korelace 0,73 → 0,59). kNN a MICE sledují trend (korelace 0,79), jen trochu příliš hladce.</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-imputace">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="s-tukey"><div class="box-t">Tukeyho ploty a winsorizace</div>
-<p><b>Tukeyho ploty</b> označí hodnotu za odlehlou, pokud leží mimo interval \([Q_1 - 1{,}5\,\text{IQR},\ Q_3 + 1{,}5\,\text{IQR}]\), kde \(Q_1, Q_3\) jsou kvartily a IQR = \(Q_3 - Q_1\). <b>Winsorizace</b> je oříznutí extrémních hodnot na zvolenou mez (např. percentil nebo plot) – hodnota zůstane v datech, ale ztratí svůj nepřiměřený vliv.</p>
+<p><b>Tukeyho ploty</b> označí hodnotu za odlehlou, pokud leží mimo interval
+\[ \big[\,Q_1 - 1{,}5\,\text{IQR},\ \ Q_3 + 1{,}5\,\text{IQR}\,\big] \]
+kde \(Q_1, Q_3\) jsou kvartily a IQR = \(Q_3 - Q_1\). <b>Winsorizace</b> je oříznutí extrémních hodnot na zvolenou mez (např. percentil nebo plot) – hodnota zůstane v datech, ale ztratí svůj nepřiměřený vliv.</p>
+<p><b>Slovy:</b> \(Q_1\) a \(Q_3\) jsou hodnoty, pod kterými leží 25 %, resp. 75 % dat; mezi nimi je „prostřední polovina“ široká IQR. Ploty stojí 1,5 této šířky pod \(Q_1\) a nad \(Q_3\) – co leží dál, je podezřelé. z-skóre \(z = (x - \mu)/\sigma\) naopak měří vzdálenost od průměru v jednotkách \(\sigma\), a průměr i \(\sigma\) odlehlá hodnota sama posune.</p>
 <p class="jinak">kvartily se odlehlou hodnotou nepohnou, proto jsou ploty robustní. Pravidlo \(|z| \gt 3\) naopak selhává, protože odlehlá hodnota sama nafoukne \(\sigma\) (maskování).</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-tukey">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="s-kodovani"><div class="box-t">one-hot, ordinální a target encoding</div>
 <p><b>One-hot</b> vytvoří pro každou úroveň kategorie jeden sloupec 0/1. <b>Ordinální kód</b> převede úrovně na jedno celé číslo. <b>Target encoding</b> nahradí úroveň průměrem cílové proměnné \(y\) pro tuto úroveň.</p>

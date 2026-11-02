@@ -138,6 +138,13 @@ where \(\eta \gt 0\) is the <b>learning rate</b> (step size).</p>
 \[ R(\theta) = \mathbb E_{(\mathbf x, y)\sim P}[L(f_\theta(\mathbf x), y)] \]
 The <b>empirical risk</b> is the average loss on a finite sample of data, e.g. on the training set:
 \[ \hat R_{\text{train}}(\theta) = \frac{1}{n}\sum_{i} L(f_\theta(\mathbf x_i), y_i) \]</p>
+<p><b>In words:</b> read \(R(\theta)\) as “how large a loss the model with parameters \(\theta\) will make on average on all future data”:</p>
+<ul>
+<li>\(\theta\) – the model parameters (e.g. weights), \(f_\theta(\mathbf x)\) – the model’s prediction for the input \(\mathbf x\);</li>
+<li>\(L(f_\theta(\mathbf x), y)\) – the loss of one sample: how much the prediction differs from the correct answer \(y\);</li>
+<li>\(\mathbb E_{(\mathbf x, y)\sim P}\) – the average over all pairs (input, label) that can come from the true distribution \(P\), weighted by how often they come.</li>
+</ul>
+<p>We do not know the distribution \(P\), so we replace it with a sample: \(\hat R\) (hat = estimate) is a plain average of the losses over the \(n\) samples we have. On the training data this estimate is overly optimistic (the model has seen them), on held-out test data it is unbiased – provided the test data come from the same distribution as the future data.</p>
 <p class="jinak">we train by minimizing the empirical risk on the training data, but we care about the population risk. We estimate it by the average loss on a held-out test set: \(\hat R_{\text{test}} \approx R(\theta)\). The whole model development is an optimization of <b>generalization</b>.</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-riziko">explained in chapter 2 →</a></p></div>
 <div class="box definice" id="s-loss-metrika"><div class="box-t">loss function vs. metric</div>
 <p>The <b>loss function</b> is the number the optimizer minimizes in every step during training; it must be differentiable and is computed per sample (cross-entropy, MSE, hinge). A <b>metric</b> is the number we use to judge the result on validation/test data and that expresses what matters in the task (accuracy, F1, AUC, Dice, MAE).</p>
@@ -146,28 +153,44 @@ The <b>empirical risk</b> is the average loss on a finite sample of data, e.g. o
 <p>The <b>confusion matrix</b> is a table of counts that, for binary classification, cross-tabulates the true and the predicted class: <b>TP</b> (truly positive, predicted positive), <b>FN</b> (positive, predicted negative – type II error), <b>FP</b> (negative, predicted positive – type I error) and <b>TN</b> (negative, predicted negative).</p>
 <p class="jinak">an overview of exactly where the model makes mistakes. All common classification metrics are ratios of numbers from this table.</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-matice-zamen">explained in chapter 2 →</a></p></div>
 <div class="box definice" id="s-precision-recall"><div class="box-t">sensitivity (recall) and precision</div>
-<p><b>Sensitivity (recall, TPR)</b> is the share of truly positive samples that the model marked as positive: TP/(TP+FN). <b>Precision (PPV)</b> is the share of samples marked as positive that really are positive: TP/(TP+FP). <b>Specificity</b> is the share of truly negative samples marked as negative: TN/(TN+FP).</p>
+<p><b>Sensitivity (recall, TPR)</b> is the share of truly positive samples that the model marked as positive. <b>Precision (PPV)</b> is the share of samples marked as positive that really are positive. <b>Specificity</b> is the share of truly negative samples marked as negative:
+\[ \text{recall} = \frac{TP}{TP + FN} \]
+\[ \text{precision} = \frac{TP}{TP + FP} \]
+\[ \text{specificity} = \frac{TN}{TN + FP} \]</p>
+<p><b>In words:</b> the numerator always holds the correct hits, the denominator says <i>out of whom</i> I compute the share. For recall and specificity it is a whole row of the confusion matrix (all truly sick, or all healthy), for precision a whole column (everyone the model called “sick”). Recall and precision differ in a single term of the denominator: recall punishes missed cases (FN), precision false alarms (FP).</p>
 <p class="jinak">recall: “how many of the sick did I find?”; precision: “when I say sick, how often am I right?”; specificity: “how many healthy people did I leave alone?” None of them is enough alone – a model that says “positive” to everyone has sensitivity 1.</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-precision-recall">explained in chapter 2 →</a></p></div>
 <div class="box definice" id="s-f1"><div class="box-t">F1 score (Dice)</div>
 <p>The <b>F1 score</b> is the harmonic mean of precision and sensitivity:
-\[ F_1 = 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision} + \text{recall}} = \frac{2TP}{2TP + FP + FN} \]
-It is identical to the Dice coefficient \(2|X\cap Y|/(|X| + |Y|)\) of the sets of predicted and true positives.</p>
+\[ \begin{aligned} F_1 &= 2\cdot\frac{\text{precision}\cdot\text{recall}}{\text{precision} + \text{recall}} \\ &= \frac{2TP}{2TP + FP + FN} \end{aligned} \]
+It is identical to the Dice coefficient of the sets of predicted and true positives:
+\[ \text{Dice} = \frac{2|X\cap Y|}{|X| + |Y|} \]</p>
+<p><b>In words:</b> the harmonic mean of two numbers always lies closer to the <i>smaller</i> of them, so F1 cannot be “cheated” by one high value: precision 1.0 and recall 0.1 give an arithmetic mean of 0.55, but \(F_1 = 0.18\). The right-hand form of the formula compares the correct hits with all errors – FP and FN count the same, true negatives (TN) not at all. In the Dice coefficient \(X\) is the set of samples (pixels in segmentation) the model marked as positive, \(Y\) the set of truly positive ones, and their intersection \(X\cap Y\) is exactly TP; \(|X| = TP + FP\) and \(|Y| = TP + FN\).</p>
 <p class="jinak">one number that is high only when the model both misses little and raises few false alarms. It does not depend on TN, so it is useful when there are few positive samples.</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-f1">explained in chapter 2 →</a></p></div>
 <div class="box definice" id="s-roc"><div class="box-t">ROC curve</div>
 <p>The <b>ROC curve</b> (receiver operating characteristic) is the curve of points \((\text{FPR}, \text{TPR})\) that we get when we move the decision threshold step by step over all score values:
 \[ \text{TPR} = \frac{TP}{TP+FN} \]
 \[ \text{FPR} = \frac{FP}{FP+TN} = 1 - \text{specificity} \]</p>
+<p><b>In words:</b> TPR is the share of <i>positive</i> samples whose score is above the threshold (how many sick people I catch); FPR is the share of <i>negative</i> samples above the threshold (how many healthy people I falsely alarm). In Fig. 2.1 these are the coloured areas to the right of the threshold. Each of the two shares is computed only within its own class, which is why the ROC curve does not depend on how many positives the data contain (on the prevalence).</p>
 <p class="jinak">the whole classifier in one picture: every threshold is one point, choosing a threshold only picks a point on the curve. High threshold ⇒ almost nothing is positive, point (0, 0); low threshold ⇒ everything positive, (1, 1). A perfect classifier touches (0, 1), a random one lies on the diagonal.</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-roc">explained in chapter 2 →</a></p></div>
 <div class="box definice" id="s-auc"><div class="box-t">AUC (area under the ROC curve)</div>
-<p><b>ROC AUC</b> is the area under the ROC curve, \(\text{AUC} = \int_0^1 \text{TPR}\,d(\text{FPR})\). It equals the probability that a randomly chosen positive sample gets a higher score than a randomly chosen negative one: \(\text{AUC} = P(s(\mathbf x^+) \gt s(\mathbf x^-))\).</p>
+<p><b>ROC AUC</b> is the area under the ROC curve:
+\[ \text{AUC} = \int_0^1 \text{TPR}\,d(\text{FPR}) \]
+It equals the probability that a randomly chosen positive sample gets a higher score than a randomly chosen negative one:
+\[ \text{AUC} = P\big(s(\mathbf x^+) \gt s(\mathbf x^-)\big) \]</p>
+<p><b>In words:</b> the integral is just a way of writing an area – it adds up the height of the curve (TPR) over all values of FPR from 0 to 1. The second form can be computed by hand: \(\mathbf x^+\) is a random positive sample, \(\mathbf x^-\) a random negative one and \(s(\cdot)\) the model’s score. Take all pairs (one positive, one negative) and count in what share of them the positive has the higher score.</p>
 <p class="jinak">how well the model <b>ranks</b> positives above negatives, independent of the threshold. 0.5 = chance, 1 = perfect ranking. But AUC says nothing about whether the scores are good probabilities (calibration).</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-auc">explained in chapter 2 →</a></p></div>
 <div class="box definice" id="s-kalibrace"><div class="box-t">calibration and Brier score</div>
-<p>A classifier is <b>calibrated</b> if its output can be read as a probability: among samples with \(\hat p = 0.8\) about 80 % are positive (checked by bins in a reliability diagram). The <b>Brier score</b> \(\frac1n\sum_i(\hat p_i - y_i)^2\) is the MSE of the probabilities and does capture calibration.</p>
+<p>A classifier is <b>calibrated</b> if its output can be read as a probability: among samples with \(\hat p = 0.8\) about 80 % are positive (checked by bins in a reliability diagram). The <b>Brier score</b> is the MSE of the probabilities and does capture calibration:
+\[ \text{Brier} = \frac1n\sum_i(\hat p_i - y_i)^2 \]</p>
+<p><b>In words:</b> \(\hat p_i\) is the predicted probability of the positive class, \(y_i\) the true label (1 = positive, 0 = negative). For each sample we measure how far the prediction was from the truth, square it and average – just like MSE. A prediction \(\hat p = 0.8\) costs:</p>
+\[ \begin{aligned} y = 1&:\ (0.8 - 1)^2 = 0.04 \\ y = 0&:\ (0.8 - 0)^2 = 0.64 \end{aligned} \]
+<p>A confident mistake is therefore expensive, which is why Brier sees calibration; 0 = perfect, lower is better.</p>
 <p class="jinak">a monotonic transformation of the score keeps the ranking, ROC and AUC – and at the same time it can destroy the probabilities. AUC does not see calibration; Brier does (in the lecture 0.133 vs. 0.153 for the same AUC).</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-kalibrace">explained in chapter 2 →</a></p></div>
 <div class="box definice" id="s-r2"><div class="box-t">coefficient of determination R²</div>
 <p>The <b>coefficient of determination</b> says how much better the model is than predicting the mean:
 \[ R^2 = 1 - \frac{\sum_i(y_i - \hat y_i)^2}{\sum_i(y_i - \bar y)^2} = 1 - \frac{\text{SSE}}{\text{SST}} \]
 \[ R^2 \in (-\infty, 1] \]</p>
+<p><b>In words:</b> SST (the denominator) is the error of a “dumb” model that always predicts the mean \(\bar y\); SSE (the numerator) is the error of our model. Their ratio says what part of the variance of \(y\) the model left <i>unexplained</i>, and \(R^2\) is the rest, i.e. the explained part. In the regression example above the ratio is 1.64/30.59 = 0.054: the model did not explain 5.4 % of the variance, \(R^2 = 0.946\). A negative \(R^2\) comes out when SSE &gt; SST – the model makes larger errors than the plain mean (typically an overfitted model on test data).</p>
 <p class="jinak">1 = perfect fit, 0 = the model is no better than “always the mean”, negative = it is even worse. The numerator is the sum of squared residuals (SSE), the denominator the total sum of squares (SST).</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-r2">explained in chapter 2 →</a></p></div>
 <div class="box definice" id="s-multiclass"><div class="box-t">multiclass and multilabel classification</div>
 <p><b>Multiclass</b> (one label): each sample belongs to exactly one of \(K\) classes, \(y \in \{1,\dots,K\}\) or a one-hot vector summing to 1 (tumour type on MRI, grade of diabetic retinopathy). <b>Multilabel</b>: a sample can have no label, one or several labels at once, \(\mathbf y \in \{0,1\}^K\) (multi-hot; image tags, a patient’s comorbidities).</p>
@@ -194,7 +217,10 @@ It is identical to the Dice coefficient \(2|X\cap Y|/(|X| + |Y|)\) of the sets o
 <p><b>Imputation</b> is replacing a missing value with an estimate – a column statistic (mean, median, most frequent value) or a value derived from the other features (kNN imputer, iterative MICE).</p>
 <p class="jinak">we patch the hole with the “most sensible guess”. But the guess is made up, not measured: one value for the whole column “flattens” it (in the lecture sd 0.96 → 0.77) and weakens relationships (correlation 0.73 → 0.59). kNN and MICE follow the trend (correlation 0.79), just a bit too smoothly.</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-imputace">explained in chapter 2 →</a></p></div>
 <div class="box definice" id="s-tukey"><div class="box-t">Tukey fences and winsorization</div>
-<p><b>Tukey fences</b> mark a value as an outlier if it lies outside the interval \([Q_1 - 1.5\,\text{IQR},\ Q_3 + 1.5\,\text{IQR}]\), where \(Q_1, Q_3\) are the quartiles and IQR = \(Q_3 - Q_1\). <b>Winsorization</b> clips extreme values to a chosen limit (e.g. a percentile or a fence) – the value stays in the data but loses its excessive influence.</p>
+<p><b>Tukey fences</b> mark a value as an outlier if it lies outside the interval
+\[ \big[\,Q_1 - 1.5\,\text{IQR},\ \ Q_3 + 1.5\,\text{IQR}\,\big] \]
+where \(Q_1, Q_3\) are the quartiles and IQR = \(Q_3 - Q_1\). <b>Winsorization</b> clips extreme values to a chosen limit (e.g. a percentile or a fence) – the value stays in the data but loses its excessive influence.</p>
+<p><b>In words:</b> \(Q_1\) and \(Q_3\) are the values below which 25 % and 75 % of the data lie; between them is the “middle half”, IQR wide. The fences stand 1.5 of this width below \(Q_1\) and above \(Q_3\) – whatever lies further out is suspicious. The z-score \(z = (x - \mu)/\sigma\), on the other hand, measures the distance from the mean in units of \(\sigma\), and both the mean and \(\sigma\) are shifted by the outlier itself.</p>
 <p class="jinak">an outlier does not move the quartiles, so the fences are robust. The rule \(|z| \gt 3\), on the other hand, fails because the outlier itself inflates \(\sigma\) (masking).</p><p class="slovnik-odkaz"><a href="02_hodnoceni.html#def-tukey">explained in chapter 2 →</a></p></div>
 <div class="box definice" id="s-kodovani"><div class="box-t">one-hot, ordinal and target encoding</div>
 <p><b>One-hot</b> creates one 0/1 column for each level of the category. <b>Ordinal encoding</b> turns the levels into one integer. <b>Target encoding</b> replaces a level by the mean of the target variable \(y\) for that level.</p>

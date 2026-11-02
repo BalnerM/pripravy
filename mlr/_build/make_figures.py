@@ -225,6 +225,121 @@ def fig02_kfold_var():
     save(fig, "fig02_kfold_var")
 
 
+def fig02_kalibrace():
+    """Stejné pořadí skóre (stejné AUC), ale jiná kalibrace: sigmoidy a reliability diagram (podle slidu 20)."""
+    from sklearn.metrics import roc_auc_score
+    r = rng(20)
+    n = 4000
+    s = r.normal(1.0, 1.6, n)                       # skóre klasifikátoru
+    sig = lambda z: 1 / (1 + np.exp(-z))
+    p_true = sig(1.6 * (s - 1.0))                   # skutečná P(y = 1 | s)
+    y = (r.uniform(size=n) < p_true).astype(int)
+    p_cal = p_true                                  # kalibrovaný model: vrací skutečnou pravděpodobnost
+    p_over = sig(4.5 * (s - 1.0))                   # přehnaně sebejistý: stejné pořadí, strmější sigmoida
+    auc = roc_auc_score(y, s)
+    fig, axs = plt.subplots(1, 2, figsize=(11, 3.9))
+    ax = axs[0]
+    ss = np.linspace(-3, 5, 300)
+    ax.plot(ss, sig(1.6 * (ss - 1.0)), color=C1, label=T("kalibrovaný", "calibrated"))
+    ax.plot(ss, sig(4.5 * (ss - 1.0)), color=C2, ls="--", label=T("přehnaně sebejistý", "overconfident"))
+    ax.set_xlabel(T("skóre s", "score s")); ax.set_ylabel(T("předpovězená pravděpodobnost p̂(y = 1 | s)",
+                                                            "predicted probability p̂(y = 1 | s)"))
+    ax.set_title(T(f"Stejné pořadí, stejné ROC AUC = {cz(auc, 3)}", f"Same ranking, same ROC AUC = {cz(auc, 3)}"))
+    ax.legend(loc="upper left", fontsize=9)
+    ax = axs[1]
+    bins = np.linspace(0, 1, 11)
+    for p, col, mk, ls, name in [(p_cal, C1, "o", "-", T("kalibrovaný", "calibrated")),
+                                 (p_over, C2, "s", "--", T("přehnaně sebejistý", "overconfident"))]:
+        idx = np.clip(np.digitize(p, bins) - 1, 0, 9)
+        mx = [p[idx == b].mean() for b in range(10) if (idx == b).sum() > 0]
+        my = [y[idx == b].mean() for b in range(10) if (idx == b).sum() > 0]
+        brier = np.mean((p - y) ** 2)
+        ax.plot(mx, my, marker=mk, color=col, ls=ls, ms=6, mec=SURF, label=f"{name}: Brier = {cz(brier, 3)}")
+        print("   ", name, "Brier", round(brier, 4))
+    ax.plot([0, 1], [0, 1], color=MUTED, lw=1, ls=":", label=T("dokonalá kalibrace", "perfect calibration"))
+    ax.set_xlabel(T("průměrná předpovězená pravděpodobnost v intervalu", "mean predicted probability in the bin"))
+    ax.set_ylabel(T("skutečný podíl pozitivních", "observed fraction of positives"))
+    ax.set_title(T("Reliability diagram (10 intervalů)", "Reliability diagram (10 bins)"))
+    ax.legend(loc="upper left", fontsize=8.5)
+    ax.set_xlim(-0.02, 1.02); ax.set_ylim(-0.02, 1.02); ax.set_aspect("equal")
+    print("    AUC", round(auc, 4))
+    save(fig, "fig02_kalibrace")
+
+
+def fig02_imputace():
+    """Úplná data, imputace průměrem a kNN imputace (k = 5) – podle slidu 36."""
+    from sklearn.impute import KNNImputer
+    r = rng(36)
+    n = 90
+    x1 = r.normal(0, 1, n)
+    x2 = 0.75 * x1 + r.normal(0, 0.65, n)
+    # chybí třetina hodnot příznaku 2, častěji u vyšších x1 (chybění závisí na pozorovaném příznaku)
+    order = np.argsort(x1 + r.normal(0, 1.5, n))
+    miss = np.zeros(n, bool); miss[order[-n // 3:]] = True
+    x2_mean = x2.copy(); x2_mean[miss] = x2[~miss].mean()
+    Xm = np.c_[x1, np.where(miss, np.nan, x2)]
+    x2_knn = KNNImputer(n_neighbors=5).fit_transform(Xm)[:, 1]
+    fig, axs = plt.subplots(1, 3, figsize=(12, 3.7), sharex=True, sharey=True)
+    panels = [(x2, T("Úplná data (ve skutečnosti je nemáme)", "Complete data (we do not have them)"),
+               T("později chybějící", "later missing")),
+              (x2_mean, T("Imputace průměrem", "Mean imputation"), T("doplněno", "imputed")),
+              (x2_knn, T("kNN imputace (k = 5)", "kNN imputation (k = 5)"), T("doplněno", "imputed"))]
+    for ax, (v, title, lab) in zip(axs, panels):
+        ax.scatter(x1[~miss], v[~miss], s=18, c=C1, marker="o", edgecolors=SURF, linewidths=0.5,
+                   label=T("naměřeno", "observed"), zorder=3)
+        ax.scatter(x1[miss], v[miss], s=26, c=C2, marker="D", edgecolors=SURF, linewidths=0.5, label=lab, zorder=4)
+        corr = np.corrcoef(x1, v)[0, 1]
+        ax.set_title(title, fontsize=10)
+        ax.text(0.03, 0.96, f"{T('korelace', 'corr')} {cz(corr)}, sd {cz(v.std())}", transform=ax.transAxes,
+                fontsize=9, color=INK2, va="top", bbox=dict(fc=SURF, ec="none", pad=1.5))
+        ax.legend(loc="lower right", fontsize=8.5)
+        ax.set_xlabel(T("příznak 1 (vždy naměřen)", "feature 1 (always observed)"))
+        print("   ", title, "corr", round(corr, 3), "sd", round(v.std(), 3))
+    axs[0].set_ylabel(T("příznak 2 (třetina chybí)", "feature 2 (a third missing)"))
+    save(fig, "fig02_imputace")
+
+
+def fig02_odlehle():
+    """Odlehlá hodnota: hranice μ + 3σ vs. Tukeyho plot a winsorizace na [P1, P99] – podle slidu 38."""
+    r = rng(38)
+    x = np.r_[r.normal(50, 7, 99), 200.0]
+    mu, sd = x.mean(), x.std()
+    sd_bez = x[:-1].std()
+    q1, q3 = np.percentile(x, [25, 75]); iqr = q3 - q1
+    lo, hi = q1 - 1.5 * iqr, q3 + 1.5 * iqr
+    p1, p99 = np.percentile(x, [1, 99])
+    yj = r.uniform(-0.35, 0.35, len(x))
+    fig, axs = plt.subplots(1, 2, figsize=(12, 3.2), sharey=True)
+    ax = axs[0]
+    ax.scatter(x[:-1], yj[:-1], s=14, c=C1, edgecolors=SURF, linewidths=0.4, zorder=3)
+    ax.scatter(x[-1], 0, s=50, c=C2, marker="s", edgecolors=SURF, zorder=4)
+    ax.axvline(mu + 3 * sd, color=INK2, ls="--", lw=1.3)
+    ax.axvline(hi, color=C3, ls="-", lw=1.6)
+    ax.axvline(lo, color=C3, ls="-", lw=1.6)
+    ax.text(mu + 3 * sd + 2, 0.82, f"μ + 3σ = {cz(mu + 3 * sd, 0)}\n(σ = {cz(sd, 0)}, {T('bez odlehlé', 'without outlier')} "
+            f"{cz(sd_bez, 0)})", fontsize=9, color=INK2, va="top")
+    k15 = "1,5" if LANG == "cs" else "1.5"
+    ax.text(hi - 1.5, 0.82, f"{T('Tukeyho ploty', 'Tukey fences')}\nQ₁ − {k15}·IQR = {cz(lo, 0)}\n"
+            f"Q₃ + {k15}·IQR = {cz(hi, 0)}", fontsize=9, color=INK2, ha="right", va="top")
+    ax.set_title(T("Detekce: kde je hranice?", "Detection: where is the fence?"))
+    ax = axs[1]
+    xw = np.clip(x, p1, p99)
+    ax.scatter(xw[:-1], yj[:-1], s=14, c=C1, edgecolors=SURF, linewidths=0.4, zorder=3)
+    ax.scatter(xw[-1], 0, s=50, c=C2, marker="s", edgecolors=SURF, zorder=4)
+    ax.axvline(p1, color=C3, ls="--", lw=1.3); ax.axvline(p99, color=C3, ls="--", lw=1.3)
+    ax.annotate("", xy=(xw[-1] + 2, 0), xytext=(198, 0), arrowprops=dict(arrowstyle="->", color=C2, lw=1.4))
+    ax.text(200, 0.12, f"200 → P₉₉ = {cz(p99, 0)}", fontsize=9, color=INK2, ha="right")
+    ax.text(p1 - 2.5, 0.82, f"P₁ = {cz(p1, 0)}", fontsize=9, color=INK2, ha="right", va="top")
+    ax.text(p99 + 2.5, 0.82, f"P₉₉ = {cz(p99, 0)}", fontsize=9, color=INK2, va="top")
+    ax.set_title(T("Ošetření: winsorizace na [P₁, P₉₉]", "Handling: winsorized to [P₁, P₉₉]"))
+    for ax in axs:
+        ax.set_xlim(0, 210); ax.set_ylim(-0.9, 0.9); ax.set_yticks([]); ax.grid(axis="y", visible=False)
+        ax.set_xlabel(T("hodnota příznaku", "feature value"))
+    print("    mu", round(mu, 1), "sd", round(sd, 1), "sd bez", round(sd_bez, 1), "mu+3sd", round(mu + 3 * sd, 1),
+          "Q1,Q3", round(q1, 1), round(q3, 1), "fence", round(lo, 1), round(hi, 1), "P1,P99", round(p1, 1), round(p99, 1))
+    save(fig, "fig02_odlehle")
+
+
 # =====================================================================  přednáška 3
 def fig03_hughes():
     """Hughesův jev: LDA, 20 trénovacích vzorků, prvních 10 příznaků informativních, ostatní šum."""
@@ -1008,7 +1123,8 @@ def t1_parabola():
 
 T1 = [t1_ridge_lambda, t1_standardizace, t1_strom, t1_parabola]
 
-ALL = [fig01_gd_eta, fig01_knn_k, fig02_roc, fig02_kfold_var, fig03_hughes, fig03_pca_lda, fig03_tsne_perp,
+ALL = [fig01_gd_eta, fig01_knn_k, fig02_roc, fig02_kfold_var, fig02_kalibrace, fig02_imputace, fig02_odlehle,
+       fig03_hughes, fig03_pca_lda, fig03_tsne_perp,
        fig03_umap_params, fig04_poly, fig04_ridge_lasso, fig04_losses, fig04_svm_c, fig04_svm_rbf,
        fig06_terce, fig06_regimy, fig06_bias_variance, fig06_tree_depth, fig06_impurity, fig06_bagging, fig06_rf, fig06_adaboost,
        fig06_ada_kola, fig06_ada_silny,
