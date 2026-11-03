@@ -259,6 +259,62 @@ def fig03_log():
     save(fig, "fig03_log")
 
 
+def fig03_prumer_sd():
+    # tři případy ze slidu „Specifické případy“ (průměr ± s, numpy std s dělitelem N jako na slidu)
+    rng = np.random.default_rng(3)  # vlastní generátor: nemění náhodná data ostatních grafů
+    x = np.arange(21)
+    r = rng.normal(0, 1, 21)
+    sady = [np.full(21, 7.0), x / 2, 5 + 0.61 * (r - r.mean()) / r.std()]
+    titulky = ["pole zcela stejných hodnot", "Y = x/2 (rovnoměrný nárůst)", "náhodně rozptýlená data"]
+    fig, axs = plt.subplots(1, 3, figsize=(12, 3.4), sharey=True)
+    for ax, y, t in zip(axs, sady, titulky):
+        m, s = y.mean(), y.std()
+        ax.axhspan(m - s, m + s, color=C1, alpha=0.13, lw=0, label="pásmo průměr ± s")
+        ax.axhline(m, color=C1, lw=2, label="průměr")
+        ax.scatter(x, y, s=22, c=INK2, zorder=3)
+        ax.set_title(f"{t}\n{m:.2f} ± {s:.2f}".replace(".", ","))
+        ax.set_xlabel("pořadí měření"); ax.set_ylim(0, 10.5)
+    axs[0].set_ylabel("hodnota")
+    axs[2].legend(loc="lower right", fontsize=9)
+    save(fig, "fig03_prumer_sd")
+
+
+def fig03_vzdalenost():
+    # nejbližší sousedé pacienta A před a po standardizaci (věk v letech vs. BNP v pg/ml)
+    rng = np.random.default_rng(35)  # vlastní generátor: nemění náhodná data ostatních grafů
+    n = 30
+    vek = rng.uniform(30, 85, n)
+    bnp = np.clip(rng.normal(400, 250, n), 30, None)
+    vek[0], bnp[0] = 55, 400
+    X = np.c_[vek, bnp]
+    Z = (X - X.mean(0)) / X.std(0, ddof=1)
+    fig, osy = plt.subplots(2, 2, figsize=(11, 4.6), gridspec_kw=dict(height_ratios=[1, 0.07]))
+    axs = osy[0]
+    gs = osy[1, 0].get_gridspec(); osy[1, 0].remove(); osy[1, 1].remove()
+    leg_ax = fig.add_subplot(gs[1, :]); leg_ax.axis("off")
+    for ax, D, t, xl, yl in zip(
+            axs, [X, Z],
+            ["bez škálování: sousedy určuje skoro jen BNP", "po standardizaci: obě proměnné mají stejnou váhu"],
+            ["věk [roky]", "věk (z-skóre)"], ["BNP [pg/ml]", "BNP (z-skóre)"]):
+        d = np.hypot(*(D - D[0]).T)
+        nn = np.argsort(d)[1:4]
+        ostatni = np.setdiff1d(np.arange(1, n), nn)
+        ax.add_patch(Ellipse(D[0], 2 * d[nn[-1]], 2 * d[nn[-1]], fill=False, ec=C2, ls="--", lw=1.5,
+                             label="okolí pacienta A (vzdálenost ke 3. sousedovi)"))
+        ax.scatter(D[ostatni, 0], D[ostatni, 1], s=26, c=C1, edgecolors=SURF, label="ostatní pacienti")
+        ax.scatter(D[nn, 0], D[nn, 1], s=70, c=C3, marker="^", edgecolors=SURF, zorder=3, label="3 nejbližší sousedé")
+        ax.scatter(*D[0], s=80, c=C2, marker="s", edgecolors=SURF, zorder=4, label="pacient A")
+        for i in nn:
+            vlevo = D is Z and D[i, 0] < D[0, 0]
+            ax.annotate(f"{X[i, 0]:.0f} let", D[i], xytext=(-7 if vlevo else 7, 4), textcoords="offset points",
+                        ha="right" if vlevo else "left", fontsize=8.5, color=INK2)
+        ax.set_title(t); ax.set_xlabel(xl); ax.set_ylabel(yl)
+    axs[0].set_xlim(25, 90)
+    axs[1].set_aspect("equal", adjustable="datalim")
+    leg_ax.legend(*axs[0].get_legend_handles_labels(), loc="center", ncol=4, fontsize=9)
+    save(fig, "fig03_vzdalenost")
+
+
 # =====================================================================  přednáška 4
 def fig04_korelace_tvary():
     n = 80
@@ -969,7 +1025,8 @@ if __name__ == "__main__":
               fig06_princip, fig06_scree, fig06_zateze, fig06_s_vs_r, fig06_biplot, fig06_limitace,
               fig07_limity, fig07_poly, fig07_kernel_1d, fig07_kpca, fig07_gamma, fig08_svd, fig09_rotace,
               fig09_spolecna_pricina, fig09_komunality,
-              fig10_gauss_t, fig10_perplexita, fig10_swiss, fig11_umap_params, fig11_srovnani]:
+              fig10_gauss_t, fig10_perplexita, fig10_swiss, fig11_umap_params, fig11_srovnani,
+              fig03_prumer_sd, fig03_vzdalenost]:
         f()
     _, w, V, _ = protein_pca()
     print("vlastní čísla:", w.round(2), "% :", (w / w.sum() * 100).round(2))

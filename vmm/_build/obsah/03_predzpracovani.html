@@ -1,5 +1,25 @@
 <h1>Předzpracování dat</h1>
 <p class="lead">Surová data téměř nikdy nejdou rovnou do modelu. Obsahují text místo čísel, díry, chyby a proměnné v nesrovnatelných jednotkách. Předzpracování je soubor kroků, které z nich udělají něco, s čím metoda umí korektně počítat.</p>
+<div class="schema narrow">
+<svg viewBox="0 0 560 360" role="img" aria-label="Nit kapitoly: vstupní data projdou šesti kroky předzpracování a teprve potom jdou do modelu">
+  <defs><marker id="ar3n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="20" y="8" width="520" height="52" rx="8" class="node"/>
+  <text x="280" y="30" text-anchor="middle" style="font-weight:600">Vstupní data</text>
+  <text x="280" y="50" text-anchor="middle" class="t2">text místo čísel, díry, chyby, nesrovnatelné jednotky</text>
+  <path d="M280 60V78" class="ln" marker-end="url(#ar3n)"/>
+  <rect x="20" y="82" width="520" height="210" rx="8" class="fl1" style="stroke:var(--c1)"/>
+  <text x="36" y="104" style="font-weight:600">Předzpracování</text><text x="300" y="104" class="t2">co tím řešíme</text>
+  <text x="36" y="134">1 Kontrola rozložení</text><text x="300" y="134" class="t2">chyby a nesmysly (BMI 94,75)</text>
+  <text x="36" y="160">2 Převod na čísla</text><text x="300" y="160" class="t2">model počítá jen s čísly</text>
+  <text x="36" y="186">3 Rozřazení příznaků / výstupu</text><text x="300" y="186" class="t2">kategorie do sloupců 0/1</text>
+  <text x="36" y="212">4 Chybějící hodnoty</text><text x="300" y="212" class="t2">díry: smazat, nebo doplnit</text>
+  <text x="36" y="238">5 Kontrola rozsahu</text><text x="300" y="238" class="t2">roky × tisíce × miliony?</text>
+  <text x="36" y="264">6 Stejný rozsah</text><text x="300" y="264" class="t2">standardizace: stejná váha všem</text>
+  <path d="M280 292V310" class="ln" marker-end="url(#ar3n)"/>
+  <rect x="20" y="314" width="520" height="40" rx="8" class="node"/>
+  <text x="280" y="339" text-anchor="middle" style="font-weight:600">Model, analýza (LR, SVM, PCA, k-means…)</text>
+</svg></div>
+<p>Kapitola má jednu nit: <b>model nerozumí datům, jen počítá s čísly</b>. Každý krok předzpracování odstraňuje jeden způsob, jak by ho čísla mohla „obelhat“. Pořadí kroků odpovídá slidu z přednášky; v praxi se kroky 1 a 5 (prohlédnout data) dělají hned na začátku a krok 6 až těsně před modelem.</p>
 
 <h2 id="proc">Proč data předzpracovávat</h2>
 <div class="box definice" id="def-predzpracovani"><div class="box-t">Definice: předzpracování dat</div>
@@ -12,6 +32,16 @@
   <li><b>Rozložení</b> všech vstupů i výstupů – je třeba ho zkontrolovat. Odpovídá min/max/průměr/medián očekávání? (BMI = 307 kg / 1,8² m² = 94,75 je téměř jistě chyba zápisu.)</li>
   <li><b>Rozsah hodnot</b> – je vhodný pro zvolenou metodu? Věk v desítkách, koncentrace v tisících, odpor v milionech…</li>
 </ol>
+<div class="box intuice"><div class="box-t">Intuice: model vidí jen čísla</div>
+<p>Model neví, že sloupec znamená „věk“ nebo „typ blokády“. Vidí tabulku čísel a bere je doslova: <b>větší číslo = víc</b>, <b>rozdíl čísel = vzdálenost</b>, <b>velké číslo = velký vliv</b>. Odtud plynou všechny kroky:</p>
+<ul>
+<li>text („Male“) neumí sečíst ani porovnat → převod na čísla;</li>
+<li>očíslované kategorie (L = 0, R = 1, Sync = 2) by model četl jako pořadí → one-hot;</li>
+<li>s dírou nejde spočítat ani průměr → odstranit nebo doplnit;</li>
+<li>překlep (BMI 94,75) by model bral jako skutečného extrémního pacienta → kontrola rozložení;</li>
+<li>proměnná v tisících by přehlušila proměnnou v desítkách jen kvůli jednotkám → standardizace.</li>
+</ul>
+<p>A jedno pravidlo nad tím vším: všechno, co se z dat „naučí“ (průměr, \(s\), medián pro doplnění), se počítá <b>jen z trénovacích dat</b> a pak se beze změny použije na nová data.</p></div>
 <div class="box postup"><div class="box-t">Postup předzpracování (shrnutí z přednášky)</div>
 <ol>
 <li><b>Poznej svoje data</b> – typy, rozsahy, rozložení, chybějící hodnoty.</li>
@@ -87,6 +117,7 @@
 </ul></div>
 <div class="box pozor"><div class="box-t">Otázka k zamyšlení (z přednášky 5): co se spočítá rychleji – průměr, nebo medián?</div>
 <p><b>Průměr.</b> Stačí jednou projít data a hodnoty sečíst. Pro medián musíme vědět, která hodnota je „uprostřed“, a k tomu je potřeba hodnoty <b>seřadit</b> (aspoň částečně) – a řazení je pomalejší než sčítání. U pár stovek pacientů je rozdíl zanedbatelný, u milionů hodnot nebo při opakovaném výpočtu (např. v každé iteraci algoritmu) už ne. Stejná úvaha vysvětluje, proč je k-medoids pomalejší než k-means (<a href="05_shlukova_analyza.html#alternativy">přednáška 5</a>).</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div><p>Nejdřív zjisti, kolik a proč chybí. Mazat jen tehdy, když si ztrátu dat můžeš dovolit, jinak díru doplnit statistikou sloupce (průměr, medián) spočtenou z trénovacích dat – s vědomím, že doplněná hodnota je odhad, ne měření.</p></div>
 
 <h2 id="skalovani">Standardizace a normalizace</h2>
 <div class="box definice" id="def-skalovani"><div class="box-t">Definice: škálování příznaků</div>
@@ -99,12 +130,28 @@
   <li>u logistické regrese lze porovnávat velikost koeficientů (význam příznaků) a model rychleji konverguje.</li>
 </ol>
 <p>Výjimka: metody založené na <b>rozhodovacích stromech</b> (random forest) standardizaci nepotřebují – strom se ptá jen „je hodnota větší než práh?“ a na měřítku nezáleží.</p>
+<div class="box intuice"><div class="box-t">Intuice: proč na měřítku záleží – vzdálenost dvou pacientů</div>
+<p>Tři pacienti: <b>A</b> má 50 let a BNP 300 pg/ml, <b>B</b> 80 let a BNP 320, <b>C</b> 52 let a BNP 400. Kdo je pacientovi A nejpodobnější? Lékař řekne C: skoro stejný věk a BNP o 100 vyšší je v rámci běžného rozptylu. B je o celou generaci starší.</p>
+<p>Eukleidovská vzdálenost v původních jednotkách ale vidí jen čísla:</p>
+\[ \begin{aligned} d(A,B) &= \sqrt{30^2 + 20^2} \approx 36 \\ d(A,C) &= \sqrt{2^2 + 100^2} \approx 100 \end{aligned} \]
+<p>Vyjde, že nejbližší je B. Rozdíl 30 let se „ztratí“, protože 30 je malé číslo proti stovkám pg/ml. Po standardizaci (\(s\) věku ≈ 15 let, \(s\) BNP ≈ 300 pg/ml) měříme rozdíly ve „směrodatných odchylkách“:</p>
+\[ \begin{aligned} d(A,B) &= \sqrt{2^2 + 0{,}07^2} \approx 2{,}00 \\ d(A,C) &= \sqrt{0{,}13^2 + 0{,}33^2} \approx 0{,}36 \end{aligned} \]
+<p>Teď je nejbližší C, jak čekáme. Standardizace neříká, která proměnná je <i>důležitější</i>. Jen zajistí, že žádná nevyhraje kvůli jednotkám. U metod, které se učí po krocích (logistická regrese, neuronové sítě), způsobí různá měřítka podobný problém: učení „klikatí“ a potřebuje víc iterací (viz experiment níže).</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig03_vzdalenost.png" alt="Nejbližší sousedé pacienta před a po standardizaci" loading="lazy"></div>
+<figcaption><b>Obr. 3.1</b> Stejných 30 pacientů (syntetická data) před a po standardizaci. Vlevo jsou nejbližšími sousedy pacienta A (55 let) pacienti ve věku 32, 81 a 44 let – stačí jim podobné BNP. Vpravo jsou to pacienti ve věku 53, 55 a 48 let, podobní ve věku i v BNP.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Okolí pacienta v původních jednotkách je ve skutečnosti úzký <b>vodorovný pás</b>: pacient o 26 let starší s BNP o 11 pg/ml vyšším je „blíž“ než pacient o 7 let mladší s BNP o 62 pg/ml vyšším. Po standardizaci je okolí kruh a obě proměnné rozhodují stejně. Proto standardizaci potřebují všechny metody, které počítají vzdálenosti nebo rozptyl (kNN, k-means, hierarchické shlukování, PCA). Strom se na každou proměnnou ptá zvlášť, takže mu jednotky nevadí.</p></div>
 
 <h3>Potřebné pojmy</h3>
 <div class="box definice" id="def-prumer-sd"><div class="box-t">Definice: výběrový průměr a směrodatná odchylka</div>
 <p><b>Výběrový průměr</b> \(\bar x\) je součet hodnot vydělený jejich počtem. <b>Výběrová směrodatná odchylka</b> \(s\) je odmocnina z průměrné kvadratické odchylky hodnot od průměru (s dělitelem \(N-1\)): \[ \begin{aligned} \bar{x} &= \frac{1}{N}\sum_{i=1}^{N} x_i \\ s &= \sqrt{\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2} \end{aligned} \]</p>
 <p class="jinak">průměr říká, <b>kde</b> data leží (těžiště), směrodatná odchylka, <b>jak daleko od průměru</b> se hodnoty typicky nacházejí. Má stejné jednotky jako data (roky, kg/m²), proto se dá přímo použít jako „pravítko“.</p></div>
-<p>Proč \(N-1\) a ne \(N\)? Odchylky měříme od průměru spočteného ze stejných dat; ten je k datům „přitažený“, takže odchylky vycházejí systematicky trochu menší. Dělení \(N-1\) to vyrovná (nestranný odhad). Speciální případy z přednášky: pole zcela stejných hodnot má \(s = 0\) (pozor – standardizace by dělila nulou!); data vydělená dvěma mají poloviční průměr i \(s\); přičtení konstanty změní průměr, ale \(s\) ne.</p>
+<p>Proč \(N-1\) a ne \(N\)? Odchylky měříme od průměru spočteného ze stejných dat; ten je k datům „přitažený“, takže odchylky vycházejí systematicky trochu menší. Dělení \(N-1\) to vyrovná (nestranný odhad).</p>
+<figure class="wide"><div class="paper"><img src="figures/fig03_prumer_sd.png" alt="Tři datové sady s vyznačeným průměrem a pásmem průměr plus minus směrodatná odchylka" loading="lazy"></div>
+<figcaption><b>Obr. 3.2</b> Specifické případy z přednášky: nad každou sadou průměr ± směrodatná odchylka (jako na slidu, s dělitelem \(N\)). Prostřední a pravá sada mají stejný průměr 5, ale úplně jinou směrodatnou odchylku.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p><b>Průměr sám data nepopíše.</b> Sady se stejným průměrem 5 se liší tím, jak daleko od něj hodnoty leží – a to měří \(s\) (3,03 proti 0,61). Pole stejných hodnot má \(s = 0\): proměnná nenese žádnou informaci a standardizace by dělila nulou (viz níže). Proto potřebuje škálování vždy dvě čísla: průměr říká, <b>kam</b> data posunout, \(s\), <b>jak moc</b> je smrštit nebo roztáhnout.</p></div>
+<p>Užitečné vlastnosti: data vydělená dvěma mají poloviční průměr i \(s\); přičtení konstanty změní průměr, ale \(s\) ne (posune celý mrak, vzdálenosti od průměru zůstanou stejné).</p>
 <div class="box pozor"><div class="box-t">Otázka k zamyšlení (z přednášky 5): co když má celý sloupec stejnou hodnotu?</div>
 <p>Pak \(s = 0\). Každá metoda, která má směrodatnou odchylku <b>ve jmenovateli</b>, dělí nulou – standardizace (z-skóre), Pearsonova korelace (<a href="04_vztahy.html#korelace">přednáška 4</a>) a vše, co na nich stojí. Výsledkem je <code>NaN</code>, které se propíše do dalších výpočtů, a <b>celá metoda „zhavaruje“</b> (nebo tiše vrátí nesmysl). Některé knihovny to ošetří (<code>StandardScaler</code> vrátí samé nuly), ruční vzorec, <code>np.corrcoef</code> ani <code>pandas.corr</code> ne.</p>
 <p>Řešení: konstantní sloupce před analýzou <b>odstraň</b> – nenesou žádnou informaci, protože se v nich pacienti neliší.</p></div>
@@ -131,6 +178,19 @@
 </table>
 <p>Obě úpravy mají stejný tvar „odečti něco a vyděl něčím“ – liší se jen v tom, <b>čím</b>: standardizace používá průměr a \(s\) (počítají se ze všech hodnot), normalizace minimum a rozpětí (určují je dvě krajní hodnoty).</p></div>
 
+<div class="box priklad"><div class="box-t">Příklad z přednášky: věk šesti pacientů</div>
+<p>Věk: 15, 64, 48, 70, 59, 61 let.</p>
+<p>1. Normalizace: minimum 15, maximum 70, rozpětí 55.</p>
+\[ x' = \frac{x - 15}{55} \]
+<p>Výsledek: 0; 0,891; 0,6; 1; 0,8; 0,836.</p>
+<p>2. Standardizace: průměr \(\bar x = 317/6 \approx 52{,}83\), směrodatná odchylka (jak ji počítá <code>StandardScaler</code>) \(s = 18{,}16\).</p>
+\[ z = \frac{x - 52{,}83}{18{,}16} \]
+<p>Výsledek: −2,083; 0,615; −0,266; 0,945; 0,340; 0,450.</p>
+<p>3. Čeho si všimnout: patnáctiletý pacient dostane u normalizace prostě 0 – je na kraji škály, stejně jako by tam byl kterýkoli nejmladší pacient. Standardizace o něm řekne víc: \(z = -2{,}08\), tedy víc než dvě směrodatné odchylky pod průměrem. Takových hodnot je u normálního rozdělení jen asi 2,5 %. <b>Normalizace říká „kde mezi minimem a maximem“, standardizace „jak neobvyklé“.</b></p></div>
+<div class="box pozor"><div class="box-t">Proč ruční výpočet nedá čísla ze slidu</div>
+<p><code>StandardScaler</code> (a <code>np.std</code>) dělí počtem \(N\), ne \(N-1\):</p>
+\[ s_N = \sqrt{\frac{1}{N}\sum_{i=1}^{N} (x_i-\bar{x})^2} = 18{,}16 \]
+<p>Podle vzorce s \(N-1\) vyjde \(s = 19{,}89\) a pro patnáctiletého \(z = -1{,}90\). Obojí je správně, jen jde o dvě varianty. U velkých souborů je rozdíl zanedbatelný, u šesti pacientů ne.</p></div>
 <div class="box priklad"><div class="box-t">Příklad krok za krokem</div>
 <p>Hodnoty proměnné: 2, 4, 6, 8, 10.</p>
 <ol>
@@ -139,7 +199,7 @@
 <li><b>Standardizace:</b> \(z = (x-6)/3{,}16\) → −1,26; −0,63; 0; 0,63; 1,26 (průměr 0, \(s\) = 1).</li>
 <li><b>Normalizace:</b> min = 2, max = 10, rozpětí 8 → \((x-2)/8\) = 0; 0,25; 0,5; 0,75; 1.</li>
 </ol>
-<p>Teď přidej chybnou hodnotu 100. <b>Normalizace:</b> rozpětí je 98, původních pět hodnot se zmáčkne do pásu 0 – 0,08 a hodnota 100 dostane 1. Celé měřítko „spotřebovala“ jediná chyba. <b>Standardizace:</b> průměr vyskočí na 21,7 a \(s\) na 38,5, ostatní hodnoty vyjdou −0,51 až −0,30 a chyba 2,04. Odlehlá hodnota tedy škodí oběma úpravám. U normalizace ale přímo <b>určuje</b> měřítko, u standardizace je jen jedním z mnoha čísel, ze kterých se průměr a \(s\) počítají. Čím víc dat, tím menší vliv má jedna chyba na průměr a \(s\), kdežto maximum určí vždy úplně. Na 60 pacientech to ukazuje obr. 3.1.</p></div>
+<p>Teď přidej chybnou hodnotu 100. <b>Normalizace:</b> rozpětí je 98, původních pět hodnot se zmáčkne do pásu 0 – 0,08 a hodnota 100 dostane 1. Celé měřítko „spotřebovala“ jediná chyba. <b>Standardizace:</b> průměr vyskočí na 21,7 a \(s\) na 38,5, ostatní hodnoty vyjdou −0,51 až −0,30 a chyba 2,04. Odlehlá hodnota tedy škodí oběma úpravám. U normalizace ale přímo <b>určuje</b> měřítko, u standardizace je jen jedním z mnoha čísel, ze kterých se průměr a \(s\) počítají. Čím víc dat, tím menší vliv má jedna chyba na průměr a \(s\), kdežto maximum určí vždy úplně. Na 60 pacientech to ukazuje obr. 3.3.</p></div>
 
 <div class="box priklad"><div class="box-t">Příklad: srovnání různých jednotek</div>
 <p>Věk pacientů má průměr 50 let a \(s = 15\). Pacient se 80 lety má \(z = (80-50)/15 = 2\): je o dvě směrodatné odchylky starší než průměr. BMI s průměrem 26 a \(s = 4\): BMI 34 dává také \(z = 2\). Po standardizaci jsou oba údaje na stejné škále („stejně neobvyklé“), přestože původně měly úplně jiné jednotky.</p></div>
@@ -156,7 +216,7 @@
 <p><b>Odlehlá hodnota</b> je pozorování, které leží neobvykle daleko od ostatních hodnot proměnné (nebo od zbytku mraku bodů ve více rozměrech). Pro jednu proměnnou se v praxi často bere \(|z| &gt; 3\) nebo hodnota dál než 1,5 mezikvartilového rozpětí od kvartilů.</p>
 <p class="jinak">bod, který „nesedí“ k ostatním. Může to být chyba (BMI 94,75 z překlepu ve váze), nebo skutečný, ale vzácný případ. Rozhodnutí, co s ním, dělá analytik – ne vzorec.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig03_skalovani.png" alt="Vliv jedné odlehlé hodnoty na standardizaci a normalizaci" loading="lazy"></div>
-<figcaption><b>Obr. 3.1</b> Jedna chybná hodnota BMI (94,75). Standardizace ji ukáže jako extrém (z ≈ 7) a ostatní body nechá v rozumném rozsahu. Min–max normalizace kvůli ní „stlačí“ všechna ostatní BMI do úzkého pásu u nuly.</figcaption></figure>
+<figcaption><b>Obr. 3.3</b> Jedna chybná hodnota BMI (94,75). Standardizace ji ukáže jako extrém (z ≈ 7) a ostatní body nechá v rozumném rozsahu. Min–max normalizace kvůli ní „stlačí“ všechna ostatní BMI do úzkého pásu u nuly.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p><b>Normalizace je citlivá na odlehlé hodnoty</b>, protože jejich hodnota přímo určuje min a max. Standardizace je robustnější, proto se <b>rutinně používá standardizace</b>. Výjimečně se nepoužije nic (např. EKG v mV pro hluboké učení) – to je ale spíš nebezpečné.</p></div>
 
@@ -169,6 +229,8 @@
 <li>dá se automatizovaně používat v <i>pipelines</i>;</li>
 <li>po standardizaci se chybějící hodnoty rutinně nahrazují nulou (= průměrem).</li>
 </ol>
+<div class="box intuice"><div class="box-t">Proč po standardizaci doplnit NaN nulou</div>
+<p>Po standardizaci má každý sloupec průměr 0. Doplnit nulu tedy znamená <b>doplnit průměr</b> – je to imputace průměrem, jen bez dalšího počítání. Na slidu mají dva pacienti BMI i po standardizaci <code>NaN</code> („přežije NaN“): <code>StandardScaler</code> díry při výpočtu průměru a \(s\) jen přeskočí, takže parametry vycházejí ze známých hodnot. Teprve potom se díra zalepí nulou. Proto je v shrnutí přednášky ošetření chybějících hodnot až za standardizací. Omezení jsou stejná jako u každé imputace průměrem: doplněné hodnoty zmenšují rozptyl.</p></div>
 <div class="box definice" id="def-uniku"><div class="box-t">Definice: únik informace (data leakage)</div>
 <p><b>Únik informace</b> nastane, když se do učení modelu (včetně předzpracování) dostane informace z dat, na kterých má být model teprve testován, nebo informace, kterou by model v reálném nasazení neměl k dispozici.</p>
 <p class="jinak">model „opisuje z řešení“. Na testu pak vypadá lépe, než ve skutečnosti je. Typický nenápadný případ: průměr a \(s\) pro standardizaci (nebo medián pro imputaci) spočítané z celého datasetu včetně testovací části.</p></div>
@@ -197,7 +259,10 @@ Nabývá hodnot 0 až 1.</p>
 <li>Standardizace výrazně <b>zrychlí konvergenci</b> (LR 27 → 12 iterací, NN 278 → 134) a přesnost neponíží.</li>
 <li>Když jeden příznak „nafoukneme“ do nevhodného rozsahu (×1000 + 500), logistická regrese se zhroutí (F1 0,245) a SVM i síť se zhorší – metody citlivé na měřítko trpí.</li>
 <li>Random forest je na měřítku nezávislý (0,927 pořád).</li>
+<li>Standardizace nemusí zvýšit F1 – u SVM dokonce mírně klesla (0,937 → 0,928). Hlavní přínos je rychlejší a stabilnější učení, ne vyšší přesnost.</li>
+<li>Normalizace min–max vyšla v tomto experimentu hůř než standardizace (LR 0,889, síť 0,904).</li>
 </ul></div>
+<div class="box kostka"><div class="box-t">V kostce</div><p>Škálování dává všem proměnným stejnou šanci – bez něj vyhrává ta s největšími čísly. Rutinně se používá standardizace s parametry z trénovacích dat; min–max je citlivá na odlehlé hodnoty a stromy škálování nepotřebují.</p></div>
 
 <h2 id="transformace">Další transformace: úprava rozložení</h2>
 <p>Některé příznaky mají „nepříznivé“ rozložení – typicky silně zešikmené doprava (koncentrace, časy, odpory): většina hodnot malá, pár obrovských. Zkusíme je převést na příznivější tvar nelineární funkcí a pak standardizovat.</p>
@@ -208,13 +273,38 @@ Nabývá hodnot 0 až 1.</p>
 <p><b>Transformace proměnné</b> je nahrazení každé hodnoty \(x\) hodnotou \(f(x)\) pro zvolenou funkci \(f\) (např. \(\log x\), \(1/x\), \(\sqrt x\)). Je-li \(f\) nelineární, změní se <b>tvar</b> rozdělení; je-li monotónní, zachová se <b>pořadí</b> hodnot.</p>
 <p class="jinak">„přeměříme“ osu nerovnoměrně. Logaritmus velké vzdálenosti zkrátí a malé natáhne, takže dlouhý chvost se stáhne a rozdělení zesymetričtí. Na rozdíl od standardizace (která jen posouvá a natahuje rovnoměrně) se tím mění tvar.</p></div>
 <figure><div class="paper"><img src="figures/fig03_log.png" alt="Histogram před a po logaritmické transformaci" loading="lazy"></div>
-<figcaption><b>Obr. 3.2</b> Logaritmus „stlačí“ velké hodnoty a roztáhne malé – zešikmené rozdělení se stane přibližně symetrickým.</figcaption></figure>
+<figcaption><b>Obr. 3.4</b> Logaritmus „stlačí“ velké hodnoty a roztáhne malé – zešikmené rozdělení se stane přibližně symetrickým.</figcaption></figure>
 <ul>
   <li><b>log(x)</b> – pro kladná, doprava zešikmená data (rozdíly v řádech → rozdíly v jednotkách); často přiblíží normalitě.</li>
   <li><b>1/x</b> – ještě silnější „stlačení“ velkých hodnot.</li>
   <li><b>√x, x², exp(x)</b> – podle tvaru rozdělení.</li>
 </ul>
+<div class="box intuice"><div class="box-t">Intuice: logaritmus měří řády, ne rozdíly</div>
+<p>Logaritmus převede násobky na stejně velké kroky: 1, 10, 100, 1000 se změní na 0, 1, 2, 3. Skok z 10 na 100 je pak stejně velký jako skok ze 100 na 1000. U biologických veličin to často odpovídá realitě: dvojnásobná koncentrace znamená podobnou změnu, ať začínáme na 5 nebo na 500.</p>
+<p>Na slidech je to příznak R_HC: hodnoty od 0 do zhruba 800, ale téměř všechny u nuly. Histogram je jeden vysoký sloupec a pár extrémů. Pro model to znamená, že rozdíly mezi běžnými pacienty jsou proti extrémům skoro nulové. Po log + standardizaci se hodnoty rozprostřou, většina zhruba mezi −1 a 2, a rozdíly mezi běžnými pacienty jsou zase vidět.</p></div>
+<div class="box pozor"><div class="box-t">Na co myslet u transformací</div>
+<ul>
+<li>Logaritmus i 1/x fungují jen pro kladné hodnoty (log 0 ani 1/0 neexistují).</li>
+<li>1/x obrátí pořadí: z největší hodnoty se stane nejmenší. Koeficient modelu pak má opačné znaménko, než bychom čekali.</li>
+<li>Stejnou transformaci (a pak stejné parametry standardizace) je nutné použít i na testovací a nová data.</li>
+</ul></div>
 <p>V experimentu s detekcí stimulace (transformovaný příznak R_HC + standardizace) se mírně zlepšila logistická regrese (F1 0,924 → 0,932 s log, 0,936 s 1/x; 10 iterací) a síť (0,938–0,939), random forest zůstal stejný. Přednáška končí „filozofickou otázkou“: <b>která metoda je nejlepší? Z jakého pohledu?</b> – podle přesnosti? rychlosti? interpretovatelnosti? Rozdíly ve třetím desetinném místě nemusí být ani reprodukovatelné.</p>
+<div class="box kostka"><div class="box-t">V kostce</div><p>Nelineární transformace (log, 1/x) mění <b>tvar</b> rozdělení: stáhne dlouhý chvost, takže pár extrémů přestane přehlušovat ostatní. Standardizace tvar nemění, jen posune a natáhne osu – proto se obě kombinují (nejdřív log, pak standardizace).</p></div>
+
+<h2 id="kdy-co">Kdy co použít</h2>
+<p>Přehled celé kapitoly z pohledu „mám tuhle situaci – co udělám a proč“:</p>
+<div class="tablewrap"><table>
+<tr><th>Situace</th><th>Co udělat</th><th>Proč</th></tr>
+<tr><td>nominální kategorie (L/R/Sync, výrobce)</td><td>one-hot</td><td>číslování by vytvořilo falešné pořadí a vzdálenosti</td></tr>
+<tr><td>binární nebo ordinální kategorie</td><td>čísla 0/1, nebo 1, 2, 3</td><td>pořadí existuje (nebo jsou jen dvě hodnoty)</td></tr>
+<tr><td>zjevná chyba (BMI 94,75)</td><td>opravit, nebo odstranit hodnotu</td><td>jinak zkreslí průměr, \(s\) i min–max</td></tr>
+<tr><td>málo chybějících hodnot, dat je dost</td><td>smazat řádky</td><td>nejjednodušší, ztráta je malá</td></tr>
+<tr><td>hodně chybějících hodnot (PhysioNet)</td><td>imputace průměrem / mediánem sloupce</td><td>po smazání by nezbyla data</td></tr>
+<tr><td>LR, SVM, neuronová síť, kNN, k-means, PCA</td><td>standardizace</td><td>vzdálenosti, rozptyl i učení po krocích závisí na jednotkách</td></tr>
+<tr><td>rozhodovací strom, random forest</td><td>škálování netřeba</td><td>strom porovnává hodnotu s prahem v jedné proměnné</td></tr>
+<tr><td>kladná, silně pravostranně zešikmená proměnná</td><td>log nebo 1/x, pak standardizace</td><td>stáhne dlouhý chvost, extrémy přestanou dominovat</td></tr>
+<tr><td>testovací a nová data</td><td>stejné parametry jako u tréninku</td><td>jiné měřítko by model zmátlo; jinak hrozí únik informace</td></tr>
+</table></div>
 <div class="box zkouska"><div class="box-t">Jak to říct u zkoušky</div>
 <p>„Před analýzou si nejdřív prohlédnu rozložení všech proměnných, opravím zjevné chyby, převedu kategorie one-hot kódováním a ošetřím chybějící hodnoty – buď odstraněním, nebo imputací mediánem. Zešikmené proměnné zlogaritmuji. Pak standardizuji na průměr 0 a směrodatnou odchylku 1; parametry si uložím z trénovacích dat a stejně transformuji i testovací. Standardizaci preferuji před min–max normalizací, protože ta je citlivá na odlehlé hodnoty. Stromové metody škálování nepotřebují.“</p></div>
 
@@ -248,3 +338,12 @@ Nabývá hodnot 0 až 1.</p>
 <p>Model se naučil na datech v určitém měřítku. Nová data (test, nasazení) je nutné transformovat <b>stejným</b> průměrem a směrodatnou odchylkou jako trénovací data, jinak by model dostal hodnoty v jiném měřítku. Počítat je z testovacích dat by navíc znamenalo únik informace. Proto se používá objekt StandardScaler, který si parametry pamatuje.</p></div></details>
 <details class="q"><summary>K čemu jsou transformace jako logaritmus nebo 1/x?</summary><div>
 <p>K úpravě nepříznivého (zešikmeného) rozložení na symetričtější, bližší normálnímu. To pomáhá metodám, které normalitu předpokládají, snižuje vliv extrémních hodnot a může zlepšit i výkon modelů (v přednášce mírné zlepšení LR i NN po log a 1/x transformaci).</p></div></details>
+<details class="q"><summary>Která metoda byla v experimentu z přednášky „nejlepší“?</summary><div>
+<p>Záleží na tom, podle čeho soudíme:</p>
+<ul>
+<li><b>Přesnost:</b> nejvyšší F1 mají SVM a neuronová síť (kolem 0,939). Rozdíly ve třetím desetinném místě (0,932 proti 0,939) ale nemusí být reprodukovatelné.</li>
+<li><b>Rychlost:</b> logistická regrese – 10 až 12 iterací proti tisícům u SVM.</li>
+<li><b>Interpretovatelnost:</b> logistická regrese – po standardizaci lze porovnat velikost koeficientů.</li>
+<li><b>Nenáročnost na předzpracování:</b> random forest – výsledek nezávisí na škálování.</li>
+</ul>
+<p>Metoda se proto vybírá podle účelu (klinické nasazení, vysvětlitelnost, výpočetní čas), ne jen podle nejvyššího čísla v tabulce.</p></div></details>
