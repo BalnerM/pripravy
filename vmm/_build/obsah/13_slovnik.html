@@ -48,10 +48,14 @@
 <p><b>Střední vektor</b> \(\boldsymbol\mu = (\mu_1,\dots,\mu_p)^T\) je vektor středních hodnot jednotlivých složek náhodného vektoru. Jeho výběrovým odhadem je <b>centroid</b> \(\bar{\mathbf x}\) – vektor aritmetických průměrů všech sloupců datové matice.</p>
 <p class="jinak">„těžiště“ mraku bodů: bod, jehož každá souřadnice je průměrem dané proměnné. Říká, <b>kde</b> data leží.</p><p class="slovnik-odkaz"><a href="02_vicerozmerne_rozdeleni.html#def-stredni-vektor">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="s-rozptyl"><div class="box-t">rozptyl</div>
-<p><b>Rozptyl</b> (variance) \(\sigma^2\), výběrově \(s^2\), je průměrná hodnota čtverců odchylek od průměru: \(s^2 = \frac{1}{n-1}\sum_i (x_i - \bar x)^2\). Jeho odmocnina je směrodatná odchylka.</p>
+<p><b>Rozptyl</b> (variance) \(\sigma^2\), výběrově \(s^2\), je průměrná hodnota čtverců odchylek od průměru:
+\[ s^2 = \frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar x)^2 \]
+Jeho odmocnina je směrodatná odchylka.</p>
 <p class="jinak">číslo, které říká, jak moc jsou hodnoty „rozházené“ kolem průměru. Malý rozptyl = všichni pacienti mají podobnou hodnotu; velký = hodně se liší. Jednotky jsou na druhou (roky²), proto se pro interpretaci častěji používá směrodatná odchylka.</p><p class="slovnik-odkaz"><a href="02_vicerozmerne_rozdeleni.html#def-rozptyl">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="s-kovariance"><div class="box-t">kovariance</div>
-<p><b>Kovariance</b> dvou proměnných je průměrný součin jejich odchylek od průměrů: \(s_{jk} = \frac{1}{n-1}\sum_i (x_{ij}-\bar x_j)(x_{ik}-\bar x_k)\). Měří sílu a směr <b>lineárního</b> společného kolísání obou proměnných; kovariance proměnné se sebou samou je její rozptyl.</p>
+<p><b>Kovariance</b> dvou proměnných je průměrný součin jejich odchylek od průměrů:
+\[ s_{jk} = \frac{1}{n-1}\sum_{i=1}^{n} (x_{ij}-\bar x_j)(x_{ik}-\bar x_k) \]
+Měří sílu a směr <b>lineárního</b> společného kolísání obou proměnných; kovariance proměnné se sebou samou je její rozptyl.</p>
 <p class="jinak">„rostou spolu, nebo proti sobě?“ Kladná = když je jedna nad průměrem, bývá nad průměrem i druhá; záporná = když je jedna nad, druhá bývá pod; blízko nule = žádná lineární souvislost. Velikost závisí na jednotkách, proto se samotné číslo špatně interpretuje.</p><p class="slovnik-odkaz"><a href="02_vicerozmerne_rozdeleni.html#def-kovariance">výklad v kapitole 2 →</a></p></div>
 <div class="box definice" id="s-kovariancni-matice"><div class="box-t">kovarianční matice</div>
 <p><b>Kovarianční matice</b> \(\boldsymbol\Sigma\) (výběrově \(\mathbf S\)) náhodného vektoru je čtvercová symetrická matice \(p\times p\), jejímž prvkem na pozici \((j,k)\) je kovariance \(j\)-té a \(k\)-té proměnné. Na diagonále tedy leží rozptyly jednotlivých proměnných.</p>

@@ -58,6 +58,7 @@
     <li><a href="#chi2">χ² diagram (Q-Q graf Mahalanobisových vzdáleností)</a></li>
     <li><a href="#hotelling">Srovnání dvou skupin: Hotellingův T² test</a></li>
     <li><a href="#vyznamnost">Statistická vs. reálná (klinická) významnost</a></li>
+    <li><a href="#kdy-co">Kdy co použít</a></li>
     <li><a href="#shrnuti-h">Shrnutí</a></li>
     <li><a href="#otazky">Otázky ke zkoušce</a></li>
   </ul>
@@ -67,6 +68,26 @@
 <p class="kicker">Přednáška 2</p>
 <h1>Vícerozměrné rozdělení a vícerozměrné testy</h1>
 <p class="lead">Jak popsat „mrak bodů“ v mnoha rozměrech několika čísly, kdy smíme předpokládat normální rozdělení a jak otestovat, že se dvě skupiny pacientů liší – ne v jedné proměnné, ale ve všech najednou.</p>
+<div class="schema">
+<svg viewBox="0 0 782 190" role="img" aria-label="Nit kapitoly: popsat data, ověřit normalitu, najít odlehlé objekty, porovnat skupiny, posoudit užitečnost; Mahalanobisova vzdálenost je společný princip kroků 2 až 4">
+  <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--ink-2)"/></marker></defs>
+  <rect x="10" y="20" width="130" height="70" rx="8" class="node"/>
+  <text x="75" y="50" text-anchor="middle" style="font-weight:600">1 Popsat data</text><text x="75" y="72" text-anchor="middle" class="t2">μ (kde) a S (tvar)</text>
+  <rect x="168" y="20" width="130" height="70" rx="8" class="node"/>
+  <text x="233" y="50" text-anchor="middle" style="font-weight:600">2 Normalita?</text><text x="233" y="72" text-anchor="middle" class="t2">testy, grafy, χ²</text>
+  <rect x="326" y="20" width="130" height="70" rx="8" class="node"/>
+  <text x="391" y="50" text-anchor="middle" style="font-weight:600">3 Odlehlé body</text><text x="391" y="72" text-anchor="middle" class="t2">D² od centroidu</text>
+  <rect x="484" y="20" width="130" height="70" rx="8" class="node"/>
+  <text x="549" y="50" text-anchor="middle" style="font-weight:600">4 Dvě skupiny</text><text x="549" y="72" text-anchor="middle" class="t2">Hotelling T²</text>
+  <rect x="642" y="20" width="130" height="70" rx="8" class="node"/>
+  <text x="707" y="50" text-anchor="middle" style="font-weight:600">5 K něčemu?</text><text x="707" y="72" text-anchor="middle" class="t2">klinický význam</text>
+  <path d="M140 55H166M298 55H324M456 55H482M614 55H640" class="ln" marker-end="url(#ar2)"/>
+  <rect x="168" y="128" width="446" height="44" rx="8" class="fl2" style="stroke:var(--c2)"/>
+  <text x="391" y="155" text-anchor="middle" style="font-weight:600">Mahalanobisova vzdálenost D² = společný klíč</text>
+  <path d="M233 90V128M391 90V128M549 90V128" class="ln dash"/>
+  <path d="M75 90V150H168" class="ln dash"/><text x="82" y="118" class="t2">používá μ a S</text>
+</svg></div>
+<p>Kapitola má jednu nit. Data nejdřív <b>popíšeme</b> středním vektorem a kovarianční maticí. Pak se ptáme, jestli jsou <b>normální</b> (to je předpoklad většiny metod), jestli v nich nejsou <b>odlehlé objekty</b> a jestli se <b>dvě skupiny liší</b>. Kroky 2–4 stojí na stejném principu – na <b>Mahalanobisově vzdálenosti</b>, tedy vzdálenosti měřené vzhledem k tvaru mraku. Na konci se ptáme, jestli je nalezený rozdíl vůbec prakticky užitečný.</p>
 
 <h2 id="nahodny-vektor">Náhodná veličina a náhodný vektor</h2>
 <div class="box definice" id="def-nahodna-velicina"><div class="box-t">Definice: náhodná veličina a její rozdělení</div>
@@ -99,10 +120,14 @@
 <h3>Kovarianční matice</h3>
 <p>Kovarianční matice \(\boldsymbol{\Sigma}\) (výběrově \(\mathbf{S}\)) je čtvercová tabulka \(p \times p\), která v jednom objektu shrnuje <b>rozptyly všech proměnných i jejich vzájemné vztahy</b>.</p>
 <div class="box definice" id="def-rozptyl"><div class="box-t">Definice: rozptyl</div>
-<p><b>Rozptyl</b> (variance) \(\sigma^2\), výběrově \(s^2\), je průměrná hodnota čtverců odchylek od průměru: \(s^2 = \frac{1}{n-1}\sum_i (x_i - \bar x)^2\). Jeho odmocnina je směrodatná odchylka.</p>
+<p><b>Rozptyl</b> (variance) \(\sigma^2\), výběrově \(s^2\), je průměrná hodnota čtverců odchylek od průměru:
+\[ s^2 = \frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar x)^2 \]
+Jeho odmocnina je směrodatná odchylka.</p>
 <p class="jinak">číslo, které říká, jak moc jsou hodnoty „rozházené“ kolem průměru. Malý rozptyl = všichni pacienti mají podobnou hodnotu; velký = hodně se liší. Jednotky jsou na druhou (roky²), proto se pro interpretaci častěji používá směrodatná odchylka.</p></div>
 <div class="box definice" id="def-kovariance"><div class="box-t">Definice: kovariance</div>
-<p><b>Kovariance</b> dvou proměnných je průměrný součin jejich odchylek od průměrů: \(s_{jk} = \frac{1}{n-1}\sum_i (x_{ij}-\bar x_j)(x_{ik}-\bar x_k)\). Měří sílu a směr <b>lineárního</b> společného kolísání obou proměnných; kovariance proměnné se sebou samou je její rozptyl.</p>
+<p><b>Kovariance</b> dvou proměnných je průměrný součin jejich odchylek od průměrů:
+\[ s_{jk} = \frac{1}{n-1}\sum_{i=1}^{n} (x_{ij}-\bar x_j)(x_{ik}-\bar x_k) \]
+Měří sílu a směr <b>lineárního</b> společného kolísání obou proměnných; kovariance proměnné se sebou samou je její rozptyl.</p>
 <p class="jinak">„rostou spolu, nebo proti sobě?“ Kladná = když je jedna nad průměrem, bývá nad průměrem i druhá; záporná = když je jedna nad, druhá bývá pod; blízko nule = žádná lineární souvislost. Velikost závisí na jednotkách, proto se samotné číslo špatně interpretuje.</p></div>
 <div class="box definice" id="def-kovariancni-matice"><div class="box-t">Definice: kovarianční matice</div>
 <p><b>Kovarianční matice</b> \(\boldsymbol\Sigma\) (výběrově \(\mathbf S\)) náhodného vektoru je čtvercová symetrická matice \(p\times p\), jejímž prvkem na pozici \((j,k)\) je kovariance \(j\)-té a \(k\)-té proměnné. Na diagonále tedy leží rozptyly jednotlivých proměnných.</p>
@@ -115,9 +140,22 @@
 <tr><td>\(s_{jk}\)</td><td>kovariance (spoluproměnlivost) proměnných \(j\) a \(k\)</td></tr>
 <tr><td>\(s_{jj} = s_j^2\)</td><td>na diagonále: rozptyl proměnné \(j\) (kovariance proměnné se sebou samou)</td></tr>
 <tr><td>\(n-1\)</td><td>dělíme \(n-1\), ne \(n\) – výběrový odhad pak není systematicky menší než skutečný rozptyl</td></tr>
-</table></div>
+</table>
+<p>Maticový zápis spočítá celou matici najednou (vektorizace výpočtu):</p>
+\[ \mathbf{S} = \frac{1}{n-1}\sum_{i=1}^{n} (\mathbf{x}_i-\bar{\mathbf{x}})(\mathbf{x}_i-\bar{\mathbf{x}})^T \]
+<table class="vars">
+<tr><td>\(\mathbf{x}_i-\bar{\mathbf{x}}\)</td><td>sloupcový vektor odchylek \(i\)-tého objektu od centroidu</td></tr>
+<tr><td>\((\mathbf{x}_i-\bar{\mathbf{x}})(\mathbf{x}_i-\bar{\mathbf{x}})^T\)</td><td>sloupec × řádek = matice \(p\times p\) všech součinů odchylek jednoho objektu; jejich průměr přes objekty je \(\mathbf S\)</td></tr>
+</table>
+<p>\(\mathbf S\) je odhad teoretické (populační) matice \(\boldsymbol\Sigma\) s prvky</p>
+\[ \begin{aligned} \sigma_{jk} &= \operatorname{cov}(X_j, X_k) \\ &= E\big[(X_j - E X_j)(X_k - E X_k)\big] \end{aligned} \]
+<p>na diagonále \(\sigma_{jj} = \sigma_j^2\) (rozptyl). Výběrová verze jen nahrazuje střední hodnoty průměry z dat.</p></div>
 <div class="box intuice"><div class="box-t">Intuice: co kovariance „počítá“</div>
 <p>Pro každého pacienta vynásobíme jeho odchylku od průměru v jedné proměnné s odchylkou ve druhé. Když jsou obě odchylky stejného znaménka (oba nadprůměrné nebo oba podprůměrné), součin je kladný. Když opačného, je záporný. Průměr těchto součinů říká, jestli proměnné mají tendenci „růst spolu“ (kladná kovariance), „jedna roste, druhá klesá“ (záporná), nebo spolu lineárně nesouvisí (≈ 0).</p></div>
+<figure><div class="paper"><img src="figures/fig02_kovariance.png" alt="Bodový graf tepu a teploty rozdělený průměry na čtyři kvadranty, body obarvené podle znaménka součinu odchylek" loading="lazy"></div>
+<figcaption><b>Obr. 2.1</b> Čárkované čáry v průměrech rozdělí rovinu na čtyři kvadranty. Modré body (vpravo nahoře a vlevo dole) přispívají ke kovarianci kladně, oranžové záporně. Modrých je víc, kovariance vyjde kladná (r ≈ 0,62).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Kovariance je „hlasování“ bodů: každý bod hlasuje součinem svých odchylek. Převažují-li body v kvadrantech „oba nad průměrem“ a „oba pod průměrem“, vyjde kladná; převažují-li opačné kvadranty, záporná; vyrovnají-li se, vyjde blízko nuly. Body daleko od průměrů mají silnější hlas – proto kovarianci (i korelaci) snadno ovlivní odlehlé hodnoty.</p></div>
 <p>Vlastnosti, které je dobré umět říct:</p>
 <ul>
   <li>na diagonále jsou <b>rozptyly</b>, mimo diagonálu <b>kovariance</b> dvojic;</li>
@@ -134,10 +172,12 @@
 <li>průměry: \(\bar{x}_1 = 80\), \(\bar{x}_2 = 37{,}0\);</li>
 <li>odchylky: \(x_1\): −10, 0, +10; \(x_2\): −0,4; +0,2; +0,2;</li>
 <li>\(s_{11} = (100+0+100)/2 = 100\), \(s_{22} = (0{,}16+0{,}04+0{,}04)/2 = 0{,}12\);</li>
-<li>\(s_{12} = (4 + 0 + 2)/2 = 3\) → kladná kovariance, tep a teplota rostou spolu;</li>
-<li>korelace \(r = 3/(\sqrt{100}\cdot\sqrt{0{,}12}) = 3/3{,}46 \approx 0{,}87\).</li>
+<li>\(s_{12} = (4 + 0 + 2)/2 = 3\) → kladná kovariance, tep a teplota rostou spolu.</li>
 </ul>
+<p>Kovarianční matice:</p>
 \[ \mathbf{S} = \begin{pmatrix} 100 & 3 \\ 3 & 0{,}12 \end{pmatrix} \]
+<p>Korelace (kovariance vydělená oběma směrodatnými odchylkami):</p>
+\[ \begin{aligned} r &= \frac{s_{12}}{s_1\, s_2} = \frac{3}{\sqrt{100}\cdot\sqrt{0{,}12}} \\ &= \frac{3}{3{,}46} \approx 0{,}87 \end{aligned} \]
 <p>Všimni si: kovariance 3 vypadá „malá“ vedle rozptylu 100, ale korelace 0,87 ukazuje silný vztah. Kovariance je zkreslená jednotkami, korelace ne.</p></div>
 
 <h3>Proč pracujeme s n &gt; 1</h3>
@@ -200,10 +240,28 @@
   <li>nezávislé proměnné → osy elipsy jsou <b>rovnoběžné</b> se souřadnicovými osami;</li>
   <li>korelované proměnné → elipsa je <b>otočená</b>, úhel závisí na korelaci \(\rho\); čím silnější korelace, tím užší a protáhlejší elipsa.</li>
 </ul>
+<figure class="wide"><div class="paper"><img src="figures/fig02_hustota.png" alt="Vrstevnice dvojrozměrné normální hustoty pro nezávislé a korelované proměnné s vyznačenými osami elipsy" loading="lazy"></div>
+<figcaption><b>Obr. 2.2</b> „Kopec“ hustoty shora: čím tmavší, tím vyšší hustota. Vlevo \(\boldsymbol\Sigma = \mathbf I\), vpravo \(\rho = 0{,}5\) (stejné matice jako na slidu přednášky). Oranžově 95% elipsa, šipky jsou její poloosy; \(\lambda\) = rozptyl dat v daném směru.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Každá vrstevnice spojuje body se <b>stejnou hustotou</b>, a tedy se stejnou Mahalanobisovou vzdáleností od středu. U nezávislých proměnných jsou vrstevnice kruhy (při různých rozptylech elipsy rovnoběžné s osami). Korelace kopec „natáhne“ podél diagonály: ve směru (1, 1) mají data rozptyl 1,5, napříč jen 0,5. Směr nejdelší osy je směr, kterým se data nejvíc rozptylují – přesně ten hledá <a href="06_pca.html">PCA</a> jako první hlavní komponentu.</p></div>
+<p>Tvar elipsy jde přesně popsat. Vrstevnice je množina bodů se stejnou hodnotou exponentu:</p>
+\[ c^2 = (\mathbf{x}-\boldsymbol\mu)^T\boldsymbol\Sigma^{-1}(\mathbf{x}-\boldsymbol\mu) \]
+<p>Je to elipsa (elipsoid) se středem v \(\boldsymbol\mu\), jejíž poloosy míří ve směrech <b>vlastních vektorů</b> \(\mathbf v_j\) matice \(\boldsymbol\Sigma\) a mají délku úměrnou odmocnině <b>vlastních čísel</b> \(\lambda_j\):</p>
+\[ \text{poloosa}_j = c\,\sqrt{\lambda_j}\;\mathbf v_j, \qquad j = 1,\dots,p \]
+<p>Jinými slovy: vlastní vektory kovarianční matice říkají, <b>kam</b> je mrak natočený, vlastní čísla, <b>jak moc</b> je v těch směrech roztažený.</p>
 <figure class="wide"><div class="paper"><img src="figures/fig02_korelace.png" alt="Čtyři bodové grafy s rostoucí korelací a 95% elipsou" loading="lazy"></div>
-<figcaption><b>Obr. 2.1</b> Dvojrozměrná normální data s různou korelací (hodnoty odpovídají příkladům z přednášky: −0,29; 0,56; 0,80). Čárkovaně elipsa, uvnitř které leží 95 % bodů.</figcaption></figure>
+<figcaption><b>Obr. 2.3</b> Dvojrozměrná normální data s různou korelací (hodnoty odpovídají příkladům z přednášky: −0,29; 0,56; 0,80). Čárkovaně elipsa, uvnitř které leží 95 % bodů.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>Tvar mraku přímo odráží kovarianční matici. Kulatý mrak = nekorelované proměnné. Otočená úzká elipsa = silná korelace – proměnné nesou z velké části stejnou informaci (to později využije PCA). Při slabé korelaci (−0,29) jsou osy elipsy „skoro souběžné se souřadnicovými osami“.</p></div>
+
+<h3>Dvojrozměrný případ: co dělá korelace s „kopcem“</h3>
+<p>Pro \(p = 2\) jsou parametry:</p>
+\[ \begin{aligned} \boldsymbol\mu &= \begin{pmatrix}\mu_1\\ \mu_2\end{pmatrix} \\ \boldsymbol\Sigma &= \begin{pmatrix}\sigma_1^2 & \sigma_{12}\\ \sigma_{21} & \sigma_2^2\end{pmatrix} \end{aligned} \]
+<p>Determinant kovarianční matice vyjde přes korelační koeficient \(\rho\):</p>
+\[ \begin{aligned} |\boldsymbol\Sigma| &= \sigma_1^2\sigma_2^2 - \sigma_{12}^2 = \sigma_1^2\sigma_2^2\,(1-\rho^2) \\ \rho &= \frac{\sigma_{12}}{\sigma_1\sigma_2} \end{aligned} \]
+<p>Obojí se dosadí do obecné hustoty (vzorec výše s \(p = 2\)).</p>
+<div class="box intuice"><div class="box-t">Intuice: determinant = „plocha“ mraku</div>
+<p>Determinant \(|\boldsymbol\Sigma|\) říká, kolik prostoru mrak zabírá (plocha elipsy je úměrná \(\sqrt{|\boldsymbol\Sigma|}\)). Při \(\rho = 0\) je největší. Čím blíž je \(\rho\) k ±1, tím víc se elipsa zplacatí – až při \(\rho = \pm 1\) splyne s přímkou: jedna proměnná je přesně dána druhou, \(|\boldsymbol\Sigma| = 0\) a matice nemá inverzi. Ve vzorci hustoty je \(|\boldsymbol\Sigma|\) ve jmenovateli: menší plocha → vyšší a užší kopec, aby celkový objem pod ním zůstal 1.</p></div>
 
 <h3>Tři užitečné vlastnosti vícerozměrného normálního rozdělení</h3>
 <ol>
@@ -211,6 +269,8 @@
   <li><b>Nekorelované složky jsou zároveň nezávislé.</b> Obecně to neplatí – u normálního rozdělení ano.</li>
   <li>Všechna <b>podmíněná rozdělení</b> jsou také normální – využívá se ve strojovém učení (Bayesovy klasifikátory).</li>
 </ol>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky: popis dat a vícerozměrné normální rozdělení</div>
+<p>Vícerozměrná data popisuji dvěma objekty. <b>Střední vektor</b> říká, kde mrak bodů leží. <b>Kovarianční matice</b> má na diagonále rozptyly a mimo ni kovariance dvojic, takže říká, jak je mrak roztažený a natočený. Vícerozměrné normální rozdělení je určené právě těmito dvěma parametry. Jeho hustota je „kopec“ s vrcholem v \(\boldsymbol\mu\) a vrstevnicemi ve tvaru elips: u nezávislých proměnných rovnoběžných s osami, u korelovaných otočených a protáhlých. V exponentu hustoty je Mahalanobisova vzdálenost – stejně pravděpodobné jsou body, které jsou od středu stejně daleko <i>vzhledem k tvaru mraku</i>.</p></div>
 
 <h2 id="mahalanobis">Mahalanobisova vzdálenost</h2>
 <div class="box definice" id="def-mahalanobis"><div class="box-t">Definice: Mahalanobisova vzdálenost</div>
@@ -229,6 +289,21 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
 <p>Eukleidovská vzdálenost měří „pravítkem“ a nevšímá si tvaru dat. Mahalanobisova vzdálenost měří, <b>kolik „typických odchylek“</b> je bod od středu – a to ve směru, kterým se díváme. Ve směru, kde je mrak protáhlý (velký rozptyl), je normální být daleko; ve směru, kde je mrak úzký, už malá odchylka znamená hodně. Dva body ve stejné eukleidovské vzdálenosti tak mohou být jeden úplně běžný a druhý extrémně odlehlý.</p></div>
 <div data-demo="korelace"></div>
 <p>Pro nekorelovaná standardizovaná data (\(\mathbf{S} = \mathbf{I}\)) se Mahalanobisova vzdálenost rovná eukleidovské. Je to tedy „eukleidovská vzdálenost poté, co mrak narovnáme a zakulatíme“.</p>
+<div class="box priklad"><div class="box-t">Příklad z přednášky: pacient s tlakem 112/91</div>
+<p>Systolický (SBP) a diastolický (DBP) tlak, centroid a kovarianční matice ze slidu přednášky:</p>
+\[ \begin{aligned} \bar{\mathbf x} &= (118{,}71;\ 60)^T \\ \mathbf S &= \begin{pmatrix}535{,}45 & 163{,}20\\ 163{,}20 & 174{,}16\end{pmatrix} \end{aligned} \]
+<p><b>Nejdřív slovně.</b> SBP a DBP spolu rostou (korelace \(r = 0{,}53\)): kdo má vyšší systolický tlak, mívá i vyšší diastolický. Pacient 112/91 má systolický <i>pod</i> průměrem a diastolický vysoko <i>nad</i> ním – jde proti směru mraku. Taková kombinace je nečekaná, i když ani jedno číslo samo o sobě extrémní není.</p>
+<p>1. Odchylka od centroidu:</p>
+\[ \begin{aligned} \mathbf x - \bar{\mathbf x} &= (112-118{,}71;\ 91-60)^T \\ &= (-6{,}71;\ 31)^T \end{aligned} \]
+<p>2. Kdybychom korelaci ignorovali, sečetli bychom jen čtverce z-skóre (směrodatné odchylky \(\sqrt{535{,}45} = 23{,}14\) a \(\sqrt{174{,}16} = 13{,}20\)):</p>
+\[ \begin{aligned} z_1 &= -6{,}71 / 23{,}14 = -0{,}29 \\ z_2 &= 31 / 13{,}20 = 2{,}35 \\ z_1^2 + z_2^2 &= 0{,}08 + 5{,}52 = 5{,}60 \end{aligned} \]
+<p>3. S korelací potřebujeme inverzi \(\mathbf S\) (determinant \(535{,}45\cdot 174{,}16 - 163{,}20^2 = 66\,620\)):</p>
+\[ \mathbf S^{-1} = \frac{1}{66\,620}\begin{pmatrix}174{,}16 & -163{,}20\\ -163{,}20 & 535{,}45\end{pmatrix} \]
+<p>4. Dosadíme do vzorce, rozepsáno na tři členy (SBP, kombinace, DBP):</p>
+\[ \begin{aligned} D^2 &= (\mathbf x-\bar{\mathbf x})^T\mathbf S^{-1}(\mathbf x-\bar{\mathbf x}) \\ &= \tfrac{1}{66\,620}\,\big(7\,841 + 67\,894 + 514\,567\big) \\ &\approx 8{,}86 \end{aligned} \]
+<p>Prostřední člen \(2\cdot 163{,}20\cdot 6{,}71\cdot 31\) je kladný právě proto, že odchylky mají opačná znaménka, zatímco kovariance je kladná – „trest“ za kombinaci proti směru mraku.</p>
+<p>5. Závěr: \(D^2 = 8{,}86\) je víc než \(\chi^2_{0{,}95}(2) = 5{,}99\), takže pacient leží <b>mimo 95% elipsu</b>. Bez korelace (5,60) by ležel uvnitř.</p>
+<p>Pro srovnání pacient 154/49 ze stejné tabulky: eukleidovsky je od centroidu <b>dál</b> (37 vs. 32 mmHg), a přesto má <b>menší</b> \(D^2 = 6{,}13\). Odchyluje se hlavně v SBP, který má velký rozptyl, takže je to „levnější“. Eukleidovská vzdálenost by pořadí neobvyklosti otočila.</p></div>
 <div class="box kostka"><div class="box-t">V kostce</div><p>Mahalanobisova vzdálenost = vzdálenost od středu měřená v jednotkách rozptylu ve daném směru. Bere v úvahu korelace. Je to přesně výraz v exponentu vícerozměrné normální hustoty.</p></div>
 
 <h2 id="overeni-normality">Jak ověřit (vícerozměrnou) normalitu</h2>
@@ -246,6 +321,8 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
   <li>Každá proměnná normální ⇒ vícerozměrná normalita. <b>Obecně neplatí.</b></li>
   <li>V praxi ale: výrazná odchylka od vícerozměrné normality se obvykle projeví i v některé jednotlivé proměnné.</li>
 </ul>
+<div class="box pozor"><div class="box-t">Normální zvlášť ≠ normální dohromady</div>
+<p>Histogram jedné proměnné vidí mrak jen „z boku“ (průmět na jednu osu). Mrak může mít z obou boků Gaussovu křivku, a přitom tvar, který elipsa vůbec není – třeba „kříž“ z bodů na dvou přímkách. Proto nestačí zkontrolovat proměnné po jedné: díváme se i na bodové grafy dvojic a na χ² diagram, který posuzuje celý vektor najednou.</p></div>
 <h3>Postupy v praxi</h3>
 <ul>
   <li>testy normality jednotlivých proměnných: χ² dobré shody, Kolmogorovův, <b>Shapirův-Wilkův</b>, Andersonův-Darlingův…;</li>
@@ -256,6 +333,17 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
 <div class="box pozor"><div class="box-t">Na co si dát pozor</div>
 <p>Vícerozměrný test normality řekne jen ANO/NE. Když řekne NE, nevíme, <b>která</b> proměnná za to může. Proto jsou z praktického hlediska užitečnější jednorozměrné kontroly. A nikdy nepodceňuj vizuální kontrolu – odhalí, když výsledek testu zkreslí pár odlehlých hodnot.</p></div>
 <p>Vizuální nástroje: dvojrozměrný/trojrozměrný bodový graf (hledáme elipsu/elipsoid), sdružený histogram, a <b>χ² diagram</b>.</p>
+<h3>Jak číst grafy dvojic: příklad z přednášky</h3>
+<p>V přednášce jsou data pacientů (věk, DBP, SBP, střední arteriální tlak MAP, saturace O₂, tep). U každé dvojice se díváme na histogramy obou proměnných (normální každá zvlášť?) a na bodový graf a sdružený histogram (je mrak elipsa?):</p>
+<div class="tablewrap"><table>
+<tr><th>Dvojice</th><th>Co vidíme</th><th>Závěr</th></tr>
+<tr><td>ideál: 3 nezávislé normální proměnné (simulace)</td><td>zvonovité histogramy, kulatý mrak, sdružený histogram jako symetrický kopec</td><td>takhle vypadá vícerozměrná normalita bez korelace</td></tr>
+<tr><td>věk × DBP</td><td>věk nesymetrický (víc starších pacientů), DBP symetrický; mrak je široký pruh skoro souběžný s osami; \(r = -0{,}29\)</td><td>slabá korelace; normalitu kazí šikmý věk</td></tr>
+<tr><td>SBP × DBP</td><td>oba histogramy zvonovité, mrak je otočená elipsa; \(r = 0{,}56\)</td><td>středně silná lineární korelace, blízko dvojrozměrné normality</td></tr>
+<tr><td>MAP × DBP</td><td>úzká protáhlá elipsa a pár bodů mimo ni; \(r = 0{,}80\)</td><td>velmi silná korelace – proměnné nesou skoro stejnou informaci</td></tr>
+<tr><td>saturace O₂ × DBP</td><td>saturace silně nesymetrická (většina 95–100 %), několik osamělých bodů s nízkou saturací</td><td>normalita neplatí; vícerozměrně odlehlé hodnoty</td></tr>
+<tr><td>věk × tep × DBP</td><td>trojrozměrný bodový graf</td><td>hledáme elipsoid; pro víc proměnných už pomůže jen χ² diagram</td></tr>
+</table></div>
 
 <h2 id="chi2">χ² diagram (Q-Q graf Mahalanobisových vzdáleností)</h2>
 <div class="box definice" id="def-qq"><div class="box-t">Definice: kvantil a Q-Q graf</div>
@@ -266,6 +354,10 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
 <p class="jinak">vícerozměrný problém („je mrak normální?“) převedeme na jedno číslo pro každý bod (\(D^2\)) a to porovnáme s tím, jaké by mělo být. Body nad přímkou vpravo nahoře jsou objekty, které jsou od středu dál, než by měly.</p></div>
 <div class="box intuice"><div class="box-t">Myšlenka</div>
 <p>Pokud data pochází z \(p\)-rozměrného normálního rozdělení, pak čtverce Mahalanobisových vzdáleností \(D^2\) od centroidu mají rozdělení <b>χ² s \(p\) stupni volnosti</b>. To je jednorozměrné rozdělení, které známe. Celý vícerozměrný problém jsme tak převedli na jednorozměrné srovnání: <b>sedí naměřené \(D^2\) s teoretickými kvantily χ²?</b></p></div>
+<div class="box intuice"><div class="box-t">Proč zrovna χ²?</div>
+<p>Představ si, že mrak posuneme do počátku, natočíme podle os elipsy a každou osu vydělíme její směrodatnou odchylkou. Z elipsy se stane kruh a z korelovaných proměnných \(p\) nezávislých z-skóre. Mahalanobisova vzdálenost se tím nezmění (proto ji tak měříme), jen se z ní stane obyčejný součet čtverců:</p>
+\[ D^2 = z_1^2 + z_2^2 + \dots + z_p^2 \]
+<p>Součet čtverců \(p\) nezávislých standardních normálních veličin má rozdělení s vlastním jménem – <b>χ² s \(p\) stupni volnosti</b>. Proto přesně víme, jak by \(D^2\) u normálních dat měly vypadat (přibližně, protože \(\bar{\mathbf x}\) a \(\mathbf S\) jen odhadujeme z dat), a můžeme je s tím porovnat.</p></div>
 <div class="box postup"><div class="box-t">Postup</div>
 <ol>
 <li>Spočítej centroid \(\bar{\mathbf{x}}\) a kovarianční matici \(\mathbf{S}\).</li>
@@ -278,9 +370,11 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
 \[ (\mathbf{x}-\bar{\mathbf{x}})^T\mathbf{S}^{-1}(\mathbf{x}-\bar{\mathbf{x}}) \le 5{,}99 \]
 <p>Princip ověření normality je tedy vždy stejný: <b>porovnání výběrových kvantilů s modelovými</b>.</p>
 <figure class="wide"><div class="paper"><img src="figures/fig02_chi2.png" alt="Dva chí-kvadrát diagramy, vlevo body na přímce, vpravo odchylky" loading="lazy"></div>
-<figcaption><b>Obr. 2.2</b> χ² diagram. Vlevo data z normálního rozdělení – body sedí na diagonále. Vpravo šikmá proměnná a několik odlehlých objektů – body se v horní části odklánějí nad přímku.</figcaption></figure>
+<figcaption><b>Obr. 2.4</b> χ² diagram. Vlevo data z normálního rozdělení – body sedí na diagonále. Vpravo šikmá proměnná a několik odlehlých objektů – body se v horní části odklánějí nad přímku.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
-<p>Odchylka nahoře vpravo = objekty jsou od středu dál, než by normální rozdělení dovolilo → <b>vícerozměrně odlehlé hodnoty</b> nebo těžké chvosty. χ² diagram tak slouží zároveň jako detektor odlehlých objektů. V příkladu z přednášky (systolický a diastolický tlak, \(\bar{\mathbf{x}} = (118{,}7;\ 60)\)) měl pacient s tlakem 112/91 hodnotu \(D^2 = 8{,}86\) – výrazně nad ostatními, i když ani 112, ani 91 samo o sobě extrémní není. Odlehlá je až <i>kombinace</i> (nízký systolický a vysoký diastolický).</p></div>
+<p>Odchylka nahoře vpravo = objekty jsou od středu dál, než by normální rozdělení dovolilo → <b>vícerozměrně odlehlé hodnoty</b> nebo těžké chvosty. χ² diagram tak slouží zároveň jako detektor odlehlých objektů. V příkladu z přednášky (systolický a diastolický tlak, \(\bar{\mathbf{x}} = (118{,}7;\ 60)\)) měl pacient s tlakem 112/91 hodnotu \(D^2 = 8{,}86\) – výrazně nad ostatními, i když ani 112, ani 91 samo o sobě extrémní není. Odlehlá je až <i>kombinace</i> (nízký systolický a vysoký diastolický) – výpočet krok po kroku je v <a href="#mahalanobis">příkladu u Mahalanobisovy vzdálenosti</a>.</p></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky: Mahalanobisova vzdálenost a χ² diagram</div>
+<p>Mahalanobisova vzdálenost měří, jak daleko je bod od středu <b>vzhledem k tvaru mraku</b> – v jednotkách rozptylu v daném směru, takže zohlední rozptyly i korelace. Bod proto může být odlehlý kombinací hodnot, i když žádná hodnota sama extrémní není. U vícerozměrně normálních dat mají čtverce \(D^2\) rozdělení χ² s \(p\) stupni volnosti. χ² diagram seřadí \(D^2\) všech objektů a vynese je proti kvantilům χ²(p). Body na přímce znamenají, že data jsou přibližně vícerozměrně normální; body odskočené nahoru vpravo jsou vícerozměrně odlehlé objekty. Výhoda: vícerozměrnou otázku převedu na jeden jednoduchý graf.</p></div>
 
 <h2 id="hotelling">Srovnání dvou skupin: Hotellingův T² test</h2>
 <p>Otázka: liší se pacienti se sepsí a bez sepse? Ne v jedné proměnné, ale v celém vektoru (tep, diastolický tlak, věk) najednou:</p>
@@ -290,10 +384,19 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
 \[ H_0: \boldsymbol\mu_1 = \boldsymbol\mu_2 \]
 <p>Nulová hypotéza: vektory středních hodnot obou skupin jsou stejné.</p>
 <p>Předpoklad: skupiny jsou <b>nezávislé</b> (různí pacienti, ne tentýž pacient dvakrát).</p>
+<div class="box intuice"><div class="box-t">Proč ne tři t-testy?</div>
+<p>Mohli bychom udělat t-test zvlášť pro tep, pro tlak a pro věk. Má to dvě vady:</p>
+<ol>
+<li><b>Plané poplachy se sčítají.</b> Každý test na hladině 0,05 má pětiprocentní šanci „najít“ rozdíl, který neexistuje. U tří nezávislých testů je šance, že aspoň jeden vyjde náhodou, \(1 - 0{,}95^3 \approx 0{,}14\), tedy 14 %. Jeden vícerozměrný test drží chybu na 5 %.</li>
+<li><b>Jednotlivé testy nevidí souvislosti.</b> Rozdíl může ležet „napříč“ mrakem, v kombinaci proměnných, a v průmětu na každou osu zvlášť se ztratí (Obr. 2.5). Hotellingův test pracuje s kovarianční maticí, takže ho najde.</li>
+</ol>
+<p>Proto postup ve dvou krocích: nejdřív jeden test na celý profil (<i>liší se skupiny vůbec?</i>), a teprve když ano, simultánní testy (<i>ve které proměnné?</i>).</p></div>
 
 <h3>Od t-testu k T²</h3>
 <p>Dvouvýběrový t-test pro jednu proměnnou porovnává rozdíl průměrů s jeho nejistotou:</p>
 \[ t = \frac{\bar x_1 - \bar x_2}{s\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}} \]
+<p>kde \(s^2\) je společný (sdružený) výběrový rozptyl obou skupin – vážený průměr jejich rozptylů (pro neznámé, ale stejné populační rozptyly \(\sigma_1^2 = \sigma_2^2\)):</p>
+\[ s^2 = \frac{(n_1-1)s_1^2 + (n_2-1)s_2^2}{n_1+n_2-2} \]
 <p>Po umocnění a přepsání do tvaru „rozdíl × inverze rozptylu × rozdíl“:</p>
 \[ t^2 = \frac{n_1 n_2}{n_1+n_2}\,(\bar x_1-\bar x_2)\,(s^2)^{-1}\,(\bar x_1-\bar x_2) \]
 <p>Když \(t^2\) napíšeme takhle, zobecnění je přímočaré – rozdíl průměrů nahradíme rozdílem vektorů a rozptyl kovarianční maticí:</p>
@@ -312,7 +415,7 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
 <div class="box intuice"><div class="box-t">Intuice</div>
 <p>\(T^2\) je vlastně <b>Mahalanobisova vzdálenost mezi dvěma centroidy</b> (krát faktor velikosti vzorku). Rozdíl průměrů se „měří“ vzhledem k tvaru mraků. Rozdíl ve směru, ve kterém data normálně moc nekolísají, je velmi průkazný – i když je v absolutních číslech malý.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig02_hotelling.png" alt="Histogramy dvou skupin se překrývají, v bodovém grafu jsou skupiny oddělené" loading="lazy"></div>
-<figcaption><b>Obr. 2.3</b> Dvě skupiny se silně korelovanými proměnnými. Každá proměnná zvlášť: t-test nevýznamný. Obě najednou: Hotellingův test vysoce významný.</figcaption></figure>
+<figcaption><b>Obr. 2.5</b> Dvě skupiny se silně korelovanými proměnnými. Každá proměnná zvlášť: t-test nevýznamný. Obě najednou: Hotellingův test vysoce významný.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>Toto je hlavní argument pro vícerozměrné testy. Skupiny se liší <b>napříč</b> hlavní osou mraku (skupina B je „pod“ skupinou A). V průmětu na osu \(x_1\) nebo \(x_2\) se rozdíl ztratí v obrovském rozptylu podél mraku. Hotellingův test pracuje s kovarianční maticí, takže rozdíl ve „štíhlém“ směru najde.</p></div>
 
@@ -327,10 +430,15 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
 <p>Skupina bez sepse a se sepsí, \(n_1 = n_2 = 17\), \(n = 34\), \(p = 3\) proměnné (tep, diastolický tlak, věk).</p>
 <ul>
 <li>průměry: bez sepse \((83{,}2;\ 58{,}5;\ 65{,}0)\), se sepsí \((98{,}7;\ 61{,}1;\ 58{,}4)\);</li>
-<li>\(T^2 = 10{,}33\) → \(F = \frac{34-3-1}{3\cdot 32}\cdot 10{,}33 = 3{,}23\);</li>
+<li>\(T^2 = 10{,}33\), převod na F:</li>
+</ul>
+\[ F = \frac{34-3-1}{3\cdot 32}\cdot 10{,}33 = 3{,}23 \]
+<ul>
 <li>kritická hodnota \(f_{0{,}95}(3, 30) = 2{,}92\) → \(3{,}23 &gt; 2{,}92\) → <b>zamítáme \(H_0\)</b>, skupiny se liší;</li>
 <li>simultánní testy: \(F_1 = 3{,}15\) (tep), \(F_2 = 0{,}09\) (tlak), \(F_3 = 0{,}59\) (věk). Jen tep překračuje 2,92 → <b>za rozdílem stojí hlavně tepová frekvence</b>.</li>
 </ul></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky: Hotellingův T² test</div>
+<p>Hotellingův T² test porovnává dvě nezávislé skupiny ve všech proměnných najednou – je to vícerozměrný t-test s nulovou hypotézou, že vektory středních hodnot jsou stejné. Místo rozdílu průměrů bere rozdíl centroidů a místo rozptylu společnou kovarianční matici, takže \(T^2\) je vlastně Mahalanobisova vzdálenost mezi centroidy, násobená faktorem velikosti vzorků. Převede se na F statistiku s \((p,\ n-p-1)\) stupni volnosti. Oproti několika t-testům má jednu hladinu významnosti a využije korelace, takže najde i rozdíl „napříč“ mrakem. Když \(H_0\) zamítnu, simultánními F-testy se stejným kritickým kvantilem zjistím, které proměnné rozdíl způsobují – u sepse to byl tep.</p></div>
 
 <h2 id="vyznamnost">Statistická vs. reálná (klinická) významnost</h2>
 <p>p-hodnota říká, jak nepravděpodobný by byl pozorovaný rozdíl, kdyby žádný rozdíl neexistoval. <b>Neříká, jak velký nebo užitečný rozdíl je.</b> S rostoucím počtem pozorování lze prokázat i nepatrný rozdíl.</p>
@@ -338,9 +446,21 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
 <p><b>Statisticky významný</b> je výsledek, u kterého test zamítl nulovou hypotézu (\(p &lt; \alpha\)) – rozdíl pravděpodobně není dílem náhody. <b>Reálně (klinicky, prakticky) významný</b> je rozdíl, který je dost velký na to, aby měl praktický dopad – změnil rozhodnutí o pacientovi, umožnil diagnózu.</p>
 <p class="jinak">statistická významnost odpovídá na „je to skutečné?“, reálná na „je to důležité?“. Při obrovském vzorku je „skutečný“ i rozdíl půl tepu za minutu, ale lékaři je k ničemu.</p></div>
 <figure><div class="paper"><img src="figures/fig02_vyznamnost.png" alt="Dvě téměř totožná rozdělení s velmi malou p-hodnotou" loading="lazy"></div>
-<figcaption><b>Obr. 2.4</b> Velký vzorek: rozdíl průměrů je statisticky vysoce významný, a přesto se skupiny téměř úplně překrývají.</figcaption></figure>
+<figcaption><b>Obr. 2.6</b> Velký vzorek: rozdíl průměrů je statisticky vysoce významný, a přesto se skupiny téměř úplně překrývají.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>V přednášce: entropie EEG v klidu a při mentální zátěži, párový t-test u 145 lidí dal \(p = 0{,}0000237\). Lze ale najít práh, podle kterého by se u jednotlivého člověka dalo rozhodnout, zda je v klidu? Ne – rozdělení se překrývají. Podobně u sepse: tep se liší významně, ale pro diagnózu potřebujeme <b>klinicky významné prahové kritérium</b>, které skupiny opravdu oddělí. Vždy se ptej nejen „je to významné?“, ale i „je to dost velké, aby to k něčemu bylo?“.</p></div>
+
+<h2 id="kdy-co">Kdy co použít</h2>
+<div class="tablewrap"><table>
+<tr><th>Otázka</th><th>Nástroj</th><th>Proč právě on</th></tr>
+<tr><td>Kde data leží a jak jsou rozházená a provázaná?</td><td>střední vektor, kovarianční matice (korelační, když mají proměnné různé jednotky)</td><td>dva objekty popíšou polohu, roztažení i natočení celého mraku</td></tr>
+<tr><td>Smím použít parametrickou metodu?</td><td>testy normality jednotlivých proměnných + grafy dvojic + χ² diagram</td><td>testy samy u velkých dat zamítají i drobnosti a neřeknou, kde je problém</td></tr>
+<tr><td>Je tento objekt neobvyklý?</td><td>Mahalanobisova vzdálenost \(D^2\), χ² diagram</td><td>zohlední korelace, takže odhalí i nečekanou kombinaci hodnot</td></tr>
+<tr><td>Liší se dvě skupiny v celém profilu?</td><td>Hotellingův T² test</td><td>jedna hladina významnosti, využije korelace</td></tr>
+<tr><td>Ve které proměnné se liší?</td><td>simultánní F-testy</td><td>společný přísnější práh hlídá mnohonásobné testování</td></tr>
+<tr><td>Data nejsou normální?</td><td>neparametrické metody nebo transformace</td><td>nespoléhají na tvar rozdělení / tvar přiblíží normálnímu</td></tr>
+<tr><td>Je nalezený rozdíl k něčemu?</td><td>velikost rozdílu, překryv skupin, klinický práh</td><td>malé p ještě neznamená užitečný rozdíl</td></tr>
+</table></div>
 
 <section class="souhrn" id="shrnuti">
 <h2 id="shrnuti-h">Shrnutí</h2>
@@ -349,7 +469,7 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
 <li>Kovarianční matice = celý „tvar“ dat v jedné tabulce: rozptyly + vztahy.</li>
 <li>Korelace je kovariance očištěná od jednotek; korelační matice = kovarianční matice standardizovaných dat.</li>
 <li>Normalita je předpoklad mnoha metod – ověřuj ji, ale testy u velkých dat ber s rezervou a dívej se na grafy.</li>
-<li>Mahalanobisova vzdálenost bere v úvahu korelace; bod může být odlehlý kombinací hodnot, ne jednotlivou hodnotou.</li>
+<li>Mahalanobisova vzdálenost bere v úvahu korelace; bod může být odlehlý kombinací hodnot, ne jednotlivou hodnotou. Je společným principem χ² diagramu i Hotellingova testu.</li>
 <li>χ² diagram: body na přímce = OK; odklon nahoře = odlehlé hodnoty / těžké chvosty.</li>
 <li>Hotellingův T² najde rozdíl, který t-testy po jednotlivých proměnných přehlédnou.</li>
 <li>Malé p ≠ velký nebo užitečný efekt.</li>

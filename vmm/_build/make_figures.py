@@ -85,6 +85,63 @@ def ellipse95(ax, X, color=INK2):
 
 
 # =====================================================================  přednáška 2
+def fig02_kovariance():
+    rng = np.random.default_rng(21)  # vlastní generátor: nemění data ostatních grafů
+    X = rng.multivariate_normal([80, 37], [[100, 2.4], [2.4, 0.12]], 70)
+    mx, my = X.mean(0)
+    prod = (X[:, 0] - mx) * (X[:, 1] - my)
+    s12 = prod.sum() / (len(X) - 1)
+    fig, ax = plt.subplots(figsize=(7.4, 4.6))
+    ax.axvline(mx, color=INK2, lw=1.2, ls="--"); ax.axhline(my, color=INK2, lw=1.2, ls="--")
+    pos = prod > 0
+    ax.scatter(X[pos, 0], X[pos, 1], s=34, c=C1, marker="o", edgecolors=SURF, linewidths=0.6,
+               label=f"součin odchylek > 0 ({pos.sum()} bodů)")
+    ax.scatter(X[~pos, 0], X[~pos, 1], s=34, c=C2, marker="s", edgecolors=SURF, linewidths=0.6,
+               label=f"součin odchylek < 0 ({(~pos).sum()} bodů)")
+    x0, x1 = X[:, 0].min() - 4, X[:, 0].max() + 4
+    y0, y1 = X[:, 1].min() - 0.22, X[:, 1].max() + 0.22
+    ax.set_xlim(x0, x1); ax.set_ylim(y0, y1)
+    kw = dict(fontsize=10, ha="center", va="center", fontweight="semibold",
+              bbox=dict(boxstyle="round,pad=0.25", fc=SURF, ec=GRID))
+    ax.text(x1 - 6, y1 - 0.09, "(+)·(+) = +", color=C1, **kw)
+    ax.text(x0 + 6, y0 + 0.09, "(−)·(−) = +", color=C1, **kw)
+    ax.text(x0 + 6, y1 - 0.09, "(−)·(+) = −", color=C2, **kw)
+    ax.text(x1 - 6, y0 + 0.09, "(+)·(−) = −", color=C2, **kw)
+    ax.text(mx + 0.6, y0 + 0.25, "průměr tepu", fontsize=9, color=MUTED, rotation=90, va="bottom")
+    ax.text(x0 + 0.5, my + 0.015, "průměr teploty", fontsize=9, color=MUTED, va="bottom")
+    ax.set_xlabel("tep (tepy/min)"); ax.set_ylabel("teplota (°C)")
+    ax.set_title(f"kovariance = průměrný součin odchylek = {s12:.2f}".replace(".", ","))
+    ax.legend(loc="upper left", bbox_to_anchor=(0, -0.16), ncol=2)
+    save(fig, "fig02_kovariance")
+
+
+def fig02_hustota():
+    fig, axs = plt.subplots(1, 2, figsize=(10, 4.4))
+    g = np.linspace(-3, 3, 241)
+    G1, G2 = np.meshgrid(g, g)
+    P = np.dstack([G1, G2])
+    c = np.sqrt(stats.chi2.ppf(0.95, 2))
+    for ax, r, t in zip(axs, [0, 0.5], ["nezávislé: Σ = I", "korelované: ρ = 0,5"]):
+        S = np.array([[1, r], [r, 1]])
+        Z = stats.multivariate_normal([0, 0], S).pdf(P)
+        ax.contourf(G1, G2, Z, levels=12, cmap=SEQ, alpha=0.85)
+        w, v = np.linalg.eigh(S)
+        ang = np.degrees(np.arctan2(v[1, 1], v[0, 1]))
+        ax.add_patch(Ellipse((0, 0), 2 * c * np.sqrt(w[1]), 2 * c * np.sqrt(w[0]), angle=ang,
+                             fill=False, ec=C2, lw=2))
+        for k, col in [(1, INK), (0, INK2)]:
+            a = c * np.sqrt(w[k]) * v[:, k]
+            ax.annotate("", xy=a, xytext=(0, 0),
+                        arrowprops=dict(arrowstyle="-|>", color=col, lw=2, mutation_scale=14))
+            ax.text(*(a * 1.12), f"λ = {w[k]:.1f}".replace(".", ","), fontsize=10, color=col,
+                    ha="center", va="center", fontweight="semibold",
+                    bbox=dict(boxstyle="round,pad=0.15", fc=SURF, ec="none", alpha=0.85))
+        ax.set_title(t)
+        ax.set_xlim(-3, 3); ax.set_ylim(-3, 3); ax.set_aspect("equal")
+        ax.set_xlabel("x₁"); ax.set_ylabel("x₂"); ax.grid(False)
+    save(fig, "fig02_hustota")
+
+
 def fig02_korelace():
     fig, axs = plt.subplots(1, 4, figsize=(12, 3.3))
     for ax, r, txt in zip(axs, [0, -0.29, 0.56, 0.8],
@@ -905,7 +962,7 @@ def fig11_srovnani():
 
 
 if __name__ == "__main__":
-    for f in [fig02_korelace, fig02_chi2, fig02_hotelling, fig02_vyznamnost,
+    for f in [fig02_kovariance, fig02_hustota, fig02_korelace, fig02_chi2, fig02_hotelling, fig02_vyznamnost,
               fig03_skalovani, fig03_log,
               fig04_korelace_tvary, fig04_regrese, fig04_logit, fig04_anova,
               fig05_vazby, fig05_dendrogram, fig05_pocet_k, fig05_kmeans_dbscan, fig05_seed, fig05_medoid,
