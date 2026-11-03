@@ -76,7 +76,7 @@
 <p class="jinak">díru zalepíme „nejrozumnějším tipem“, abychom nemuseli vyhodit celý řádek. Tip je ale vymyšlený, ne naměřený – proto imputace vždy trochu zkresluje (hlavně zmenšuje rozptyl).</p></div>
 <ul>
 <li><b>Hromadně konstantou</b> (např. 0) – jednoduché, ale nepříliš praktické: nula v BMI je nesmysl a zkreslí rozložení.</li>
-<li><b>Správněji – statistikou daného sloupce</b>: průměrem nebo mediánem sloupce BMI. Medián je robustnější vůči odlehlým hodnotám.</li>
+<li><b>Správněji – statistikou daného sloupce</b>: průměrem nebo mediánem sloupce BMI. Medián je robustnější vůči odlehlým hodnotám, ale <b>výpočetně dražší</b> (viz otázka níže).</li>
 <li>(Navíc nad rámec přednášky: pokročilé metody odhadují chybějící hodnotu z ostatních proměnných – k nejbližších sousedů, regresní imputace, MICE.)</li>
 </ul>
 <div class="box pozor"><div class="box-t">Na co myslet</div>
@@ -85,6 +85,8 @@
 <li>Záleží na tom, <b>proč</b> hodnota chybí. Chybí náhodně? Nebo chybí laktát hlavně u pacientů, kterým ho lékař neměřil, protože jim nic nebylo? Pak je i sama informace „chybí“ diagnosticky cenná.</li>
 <li>Statistiky pro imputaci (průměr, medián) počítej jen z trénovacích dat a stejné hodnoty použij na testovací data.</li>
 </ul></div>
+<div class="box pozor"><div class="box-t">Otázka k zamyšlení (z přednášky 5): co se spočítá rychleji – průměr, nebo medián?</div>
+<p><b>Průměr.</b> Stačí jednou projít data a hodnoty sečíst. Pro medián musíme vědět, která hodnota je „uprostřed“, a k tomu je potřeba hodnoty <b>seřadit</b> (aspoň částečně) – a řazení je pomalejší než sčítání. U pár stovek pacientů je rozdíl zanedbatelný, u milionů hodnot nebo při opakovaném výpočtu (např. v každé iteraci algoritmu) už ne. Stejná úvaha vysvětluje, proč je k-medoids pomalejší než k-means (<a href="05_shlukova_analyza.html#alternativy">přednáška 5</a>).</p></div>
 
 <h2 id="skalovani">Standardizace a normalizace</h2>
 <div class="box definice" id="def-skalovani"><div class="box-t">Definice: škálování příznaků</div>
@@ -100,9 +102,12 @@
 
 <h3>Potřebné pojmy</h3>
 <div class="box definice" id="def-prumer-sd"><div class="box-t">Definice: výběrový průměr a směrodatná odchylka</div>
-<p><b>Výběrový průměr</b> \(\bar x\) je součet hodnot vydělený jejich počtem. <b>Výběrová směrodatná odchylka</b> \(s\) je odmocnina z průměrné kvadratické odchylky hodnot od průměru (s dělitelem \(N-1\)): \[ \bar{x} = \frac{1}{N}\sum_{i=1}^{N} x_i, \qquad s = \sqrt{\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2} \]</p>
+<p><b>Výběrový průměr</b> \(\bar x\) je součet hodnot vydělený jejich počtem. <b>Výběrová směrodatná odchylka</b> \(s\) je odmocnina z průměrné kvadratické odchylky hodnot od průměru (s dělitelem \(N-1\)): \[ \begin{aligned} \bar{x} &= \frac{1}{N}\sum_{i=1}^{N} x_i \\ s &= \sqrt{\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2} \end{aligned} \]</p>
 <p class="jinak">průměr říká, <b>kde</b> data leží (těžiště), směrodatná odchylka, <b>jak daleko od průměru</b> se hodnoty typicky nacházejí. Má stejné jednotky jako data (roky, kg/m²), proto se dá přímo použít jako „pravítko“.</p></div>
 <p>Proč \(N-1\) a ne \(N\)? Odchylky měříme od průměru spočteného ze stejných dat; ten je k datům „přitažený“, takže odchylky vycházejí systematicky trochu menší. Dělení \(N-1\) to vyrovná (nestranný odhad). Speciální případy z přednášky: pole zcela stejných hodnot má \(s = 0\) (pozor – standardizace by dělila nulou!); data vydělená dvěma mají poloviční průměr i \(s\); přičtení konstanty změní průměr, ale \(s\) ne.</p>
+<div class="box pozor"><div class="box-t">Otázka k zamyšlení (z přednášky 5): co když má celý sloupec stejnou hodnotu?</div>
+<p>Pak \(s = 0\). Každá metoda, která má směrodatnou odchylku <b>ve jmenovateli</b>, dělí nulou – standardizace (z-skóre), Pearsonova korelace (<a href="04_vztahy.html#korelace">přednáška 4</a>) a vše, co na nich stojí. Výsledkem je <code>NaN</code>, které se propíše do dalších výpočtů, a <b>celá metoda „zhavaruje“</b> (nebo tiše vrátí nesmysl). Některé knihovny to ošetří (<code>StandardScaler</code> vrátí samé nuly), ruční vzorec, <code>np.corrcoef</code> ani <code>pandas.corr</code> ne.</p>
+<p>Řešení: konstantní sloupce před analýzou <b>odstraň</b> – nenesou žádnou informaci, protože se v nich pacienti neliší.</p></div>
 
 <div class="box definice" id="def-standardizace"><div class="box-t">Definice: standardizace (z-skóre)</div>
 <p><b>Standardizace</b> je transformace proměnné, při které od každé hodnoty odečteme průměr proměnné a výsledek vydělíme její směrodatnou odchylkou: \(z_i = (x_i - \bar x)/s\). Výsledná proměnná (<b>z-skóre</b>) má průměr 0 a směrodatnou odchylku 1 a je <b>bezrozměrná</b>.</p>

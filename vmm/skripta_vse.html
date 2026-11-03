@@ -750,7 +750,7 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
 <p class="jinak">díru zalepíme „nejrozumnějším tipem“, abychom nemuseli vyhodit celý řádek. Tip je ale vymyšlený, ne naměřený – proto imputace vždy trochu zkresluje (hlavně zmenšuje rozptyl).</p></div>
 <ul>
 <li><b>Hromadně konstantou</b> (např. 0) – jednoduché, ale nepříliš praktické: nula v BMI je nesmysl a zkreslí rozložení.</li>
-<li><b>Správněji – statistikou daného sloupce</b>: průměrem nebo mediánem sloupce BMI. Medián je robustnější vůči odlehlým hodnotám.</li>
+<li><b>Správněji – statistikou daného sloupce</b>: průměrem nebo mediánem sloupce BMI. Medián je robustnější vůči odlehlým hodnotám, ale <b>výpočetně dražší</b> (viz otázka níže).</li>
 <li>(Navíc nad rámec přednášky: pokročilé metody odhadují chybějící hodnotu z ostatních proměnných – k nejbližších sousedů, regresní imputace, MICE.)</li>
 </ul>
 <div class="box pozor"><div class="box-t">Na co myslet</div>
@@ -759,6 +759,8 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
 <li>Záleží na tom, <b>proč</b> hodnota chybí. Chybí náhodně? Nebo chybí laktát hlavně u pacientů, kterým ho lékař neměřil, protože jim nic nebylo? Pak je i sama informace „chybí“ diagnosticky cenná.</li>
 <li>Statistiky pro imputaci (průměr, medián) počítej jen z trénovacích dat a stejné hodnoty použij na testovací data.</li>
 </ul></div>
+<div class="box pozor"><div class="box-t">Otázka k zamyšlení (z přednášky 5): co se spočítá rychleji – průměr, nebo medián?</div>
+<p><b>Průměr.</b> Stačí jednou projít data a hodnoty sečíst. Pro medián musíme vědět, která hodnota je „uprostřed“, a k tomu je potřeba hodnoty <b>seřadit</b> (aspoň částečně) – a řazení je pomalejší než sčítání. U pár stovek pacientů je rozdíl zanedbatelný, u milionů hodnot nebo při opakovaném výpočtu (např. v každé iteraci algoritmu) už ne. Stejná úvaha vysvětluje, proč je k-medoids pomalejší než k-means (<a href="#k05-alternativy">přednáška 5</a>).</p></div>
 
 <h2 id="k03-skalovani">Standardizace a normalizace</h2>
 <div class="box definice" id="k03-def-skalovani"><div class="box-t">Definice: škálování příznaků</div>
@@ -774,9 +776,12 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
 
 <h3>Potřebné pojmy</h3>
 <div class="box definice" id="k03-def-prumer-sd"><div class="box-t">Definice: výběrový průměr a směrodatná odchylka</div>
-<p><b>Výběrový průměr</b> \(\bar x\) je součet hodnot vydělený jejich počtem. <b>Výběrová směrodatná odchylka</b> \(s\) je odmocnina z průměrné kvadratické odchylky hodnot od průměru (s dělitelem \(N-1\)): \[ \bar{x} = \frac{1}{N}\sum_{i=1}^{N} x_i, \qquad s = \sqrt{\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2} \]</p>
+<p><b>Výběrový průměr</b> \(\bar x\) je součet hodnot vydělený jejich počtem. <b>Výběrová směrodatná odchylka</b> \(s\) je odmocnina z průměrné kvadratické odchylky hodnot od průměru (s dělitelem \(N-1\)): \[ \begin{aligned} \bar{x} &= \frac{1}{N}\sum_{i=1}^{N} x_i \\ s &= \sqrt{\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2} \end{aligned} \]</p>
 <p class="jinak">průměr říká, <b>kde</b> data leží (těžiště), směrodatná odchylka, <b>jak daleko od průměru</b> se hodnoty typicky nacházejí. Má stejné jednotky jako data (roky, kg/m²), proto se dá přímo použít jako „pravítko“.</p></div>
 <p>Proč \(N-1\) a ne \(N\)? Odchylky měříme od průměru spočteného ze stejných dat; ten je k datům „přitažený“, takže odchylky vycházejí systematicky trochu menší. Dělení \(N-1\) to vyrovná (nestranný odhad). Speciální případy z přednášky: pole zcela stejných hodnot má \(s = 0\) (pozor – standardizace by dělila nulou!); data vydělená dvěma mají poloviční průměr i \(s\); přičtení konstanty změní průměr, ale \(s\) ne.</p>
+<div class="box pozor"><div class="box-t">Otázka k zamyšlení (z přednášky 5): co když má celý sloupec stejnou hodnotu?</div>
+<p>Pak \(s = 0\). Každá metoda, která má směrodatnou odchylku <b>ve jmenovateli</b>, dělí nulou – standardizace (z-skóre), Pearsonova korelace (<a href="#k04-korelace">přednáška 4</a>) a vše, co na nich stojí. Výsledkem je <code>NaN</code>, které se propíše do dalších výpočtů, a <b>celá metoda „zhavaruje“</b> (nebo tiše vrátí nesmysl). Některé knihovny to ošetří (<code>StandardScaler</code> vrátí samé nuly), ruční vzorec, <code>np.corrcoef</code> ani <code>pandas.corr</code> ne.</p>
+<p>Řešení: konstantní sloupce před analýzou <b>odstraň</b> – nenesou žádnou informaci, protože se v nich pacienti neliší.</p></div>
 
 <div class="box definice" id="k03-def-standardizace"><div class="box-t">Definice: standardizace (z-skóre)</div>
 <p><b>Standardizace</b> je transformace proměnné, při které od každé hodnoty odečteme průměr proměnné a výsledek vydělíme její směrodatnou odchylkou: \(z_i = (x_i - \bar x)/s\). Výsledná proměnná (<b>z-skóre</b>) má průměr 0 a směrodatnou odchylku 1 a je <b>bezrozměrná</b>.</p>
@@ -1012,7 +1017,7 @@ Nabývá hodnot 0 až 1.</p>
 \[ r_{x,y} = \frac{\operatorname{cov}(x,y)}{\operatorname{std}(x)\cdot \operatorname{std}(y)} \]
 <table class="vars">
 <tr><td>\(\operatorname{cov}(x,y)\)</td><td>kovariance – jak spolu proměnné kolísají (viz <a href="#k02-charakteristiky">přednáška 2</a>)</td></tr>
-<tr><td>\(\operatorname{std}\)</td><td>směrodatné odchylky – dělením se zbavíme jednotek</td></tr>
+<tr><td>\(\operatorname{std}\)</td><td>směrodatné odchylky – dělením se zbavíme jednotek. Je-li jedna proměnná konstantní, je její \(\operatorname{std} = 0\) a \(r\) není definováno (výsledek <code>NaN</code>, viz <a href="#k03-skalovani">přednáška 3</a>)</td></tr>
 <tr><td>\(r\)</td><td>od −1 (dokonalý klesající lineární vztah) přes 0 (žádný lineární vztah) po +1 (dokonalý rostoucí)</td></tr>
 </table></div>
 <p>Korelace popisuje <b>lineární</b> vazbu. \(r\) blízké 0 vylučuje lineární vztah, ale <b>nevylučuje jiný</b> (např. parabolický).</p>
@@ -1224,12 +1229,20 @@ Nabývá hodnot 0 až 1.</p>
 <div class="tablewrap"><table>
 <tr><th>Metrika</th><th>Vzorec</th><th>Kdy</th></tr>
 <tr><td><b>eukleidovská</b> (L2)</td><td>\(d_E = \sqrt{\sum_{i=1}^{N}(a_i-b_i)^2}\)</td><td>výchozí volba pro spojitá standardizovaná data; „vzdálenost pravítkem“</td></tr>
-<tr><td><b>manhattanská</b> (L1, city-block)</td><td>\(d_M = \sum_{i=1}^{N}|a_i-b_i|\)</td><td>součet rozdílů po osách; méně citlivá na jeden velký rozdíl</td></tr>
+<tr><td><b>manhattanská</b> (L1, city-block)</td><td>\(d_M = \sum_{i=1}^{N}|a_i-b_i|\)</td><td>součet rozdílů po osách; méně citlivá na jeden velký rozdíl; <b>výpočetně levnější</b> (žádné umocňování ani odmocnina)</td></tr>
 <tr><td><b>kosinová</b></td><td>\(d_C = 1 - \cos\theta = 1 - \dfrac{\mathbf{a}\cdot\mathbf{b}}{\lVert\mathbf{a}\rVert\,\lVert\mathbf{b}\rVert}\)</td><td>jen úhel mezi vektory – porovnává <b>tvar profilu</b>, ne velikost (analýza textu, spektra)</td></tr>
 </table></div>
 <p>\(N\) = počet dimenzí (příznaků), \(a_i, b_i\) = souřadnice obou objektů v \(i\)-té dimenzi.</p>
-<div class="box priklad"><div class="box-t">Příklad</div>
-<p>A = (1, 1), C = (4, 5). Eukleidovská: \(\sqrt{3^2 + 4^2} = 5\). Manhattanská: \(3 + 4 = 7\). Body A = (1, 1) a B = (3, 3) mají eukleidovskou vzdálenost 2,83, ale kosinovou 0 – leží na stejné polopřímce z počátku (B je jen „větší verze“ A).</p></div>
+<div class="box priklad"><div class="box-t">Příklad (body ze slidů přednášky)</div>
+<p>A = (0, 0), B = (1, 1), C = (3, 2). Spočítáme vzdálenost C–A a B–C.</p>
+<p>1. Eukleidovská (rozdíly souřadnic umocníme, sečteme, odmocníme):</p>
+\[ \begin{aligned} d_E(C,A) &= \sqrt{3^2 + 2^2} = \sqrt{13} \approx 3{,}61 \\ d_E(B,C) &= \sqrt{2^2 + 1^2} = \sqrt{5} \approx 2{,}24 \end{aligned} \]
+<p>2. Manhattanská (jen sečteme absolutní rozdíly):</p>
+\[ \begin{aligned} d_M(C,A) &= 3 + 2 = 5 \\ d_M(B,C) &= 2 + 1 = 3 \end{aligned} \]
+<p>3. Kosinová – na slidu jiné body: A = (0,5; 0,5), B = (1,5; 1,5), C = (3; 1). A a B leží na stejné polopřímce z počátku (B je jen „větší verze“ A), proto \(d_C(A,B) = 0\), i když eukleidovsky jsou od sebe 1,41. Pro A a C:</p>
+\[ \cos\theta = \frac{0{,}5\cdot 3 + 0{,}5\cdot 1}{\sqrt{0{,}5}\cdot\sqrt{10}} = \frac{2}{\sqrt 5} \approx 0{,}894 \]
+\[ d_C(A,C) = 1 - 0{,}894 \approx 0{,}106 \]
+<p>Stejnou kosinovou vzdálenost 0,106 má i dvojice B–C – B míří stejným směrem jako A.</p></div>
 <div class="box pozor"><div class="box-t">Otázka z přednášky</div>
 <p><i>Co může znamenat, když je eukleidovská vzdálenost dvou různých vzorků 0?</i> Mají úplně stejné hodnoty všech příznaků – pravděpodobně jde o <b>duplicitní záznam</b>, nebo příznaky nestačí k rozlišení objektů.</p></div>
 
@@ -1298,7 +1311,7 @@ Nabývá hodnot 0 až 1.</p>
 <ul>
 <li><b>Z tvaru bodového grafu a dendrogramu</b> – u 2D dat často zjevné.</li>
 <li><b>Největší vzdálenost nepřerušená slučováním</b> – najdi nejdelší svislý úsek dendrogramu a řízni v něm. (V přednášce tohle pravidlo vedlo na 2 shluky, což bylo chybně – pravidla jsou jen vodítka.)</li>
-<li><b>Změna vzdálenosti slučování</b> – vynes vzdálenost sloučení proti iteraci; místo prudké změny nárůstu („loket“) signalizuje potenciální počet shluků.</li>
+<li><b>Změna vzdálenosti slučování</b> – vynes vzdálenost sloučení proti iteraci; místo prudké změny nárůstu („loket“ = místo s <b>nejmenším poloměrem křivosti</b>, nejostřejší ohyb křivky) signalizuje potenciální počet shluků.</li>
 </ul>
 <div class="box priklad"><div class="box-t">Na reálných datech je to těžší</div>
 <p>U 19rozměrných EKG dat nejde počet shluků odhadnout „okem“. Pomůže zobrazit výsledek v prvních dvou hlavních komponentách (PCA zvýraznila shluky, které v původních dvojicích příznaků čitelné nebyly). Přechod ze 3 na 5 shluků dal skupiny s 4308, 4081 a 1491 záznamy… Pak je nutné <b>prohlédnout reálné záznamy</b> z každého shluku a ptát se: dává rozdělení smysl? Můžeme věřit N = 3?</p></div>
@@ -1319,9 +1332,15 @@ Nabývá hodnot 0 až 1.</p>
 <ul>
 <li><b>Co musíme znát před spuštěním?</b> Počet shluků K a způsob inicializace těžišť. Výsledek závisí na startu → algoritmus se spouští vícekrát a vezme se nejlepší výsledek.</li>
 <li><b>Potřebujeme standardizovaná data?</b> Ano – pracuje s eukleidovskou vzdáleností, takže proměnná s velkým rozsahem by dominovala.</li>
-<li><b>Můžeme mít kategorická data?</b> Ne – průměr kategorií („průměrná krevní skupina“) nedává smysl.</li>
+<li><b>Můžeme mít kategorická data?</b> Ne – průměr kategorií („průměrná krevní skupina“) nedává smysl. Příklad z přednášky: pohlaví zakódované 0/1 dá těžiště „0,7 muž a 0,3 žena“ – takového pacienta neumíme interpretovat.</li>
 <li>Těžiště je průměr → <b>citlivost na odlehlé hodnoty</b>; k-means hledá <b>kulaté (konvexní) shluky podobné velikosti</b>.</li>
 </ul>
+<div class="box pozor"><div class="box-t">Zafixuj random seed</div>
+<p>Počáteční těžiště jsou náhodná, takže dvě spuštění na stejných datech mohou dát různé shluky (obr. 5.3). Než začneš ladit nastavení (K, metriku, předzpracování), zafixuj <code>random_state</code>. Jinak nepoznáš, jestli změnu výsledku způsobila tvoje úprava, nebo jen jiný náhodný start. V přednášce proto i umělá data vznikají s <code>random_state=0</code> – „ať je to vždy stejné“.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig05_seed.png" alt="Tři běhy k-means se stejnými daty a různým náhodným startem" loading="lazy"></div>
+<figcaption><b>Obr. 5.3</b> Stejná data (3 shluky), k-means s K = 3 a jediným startem (<code>n_init=1</code>), jen jiný <code>random_state</code>. Černé křížky = výsledná těžiště.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>k-means najde jen <b>nejbližší „údolí“</b> od místa, kde začal (lokální minimum WSS). Když dvě počáteční těžiště padnou do jednoho skutečného shluku, rozdělí ho napůl a dva jiné shluky slije. Lepší řešení poznáš podle <b>nižšího WSS</b>. Proto se k-means spouští víckrát (<code>n_init</code>) a bere se běh s nejnižším WSS – a proto se fixuje seed, aby byl výsledek opakovatelný.</p></div>
 <h3>Jak určit K</h3>
 <ol>
 <li>ze <b>znalosti problematiky</b>;</li>
@@ -1340,12 +1359,12 @@ Nabývá hodnot 0 až 1.</p>
 <div class="box definice" id="k05-def-wss"><div class="box-t">Definice: WSS a metoda lokte</div>
 <p><b>WSS</b> (within-cluster sum of squares, vnitroshlukový součet čtverců) je součet čtverců vzdáleností všech bodů od těžišť jejich shluků. <b>Metoda lokte</b> (elbow method) vynese WSS proti počtu shluků \(K\) a za vhodné \(K\) zvolí místo, kde se pokles křivky výrazně zpomalí („loket“).</p>
 <p class="jinak">WSS měří, jak „rozplizlé“ jsou shluky. Dalšími shluky ho vždy zmenšíme, ale od určitého \(K\) už jen trochu – tam se přestává vyplácet shluky přidávat.</p></div>
-<p>WSS s rostoucím K <b>vždy klesá</b> (při K = n je nula – každý bod je sám sobě těžištěm). Proto nehledáme minimum, ale <b>„loket“</b> – místo, za kterým přidání dalšího shluku už WSS sníží jen málo.</p>
+<p>WSS s rostoucím K <b>vždy klesá</b> (při K = n je nula – každý bod je sám sobě těžištěm). Proto nehledáme minimum, ale <b>„loket“</b> – místo, za kterým přidání dalšího shluku už WSS sníží jen málo. Na grafu je to místo s <b>nejmenším poloměrem křivosti</b> – kde se křivka nejostřeji „láme“.</p>
 <div class="box definice" id="k05-def-ch"><div class="box-t">Definice: Calinski–Harabasz index</div>
 <p><b>Calinski–Harabasz index</b> je poměr rozptylu <i>mezi</i> shluky a rozptylu <i>uvnitř</i> shluků, každý vydělený svými stupni volnosti: \(\mathrm{CH} = \dfrac{B/(K-1)}{W/(N-K)}\), kde \(W\) je WSS a \(B = \sum_k N_k \lVert \mathbf c_k - \mathbf c \rVert^2\) je součet čtverců vzdáleností těžišť shluků \(\mathbf c_k\) od celkového těžiště \(\mathbf c\) (vážený velikostí shluku \(N_k\)). Vyšší hodnota = lepší rozdělení.</p>
 <p class="jinak">stejná logika jako F-statistika v ANOVA: „jsou shluky od sebe daleko ve srovnání s tím, jak jsou samy rozptýlené?“ Hledáme \(K\) s maximálním CH. Korekce \(K-1\) a \(N-K\) brání tomu, aby index rostl jen díky tomu, že přidáváme shluky.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig05_pocet_k.png" alt="Data se třemi shluky a grafy WSS, Calinski-Harabasz a silueta pro různé K" loading="lazy"></div>
-<figcaption><b>Obr. 5.3</b> Volba K na datech se třemi shluky.</figcaption></figure>
+<figcaption><b>Obr. 5.4</b> Volba K na datech se třemi shluky.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>Na „učebnicových“ datech se kritéria shodnou: loket WSS, maximum CH i siluety leží u správného K. Na reálných EKG datech to tak hezké nebylo: <b>elbow metoda byla prakticky nepoužitelná</b> (žádný zřetelný loket), CH ukazoval na 7 nebo 2 shluky. Při K = 7 vznikl i shluk s jediným záznamem (N = 1) – to je odlehlá hodnota, ne shluk. Kritéria jsou vodítka, ne pravda.</p></div>
 
@@ -1359,13 +1378,20 @@ Nabývá hodnot 0 až 1.</p>
 <div class="tablewrap"><table>
 <tr><th></th><th>k-medoids</th><th>DBSCAN</th></tr>
 <tr><td>princip</td><td>jako k-means, ale střed shluku je <b>skutečný bod</b> (medoid)</td><td>shluk = oblast s dostatečnou <b>hustotou</b> bodů</td></tr>
-<tr><td>výhody</td><td>menší vliv odlehlých hodnot; interpretovatelné i u kategorických proměnných; libovolná metrika (ve scikit implicitně manhattanská)</td><td>nepotřebuje znát počet shluků; zvládne <b>nekonvexní</b> tvary; odlehlé body označí jako <b>šum</b></td></tr>
-<tr><td>nevýhody</td><td>výrazně delší výpočet (cca 10× na úloze z přednášky)</td><td>potřebuje nastavit ε (poloměr okolí) a minimální počet bodů v okolí; špatně zvládá shluky různé hustoty</td></tr>
+<tr><td>výhody</td><td>menší vliv odlehlých hodnot; interpretovatelné i u kategorických proměnných (střed je skutečný pacient – „jasně muž, nebo žena“, ne 0,7 muže); libovolná metrika (ve scikit implicitně manhattanská)</td><td>nepotřebuje znát počet shluků; zvládne <b>nekonvexní</b> tvary; odlehlé body označí jako <b>šum</b> – nevytváří z nich jednoprvkové „shluky“</td></tr>
+<tr><td>nevýhody</td><td>výrazně delší výpočet (cca 10× na úloze z přednášky) – viz box níže</td><td>potřebuje nastavit ε (poloměr okolí) a minimální počet bodů v okolí; špatně zvládá shluky různé hustoty</td></tr>
 </table></div>
+<figure><div class="paper"><img src="figures/fig05_medoid.png" alt="Těžiště a medoid shluku s jedním odlehlým bodem" loading="lazy"></div>
+<figcaption><b>Obr. 5.5</b> Shluk 12 bodů a jeden odlehlý bod; vpravo přiblížení shluku. Těžiště (průměr) vs. medoid (skutečný bod s nejmenším součtem vzdáleností k ostatním).</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Jediný odlehlý bod <b>přetáhne těžiště</b> mimo hustou část shluku – na místo, kde neleží žádný skutečný objekt. <b>Medoid</b> zůstane uvnitř shluku a je to skutečný objekt, takže ho lze ukázat a interpretovat (i u kategorií). Proto je k-medoids odolnější vůči odlehlým hodnotám.</p></div>
+<div class="box intuice"><div class="box-t">Proč je k-medoids pomalejší</div>
+<p>Medoid je vícerozměrná obdoba <b>mediánu</b>. Už v jedné dimenzi platí, že medián se počítá déle než průměr (otázka z úvodu přednášky): průměr = jeden průchod daty, medián = hodnoty je třeba seřadit (<a href="#k03-chybejici">přednáška 3</a>). U medoidu je to ještě dražší: aby se našel bod s nejmenším součtem vzdáleností k ostatním, musí se spočítat <b>vzdálenosti všech dvojic</b> bodů shluku – pro \(n\) bodů zhruba \(n^2\) výpočtů, zatímco těžiště potřebuje jen \(n\) sčítání. A to se opakuje v každé iteraci.</p></div>
 <div class="box intuice"><div class="box-t">Jak DBSCAN „myslí“</div>
-<p>Kolem každého bodu nakresli kruh o poloměru ε. Má-li v něm aspoň <i>min_samples</i> bodů, je to <b>jádrový bod</b>. Jádrové body, které na sebe dosáhnou, tvoří jeden shluk; body na okraji (v dosahu jádra, ale samy ne jádrové) se přidají. Co nedosáhne nikam, je <b>šum</b>. Shluk se tak „rozlévá“ po hustých oblastech libovolného tvaru.</p></div>
+<p>Kolem každého bodu nakresli kruh o poloměru ε. Má-li v něm aspoň <i>min_samples</i> bodů, je to <b>jádrový bod</b>. Jádrové body, které na sebe dosáhnou, tvoří jeden shluk; body na okraji (v dosahu jádra, ale samy ne jádrové) se přidají. Co nedosáhne nikam, je <b>šum</b>. Shluk se tak „rozlévá“ po hustých oblastech libovolného tvaru.</p>
+<p>Každý shluk musí obsahovat aspoň jeden jádrový bod, takže má vždy aspoň <i>min_samples</i> bodů. Osamocený odlehlý záznam proto DBSCAN označí jako šum, místo aby z něj udělal vlastní shluk – jako k-means s K = 7 na EKG datech (shluk s N = 1).</p></div>
 <figure><div class="paper"><img src="figures/fig05_kmeans_dbscan.png" alt="k-means a DBSCAN na datech tvaru půlměsíců" loading="lazy"></div>
-<figcaption><b>Obr. 5.4</b> Dva propletené půlměsíce s trochou šumu.</figcaption></figure>
+<figcaption><b>Obr. 5.6</b> Dva propletené půlměsíce s trochou šumu.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p>k-means dělí prostor na „kulaté“ oblasti kolem těžišť, takže půlměsíce rozřízne napříč. DBSCAN sleduje hustotu, najde oba tvary a rozptýlené body vyřadí jako šum. Na reálných EKG datech (po UMAP) ale DBSCAN našel 36 shluků a nejasné oblasti slil dohromady, zatímco k-means (K = 4) vytvářel podobně velké shluky a jeden zjevný shluk přehlédl. <b>Nic z toho není perfektní</b> – je potřeba ladit a kombinovat.</p></div>
 
@@ -1373,7 +1399,8 @@ Nabývá hodnot 0 až 1.</p>
 <p>Při mnoha příznacích je vhodné data před shlukováním (nebo alespoň pro zobrazení výsledku) zredukovat:</p>
 <ul>
 <li><b>PCA</b> natočí podprostor tak, aby co nejlépe pokryl variabilitu dat (<a href="#k06">přednáška 6</a>);</li>
-<li><b>UMAP</b> (příp. t-SNE) převede data do 2D se zachováním topologických vazeb (<a href="#k11">přednáška 11</a>). Je žádoucí věnovat čas nastavení parametrů a zafixovat <i>random seed</i> (reprodukovatelnost).</li>
+<li><b>UMAP</b> (příp. t-SNE) převede data do 2D se zachováním topologických vazeb (<a href="#k11">přednáška 11</a>). Je žádoucí věnovat čas nastavení parametrů a zafixovat <i>random seed</i> (reprodukovatelnost) – výsledek UMAP na seedu <b>silně závisí</b>: na slidu dávají stejná EKG data s jiným seedem a parametry šest viditelně odlišných obrázků.</li>
+<li><b>PCA a UMAP lze řadit za sebe</b>: PCA nejdřív sníží počet dimenzí (v přednášce např. 19 příznaků → 8 hlavních komponent) a odfiltruje složky s malou variabilitou, UMAP pak pracuje s menšími a čistšími daty – PCA mu „ulehčí práci“.</li>
 </ul>
 <p>V přednášce: UMAP + aglomerativní shlukování rozdělily EKG data na 7 dobře viditelných skupin (376 až 3486 záznamů).</p>
 
@@ -1436,7 +1463,7 @@ Nabývá hodnot 0 až 1.</p>
 <li>Spojité vstupy pro shlukování standardizuj.</li>
 <li>Vysoký počet proměnných lze redukovat PCA, případně PCA + UMAP.</li>
 <li>Volba metody i metriky musí odpovídat úloze (k-means ne na kategorická data, eukleidovská vzdálenost ne na řetězce/slova).</li>
-<li>Volbou a nastavením metody ovlivníš citlivost na odlehlé hodnoty.</li>
+<li>Volbou a nastavením metody ovlivníš citlivost na odlehlé hodnoty (odolnější je např. k-medoids než k-means).</li>
 <li>Počet shluků odhaduj nástroji (WSS, CH, silueta, DB) a kombinuj je s vlastním úsudkem.</li>
 <li>Celý postup vyžaduje pečlivé nastavení – a kontrolu skutečných objektů ve shlucích.</li>
 </ol></div>
@@ -3302,7 +3329,7 @@ Je to vzdálenost, která zohledňuje rozptyly proměnných i korelace mezi nimi
 <p><b>Škálování</b> (feature scaling) je transformace, která každou proměnnou zvlášť <b>posune a přenásobí</b> (\(x' = (x - a)/b\)) tak, aby všechny proměnné měly srovnatelný rozsah. Dva nejčastější typy jsou standardizace a normalizace.</p>
 <p class="jinak">změníme „jednotky“ každé proměnné tak, aby věk v letech, koncentrace v tisících a odpor v milionech hrály v analýze se stejně velkými čísly. Jde o lineární úpravu – pořadí hodnot i tvar rozdělení zůstanou stejné, mění se jen poloha a „roztažení“ osy.</p><p class="slovnik-odkaz"><a href="#k03-def-skalovani">výklad v kapitole 3 →</a></p></div>
 <div class="box definice" id="k13-s-prumer-sd"><div class="box-t">výběrový průměr a směrodatná odchylka</div>
-<p><b>Výběrový průměr</b> \(\bar x\) je součet hodnot vydělený jejich počtem. <b>Výběrová směrodatná odchylka</b> \(s\) je odmocnina z průměrné kvadratické odchylky hodnot od průměru (s dělitelem \(N-1\)): \[ \bar{x} = \frac{1}{N}\sum_{i=1}^{N} x_i, \qquad s = \sqrt{\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2} \]</p>
+<p><b>Výběrový průměr</b> \(\bar x\) je součet hodnot vydělený jejich počtem. <b>Výběrová směrodatná odchylka</b> \(s\) je odmocnina z průměrné kvadratické odchylky hodnot od průměru (s dělitelem \(N-1\)): \[ \begin{aligned} \bar{x} &= \frac{1}{N}\sum_{i=1}^{N} x_i \\ s &= \sqrt{\frac{1}{N-1}\sum_{i=1}^{N} (x_i-\bar{x})^2} \end{aligned} \]</p>
 <p class="jinak">průměr říká, <b>kde</b> data leží (těžiště), směrodatná odchylka, <b>jak daleko od průměru</b> se hodnoty typicky nacházejí. Má stejné jednotky jako data (roky, kg/m²), proto se dá přímo použít jako „pravítko“.</p><p class="slovnik-odkaz"><a href="#k03-def-prumer-sd">výklad v kapitole 3 →</a></p></div>
 <div class="box definice" id="k13-s-standardizace"><div class="box-t">standardizace (z-skóre)</div>
 <p><b>Standardizace</b> je transformace proměnné, při které od každé hodnoty odečteme průměr proměnné a výsledek vydělíme její směrodatnou odchylkou: \(z_i = (x_i - \bar x)/s\). Výsledná proměnná (<b>z-skóre</b>) má průměr 0 a směrodatnou odchylku 1 a je <b>bezrozměrná</b>.</p>

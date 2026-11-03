@@ -357,6 +357,55 @@ def fig05_kmeans_dbscan():
     save(fig, "fig05_kmeans_dbscan")
 
 
+def fig05_seed():
+    X, _ = make_blobs(300, centers=[[0, 0], [6, 0], [3, 5]], cluster_std=0.9, random_state=1)
+    fig, axs = plt.subplots(1, 3, figsize=(12, 3.8))
+    for ax, s in zip(axs, [9, 28, 0]):
+        km = KMeans(3, n_init=1, init="random", random_state=s).fit(X)
+        lab = km.labels_
+        # očíslování shluků podle polohy těžiště (stálé barvy napříč panely)
+        order = np.argsort(km.cluster_centers_[:, 0] + 0.01 * km.cluster_centers_[:, 1])
+        lab = np.array([list(order).index(l) for l in lab])
+        scatter_groups(ax, X, lab, s=14)
+        ax.scatter(*km.cluster_centers_.T, marker="X", s=140, c=INK, edgecolors=SURF, linewidths=1.2,
+                   label="těžiště", zorder=5)
+        ax.set_title(f"random_state = {s}:  WSS = {km.inertia_:.0f}", fontsize=10)
+        ax.set_xlabel("příznak 1"); ax.set_ylabel("příznak 2"); ax.set_aspect("equal")
+    axs[2].set_title(axs[2].get_title() + "  (nejlepší)", fontsize=10)
+    save(fig, "fig05_seed")
+
+
+def fig05_medoid():
+    rng = np.random.default_rng(5)
+    X = np.vstack([rng.normal([2, 2], 0.4, (12, 2)), [[8, 6]]])
+    D = np.sqrt(((X[:, None, :] - X[None, :, :]) ** 2).sum(-1))
+    med = X[D.sum(1).argmin()]           # medoid: bod s nejmenším součtem vzdáleností k ostatním
+    cen = X.mean(0)                      # těžiště: průměr včetně odlehlého bodu
+    fig, axs = plt.subplots(1, 2, figsize=(11, 4.4), gridspec_kw={"width_ratios": [1, 1.15]})
+    for ax in axs:
+        ax.scatter(X[:-1, 0], X[:-1, 1], s=30, c=C1, marker="o", edgecolors=SURF, linewidths=0.6,
+                   label="body shluku")
+        ax.scatter(*X[-1], s=60, c=C2, marker="s", edgecolors=SURF, linewidths=0.6, label="odlehlý bod")
+        ax.scatter(*cen, s=170, c=INK, marker="X", edgecolors=SURF, linewidths=1.2, zorder=5,
+                   label="těžiště (průměr)")
+        ax.scatter(*med, s=260, facecolors="none", edgecolors=C3, marker="o", linewidths=2.5, zorder=5,
+                   label="medoid (skutečný bod)")
+        ax.set_xlabel("příznak 1"); ax.set_ylabel("příznak 2"); ax.set_aspect("equal")
+    axs[0].set_title("celý pohled")
+    lo, hi = X[:-1].min(0) - 0.4, X[:-1].max(0) + 0.4
+    axs[0].add_patch(plt.Rectangle(lo, *(hi - lo), fill=False, ec=MUTED, ls="--", lw=1))
+    axs[1].set_xlim(lo[0], hi[0]); axs[1].set_ylim(lo[1], hi[1])
+    axs[1].set_title("přiblížení shluku")
+    m0 = X[:-1].mean(0)                  # průměr bez odlehlého bodu
+    axs[1].scatter(*m0, s=90, c=MUTED, marker="+", linewidths=2, zorder=4, label="průměr bez odlehlého bodu")
+    axs[1].annotate("", xy=cen, xytext=m0, arrowprops=dict(arrowstyle="->", color=INK2, lw=1.4))
+    axs[1].text(cen[0], cen[1] + 0.12, "odlehlý bod táhne\ntěžiště ven ze shluku", color=INK2,
+                fontsize=9, ha="center", va="bottom")
+    axs[1].legend(loc="upper left", bbox_to_anchor=(1.02, 1), fontsize=9)
+    print("  těžiště", cen.round(2), "medoid", med.round(2), "průměr bez odlehlého", X[:-1].mean(0).round(2))
+    save(fig, "fig05_medoid")
+
+
 # =====================================================================  přednáška 6 (PCA)
 PROT = pd.read_csv(Path(__file__).parent / "protein.csv", index_col=0)
 CZ = {"Albania": "Albánie", "Austria": "Rakousko", "Belgium": "Belgie", "Bulgaria": "Bulharsko",
@@ -859,7 +908,7 @@ if __name__ == "__main__":
     for f in [fig02_korelace, fig02_chi2, fig02_hotelling, fig02_vyznamnost,
               fig03_skalovani, fig03_log,
               fig04_korelace_tvary, fig04_regrese, fig04_logit, fig04_anova,
-              fig05_vazby, fig05_dendrogram, fig05_pocet_k, fig05_kmeans_dbscan,
+              fig05_vazby, fig05_dendrogram, fig05_pocet_k, fig05_kmeans_dbscan, fig05_seed, fig05_medoid,
               fig06_princip, fig06_scree, fig06_zateze, fig06_s_vs_r, fig06_biplot, fig06_limitace,
               fig07_limity, fig07_poly, fig07_kernel_1d, fig07_kpca, fig07_gamma, fig08_svd, fig09_rotace,
               fig09_spolecna_pricina, fig09_komunality,
