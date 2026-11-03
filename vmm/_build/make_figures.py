@@ -716,6 +716,56 @@ def fig09_rotace():
                        columns=["F1", "F2", "F1 var", "F2 var", "komunalita"]).round(2))
 
 
+def fig09_spolecna_pricina():
+    """Dva příznaky vzniklé ze stejného skrytého faktoru korelují; po odečtení vlivu faktoru ne."""
+    n = 250
+    rng = np.random.default_rng(91)
+    F = rng.normal(size=n)
+    e1, e2 = rng.normal(0, .6, n), rng.normal(0, .7, n)
+    x1, x2 = .8 * F + e1, .7 * F + e2
+    r_x = np.corrcoef(x1, x2)[0, 1]
+    r_e = np.corrcoef(e1, e2)[0, 1]
+    fig, axs = plt.subplots(1, 2, figsize=(10.5, 4.6))
+    sc = axs[0].scatter(x1, x2, c=F, cmap=SEQ, s=24, edgecolors=SURF, linewidths=.5)
+    cb = fig.colorbar(sc, ax=axs[0], fraction=.046, pad=.03)
+    cb.set_label("hodnota skrytého faktoru F", color=INK2); cb.outline.set_visible(False)
+    axs[0].set_title(f"měřené příznaky: korelují (r = {r_x:.2f})".replace(".", ","), fontsize=10)
+    axs[0].set_xlabel("příznak x₁ = 0,8·F + ε₁"); axs[0].set_ylabel("příznak x₂ = 0,7·F + ε₂")
+    axs[1].scatter(e1, e2, c=C1, s=24, edgecolors=SURF, linewidths=.5)
+    axs[1].set_title(f"po odečtení vlivu F: nekorelují (r = {r_e:.2f})".replace(".", ","), fontsize=10)
+    axs[1].set_xlabel("ε₁ = x₁ − 0,8·F  (specifická část x₁)")
+    axs[1].set_ylabel("ε₂ = x₂ − 0,7·F  (specifická část x₂)")
+    for ax in axs:
+        ax.set_xlim(-3.6, 3.6); ax.set_ylim(-3.6, 3.6); ax.set_aspect("equal")
+    save(fig, "fig09_spolecna_pricina")
+    print(f"r(x1,x2) = {r_x:.3f}, r(e1,e2) = {r_e:.3f}")
+
+
+def fig09_komunality():
+    """Rozklad rozptylu standardizovaných příznaků sportovců: podíl F1, podíl F2, specifický rozptyl (tabulka z přednášky)."""
+    names = ["km/týden", "počet maratonů", "roky aktivity", "BMI", "věk",
+             "rychlost", "zrychlení", "výkon", "spirometrie", "biochemie"]
+    f1 = np.array([.57, .77, .68, .52, .49, .01, .01, .02, .53, .52])
+    f2 = np.array([.00, .01, .01, .36, .24, .53, .80, .61, .34, .26])
+    h2 = f1 + f2
+    psi = 1 - h2
+    y = np.arange(len(names))[::-1]
+    fig, ax = plt.subplots(figsize=(9, 4.8))
+    ax.barh(y, f1, color=C1, label="podíl F1 („dlouhodobý trénink“)", height=.68)
+    ax.barh(y, f2, left=f1, color=C2, label="podíl F2 („aktuální forma“)", height=.68)
+    ax.barh(y, psi, left=h2, color=GRID, label="specifický rozptyl ψ", height=.68)
+    ax.text(.995, -.95, "modrá + oranžová = komunalita h²", ha="right", va="center", color=INK2, fontsize=8.5)
+    ax.set_axisbelow(True)
+    ax.set_yticks(y); ax.set_yticklabels(names); ax.tick_params(axis="y", colors=INK2)
+    ax.set_ylim(-1.4, len(names) - .5)
+    ax.set_xlim(0, 1); ax.set_xticks(np.linspace(0, 1, 6))
+    ax.set_xticklabels([f"{v:.0%}" for v in np.linspace(0, 1, 6)])
+    ax.set_xlabel("podíl rozptylu standardizovaného příznaku (celkem 1)")
+    ax.grid(axis="y", visible=False)
+    ax.legend(loc="upper center", bbox_to_anchor=(.5, -.14), ncol=3, fontsize=8.5)
+    save(fig, "fig09_komunality")
+
+
 # =====================================================================  přednáška 10 (t-SNE)
 def fig10_gauss_t():
     d = np.linspace(0, 5, 300)
@@ -812,6 +862,7 @@ if __name__ == "__main__":
               fig05_vazby, fig05_dendrogram, fig05_pocet_k, fig05_kmeans_dbscan,
               fig06_princip, fig06_scree, fig06_zateze, fig06_s_vs_r, fig06_biplot, fig06_limitace,
               fig07_limity, fig07_poly, fig07_kernel_1d, fig07_kpca, fig07_gamma, fig08_svd, fig09_rotace,
+              fig09_spolecna_pricina, fig09_komunality,
               fig10_gauss_t, fig10_perplexita, fig10_swiss, fig11_umap_params, fig11_srovnani]:
         f()
     _, w, V, _ = protein_pca()
