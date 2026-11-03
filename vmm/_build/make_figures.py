@@ -392,6 +392,71 @@ def fig04_anova():
     save(fig, "fig04_anova")
 
 
+def _lowess(x, y, xx, frac=0.4):
+    # lokálně vážená lineární regrese (tricube váhy na frac nejbližších bodů)
+    k = int(np.ceil(frac * len(x)))
+    out = []
+    for x0 in xx:
+        d = np.abs(x - x0)
+        h = np.sort(d)[k - 1]
+        w = np.clip(1 - (d / h) ** 3, 0, None) ** 3
+        W = np.sqrt(w)
+        A = np.c_[np.ones_like(x), x - x0] * W[:, None]
+        beta = np.linalg.lstsq(A, y * W, rcond=None)[0]
+        out.append(beta[0])
+    return np.array(out)
+
+
+def fig04_nelinearni():
+    # syntetický vztah věk–BMI tvaru obráceného U (jako na slidu Regrese-3)
+    rng = np.random.default_rng(46)  # vlastní generátor: nemění náhodná data ostatních grafů
+    n = 400
+    vek = rng.uniform(18, 90, n)
+    bmi = 29 - 0.0028 * (vek - 58) ** 2 + rng.normal(0, 4, n)
+    xx = np.linspace(18, 90, 200)
+    fig, ax = plt.subplots(figsize=(8.5, 4))
+    ax.scatter(vek, bmi, s=10, c=MUTED, alpha=.45, edgecolors="none", label="pacienti (syntetická data)")
+    b, a = np.polyfit(vek, bmi, 1)
+    ax.plot(xx, a + b * xx, color=C1, label="přímka (lineární regrese)")
+    ax.plot(xx, np.polyval(np.polyfit(vek, bmi, 3), xx), color=C2, ls="--", label="polynom 3. řádu")
+    ax.plot(xx, _lowess(vek, bmi, xx), color=C3, ls=":", lw=2.6, label="LOWESS (lokální vyhlazení)")
+    ax.set_xlabel("věk [roky]"); ax.set_ylabel("BMI [kg/m²]")
+    ax.set_ylim(14, 44)
+    ax.set_title("přímka vrchol „nevidí“, polynom a LOWESS ano")
+    ax.legend(loc="upper left", fontsize=9, ncol=2)
+    save(fig, "fig04_nelinearni")
+
+
+def fig04_multikolinearita():
+    # 300 opakování „stejné studie“: odhady koeficientů a1, a2 pro nekorelované a silně korelované vstupy
+    rng = np.random.default_rng(44)  # vlastní generátor: nemění náhodná data ostatních grafů
+    n, opak = 50, 300
+    fig, axs = plt.subplots(1, 2, figsize=(10, 4.3), sharex=True, sharey=True)
+    for ax, rho, t, c, m in zip(axs, [0.0, 0.97], ["nekorelované vstupy", "silně korelované vstupy"],
+                                [C1, C2], ["o", "s"]):
+        A = []
+        for _ in range(opak):
+            x1 = rng.normal(0, 1, n)
+            x2 = rho * x1 + np.sqrt(1 - rho ** 2) * rng.normal(0, 1, n)
+            y = 1.0 * x1 + 1.0 * x2 + rng.normal(0, 1, n)
+            X = np.c_[np.ones(n), x1, x2]
+            A.append(np.linalg.lstsq(X, y, rcond=None)[0][1:])
+        A = np.array(A)
+        vif = 1 / (1 - rho ** 2)
+        ax.plot([-2, 4], [4, -2], color=AXIS, ls="--", lw=1.2, label="a₁ + a₂ = 2 (součet sedí vždy)")
+        ax.scatter(A[:, 0], A[:, 1], s=12, c=c, marker=m, alpha=.55, edgecolors="none",
+                   label="odhad z jedné studie")
+        ax.scatter([1], [1], s=110, c=INK, marker="X", zorder=4, label="skutečnost a₁ = a₂ = 1")
+        zap = np.mean((A < 0).any(axis=1)) * 100
+        ax.set_title(f"{t} (VIF ≈ {vif:.0f})\nzáporný koeficient v {zap:.0f} % studií".replace(".", ","))
+        ax.set_xlabel("odhad a₁ (vliv x₁)")
+        ax.set_aspect("equal")
+    axs[0].set_ylabel("odhad a₂ (vliv x₂)")
+    axs[0].set_xlim(-1.5, 3.5); axs[0].set_ylim(-1.5, 3.5)
+    axs[1].legend(loc="upper right", fontsize=8.5)
+    save(fig, "fig04_multikolinearita")
+
+
 # =====================================================================  přednáška 5
 def fig05_vazby():
     Xb, _ = make_blobs(220, centers=[[0, 0], [4, 0], [2, 3.5]], cluster_std=[0.6, 1.2, 0.5],
@@ -1026,7 +1091,7 @@ if __name__ == "__main__":
               fig07_limity, fig07_poly, fig07_kernel_1d, fig07_kpca, fig07_gamma, fig08_svd, fig09_rotace,
               fig09_spolecna_pricina, fig09_komunality,
               fig10_gauss_t, fig10_perplexita, fig10_swiss, fig11_umap_params, fig11_srovnani,
-              fig03_prumer_sd, fig03_vzdalenost]:
+              fig03_prumer_sd, fig03_vzdalenost, fig04_nelinearni, fig04_multikolinearita]:
         f()
     _, w, V, _ = protein_pca()
     print("vlastní čísla:", w.round(2), "% :", (w / w.sum() * 100).round(2))

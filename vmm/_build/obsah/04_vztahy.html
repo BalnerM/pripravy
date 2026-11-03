@@ -1,5 +1,23 @@
 <h1>Vztahy mezi proměnnými</h1>
 <p class="lead">Než postavíme model, musíme vědět, jak spolu proměnné souvisejí – navzájem i s výstupem. Nástroje: vhodné grafy, regrese, korelace, měření multikolinearity a analýza rozptylu s mnohonásobným porovnáváním.</p>
+<div class="schema narrow">
+<svg viewBox="0 0 560 330" role="img" aria-label="Nit kapitoly: tři otázky k datasetu EDYS, nástroj, který na každou odpovídá, a odpověď z přednášky">
+  <rect x="20" y="8" width="520" height="40" rx="8" class="node"/>
+  <text x="280" y="33" text-anchor="middle" style="font-weight:600">Dataset: 1094 EKG záznamů, blokáda L / R / Sync</text>
+  <rect x="20" y="62" width="520" height="80" rx="8" class="fl1" style="stroke:var(--c1)"/>
+  <text x="36" y="86" style="font-weight:600">1 Jak spolu proměnné souvisejí?</text>
+  <text x="36" y="108" class="t2">nástroj: grafy, korelační matice</text>
+  <text x="36" y="130">QRSd a AreaQRS skoro totéž (0,71); zdraví jsou mladší</text>
+  <rect x="20" y="152" width="520" height="80" rx="8" class="fl2" style="stroke:var(--c2)"/>
+  <text x="36" y="176" style="font-weight:600">2 Rozpozná EDYS druh blokády?</text>
+  <text x="36" y="198" class="t2">nástroj: ANOVA + Tukey HSD</text>
+  <text x="36" y="220">ano: F = 233, odděluje L, R i Sync navzájem</text>
+  <rect x="20" y="242" width="520" height="80" rx="8" class="fl3" style="stroke:var(--c3)"/>
+  <text x="36" y="266" style="font-weight:600">3 Není EDYS jen kopie QRSd?</text>
+  <text x="36" y="288" class="t2">nástroj: korelace, VIF</text>
+  <text x="36" y="310">ne: r = 0,44, VIF 3,0 (QRSd 42,5) – nese vlastní informaci</text>
+</svg></div>
+<p>Kapitola má jednu nit: <b>každý nástroj odpovídá na jinou otázku</b>. Grafy a korelace ukážou, co s čím souvisí. Regrese řekne, <i>o kolik</i> se jedna veličina mění s druhou, a umí předpovídat. VIF prozradí, které vstupy říkají totéž. ANOVA s Tukeyho testem zjistí, jestli a které skupiny se liší. Na konci kapitoly je tabulka <a href="#kdy-co">Kdy co použít</a>.</p>
 
 <h2 id="proc">Proč potřebujeme znát vztahy mezi daty</h2>
 <ol>
@@ -48,14 +66,25 @@
 <div class="box definice" id="def-interval-spolehlivosti"><div class="box-t">Definice: interval spolehlivosti</div>
 <p><b>95% interval spolehlivosti</b> je interval spočtený z dat takovým postupem, že při opakování celého experimentu by v 95 % případů pokryl skutečnou (populační) hodnotu odhadovaného parametru.</p>
 <p class="jinak">„odhad i s chybovou úsečkou“. Čím užší interval, tím přesněji parametr známe; užší je při větším počtu dat a menším rozptylu.</p></div>
-<p>Pás kolem regresní přímky v grafech bývá <b>95% interval spolehlivosti</b> – oblast, kde s 95% jistotou leží skutečná přímka. Příklad použití z přednášky: predikce počtu dárců krve z 5 příznaků (trénink na 106 týdnech z let 2021, 2022 a 2024, test na 52 týdnech roku 2023).</p>
+<p>Pás kolem regresní přímky v grafech bývá <b>95% interval spolehlivosti</b> – oblast, kde s 95% jistotou leží skutečná přímka. Příklad použití z přednášky: predikce počtu dárců krve z 5 příznaků (trénink na 106 týdnech z let 2021, 2022 a 2024, test na 52 týdnech roku 2023). Na testovacím roce sledovala předpověď skutečnost velmi těsně: korelace předpovědi se skutečností \(r = 0{,}96\), průměrná absolutní chyba (MAE) 26,89 transfuzních jednotek za týden.</p>
+
+<h3>Když přímka nestačí: nelineární regrese</h3>
+<p>Přímka umí jen „pořád roste“ nebo „pořád klesá“. Přednáška na stejných datech (BMI podle věku) ukazuje dvě pružnější možnosti:</p>
+<ul>
+<li><b>polynomiální regrese</b> (3. řádu): místo \(a x + b\) prokládáme \(a_1 x + a_2 x^2 + a_3 x^3 + b\). Křivka se může jednou až dvakrát ohnout. Stále jde o lineární regresi – jen jsme k \(x\) přidali „nové vstupy“ \(x^2\) a \(x^3\);</li>
+<li><b>LOWESS</b> (locally weighted scatterplot smoothing): pro každé místo na ose \(x\) proloží malou přímku jen <b>blízkými body</b> (bližší body mají větší váhu) a z těchto kousků poskládá hladkou křivku. Nemusíme předem volit tvar vztahu, ale nedostaneme žádnou rovnici.</li>
+</ul>
+<figure><div class="paper"><img src="figures/fig04_nelinearni.png" alt="Přímka, polynom 3. řádu a LOWESS proložené daty tvaru obráceného U" loading="lazy"></div>
+<figcaption><b>Obr. 4.1</b> Syntetická data podobná slidu: BMI roste do středního věku a pak mírně klesá.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>Přímka ukáže jen slabý celkový růst a vrchol kolem 60 let „zprůměruje“. Polynom i LOWESS ohyb najdou a shodují se – to je dobré znamení, že jde o skutečný tvar dat, ne o výtvor jedné metody. Kdy co: <b>přímka</b>, když stačí a chceme jednoduchý výklad („o kolik za rok“); <b>polynom</b>, když chceme rovnici ohnuté závislosti; <b>LOWESS</b> k prohlédnutí tvaru vztahu bez předpokladů. Polynom vysokého řádu se na okrajích dat snadno „rozkmitá“, proto nižší řád.</p></div>
 
 <h3>Obyčejná vs. ortogonální regrese</h3>
 <div class="box definice" id="def-ortogonalni-regrese"><div class="box-t">Definice: ortogonální regrese</div>
 <p><b>Ortogonální regrese</b> (total least squares) je regrese, která minimalizuje součet čtverců <b>kolmých</b> vzdáleností bodů od přímky, a ne svislých vzdáleností jako OLS. Předpokládá, že chybou měření jsou zatíženy obě proměnné.</p>
 <p class="jinak">přímka „uprostřed mraku“, kde se s oběma proměnnými zachází stejně – žádná není ta „přesná“. Hodí se pro porovnání dvou přístrojů.</p></div>
 <figure><div class="paper"><img src="figures/fig04_regrese.png" alt="Svislé a kolmé rezidua u dvou typů regrese" loading="lazy"></div>
-<figcaption><b>Obr. 4.1</b> Z čeho se počítají čtverce, které regrese minimalizuje.</figcaption></figure>
+<figcaption><b>Obr. 4.2</b> Z čeho se počítají čtverce, které regrese minimalizuje.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <p><b>Obyčejná regrese (OLS)</b> předpokládá, že \(x\) je změřené přesně a chyba je jen v \(y\) – minimalizuje svislé vzdálenosti. <b>Ortogonální regrese</b> předpokládá chybu v obou proměnných a minimalizuje kolmé vzdálenosti k přímce. Typické použití: <b>kontrola měřidel</b> – měří dva přístroje stejně? Ani jeden není „přesný“, oba mají chybu. (Mimochodem: ortogonální regrese hledá stejný směr jako první hlavní komponenta v <a href="06_pca.html">PCA</a>.)</p></div>
 
@@ -77,8 +106,41 @@
 <tr><td>\(a_j\)</td><td>vliv \(j\)-té proměnné: kladný zvyšuje pravděpodobnost výstupu, záporný snižuje; \(e^{a_j}\) je poměr šancí (odds ratio) při zvýšení proměnné o 1</td></tr>
 </table></div>
 <figure><div class="paper"><img src="figures/fig04_logit.png" alt="Sigmoidní křivka logistické regrese" loading="lazy"></div>
-<figcaption><b>Obr. 4.2</b> Logistická regrese: body jsou 0/1, křivka je predikovaná pravděpodobnost.</figcaption></figure>
+<figcaption><b>Obr. 4.3</b> Logistická regrese: body jsou 0/1, křivka je predikovaná pravděpodobnost.</figcaption></figure>
 <p>S více proměnnými logistický model říká, jaký vliv má každá proměnná na to, že je subjekt „zdravý“, <b>při ostatních proměnných konstantních</b>. Aby koeficienty šlo mezi sebou porovnat, musí být vstupy standardizované a nesmí být silně korelované (viz multikolinearita). Podobně se v klinických studiích používají modely rizika (v přednášce porovnání vlivu proměnných na riziko úmrtí nebo hospitalizace pro srdeční selhání v databázi MADIT-CRT, výsledkem jsou hazard ratio).</p>
+<div class="box priklad"><div class="box-t">Příklad z přednášky: co logistický model „přesně říká“</div>
+<p>Výstup = „subjekt je zdravý“ (1/0), 1094 subjektů, vstupy věk, pohlaví (žena = 1), BMI, QRSd, AreaQRS a EDYS. Výsledky ze slidu (\(e^{a}\) přepočteno):</p>
+<div class="tablewrap"><table class="compact">
+<tr><th>proměnná</th><th class="num">koeficient \(a\)</th><th class="num">p</th><th class="num">poměr šancí \(e^{a}\)</th></tr>
+<tr><td>věk (rok)</td><td class="num">−0,117</td><td class="num">&lt; 0,001</td><td class="num">0,89</td></tr>
+<tr><td>pohlaví (žena)</td><td class="num">0,452</td><td class="num">0,155</td><td class="num">1,57</td></tr>
+<tr><td>BMI (kg/m²)</td><td class="num">−0,103</td><td class="num">0,001</td><td class="num">0,90</td></tr>
+<tr><td>QRSd (ms)</td><td class="num">−0,039</td><td class="num">0,001</td><td class="num">0,96</td></tr>
+<tr><td>AreaQRS</td><td class="num">0,0004</td><td class="num">0,969</td><td class="num">1,00</td></tr>
+<tr><td>EDYS</td><td class="num">−0,015</td><td class="num">0,269</td><td class="num">0,99</td></tr>
+</table></div>
+<p>Jak výstup číst:</p>
+<ol>
+<li><b>Znaménko</b> = směr. Záporné u věku, BMI a QRSd: čím vyšší hodnota, tím menší šance, že je subjekt zdravý.</li>
+<li><b>p-hodnota</b> = dá se vliv odlišit od nuly? Ano u věku, BMI a QRSd; u pohlaví, AreaQRS a EDYS ne.</li>
+<li><b>Velikost</b> přes poměr šancí. Věk: \(e^{-0{,}117} \approx 0{,}89\), tedy každý rok navíc sníží šanci „být zdravý“ asi o 11 % (při stejných ostatních vstupech). O 10 let starší subjekt má šanci asi třetinovou (\(e^{-1{,}17} \approx 0{,}31\)).</li>
+</ol></div>
+<div class="box pozor"><div class="box-t">Co z modelu nevyvozovat</div>
+<ul>
+<li><b>Věk vychází jako silný „prediktor zdraví“ hlavně kvůli kohortě</b>: zdraví dobrovolníci jsou mladší než pacienti. Model popisuje tento dataset, ne biologii.</li>
+<li><b>Nevýznamné EDYS a AreaQRS neznamenají „nesouvisí se zdravím“.</b> QRSd nese velkou část stejné informace (korelace s AreaQRS 0,71, s EDYS 0,44). Model pak neví, komu vliv připsat, a dá ho jednomu z nich – to je <a href="#multikolinearita">multikolinearita</a>.</li>
+<li><b>Velikost koeficientů nejde porovnat</b>, protože vstupy mají různé jednotky. Malé číslo u QRSd (−0,039 za 1 ms) neznamená malý vliv: za 10 ms je poměr šancí \(e^{-0{,}39} \approx 0{,}68\). Pro porovnání vlivů je třeba vstupy standardizovat.</li>
+</ul></div>
+<div class="box priklad"><div class="box-t">Příklad z přednášky: jak číst tabulku rizika (Coxův model, pacienti s LBBB v MADIT-CRT)</div>
+<p><b>Hazard ratio (HR)</b> říká, kolikrát je vyšší riziko endpointu (srdeční selhání nebo úmrtí) při daném faktoru, ostatní faktory stejné. HR = 1 znamená žádný vliv. Ke každému HR je 95% interval spolehlivosti; <b>obsahuje-li 1, vliv není významný</b>.</p>
+<ul>
+<li><b>VED &lt; Q1</b> (EDYS v dolní čtvrtině): HR 2,34 (1,53–3,57), p &lt; 0,001. Pacienti s malou elektrickou dyssynchronií mají asi 2,3× vyšší riziko. Na křivkách ze slidu vypadá jejich průběh s CRT podobně jako u pacientů jen s defibrilátorem (ICD), tedy resynchronizace jim zřejmě tolik nepomáhá.</li>
+<li><b>Žena</b>: HR 0,45 (0,26–0,76) – riziko zhruba poloviční.</li>
+<li><b>Předchozí hospitalizace</b>: HR 1,39 (0,95–2,03), p = 0,089 – interval obsahuje 1, vliv neprokázán.</li>
+</ul>
+<p>Princip je stejný jako u poměru šancí v logistické regresi: číslo nad 1 riziko zvyšuje, pod 1 snižuje.</p></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky: regrese</div>
+<p>Regrese hledá funkci, která popisuje, jak se v průměru mění závislá proměnná se vstupy, a umí ji předpovídat. Pro spojitý výstup lineární regrese, a když přímka nestačí, polynom nebo LOWESS. Obyčejná regrese předpokládá chybu jen v \(y\), ortogonální v obou proměnných, proto se hodí na porovnání dvou přístrojů. Pro binární výstup logistická regrese: lineární kombinaci vstupů převede sigmoidou na pravděpodobnost. Její koeficient čtu přes znaménko, p-hodnotu a poměr šancí \(e^{a}\). Porovnávat koeficienty mezi sebou smím jen u standardizovaných a málo korelovaných vstupů.</p></div>
 <div class="box kostka"><div class="box-t">V kostce</div><p>Regrese hledá funkci, která vysvětluje závislou proměnnou nezávislými. Lineární pro spojitý výstup, logistická pro binární. OLS = chyba jen v \(y\); ortogonální = chyba v obou.</p></div>
 
 <h2 id="korelace">Korelace</h2>
@@ -92,9 +154,17 @@
 <tr><td>\(\operatorname{std}\)</td><td>směrodatné odchylky – dělením se zbavíme jednotek. Je-li jedna proměnná konstantní, je její \(\operatorname{std} = 0\) a \(r\) není definováno (výsledek <code>NaN</code>, viz <a href="03_predzpracovani.html#skalovani">přednáška 3</a>)</td></tr>
 <tr><td>\(r\)</td><td>od −1 (dokonalý klesající lineární vztah) přes 0 (žádný lineární vztah) po +1 (dokonalý rostoucí)</td></tr>
 </table></div>
+<div class="box intuice"><div class="box-t">Intuice: korelace, nebo regrese? Dvě různé otázky</div>
+<ul>
+<li><b>Korelace</b> se ptá: <i>jak těsně</i> leží body kolem přímky a jakým směrem? Je symetrická (korelace \(x\) s \(y\) je stejná jako \(y\) s \(x\)), nemá jednotky a nic nepředpovídá.</li>
+<li><b>Regrese</b> se ptá: <i>o kolik</i> se v průměru změní \(y\), když \(x\) vzroste o 1? Sklon má jednotky (např. kg/m² za rok), má směr (\(x\) vysvětluje \(y\)) a dá se z ní předpovídat.</li>
+</ul>
+<p>Přímku lze proložit vždy. Korelace řekne, jestli jí má smysl věřit. Na slidu přímka „BMI podle věku“ mírně stoupá, ale body jsou kolem ní hodně rozházené: korelace věk–BMI je jen 0,12 (Spearman, korelační matice níže). Naopak QRSd a AreaQRS mají \(r = 0{,}75\) (Pearson) – mrak je úzký a přímka ho popíše dobře. U jednoduché lineární regrese platí \(R^2 = r^2\) (<a href="#def-r2">koeficient determinace</a>): při \(r \approx 0{,}12\) by věk vysvětlil jen asi 1,4 % kolísání BMI.</p></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky: korelace</div>
+<p>Korelace měří sílu a směr vztahu dvou proměnných, číslem od −1 do 1. Pearson měří lineární vztah a pracuje se skutečnými hodnotami, takže ho ovlivní odlehlé hodnoty. Spearman je Pearson spočítaný na pořadích, měří monotónní vztah a je robustní. Nulová korelace neznamená, že vztah není – může být nelineární, proto se vždy podívám na graf. A korelace neznamená příčinu: obě proměnné může ovlivňovat třetí, například věk.</p></div>
 <p>Korelace popisuje <b>lineární</b> vazbu. \(r\) blízké 0 vylučuje lineární vztah, ale <b>nevylučuje jiný</b> (např. parabolický).</p>
 <figure class="wide"><div class="paper"><img src="figures/fig04_korelace_tvary.png" alt="Čtyři typy vztahů s Pearsonovou a Spearmanovou korelací" loading="lazy"></div>
-<figcaption><b>Obr. 4.3</b> Pearson vs. Spearman na čtyřech typech dat.</figcaption></figure>
+<figcaption><b>Obr. 4.4</b> Pearson vs. Spearman na čtyřech typech dat.</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
 <ul>
 <li><b>Lineární vztah</b>: oba koeficienty se shodují.</li>
@@ -117,6 +187,14 @@
 
 <h3>Korelační matice</h3>
 <p>Spočítá korelaci každé proměnné s každou. Co v ní chceme vidět pro dobře fungující model? <b>Vstupy silně korelované s výstupem a málo korelované mezi sebou</b> (každý vstup nese novou informaci). Přednáška kombinuje do jednoho obrázku korelační matici (horní trojúhelník, s p-hodnotou), KDE grafy (dolní trojúhelník) a histogramy (diagonála).</p>
+<div class="box priklad"><div class="box-t">Příklad z přednášky: jak číst korelační matici datasetu (Spearman)</div>
+<ul>
+<li><b>QRSd–AreaQRS 0,71</b>: nejsilnější vazba mezi vstupy. Oba popisují „jak široký a velký je QRS komplex“ – kandidáti na nadbytečnost. VIF to potvrdí (42,5 a 13,2, viz <a href="#multikolinearita">multikolinearita</a>).</li>
+<li><b>AreaQRS–EDYS 0,60, QRSd–EDYS 0,44</b>: EDYS se šířkou QRS souvisí, ale zdaleka to není kopie – nese i vlastní informaci (odpověď na otázku 3 datasetu).</li>
+<li><b>Věk–Zdravý −0,40</b>: zdraví dobrovolníci jsou výrazně mladší. Slabina kohorty – rozdíl zdravý/nemocný se může „schovat“ za věk.</li>
+<li><b>Pohlaví a BMI</b> souvisí s ostatními jen slabě (|r| do 0,26).</li>
+</ul>
+<p>V kombinovaném obrázku ze slidu jsou políčka s \(p &gt; 0{,}05\) přeškrtnutá: taková korelace se nedá odlišit od nuly (např. věk–pohlaví −0,026). Souvislost s <b>druhem blokády</b> (L/R/Sync) se lépe zkoumá ANOVOU než korelací, protože blokáda je kategorie bez pořadí (<a href="#anova">viz níže</a>).</p></div>
 <div class="box pozor"><div class="box-t">Běžné prohřešky s korelací</div>
 <ul>
 <li><b>Korelace ≠ kauzalita.</b> Dvě proměnné mohou korelovat proto, že obě závisí na třetí (věk). Taková třetí proměnná se nazývá <b>matoucí (confounder)</b>: např. velikost bot a slovní zásoba u dětí silně korelují, protože obě rostou s věkem.</li>
@@ -124,6 +202,7 @@
 <li>Záměna statistické významnosti a síly: \(r = 0{,}1\) může být při velkém \(n\) „významné“, ale vztah je slabý.</li>
 <li>Interpretace \(r \approx 0\) jako „žádný vztah“ – může jít o nelineární vztah.</li>
 </ul></div>
+<div class="box kostka"><div class="box-t">V kostce</div><p>Korelace je jedno číslo pro „jak těsně a kterým směrem“ spolu dvě proměnné jdou. Pearson pro lineární vztah bez odlehlých hodnot, Spearman pro monotónní vztah a robustnost. Korelační matice je první rychlý pohled na celý dataset: hledáme vstupy silně spojené s výstupem a slabě mezi sebou.</p></div>
 
 <h2 id="multikolinearita">Multikolinearita</h2>
 <div class="box definice" id="def-multikolinearita"><div class="box-t">Definice: multikolinearita</div>
@@ -135,6 +214,14 @@
 <li>porušuje předpoklad většiny modelů, že vstupy jsou nezávislé;</li>
 <li><b>znemožňuje porovnávat příznaky</b> – když jsou výška a hmotnost silně spojené, model neví, „komu připsat zásluhu“, koeficienty jsou nestabilní (malá změna dat je výrazně změní, mohou mít i nesmyslné znaménko).</li>
 </ul>
+<div class="box intuice"><div class="box-t">Intuice: proč koeficienty „ujíždějí“ – výška v cm i v palcích</div>
+<p>Do modelu omylem dáme výšku dvakrát: v centimetrech a v palcích (1 palec = 2,54 cm). Pokud platí \(y = 0{,}5 \cdot \text{výška}_\text{cm}\), sedí na data <b>stejně dobře</b> všechny tyto modely:</p>
+\[ \begin{aligned} y &= 0{,}5 \cdot \text{cm} + 0 \cdot \text{palce} \\ y &= 0 \cdot \text{cm} + 1{,}27 \cdot \text{palce} \\ y &= 2 \cdot \text{cm} - 3{,}81 \cdot \text{palce} \end{aligned} \]
+<p>Model nemá podle čeho vybrat. Při jen <b>skoro</b> stejných vstupech (výška a hmotnost, QRSd a AreaQRS) je to podobné: o volbě rozhodne náhodný šum v datech. Proto koeficienty mezi vzorky skáčou a mohou mít i nesmyslné znaménko (−3,81 u výšky?). Společný vliv obou vstupů ale model zná dobře, takže <b>předpovědi</b> mohou zůstat přesné. Multikolinearita škodí hlavně tomu, co chceme z koeficientů <b>vyčíst</b>.</p></div>
+<figure class="wide"><div class="paper"><img src="figures/fig04_multikolinearita.png" alt="Odhady dvou regresních koeficientů z 300 opakovaných studií pro nekorelované a silně korelované vstupy" loading="lazy"></div>
+<figcaption><b>Obr. 4.5</b> 300 „opakovaných studií“ po 50 pacientech (syntetická data). Výstup závisí na obou vstupech stejně (\(a_1 = a_2 = 1\)); každý bod je dvojice koeficientů odhadnutá v jedné studii.</figcaption></figure>
+<div class="box odnes"><div class="box-t">Co si z obrázku odnést</div>
+<p>U <b>nekorelovaných</b> vstupů leží odhady těsně kolem skutečnosti. U vstupů s korelací 0,97 (VIF ≈ 17, podobně jako věk nebo BMI na slidu) se odhady rozutečou podél přímky \(a_1 + a_2 = 2\). <b>Součet</b> vlivů model zná přesně, jak si ho vstupy rozdělí, ne. Mrak je asi 4× širší (\(\sqrt{17} \approx 4\)) – přesně to říká VIF: rozptyl koeficientu je 17× větší. V 8 % studií vyšel dokonce záporný koeficient, přestože oba vstupy výstup zvyšují.</p></div>
 <h3>Jak ji měřit: VIF</h3>
 <div class="box definice" id="def-r2"><div class="box-t">Definice: koeficient determinace R²</div>
 <p><b>Koeficient determinace</b> \(R^2\) je podíl rozptylu závislé proměnné, který vysvětluje regresní model: \(R^2 = 1 - \frac{\sum (y_i-\hat y_i)^2}{\sum (y_i - \bar y)^2}\). Nabývá hodnot 0 (model nevysvětluje nic) až 1 (model vysvětluje vše, body leží přesně na modelu).</p>
@@ -163,11 +250,19 @@
 <p>Model pro rozlišení druhu raménkové blokády (žádná / LBBB / RBBB), postupné odstraňování příznaku s nejhorším VIF, test 50% hold-out:</p>
 <div class="tablewrap"><table>
 <tr><th>krok</th><th class="num">0</th><th class="num">1</th><th class="num">2</th><th class="num">3</th><th class="num">4</th></tr>
+<tr><td>odstraněno (VIF)</td><td class="num">–</td><td class="num">QRSd (42,5)</td><td class="num">věk (13,3)</td><td class="num">AreaQRS (6,3)</td><td class="num">EDYS (1,9)</td></tr>
 <tr><td>LR (F1)</td><td class="num">0,658</td><td class="num">0,660</td><td class="num">0,632</td><td class="num">0,571</td><td class="num">0,310</td></tr>
 <tr><td>SVM (F1)</td><td class="num">0,619</td><td class="num">0,639</td><td class="num">0,638</td><td class="num">0,633</td><td class="num">0,302</td></tr>
 <tr><td>RF (F1)</td><td class="num">0,585</td><td class="num">0,574</td><td class="num">0,541</td><td class="num">0,491</td><td class="num">0,302</td></tr>
 </table></div>
-<p>Odstranění nejvíce redundantního příznaku LR a SVM mírně pomohlo, další odstraňování už bere užitečnou informaci. Otázka „který model je nejlepší?“ – <b>nemáme dost informací</b>: jediné rozdělení 50/50, bez intervalů spolehlivosti, rozdíly v řádu setin mohou být náhodné.</p></div>
+<p>Odstranění nejvíce redundantního příznaku LR a SVM mírně pomohlo, další odstraňování už bere užitečnou informaci. Otázka „který model je nejlepší?“ – <b>nemáme dost informací</b>: jediné rozdělení 50/50, bez intervalů spolehlivosti, rozdíly v řádu setin mohou být náhodné.</p>
+<p>Výchozí VIF ze slidu: věk 16,7, pohlaví 1,3, BMI 19,1, QRSd 42,5, AreaQRS 13,2, EDYS 3,0. V každém kroku se VIF přepočítá, protože po odstranění jednoho příznaku klesne VIF těm, kteří s ním souviseli (BMI 19,1 → 13,1 → 4,3 → 1,6).</p></div>
+<div class="box pozor"><div class="box-t">Chyták z experimentu: VIF měří nadbytečnost, ne užitečnost</div>
+<p>Před krokem 4 měly všechny zbylé příznaky VIF pod 2 (pohlaví 1,3, BMI 1,6, EDYS 1,9) – multikolinearita už byla vyřešená. Postup přesto odstranil „nejhorší“ příznak, tedy EDYS. F1 pak spadlo u všech modelů skoro na polovinu (LR 0,571 → 0,310). EDYS je přitom znak, který druhy blokád odděluje nejlépe (ANOVA F = 233). Zbyly pohlaví a BMI, které neoddělí nic.</p>
+<p>VIF říká jen, jestli příznak <b>opakuje</b> informaci ostatních, ne jestli je <b>užitečný</b> pro výstup. Příznaky se proto odstraňují jen do chvíle, kdy VIF klesne pod hranici (5–10), a pak se přestane.</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div><p>Multikolinearita = vstupy říkají totéž. Model pak neumí rozdělit zásluhy a koeficienty jsou nestabilní. VIF měří, jak dobře jde příznak spočítat z ostatních; vysoký VIF se řeší sloučením, odstraněním nebo PCA – ale jen dokud je nad hranicí.</p></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky: multikolinearita a VIF</div>
+<p>Multikolinearita znamená, že vstupy modelu jsou navzájem silně lineárně závislé, takže několik z nich nese stejnou informaci. Model pak neví, kterému připsat vliv: koeficienty se mezi vzorky mění, mohou mít špatné znaménko a nejdou porovnávat. Měřím ji VIF: každý příznak zkusím předpovědět regresí z ostatních a \(\mathrm{VIF} = 1/(1-R^2)\). Pod 5 je to v pořádku, nad 10 problém. Řeším ji sloučením příznaků (výška a hmotnost → BMI), odstraněním toho s nejvyšším VIF nebo PCA. Standardizace nepomůže, protože korelace nemění. A pozor: VIF neříká, jestli je příznak užitečný – v přednášce odstranění EDYS s VIF 1,9 model zhroutilo.</p></div>
 
 <h2 id="anova">Analýza rozptylu (ANOVA) a mnohonásobné porovnávání</h2>
 <p>Otázka: liší se hodnota příznaku (např. EDYS) mezi skupinami L, R a Sync?</p>
@@ -196,7 +291,7 @@
 <p><b>Post-hoc test</b> je test provedený až po zamítnutí \(H_0\) v ANOVA, který porovná všechny dvojice skupin a určí, které se od sebe liší. <b>Tukeyho HSD</b> (honestly significant difference) to dělá tak, že pro všechna párová porovnání drží celkovou pravděpodobnost falešně pozitivního výsledku na hladině \(\alpha\).</p>
 <p class="jinak">ANOVA řekne „někde je rozdíl“, post-hoc test řekne „mezi L a R ano, mezi R a Sync ne“ – a přitom nepodvádí tím, že by dělal mnoho testů bez korekce.</p></div>
 <figure class="wide"><div class="paper"><img src="figures/fig04_anova.png" alt="Tři situace ANOVA: znak odděluje vše, jen jednu skupinu, nic" loading="lazy"></div>
-<figcaption><b>Obr. 4.4</b> Tři situace odpovídající výsledkům z přednášky (černá čárka = průměr skupiny).</figcaption></figure>
+<figcaption><b>Obr. 4.6</b> Tři situace odpovídající výsledkům z přednášky (černá čárka = průměr skupiny).</figcaption></figure>
 <div class="box odnes"><div class="box-t">Co si z obrázku odnést (výsledky přednášky)</div>
 <ul>
 <li><b>EDYS</b>: ANOVA F = 233, p &lt; 0,001; Tukey HSD – znak <b>odděluje všechny tři skupiny</b> navzájem.</li>
@@ -204,10 +299,39 @@
 <li><b>BMI</b>: F = 0,9, p = 0,42 – znak <b>neodděluje nic</b> (ani pohlaví, ani BMI neoddělí L, R, Sync).</li>
 </ul>
 <p>Obě první ANOVA jsou „významné“, ale teprve post-hoc test ukáže, že EDYS je pro rozlišení blokád mnohem užitečnější.</p></div>
+<div class="box priklad"><div class="box-t">Příklad z přednášky: ANOVA pro všechny znaky (L / R / Sync)</div>
+<div class="tablewrap"><table class="compact">
+<tr><th>znak</th><th class="num">F</th><th class="num">p</th><th>závěr</th></tr>
+<tr><td>EDYS</td><td class="num">232,5</td><td class="num">&lt; 0,001</td><td>liší se (Tukey: všechny tři skupiny)</td></tr>
+<tr><td>QRSd</td><td class="num">143,5</td><td class="num">&lt; 0,001</td><td>liší se</td></tr>
+<tr><td>AreaQRS</td><td class="num">125,9</td><td class="num">&lt; 0,001</td><td>liší se (Tukey: jen L od ostatních)</td></tr>
+<tr><td>věk</td><td class="num">39,4</td><td class="num">&lt; 0,001</td><td>liší se</td></tr>
+<tr><td>pohlaví</td><td class="num">1,4</td><td class="num">0,24</td><td>neliší se</td></tr>
+<tr><td>BMI</td><td class="num">0,9</td><td class="num">0,42</td><td>neliší se</td></tr>
+</table></div>
+<p>Čím větší \(F\), tím víc se průměry skupin liší vzhledem k rozptylu uvnitř skupin. Pořadí EDYS &gt; QRSd &gt; AreaQRS ukazuje, který znak nejlépe odděluje druhy blokád. Pozor na věk: skupiny se liší i věkem (skupina Sync zahrnuje i mladší zdravé dobrovolníky), takže část rozdílů mezi skupinami může jít na vrub věku – opět slabina kohorty.</p></div>
+<div class="box kostka"><div class="box-t">V kostce</div><p>ANOVA jedním testem zjistí, jestli se průměr znaku liší aspoň v jedné z několika skupin (poměr rozptylu mezi skupinami a uvnitř skupin). Které skupiny se liší, řekne až post-hoc test (Tukey HSD), který přitom hlídá chybu mnohonásobného testování.</p></div>
+<div class="box zkouska"><div class="box-t">Jak to říct u zkoušky: ANOVA a Tukey HSD</div>
+<p>ANOVA testuje, jestli se střední hodnota spojité proměnné liší mezi třemi a více skupinami. Porovnává, jak daleko jsou od sebe průměry skupin, s tím, jak moc kolísají hodnoty uvnitř skupin; poměr je statistika \(F\). Velké \(F\) a malé p znamená, že se liší aspoň jedna skupina – ale ne která. Na to je post-hoc test Tukey HSD: porovná všechny dvojice a drží celkovou chybu na hladině \(\alpha\). Místo ANOVA nedělám řadu t-testů, protože s každým testem roste šance na falešně pozitivní výsledek. V přednášce EDYS oddělil všechny tři skupiny, AreaQRS jen L a BMI nic.</p></div>
+
+<h2 id="kdy-co">Kdy co použít</h2>
+<p>Přehled celé kapitoly z pohledu „mám tuhle otázku – který nástroj a na co si dát pozor“:</p>
+<div class="tablewrap"><table>
+<tr><th>Otázka</th><th>Nástroj</th><th>Co neřekne / pozor</th></tr>
+<tr><td>jak spolu souvisí dvě spojité proměnné?</td><td>bodový graf (u mnoha bodů KDE) + korelace</td><td>Pearson jen lineární vztah; s odlehlými hodnotami nebo nelinearitou Spearman; korelace ≠ příčina</td></tr>
+<tr><td>jak vypadá celý dataset najednou?</td><td>pair-plot, korelační matice</td><td>u mnoha proměnných a skupin nepřehledné; zjednodušit</td></tr>
+<tr><td>o kolik se změní \(y\) se změnou \(x\)? předpověď spojitého výstupu</td><td>lineární regrese; při ohybu polynom nebo LOWESS</td><td>přímku lze proložit vždy – sílu vztahu řekne korelace / \(R^2\)</td></tr>
+<tr><td>měří dva přístroje stejně?</td><td>ortogonální regrese</td><td>chyba je v obou proměnných, OLS by sklon podhodnotila</td></tr>
+<tr><td>jak vstupy ovlivňují binární výstup (zdravý / nemocný)?</td><td>logistická regrese → poměr šancí</td><td>koeficienty porovnat jen u standardizovaných a nekorelovaných vstupů</td></tr>
+<tr><td>jak faktory mění riziko události (úmrtí, hospitalizace)?</td><td>model rizika (Cox) → hazard ratio</td><td>interval obsahující 1 = vliv neprokázán</td></tr>
+<tr><td>neříkají některé vstupy totéž?</td><td>korelační matice + VIF</td><td>VIF měří nadbytečnost, ne užitečnost</td></tr>
+<tr><td>liší se znak mezi 3 a více skupinami?</td><td>histogramy / KDE po skupinách, ANOVA</td><td>neřekne, které skupiny – na to Tukey HSD</td></tr>
+</table></div>
 
 <section class="souhrn" id="shrnuti">
 <h2 id="shrnuti-h">Shrnutí</h2>
 <p>Vztahy mezi proměnnými zkoumáme proto, abychom rozuměli datům, vybrali vstupy modelů, odhalili redundanci a správně interpretovali modely. <b>Grafy</b> (bodové, KDE, histogramy, pair-plot) odhalí nelinearity, podskupiny a slabiny kohorty. <b>Regrese</b> modeluje závislou proměnnou nezávislými – lineární pro spojitý výstup (OLS = chyba v y, ortogonální = chyba v obou), logistická pro binární výstup. <b>Korelace</b> měří sílu lineárního (Pearson) nebo monotónního (Spearman, na pořadích, robustní) vztahu; nulová korelace nevylučuje nelineární vztah a korelace neznamená kauzalitu. <b>Multikolinearita</b> (silně korelované vstupy) znehodnocuje interpretaci koeficientů; měříme ji <b>VIF</b> = 1/(1−R²) a řešíme sloučením, odstraněním nebo redukcí dimenze – ne standardizací. <b>ANOVA</b> testuje, zda se liší aspoň jedna skupina (poměr rozptylu mezi a uvnitř skupin), <b>Tukey HSD</b> řekne které.</p>
+<p>Na otázky z přednášky to dává odpovědi: QRSd a AreaQRS nesou skoro stejnou informaci (korelace 0,71, nejvyšší VIF), EDYS odděluje všechny tři druhy blokády (ANOVA F = 233, Tukey) a s QRSd souvisí jen středně (0,44, VIF 3,0), takže přináší vlastní informaci. Slabinou kohorty je věk: zdraví dobrovolníci jsou mladší.</p>
 <div class="takehome"><h3>Take-home messages</h3><ol>
 <li>Vhodný graf ukáže vztahy, které výpočet přehlédne – vždy se na data podívej.</li>
 <li>Korelační matice je rychlý a efektivní nástroj, ale vidí jen lineární/monotónní vztahy.</li>
@@ -215,6 +339,8 @@
 <li>Multikolinearita: VIF &gt; 10 je problém; standardizace ji neřeší.</li>
 <li>Snížení multikolinearity obvykle zvýší užitnou hodnotu (a interpretovatelnost) modelů.</li>
 <li>ANOVA řekne „někde je rozdíl“, Tukey HSD řekne „kde“.</li>
+<li>Korelace říká „jak těsně“, regrese „o kolik“ – a jen regrese umí předpovídat.</li>
+<li>VIF měří nadbytečnost, ne užitečnost: podle VIF se odstraňuje jen nad hranicí.</li>
 </ol></div>
 </section>
 
@@ -225,7 +351,9 @@
 <details class="q"><summary>Znamená nulová korelace, že proměnné spolu nesouvisejí?</summary><div>
 <p>Ne. Nulová korelace vylučuje jen lineární vztah. Proměnné mohou mít silný nelineární vztah, např. parabolický (\(y = x^2\) na symetrickém intervalu má \(r \approx 0\)). Proto je nutné se na data podívat graficky.</p></div></details>
 <details class="q"><summary>Co je multikolinearita, proč vadí a jak se měří?</summary><div>
-<p>Situace, kdy jsou vstupní proměnné navzájem silně korelované (lineárně závislé). Vadí, protože porušuje předpoklad nezávislosti vstupů a znemožňuje oddělit vliv jednotlivých proměnných – koeficienty jsou nestabilní a nelze je porovnávat. Měří se VIF\(_j = 1/(1-R_j^2)\), kde \(R_j^2\) je podíl rozptylu příznaku vysvětlený ostatními příznaky. Pod 5 OK, 5–10 pozor, nad 10 problém. Řeší se sloučením (výška + hmotnost → BMI), odstraněním příznaku nebo PCA; standardizace nepomůže.</p></div></details>
+<p>Situace, kdy jsou vstupní proměnné navzájem silně korelované (lineárně závislé). Vadí, protože porušuje předpoklad nezávislosti vstupů a znemožňuje oddělit vliv jednotlivých proměnných – koeficienty jsou nestabilní a nelze je porovnávat. Měří se VIF\(_j = 1/(1-R_j^2)\), kde \(R_j^2\) je podíl rozptylu příznaku vysvětlený ostatními příznaky. Pod 5 OK, 5–10 pozor, nad 10 problém. Řeší se sloučením (výška + hmotnost → BMI), odstraněním příznaku nebo PCA; standardizace nepomůže. Odstraňovat se má jen do chvíle, kdy VIF klesne pod hranici: v experimentu z přednášky poslední krok odstranil EDYS (VIF 1,9), tedy užitečný a nekolineární znak, a F1 spadlo skoro na polovinu.</p></div></details>
+<details class="q"><summary>Jaký je rozdíl mezi korelací a regresí?</summary><div>
+<p>Korelace měří, jak těsně a kterým směrem spolu dvě proměnné souvisejí; je symetrická, bez jednotek a nic nepředpovídá. Regrese popisuje, o kolik se v průměru změní závislá proměnná, když se změní nezávislá; sklon má jednotky, vztah má směr \(x \to y\) a model umí předpovídat. Přímku lze proložit vždy – jestli jí věřit, řekne korelace (u jednoduché lineární regrese \(R^2 = r^2\)). Na slidu přímka BMI podle věku mírně stoupá, ale korelace je jen 0,12.</p></div></details>
 <details class="q"><summary>Jaký je rozdíl mezi obyčejnou a ortogonální regresí?</summary><div>
 <p>Obyčejná (OLS) minimalizuje svislé vzdálenosti bodů od přímky – předpokládá chybu jen v závislé proměnné. Ortogonální minimalizuje kolmé vzdálenosti – předpokládá chybu v obou proměnných. Používá se např. při srovnání dvou měřicích přístrojů, kde ani jeden není referenční.</p></div></details>
 <details class="q"><summary>Jak funguje logistická regrese a co říkají její koeficienty?</summary><div>
