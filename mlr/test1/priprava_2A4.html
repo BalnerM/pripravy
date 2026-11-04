@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MLR test 1 na 2 A4</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<style>
+:root { --ink:#17202b; --mute:#5a6675; --line:#c9d1da; --c1:#2a78d6; --c1d:#1b5aa8; --c2:#c9501f; --bg1:#eef4fc; --bg2:#fdf1eb; --code:#f2f4f7; }
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #fff; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font: 8.8pt/1.27 "Segoe UI", Arial, sans-serif; }
+.page { width: 210mm; height: 297mm; padding: 7.5mm 8.5mm 6mm; overflow: hidden; break-after: page; display: flex; flex-direction: column; }
+.page:last-child { break-after: auto; }
+.cols { flex: 1; min-height: 0; column-count: 2; column-gap: 5.5mm; column-fill: auto; }
+header h1 { font-size: 14pt; line-height: 1.1; margin: 0 0 1mm; }
+header .fmt { color: var(--mute); margin: 0 0 1.4mm; }
+.plan { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; background: var(--bg1); border-radius: 1.2mm; padding: 1.5mm 2.5mm; margin-bottom: 2.2mm; }
+.plan p { margin: 0; }
+section { break-inside: avoid; margin-bottom: 2mm; }
+h2 { font-size: 9.4pt; line-height: 1.15; margin: 0 0 .8mm; padding-bottom: .5mm; border-bottom: .5mm solid var(--c1); color: var(--c1d); display: flex; justify-content: space-between; align-items: baseline; gap: 2mm; }
+h2 span { font-size: 7.2pt; font-weight: 500; color: var(--mute); white-space: nowrap; }
+p { margin: 0 0 .8mm; }
+ul, ol { margin: 0 0 .8mm; padding-left: 3.6mm; }
+li { margin: 0 0 .25mm; }
+code { font: 8.1pt/1.2 Consolas, "Courier New", monospace; background: var(--code); padding: 0 .5mm; border-radius: .5mm; }
+pre { font: 8.1pt/1.22 Consolas, "Courier New", monospace; background: var(--code); margin: .6mm 0 .8mm; padding: .9mm 1.5mm; border-radius: .8mm; white-space: pre-wrap; }
+pre code { background: none; padding: 0; }
+table { width: 100%; border-collapse: collapse; margin: .5mm 0 .9mm; }
+td, th { border-bottom: .2mm solid var(--line); padding: .35mm 1mm; text-align: left; vertical-align: top; }
+th { background: var(--code); font-weight: 600; }
+td:first-child { padding-left: 0; }
+.kod td:first-child { white-space: nowrap; }
+.en { font-style: italic; color: var(--c1d); }
+.past { background: var(--bg2); border-left: .7mm solid var(--c2); padding: .6mm 1.5mm; margin: .7mm 0 .8mm; }
+.past b:first-child { color: var(--c2); }
+.row { display: flex; align-items: center; justify-content: space-around; gap: 2mm; margin: .4mm 0 .7mm; }
+.katex { font-size: 1em; }
+.katex-display { margin: .5mm 0 .7mm; }
+.conf td, .conf th { text-align: center; }
+.conf td:first-child, .conf th:first-child { text-align: left; }
+.conf { width: 48mm; margin: 0; flex: none; }
+.foot { color: var(--mute); font-size: 7pt; margin-top: auto; }
+@media screen {
+  html { background: #dde2e8; }
+  .page { margin: 6mm auto; background: #fff; box-shadow: 0 1mm 4mm rgba(0,0,0,.2); }
+  @media (max-width: 800px) {
+    .page { width: auto; height: auto; margin: 0; padding: 16px; overflow: visible; box-shadow: none; }
+    .cols { column-count: 1; }
+    .plan { grid-template-columns: 1fr; }
+    .conf { width: 100%; }
+    .kod td:first-child { white-space: normal; }
+    .row { flex-wrap: wrap; }
+    .katex-display { overflow-x: auto; overflow-y: hidden; }
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+<header>
+<h1>MLR – Practical test 1: to nejdůležitější na 2 A4</h1>
+<p class="fmt">25 min · 5 bodů · jen papír, bez poznámek a kalkulačky · zadání anglicky · kód se jen čte · indexy od nuly · zlomky stačí</p>
+<div class="plan">
+<p><b>Co čekat:</b> 5 nezávislých úloh, ~5 min na každou. V obou ukázkách: <b>matice ručně</b> (1,25 b.), <b>oprava kódu</b>, <b>interpretace výsledků</b>, <b>hlasování nebo výběr příznaků</b>, <b>agenti</b> (0,75 b.).</p>
+<p><b>Plné body:</b> vždy napiš mezikrok a jmenovatel. „Explain“ = věta s <i>because</i>. U opravy kódu napiš opravený řádek. Začni rychlými body (agenti, predikce), pak výpočty. <span class="en">Modře</span> = věta, kterou můžeš použít.</p>
+</div>
+</header>
+<div class="cols">
+
+<section>
+<h2>1 · Čtení kódu: nejdřív tvar, pak čísla <span>všude</span></h2>
+<p><b>Řádek = vzorek, sloupec = příznak.</b> <code>X</code> má tvar <code>(n, d)</code>; vektor má tvar <code>(n,)</code>.</p>
+<table class="kod">
+<tr><td><code>A @ B</code></td><td>maticový součin: <code>(a,b) @ (b,c)</code> → <code>(a,c)</code>. Vnitřní rozměry nesedí = <i>dimensional error</i>. <code>*</code> násobí po prvcích.</td></tr>
+<tr><td><code>X.T @ X</code></td><td><code>(d,d)</code>; <code>X.T @ y</code> → <code>(d,)</code>; <code>X @ w</code> → <code>(n,)</code> = jedna predikce na vzorek; <code>X @ X.T</code> → <code>(n,n)</code></td></tr>
+<tr><td><code>axis</code></td><td><b>osa, která zmizí.</b> <code>axis=1</code>: jedno číslo na řádek; <code>axis=0</code>: jedno číslo na sloupec</td></tr>
+<tr><td><code>X.shape[0]</code>, <code>[1]</code></td><td>počet řádků, počet sloupců. <code>np.eye(k)</code> = jednotková <code>k×k</code></td></tr>
+<tr><td><code>column_stack</code></td><td>skládá vektory jako <b>sloupce</b>. <code>range(3)</code> = 0, 1, 2; <code>t**0</code> = samé jedničky</td></tr>
+<tr><td><code>(p &gt; 0.5).astype(int)</code></td><td>práh na 1/0. Ostře: <b>přesně 0,5 dá 0</b></td></tr>
+<tr><td><code>np.argmax(s)</code></td><td><b>pozice</b> největšího prvku (při shodě první), ne hodnota</td></tr>
+<tr><td><code>np.argsort(d)[:k]</code></td><td>indexy k nejmenších hodnot (k nejbližších sousedů)</td></tr>
+<tr><td><code>l.pop(i)</code> / <code>l.remove(x)</code></td><td>odebere podle <b>pozice</b> a vrátí prvek / odebere podle <b>hodnoty</b></td></tr>
+<tr><td><code>np.mean(y == p)</code></td><td>accuracy. <code>np.sum((y==1) &amp; (p==1))</code> = TP</td></tr>
+<tr><td colspan="2" style="white-space:normal"><code>np.unique(v, return_counts=True)</code> různé hodnoty a jejich počty (hlasování v k-NN)</td></tr>
+</table>
+</section>
+
+<section>
+<h2>2 · Lineární regrese ručně <span>A1 · 1,25 b.</span></h2>
+<p><b>Princip:</b> hledáme váhy s nejmenším součtem čtverců chyb. Data zapíšeme do matice a váhy dá vzorec. Pro body (−1, 0), (0, 0), (1, 6) a sloupce [1, x]:</p>
+<div class="row">
+<div>\( X = \begin{bmatrix} 1 & -1 \\ 1 & 0 \\ 1 & 1 \end{bmatrix} \)</div>
+<div>\( \mathbf y = \begin{bmatrix} 0 \\ 0 \\ 6 \end{bmatrix} \)</div>
+<div>\( \mathbf w = (X^\top X)^{-1} X^\top \mathbf y \)</div>
+</div>
+<p class="en">The column of ones multiplies the intercept b, so b is learned as an ordinary weight.</p>
+<p><b>Když chtějí výpočet:</b></p>
+<div class="row">
+<div>\( X^\top X = \begin{bmatrix} 3 & 0 \\ 0 & 2 \end{bmatrix} \)</div>
+<div>\( X^\top \mathbf y = \begin{bmatrix} 6 \\ 6 \end{bmatrix} \)</div>
+<div>\( \mathbf w = \begin{bmatrix} 2 \\ 3 \end{bmatrix} \)</div>
+</div>
+<p>Inverze 2×2 (ta se musí umět z hlavy):</p>
+\[ \begin{bmatrix} a & b \\ c & d \end{bmatrix}^{-1} = \frac{1}{ad - bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix} \]
+<p>Predikce: \(\hat y(2) = b + w \cdot 2 = 2 + 3 \cdot 2 = 8\).</p>
+<div class="past"><b>Pozor:</b> „Leave unevaluated“ = jen dosaď matice do vzorce, nepočítej. Pořadí sloupců ber ze zadání: u [x, 1] je \(\mathbf w = [w, b]^\top\) a jedničky jsou vpravo.</div>
+</section>
+
+<section>
+<h2>3 · Polynomiální příznaky <span>B1 · 1,25 b.</span></h2>
+<pre><code>t = np.array([-1., 0., 1.])
+# sloupce: 1, t, t²
+X = np.column_stack([t ** j for j in range(3)])
+y_pred = X @ np.array([1., 2., 1.])</code></pre>
+<div class="row">
+<div>\( X = \begin{bmatrix} 1 & -1 & 1 \\ 1 & 0 & 0 \\ 1 & 1 & 1 \end{bmatrix} \)</div>
+<div>\( \texttt{y\_pred} = \begin{bmatrix} 0 \\ 1 \\ 4 \end{bmatrix} \)</div>
+<div>\( \hat y = 1 + 2t + t^2 \)</div>
+</div>
+<p class="en">The prediction is a weighted sum of fixed features 1, t, t²; only the features are nonlinear in t, so the model is linear in its weights and the same formula fits them.</p>
+<p>Bez konstanty (<code>range(1, 3)</code>) model v t = 0 vždy predikuje 0.</p>
+</section>
+
+<section>
+<h2>4 · Ridge regrese <span>B2 · 1 b.</span></h2>
+<p><b>Princip:</b> kromě chyby se trestají i velké váhy. Model je pak klidnější a méně se přeučí.</p>
+\[ J(\mathbf w) = \|X\mathbf w - \mathbf y\|_2^2 + \lambda\|\mathbf w\|_2^2 \]
+\[ \mathbf w = (X^\top X + \lambda I)^{-1} X^\top \mathbf y \]
+<ul>
+<li><b>1. člen</b> měří chybu na trénovacích datech, <b>2. člen</b> trestá velké váhy.</li>
+<li><b>↑λ:</b> menší váhy, hladší křivka, trénovací chyba roste. Příliš velké λ = podučení (váhy → 0). λ = 0 je obyčejná regrese.</li>
+</ul>
+<div class="past"><b>Chyba z ukázky:</b> <code>np.eye(X.shape[0])</code> je 3×3, ale <code>X.T @ X</code> je 2×2, takže nejdou sečíst. Oprava: <code>np.eye(X.shape[1])</code>, jedna diagonála na váhu.</div>
+<p><b>Duální tvar je jiný:</b> <code>LA.inv(X @ X.T + lam*np.eye(X.shape[0])) @ y</code> dá α a \(\mathbf w = X^\top \boldsymbol\alpha\). Tady je <code>shape[0]</code> <b>správně</b>, protože <code>X @ X.T</code> je <code>(n,n)</code>. Jádrový trik: \(XX^\top\) se nahradí maticí K, pak \(\hat{\mathbf y} = K_{\text{new}}\boldsymbol\alpha\).</p>
+<p>Ruční výpočet: stejná data jako v 2, λ = 1, trestají se obě váhy:</p>
+<div class="row">
+<div>\( X^\top X + I = \begin{bmatrix} 4 & 0 \\ 0 & 3 \end{bmatrix} \)</div>
+<div>\( \mathbf w = \begin{bmatrix} 6/4 \\ 6/3 \end{bmatrix} = \begin{bmatrix} 3/2 \\ 2 \end{bmatrix} \)</div>
+</div>
+<p>Váhy se oproti [2, 3] zmenšily. Trest jen na sklon: místo λI se přičte diag(0, λ).</p>
+</section>
+
+<section>
+<h2>5 · Podučení a přeučení <span>A4 · 1 b.</span></h2>
+<table>
+<tr><th>Stav</th><th>Trénovací chyba</th><th>Testovací chyba</th><th>Křivka</th></tr>
+<tr><td><b>podučení</b> (st. 1)</td><td>vysoká 0,227</td><td>vysoká 0,283</td><td>nestíhá trend</td></tr>
+<tr><td><b>dobře</b> (st. 3)</td><td>nízká 0,051</td><td>nejnižší 0,085</td><td>sleduje trend</td></tr>
+<tr><td><b>přeučení</b> (st. 15)</td><td>nejnižší 0,040</td><td>obří 10,39</td><td>kmitá, ulétá</td></tr>
+</table>
+<p>Vždy cituj <b>křivku i čísla z tabulky</b>. Stupeň, λ, k i příznaky se vybírají na validaci:</p>
+<p class="en">Choose the degree on a validation split or by cross-validation; use the test set only once at the end, so it stays independent.</p>
+</section>
+
+<section>
+<h2>6 · k-NN a gradientní sestup <span>cvičení 1–2</span></h2>
+<ul>
+<li><b>k-NN:</b> většina mezi k nejbližšími. Ručně stačí \(d^2\) bez odmocniny, pořadí se nezmění. Malé k = citlivé na šum, velké k = rozmazané hranice. Bod (3, 3): \(d^2\) k (2, 3) je 1, k (4, 4) je 2.</li>
+<li><b>Sestup:</b> \(w_{t+1} = w_t - \eta f'(w_t)\). Pro \(f = (w - 3)^2\), \(w_0 = 0\), η = 0,25: \(w_1 = 1{,}5\), \(w_2 = 2{,}25\). Velké η kmitá nebo diverguje, malé je pomalé.</li>
+</ul>
+</section>
+
+</div>
+</div>
+
+<div class="page">
+<div class="cols">
+
+<section>
+<h2>7 · Matice záměn a metriky <span>B3 · 1 b.</span></h2>
+<div class="row" style="justify-content:flex-start">
+<table class="conf">
+<tr><th></th><th>Pred. 0</th><th>Pred. 1</th></tr>
+<tr><th>Actual 0</th><td>TN = 6</td><td>FP = 2</td></tr>
+<tr><th>Actual 1</th><td>FN = 1</td><td>TP = 3</td></tr>
+</table>
+<div><b>„missed“</b> = FN = 1<br><b>„flagged“</b> = FP = 2<br>Nejdřív čti popisky!</div>
+</div>
+\[ \begin{aligned} \text{accuracy} &= \frac{TP + TN}{\text{vše}} = \frac{3 + 6}{12} = \frac34 \\[7pt] \text{recall} &= \frac{TP}{TP + FN} = \frac{3}{3 + 1} = \frac34 \\[7pt] \text{precision} &= \frac{TP}{TP + FP} = \frac{3}{3 + 2} = \frac35 \\[7pt] \text{specificity} &= \frac{TN}{TN + FP} = \frac{6}{6 + 2} = \frac34 \\[7pt] F_1 &= \frac{2TP}{2TP + FP + FN} = \frac{6}{9} = \frac23 \end{aligned} \]
+<ul>
+<li><b>Recall:</b> <span class="en">the share of truly faulty items that the model catches (3 of 4).</span></li>
+<li><b>Precision:</b> <span class="en">of the items flagged as faulty, the share that really are faulty.</span></li>
+<li>Screening: důležitější recall (přehlédnutí je horší než falešný poplach).</li>
+<li>Nevyvážené třídy: accuracy klame, proto recall, F1, balanced accuracy.</li>
+<li>Regrese: \(\text{MSE} = \frac1n\sum(\hat y_i - y_i)^2\), \(\text{MAE} = \frac1n\sum|\hat y_i - y_i|\).</li>
+</ul>
+<div class="past"><b>Pozor:</b> matice může být otočená (řádky = predikce). Vždy napiš čísla ve jmenovateli.</div>
+</section>
+
+<section>
+<h2>8 · Předzpracování a únik dat <span>A2 · 1 b.</span></h2>
+<p><b>Pravidlo:</b> vše, co se učí z dat (μ, σ, min, max, průměr na doplnění), se učí <b>jen z train</b>. <b>Validace</b> vybírá, <b>test</b> se použije jednou na konci.</p>
+<pre><code>X_train = scaler.fit_transform(train)
+X_valid = scaler.transform(valid)     # ne fit_transform!</code></pre>
+<p class="en">Refitting on validation scales it with a different mean and standard deviation, so the two sets are in different units and k-NN distances are distorted. The mean and standard deviation must come from the training data only.</p>
+\[ z = \frac{x - \mu_{\text{train}}}{\sigma_{\text{train}}} = \frac{4 - 1}{1} = 3 \]
+<p><b>Proč škálovat:</b> ve vzdálenosti jinak přehluší vše příznak s velkými čísly. Stromy škálování nepotřebují.</p>
+<p><b>Další chyby v kódu („red flags“):</b></p>
+<ul>
+<li>scaler nebo průměr na doplnění spočítaný <b>i z dalších dat</b>: před rozdělením nebo z <code>concat([train, valid])</code></li>
+<li>výběr k / λ podle testu, <code>max(scores)</code> z testu jako výsledek</li>
+<li>accuracy na trénovacích datech (1-NN má skoro vždy 100 %)</li>
+<li><code>default_rng(0)</code> uvnitř smyčky: všechny stromy dostanou stejný vzorek. Generátor vytvoř jednou před smyčkou.</li>
+</ul>
+</section>
+
+<section>
+<h2>9 · Výběr příznaků <span>B4 · 1 b.</span></h2>
+<p><b>Dopředný výběr:</b> přidávej po jednom příznak, který nejvíc zvýší validační skóre. Skonči, když se ostře nezlepší.</p>
+<pre><code>selected = [0];  remaining = [1, 3, 4]
+best_score = 0.75
+scores = [0.80, 0.90, 0.85]
+best_position = int(np.argmax(scores))     # 1
+feature = remaining.pop(best_position)     # 3
+selected.append(feature)
+best_score = scores[best_position]         # 0.90
+# selected = [0, 3], remaining = [1, 4]</code></pre>
+<ul>
+<li><b>Pozice ≠ příznak:</b> pozice 1 je místo v seznamu, příznak <code>remaining[1] = 3</code> je sloupec dat.</li>
+<li><b>„Strictly improves“:</b> 0,90 není &gt; 0,90, takže nepřijmout a skončit.</li>
+<li><b>Filtr</b> (korelace, vzájemná informace) hodnotí každý příznak zvlášť bez modelu. <b>Wrapper</b> (dopředný výběr) měří podmnožiny výkonem modelu.</li>
+<li><b>PCA</b> nevybírá, ale skládá nové příznaky ve směrech největšího rozptylu; nepoužívá labely.</li>
+</ul>
+</section>
+
+<section>
+<h2>10 · Stromy a bagging <span>A5 · 1 b.</span></h2>
+<div class="row">
+<div>\( V = \begin{bmatrix} 0 & 1 & 0 \\ 1 & 1 & 0 \\ 0 & 0 & 1 \\ 1 & 1 & 1 \end{bmatrix} \)</div>
+<div>\( \mathbf y = \begin{bmatrix} 0 \\ 1 \\ 1 \\ 1 \end{bmatrix} \)</div>
+<div><code>(V.mean(axis=1) &gt; 0.5)</code><br><code>.astype(int)</code></div>
+</div>
+<p><span class="en">axis=1 averages over the trees in each row: one value per sample</span>, tedy podíl hlasů pro 1:</p>
+\[ \left[\tfrac13, \tfrac23, \tfrac13, 1\right] \;\to\; \hat{\mathbf y} = [0, 1, 0, 1] \;\to\; \text{accuracy} = \tfrac34 \]
+<p><b>Bootstrap</b> <code>rng.choice(n, size=n, replace=True)</code>: <span class="en">sampling with replacement, so a row can occur twice and some rows are left out (out-of-bag, about 37 %).</span> Stejné <code>idx</code> pro X i y.</p>
+<ul>
+<li><b>Bagging:</b> každý strom na vlastním bootstrapu, pak hlasování. Snižuje rozptyl, ale jen když se stromy liší. <b>Random forest</b> navíc v každém uzlu zkouší náhodnou podmnožinu příznaků.</li>
+<li><b>Strom:</b> řezy \(x_j \le s\), list predikuje většinovou třídu.</li>
+<li><b>Gini:</b> \(G = 2p(1-p)\) pro dvě třídy. Čistý uzel 0, půl na půl 0,5, 4 : 1 → 0,32. Kvalita řezu = vážený průměr dětí.</li>
+<li><b>SVM:</b> ↑C i ↑γ = složitější hranice, riziko přeučení.</li>
+</ul>
+</section>
+
+<section>
+<h2>11 · AI agenti <span>A3, B5 · 0,75 b.</span></h2>
+<table>
+<tr><td><b>Skill</b></td><td class="en">A saved, reusable recipe (a SKILL.md file with a name, a description of when to use it, and instructions) that the agent loads only when the task needs it.</td></tr>
+<tr><td><b>Subagent</b></td><td class="en">A helper the main agent starts for a side task; it works in its own fresh context and returns only a short summary.</td></tr>
+<tr><td><b>Hook</b></td><td class="en">A small script the harness runs automatically at an event, e.g. before every file edit; it can block the action.</td></tr>
+<tr><td><code>AGENTS.md</code></td><td>pravidla projektu, čtou se vždy. Pravidlo <b>žádá</b>, hook <b>vynutí</b>.</td></tr>
+<tr><td><b>MCP</b></td><td>standardní „zástrčka“ pro další nástroje (prohlížeč, dokumentace).</td></tr>
+<tr><td><b>Kontext</b></td><td>vše, co model čte před odpovědí. Plný kontext: stav do <code>PLAN.md</code>, pak <code>/clear</code>.</td></tr>
+</table>
+<p><b>Jak vytvořit skill:</b> <span class="en">Do the task once with the agent and note the steps and the check that worked. Write .claude/skills/&lt;name&gt;/SKILL.md with a name, a clear description and short instructions. Test it in a fresh session and refine it.</span></p>
+<p><b>Úkol pro subagenta:</b> <span class="en">Read the long training log and return only the epoch with the lowest validation loss, its value and any error messages.</span> Výstup musí být konkrétní a krátký; subagent nevidí konverzaci.</p>
+<p><b>Dobré zadání:</b> Goal · Context · Constraints · Done when. <b>Důkaz:</b> <span class="en">Run the check and show the output.</span></p>
+</section>
+
+<section>
+<h2>Kontrola před odevzdáním</h2>
+<ul>
+<li>Sedí orientace matice záměn a pořadí sloupců X podle zadání?</li>
+<li>Jsou tam mezikroky a jmenovatele, ne jen výsledek?</li>
+<li>Je u opravy kódu opravený řádek a u „explain“ důvod (<i>because</i>)?</li>
+<li>Pozice, nebo číslo příznaku? <code>shape[0]</code>, nebo <code>shape[1]</code>?</li>
+<li>Je výběr modelu na validaci a test až na konci?</li>
+</ul>
+</section>
+
+<section>
+<h2>Slovíčka ze zadání</h2>
+<p>sample = vzorek · feature = příznak · weight = váha · intercept = absolutní člen · fit = natrénovat · split = část dat · denominator = jmenovatel · missed = přehlédnutý · flagged = označený · trade-off = kompromis · with replacement = s vracením · strictly = ostře · penalize = trestat</p>
+</section>
+
+</div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  renderMathInElement(document.body, { delimiters: [
+    { left: "\\[", right: "\\]", display: true },
+    { left: "\\(", right: "\\)", display: false } ], throwOnError: false });
+});
+</script>
+</body>
+</html>
