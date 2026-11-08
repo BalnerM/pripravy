@@ -52,3 +52,8 @@ footer { font-size: 6.4pt; color: var(--mute); margin-top: .8mm; text-align: rig
 .phi td:first-child { background: var(--th); }
 .vz { background: var(--bg1); padding: .3mm 1mm; border-radius: .5mm; }
 .st { font-weight: 600; color: var(--c1d); margin: .5mm 0 .2mm; }
+.rz3 { font-size: 6.9pt; line-height: 1.15; }
+.rz3 td { padding-top: 0; padding-bottom: 0; white-space: nowrap; }
+.rz3 td:first-child { width: auto; }
+.rz3 td:last-child { width: 3.5mm; text-align: right; font-weight: 600; color: var(--c1d); padding-right: .3mm; }
+.rz3 tr.g th { background: none; color: var(--c1d); font-size: .95em; padding: .4mm .3mm 0; border-bottom: .2mm solid var(--c1d); }

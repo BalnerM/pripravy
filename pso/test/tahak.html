@@ -17,26 +17,65 @@
 <div class="cols">
 
 <section>
-<h2>Rozpoznávač: v zadání → typ → oddíl</h2>
-<table class="rz">
-<tr><td>die, cards, balls, draw k</td><td>klasická → 1</td></tr>
-<tr><td>numbers from interval, point, random coefficients</td><td>geometrická → 2</td></tr>
-<tr><td>groups/boxes with different rates; <i>if … was it from</i></td><td>úplná p. / Bayes → 3</td></tr>
-<tr><td>before; take turns</td><td>dřív než / střídání → 3</td></tr>
-<tr><td>table \(x_i, p_i\); F(x) given</td><td>diskrétní X → 4</td></tr>
-<tr><td>n trials, same p, exactly / at least</td><td>Bi(n, p) → 5</td></tr>
-<tr><td>until, first failure / success</td><td>Ge (od 0 / od 1) → 5</td></tr>
-<tr><td>M rejects among N, select n</td><td>H(N, M, n) → 5</td></tr>
-<tr><td>an average of … per hour</td><td>Po(λ) → 5</td></tr>
-<tr><td>density f(x), parameter a</td><td>spojitá X → 6</td></tr>
-<tr><td>normal, mean, variance</td><td>No(μ, σ) → 7</td></tr>
-<tr><td>10000 newborns; how many trials</td><td>Moivre–Laplace → 8</td></tr>
-<tr><td>total mass, how many people</td><td>CLV → 8</td></tr>
-<tr><td>random vector, f(x, y), p(Y ≤ X)</td><td>dvojný integrál → 9</td></tr>
-<tr><td>realizations + confidence interval</td><td>interval → 11</td></tr>
-<tr><td>states 100 g / does not cheat; two groups; before / after</td><td>t-testy, F-test → 12, 13</td></tr>
-<tr><td>frequencies \(n_j\), Poisson / normal?</td><td>χ², K–S → 14, 15</td></tr>
-<tr><td>regression line predicting y</td><td>\(\hat y = a + bx\) → 16</td></tr>
+<h2>Rozpoznávač: fráze ze zadání → typ → oddíl</h2>
+<table class="rz rz3">
+<tr class="g"><th colspan="3">Pravděpodobnost</th></tr>
+<tr><td>die, coin, cards; sum of dice</td><td>klasická</td><td>1</td></tr>
+<tr><td>select 3, return, select again</td><td>přes 1. kolo</td><td>1</td></tr>
+<tr><td>dot on screen, point in square</td><td>poměr ploch</td><td>2</td></tr>
+<tr><td>2 numbers from ⟨0, 1⟩, sum, product</td><td>plocha pod křivkou</td><td>2</td></tr>
+<tr><td>random p, q of \(x^2+px+q\)</td><td>\(D \ge 0\), plocha</td><td>2</td></tr>
+<tr><td>groups / boxes, different rates</td><td>úplná p.</td><td>3</td></tr>
+<tr><td>… what is p it was from group 1?</td><td>Bayes</td><td>3</td></tr>
+<tr><td>sum 5 comes up before sum 7</td><td>A dřív než B</td><td>3</td></tr>
+<tr><td>players take turns, A starts</td><td>střídání</td><td>3</td></tr>
+<tr><td>\(p(N=k)\) given, we draw white</td><td>Bayes přes k</td><td>3</td></tr>
+<tr class="g"><th colspan="3">Diskrétní veličina</th></tr>
+<tr><td>draw until the red ball</td><td>\(p_i\) postupně</td><td>4</td></tr>
+<tr><td>F(x) given by steps</td><td>skoky = \(p_i\)</td><td>4</td></tr>
+<tr><td>table \(x_i, p_i\); expected number</td><td>EX, DX</td><td>4</td></tr>
+<tr><td>2 unknown p in table, EX given</td><td>soustava → Simul</td><td>4</td></tr>
+<tr><td>six on 2nd and 4th roll only</td><td>konkrétní pořadí</td><td>5</td></tr>
+<tr><td>exactly / at least k of n</td><td>Bi(n, p)</td><td>5</td></tr>
+<tr><td>fails → cannot continue, max 6</td><td>Ge useknuté</td><td>5</td></tr>
+<tr><td>asks until incorrect answer</td><td>Ge od 0</td><td>5</td></tr>
+<tr><td>roll until six, which attempt</td><td>Ge od 1</td><td>5</td></tr>
+<tr><td>20 rejects among 100, select 10</td><td>H(N, M, n)</td><td>5</td></tr>
+<tr><td>average 20 per hour, in 5 min</td><td>Po, λ na interval</td><td>5</td></tr>
+<tr><td>800 computers, p = 0,01</td><td>Po(np) ≈ Bi</td><td>5</td></tr>
+<tr class="g"><th colspan="3">Spojitá veličina, normální</th></tr>
+<tr><td>density with parameter a</td><td>\(\int f = 1\), F, EX, DX</td><td>6</td></tr>
+<tr><td>prove f can be a density</td><td>\(f \ge 0\), \(\int f = 1\)</td><td>6</td></tr>
+<tr><td>Laplace \(a e^{-\lambda|x|}\)</td><td>sudá: \(2\int_0^\infty\)</td><td>6</td></tr>
+<tr><td>lifetime, waiting time</td><td>exponenciální</td><td>6</td></tr>
+<tr><td>median, quantile</td><td>F(x) = 0,5 / p</td><td>6</td></tr>
+<tr><td>p(U &lt; 1,67); find u</td><td>Φ; kvantil \(u_p\)</td><td>7</td></tr>
+<tr><td>mean 10 mA, variance 4</td><td>No, σ = 2</td><td>7</td></tr>
+<tr><td>above what value with p 0,01</td><td>\(\mu + \sigma u_{0{,}99}\)</td><td>7</td></tr>
+<tr><td>symmetric interval with p 0,75</td><td>\(\mu \pm \sigma u_{0{,}875}\)</td><td>7</td></tr>
+<tr class="g"><th colspan="3">Limitní věty, vektor</th></tr>
+<tr><td>10000 newborns, more girls</td><td>Moivre–Laplace</td><td>8</td></tr>
+<tr><td>relative frequency between</td><td>No\((p, \sqrt{pq/n})\)</td><td>8</td></tr>
+<tr><td>frequency of ones 4900–5100</td><td>M–L, \(2\Phi(u) - 1\)</td><td>8</td></tr>
+<tr><td>how many trials … at least 90×</td><td>hledání n, nahoru</td><td>8</td></tr>
+<tr><td>total mass &lt; 4500 kg, how many</td><td>CLV + n, dolů</td><td>8</td></tr>
+<tr><td>estimate without distribution</td><td>Čebyšev</td><td>8</td></tr>
+<tr><td>simultaneous density f(x, y)</td><td>marginální, ∬</td><td>9</td></tr>
+<tr class="g"><th colspan="3">Statistika</th></tr>
+<tr><td>realizations; interval for μ</td><td>t-interval</td><td>11</td></tr>
+<tr><td>interval for σ², σ; precision</td><td>χ²-interval</td><td>11</td></tr>
+<tr><td>states 100 g, does not cheat</td><td>1výb. t, \(H_1\): &lt;</td><td>13</td></tr>
+<tr><td>two selections, same mean</td><td>F-test, pak 2výb. t</td><td>13</td></tr>
+<tr><td>“Is … correlated with weight?”</td><td>2výb. t, ≠</td><td>13</td></tr>
+<tr><td>before / after, drug effective</td><td>párový t, \(H_1\): &gt;</td><td>13</td></tr>
+<tr><td>variance equals a given value</td><td>χ² test rozptylu</td><td>13</td></tr>
+<tr><td>frequencies \(n_j\), Poisson?</td><td>χ² shody, r = 1</td><td>14</td></tr>
+<tr><td>classes ⟨5, 10), normal?</td><td>χ² shody, r = 2</td><td>14</td></tr>
+<tr><td>die is fair, equally likely</td><td>χ², \(p_j = 1/6\)</td><td>14</td></tr>
+<tr><td>table of 2 traits, independent?</td><td>kontingenční χ²</td><td>14</td></tr>
+<tr><td>Kolmogorov–Smirnov</td><td>\(D = \max|F_n - F_0|\)</td><td>15</td></tr>
+<tr><td>regression line predicting y</td><td>\(\hat y = a + bx\)</td><td>16</td></tr>
+<tr><td>correlation, linear dependence</td><td>r</td><td>16</td></tr>
 </table>
 <p class="m"><b>Fráze:</b> exactly k \(X=k\) · at least k \(X\ge k = 1-p(X\le k-1)\) · at most / not more than \(X\le k\) · more / less than \(&gt;,&lt;\) · none \(X=0\) · at least one \(1-p(0)\) · either A or B \(A\cup B\) · given that \(p(\cdot\mid\cdot)\) · with / without replacement → Bi / H · confidence 0,95 → α = 0,05 · significance level 95 % (S8/3) → α = 0,05.</p>
 </section>
@@ -152,7 +191,17 @@
 <li>μ, σ <b>jedné</b> veličiny (hmotnost 1 osoby).</li>
 <li>Součet: \(\mu_S = n\mu\), \(\sigma_S = \sigma\sqrt n\) (ne nσ!) · průměr: μ, \(\sigma/\sqrt n\).</li>
 <li>Dál jako 7A.</li></ol>
-<p class="st">Hledání n (kolik lidí / pokusů)</p>
+</section>
+
+</div>
+</div>
+
+<div class="page">
+<div class="cols">
+
+<section>
+<h2>8 · Limitní věty: hledání n, Čebyšev</h2>
+<p class="st" style="margin-top:0">Hledání n (kolik lidí / pokusů)</p>
 <ol class="p">
 <li>Podmínku zapiš normovanou: \(\frac{4500 - 75n}{15\sqrt n} \ge u_{0{,}99} = 2{,}326\).</li>
 <li>Substituce \(z = \sqrt n\), roznásob: \(75z^2 + 2{,}326\cdot 15\,z - 4500 \le 0\).</li>
@@ -161,12 +210,6 @@
 <p class="vz"><b>S6/4</b> \(75z^2 + 34{,}89z - 4500 = 0\) → \(z = 7{,}52\), \(z^2 = 56{,}5\) → n = 56 lidí.</p>
 <p><b>Čebyšev:</b> \(p(|X - EX| \ge \varepsilon) \le DX/\varepsilon^2\).</p>
 </section>
-
-</div>
-</div>
-
-<div class="page">
-<div class="cols">
 
 <section>
 <h2>9 · Náhodný vektor (X, Y)</h2>
