@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSO tahák jen se vzorci</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'\\[',right:'\\]',display:true},{left:'\\(',right:'\\)',display:false}],throwOnError:false});document.body.classList.add('ok')"></script>
+<link rel="stylesheet" href="tahak.css">
+<style>
+body { font-size: 9.3pt; line-height: 1.27; }
+.cols { column-count: 2; column-gap: 5mm; }
+h2 { font-size: 8.6pt; }
+section { margin-bottom: 2mm; }
+.katex-display { margin: .7mm 0 1mm; }
+</style>
+</head>
+<body>
+
+<div class="page">
+<header><h1>PSO – vzorce <span>F(x) = p(X &lt; x) · No(μ, σ) · q = 1 − p</span></h1></header>
+<div class="cols">
+
+<section>
+<h2>Jevy a kombinatorika</h2>
+\[ \begin{aligned} p(\bar A) &= 1 - p(A) \\ p(A \cup B) &= p(A) + p(B) - p(A \cap B) \\ p(A \mid B) &= \frac{p(A \cap B)}{p(B)} \\ \text{nezávislé: } p(A \cap B) &= p(A)\,p(B) \end{aligned} \]
+\[ \binom{n}{k} = \frac{n!}{k!\,(n-k)!}, \qquad V_k(n) = \frac{n!}{(n-k)!}, \qquad V'_k(n) = n^k \]
+\[ p(A) = \frac{m}{n}, \qquad p(A) = \frac{|A|}{|\Omega|} \ \ \text{(geometrická: délka, plocha)} \]
+</section>
+
+<section>
+<h2>Úplná pravděpodobnost, Bayes, opakování</h2>
+\[ \begin{aligned} p(A) &= \sum_i p(H_i)\,p(A \mid H_i), \qquad \textstyle\sum_i p(H_i) = 1 \\ p(H_k \mid A) &= \frac{p(H_k)\,p(A \mid H_k)}{\sum_i p(H_i)\,p(A \mid H_i)} \end{aligned} \]
+\[ \begin{aligned} p(A \text{ dřív než } B) &= \frac{p(A)}{p(A) + p(B)} \\ p(\text{začínající vyhraje}) &= \frac{a}{1 - (1-a)(1-b)} \end{aligned} \]
+\[ \sum_{k=0}^{\infty} q^k = \frac{1}{1-q}, \qquad \sum_{k=0}^{\infty} \frac{x^k}{k!} = e^x \]
+</section>
+
+<section>
+<h2>Náhodná veličina</h2>
+\[ \begin{aligned} F(x) &= p(X &lt; x), \qquad p(a \le X &lt; b) = F(b) - F(a) \\ p(X = x_i) &= F(x_i^+) - F(x_i) \end{aligned} \]
+\[ \begin{aligned} EX &= \textstyle\sum x_i p_i \quad\text{nebo}\quad \int x f(x)\,dx \\ EX^2 &= \textstyle\sum x_i^2 p_i \quad\text{nebo}\quad \int x^2 f(x)\,dx \\ DX &= EX^2 - (EX)^2, \qquad \sigma = \sqrt{DX} \end{aligned} \]
+\[ \begin{aligned} E(aX + b) &= a\,EX + b, \qquad D(aX + b) = a^2 DX \\ E(X + Y) &= EX + EY; \quad \text{nezávislé: } D(X + Y) = DX + DY \end{aligned} \]
+\[ \begin{aligned} \int_{-\infty}^{\infty} f(x)\,dx &= 1, \qquad f \ge 0, \qquad F(x) = \int_{-\infty}^{x} f(t)\,dt \\ p(a &lt; X &lt; b) &= \int_a^b f(x)\,dx, \qquad F(\tilde x) = 0{,}5 \end{aligned} \]
+</section>
+
+<section>
+<h2>Diskrétní rozdělení</h2>
+<table class="f">
+<tr><th></th><th>\(p(X = k)\)</th><th>EX</th><th>DX</th></tr>
+<tr><td>Bi(n, p), k = 0..n</td><td>\(\binom{n}{k} p^k q^{n-k}\)</td><td>\(np\)</td><td>\(npq\)</td></tr>
+<tr><td>Ge, k = 0, 1, …</td><td>\(p^k q\)</td><td>\(\frac{p}{q}\)</td><td>\(\frac{p}{q^2}\)</td></tr>
+<tr><td>Ge, k = 1, 2, …</td><td>\(q^{k-1} p\)</td><td>\(\frac{1}{p}\)</td><td>\(\frac{q}{p^2}\)</td></tr>
+<tr><td>H(N, M, n)</td><td>\(\frac{\binom{M}{k}\binom{N-M}{n-k}}{\binom{N}{n}}\)</td><td>\(n\frac{M}{N}\)</td><td>\(n\frac{M}{N}\frac{N-M}{N}\frac{N-n}{N-1}\)</td></tr>
+<tr><td>Po(λ), k = 0, 1, …</td><td>\(\frac{\lambda^k}{k!} e^{-\lambda}\)</td><td>λ</td><td>λ</td></tr>
+</table>
+<p>Bi(n, p) ≈ Po(np) pro velké n, malé p.</p>
+</section>
+
+<section>
+<h2>Spojitá rozdělení</h2>
+<table class="f">
+<tr><th></th><th>\(f(x)\)</th><th>EX</th><th>DX</th></tr>
+<tr><td>rovnoměrné ⟨a, b⟩</td><td>\(\frac{1}{b-a}\)</td><td>\(\frac{a+b}{2}\)</td><td>\(\frac{(b-a)^2}{12}\)</td></tr>
+<tr><td>exponenciální, x ≥ 0</td><td>\(\lambda e^{-\lambda x}\)</td><td>\(\frac{1}{\lambda}\)</td><td>\(\frac{1}{\lambda^2}\)</td></tr>
+<tr><td>Laplace</td><td>\(\frac{\lambda}{2} e^{-\lambda |x|}\)</td><td>0</td><td>\(\frac{2}{\lambda^2}\)</td></tr>
+<tr><td>No(μ, σ)</td><td>\(\frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}\)</td><td>μ</td><td>σ²</td></tr>
+</table>
+</section>
+
+<section>
+<h2>Integrály</h2>
+\[ \begin{aligned} \int x^n\,dx &= \frac{x^{n+1}}{n+1}, \qquad \int e^{ax} dx = \frac{e^{ax}}{a}, \qquad \int \frac{dx}{x} = \ln|x| \\ \int u v'\,dx &= uv - \int u' v\,dx \\ \int x \sin x\,dx &= \sin x - x \cos x \\ \int x \cos x\,dx &= \cos x + x \sin x \\ \int x^2 \sin x\,dx &= -x^2 \cos x + 2x \sin x + 2 \cos x \\ \int x^2 \cos x\,dx &= x^2 \sin x + 2x \cos x - 2 \sin x \\ \int x e^{-\lambda x} dx &= -\frac{e^{-\lambda x}}{\lambda^2}(\lambda x + 1) \\ \int x^2 e^{-\lambda x} dx &= -\frac{e^{-\lambda x}}{\lambda^3}(\lambda^2 x^2 + 2\lambda x + 2) \end{aligned} \]
+</section>
+
+<section>
+<h2>Normální rozdělení</h2>
+\[ \begin{aligned} u &= \frac{x - \mu}{\sigma}, \qquad p(X &lt; x) = \Phi(u) \\ \Phi(-u) &= 1 - \Phi(u) \\ p(a &lt; X &lt; b) &= \Phi\!\left(\tfrac{b - \mu}{\sigma}\right) - \Phi\!\left(\tfrac{a - \mu}{\sigma}\right) \\ x_p &= \mu + \sigma u_p, \qquad u_{1-p} = -u_p \\ p(|X - \mu| &lt; \sigma u_{(1+\gamma)/2}) &= \gamma \end{aligned} \]
+</section>
+
+<section>
+<h2>Limitní věty</h2>
+\[ \begin{aligned} \text{Bi}(n, p) &\approx \text{No}\big(np,\ \sqrt{npq}\big), \qquad npq &gt; 9 \\ \tfrac{X}{n} &\approx \text{No}\big(p,\ \sqrt{pq/n}\big) \\ \textstyle\sum_{i=1}^{n} X_i &\approx \text{No}\big(n\mu,\ \sigma\sqrt{n}\big), \qquad \bar X \approx \text{No}\big(\mu,\ \sigma/\sqrt{n}\big) \\ p(|X - EX| \ge \varepsilon) &\le \frac{DX}{\varepsilon^2} \end{aligned} \]
+</section>
+
+<section>
+<h2>Φ(u) = p(U &lt; u), U ~ No(0, 1); Φ(−u) = 1 − Φ(u)</h2>
+<table class="f q kv phi">
+<tr><th>u</th><th>0,00</th><th>0,01</th><th>0,02</th><th>0,03</th><th>0,04</th><th>0,05</th><th>0,06</th><th>0,07</th><th>0,08</th><th>0,09</th></tr>
+<tr><td>0,0</td><td>,5000</td><td>,5040</td><td>,5080</td><td>,5120</td><td>,5160</td><td>,5199</td><td>,5239</td><td>,5279</td><td>,5319</td><td>,5359</td></tr>
+<tr><td>0,1</td><td>,5398</td><td>,5438</td><td>,5478</td><td>,5517</td><td>,5557</td><td>,5596</td><td>,5636</td><td>,5675</td><td>,5714</td><td>,5753</td></tr>
+<tr><td>0,2</td><td>,5793</td><td>,5832</td><td>,5871</td><td>,5910</td><td>,5948</td><td>,5987</td><td>,6026</td><td>,6064</td><td>,6103</td><td>,6141</td></tr>
+<tr><td>0,3</td><td>,6179</td><td>,6217</td><td>,6255</td><td>,6293</td><td>,6331</td><td>,6368</td><td>,6406</td><td>,6443</td><td>,6480</td><td>,6517</td></tr>
+<tr><td>0,4</td><td>,6554</td><td>,6591</td><td>,6628</td><td>,6664</td><td>,6700</td><td>,6736</td><td>,6772</td><td>,6808</td><td>,6844</td><td>,6879</td></tr>
+<tr><td>0,5</td><td>,6915</td><td>,6950</td><td>,6985</td><td>,7019</td><td>,7054</td><td>,7088</td><td>,7123</td><td>,7157</td><td>,7190</td><td>,7224</td></tr>
+<tr><td>0,6</td><td>,7257</td><td>,7291</td><td>,7324</td><td>,7357</td><td>,7389</td><td>,7422</td><td>,7454</td><td>,7486</td><td>,7517</td><td>,7549</td></tr>
+<tr><td>0,7</td><td>,7580</td><td>,7611</td><td>,7642</td><td>,7673</td><td>,7704</td><td>,7734</td><td>,7764</td><td>,7794</td><td>,7823</td><td>,7852</td></tr>
+<tr><td>0,8</td><td>,7881</td><td>,7910</td><td>,7939</td><td>,7967</td><td>,7995</td><td>,8023</td><td>,8051</td><td>,8078</td><td>,8106</td><td>,8133</td></tr>
+<tr><td>0,9</td><td>,8159</td><td>,8186</td><td>,8212</td><td>,8238</td><td>,8264</td><td>,8289</td><td>,8315</td><td>,8340</td><td>,8365</td><td>,8389</td></tr>
+<tr><td>1,0</td><td>,8413</td><td>,8438</td><td>,8461</td><td>,8485</td><td>,8508</td><td>,8531</td><td>,8554</td><td>,8577</td><td>,8599</td><td>,8621</td></tr>
+<tr><td>1,1</td><td>,8643</td><td>,8665</td><td>,8686</td><td>,8708</td><td>,8729</td><td>,8749</td><td>,8770</td><td>,8790</td><td>,8810</td><td>,8830</td></tr>
+<tr><td>1,2</td><td>,8849</td><td>,8869</td><td>,8888</td><td>,8907</td><td>,8925</td><td>,8944</td><td>,8962</td><td>,8980</td><td>,8997</td><td>,9015</td></tr>
+<tr><td>1,3</td><td>,9032</td><td>,9049</td><td>,9066</td><td>,9082</td><td>,9099</td><td>,9115</td><td>,9131</td><td>,9147</td><td>,9162</td><td>,9177</td></tr>
+<tr><td>1,4</td><td>,9192</td><td>,9207</td><td>,9222</td><td>,9236</td><td>,9251</td><td>,9265</td><td>,9279</td><td>,9292</td><td>,9306</td><td>,9319</td></tr>
+<tr><td>1,5</td><td>,9332</td><td>,9345</td><td>,9357</td><td>,9370</td><td>,9382</td><td>,9394</td><td>,9406</td><td>,9418</td><td>,9429</td><td>,9441</td></tr>
+<tr><td>1,6</td><td>,9452</td><td>,9463</td><td>,9474</td><td>,9484</td><td>,9495</td><td>,9505</td><td>,9515</td><td>,9525</td><td>,9535</td><td>,9545</td></tr>
+<tr><td>1,7</td><td>,9554</td><td>,9564</td><td>,9573</td><td>,9582</td><td>,9591</td><td>,9599</td><td>,9608</td><td>,9616</td><td>,9625</td><td>,9633</td></tr>
+<tr><td>1,8</td><td>,9641</td><td>,9649</td><td>,9656</td><td>,9664</td><td>,9671</td><td>,9678</td><td>,9686</td><td>,9693</td><td>,9699</td><td>,9706</td></tr>
+<tr><td>1,9</td><td>,9713</td><td>,9719</td><td>,9726</td><td>,9732</td><td>,9738</td><td>,9744</td><td>,9750</td><td>,9756</td><td>,9761</td><td>,9767</td></tr>
+<tr><td>2,0</td><td>,9772</td><td>,9778</td><td>,9783</td><td>,9788</td><td>,9793</td><td>,9798</td><td>,9803</td><td>,9808</td><td>,9812</td><td>,9817</td></tr>
+<tr><td>2,1</td><td>,9821</td><td>,9826</td><td>,9830</td><td>,9834</td><td>,9838</td><td>,9842</td><td>,9846</td><td>,9850</td><td>,9854</td><td>,9857</td></tr>
+<tr><td>2,2</td><td>,9861</td><td>,9864</td><td>,9868</td><td>,9871</td><td>,9875</td><td>,9878</td><td>,9881</td><td>,9884</td><td>,9887</td><td>,9890</td></tr>
+<tr><td>2,3</td><td>,9893</td><td>,9896</td><td>,9898</td><td>,9901</td><td>,9904</td><td>,9906</td><td>,9909</td><td>,9911</td><td>,9913</td><td>,9916</td></tr>
+<tr><td>2,4</td><td>,9918</td><td>,9920</td><td>,9922</td><td>,9925</td><td>,9927</td><td>,9929</td><td>,9931</td><td>,9932</td><td>,9934</td><td>,9936</td></tr>
+<tr><td>2,5</td><td>,9938</td><td>,9940</td><td>,9941</td><td>,9943</td><td>,9945</td><td>,9946</td><td>,9948</td><td>,9949</td><td>,9951</td><td>,9952</td></tr>
+<tr><td>2,6</td><td>,9953</td><td>,9955</td><td>,9956</td><td>,9957</td><td>,9959</td><td>,9960</td><td>,9961</td><td>,9962</td><td>,9963</td><td>,9964</td></tr>
+<tr><td>2,7</td><td>,9965</td><td>,9966</td><td>,9967</td><td>,9968</td><td>,9969</td><td>,9970</td><td>,9971</td><td>,9972</td><td>,9973</td><td>,9974</td></tr>
+<tr><td>2,8</td><td>,9974</td><td>,9975</td><td>,9976</td><td>,9977</td><td>,9977</td><td>,9978</td><td>,9979</td><td>,9979</td><td>,9980</td><td>,9981</td></tr>
+<tr><td>2,9</td><td>,9981</td><td>,9982</td><td>,9982</td><td>,9983</td><td>,9984</td><td>,9984</td><td>,9985</td><td>,9985</td><td>,9986</td><td>,9986</td></tr>
+<tr><td>3,0</td><td>,9987</td><td>,9987</td><td>,9987</td><td>,9988</td><td>,9988</td><td>,9989</td><td>,9989</td><td>,9989</td><td>,9990</td><td>,9990</td></tr>
+</table>
+<p class="m">Hodnoty bez „0“: ,8413 = 0,8413. Φ(3,5) = 0,99977.</p>
+</section>
+
+</div>
+</div>
+
+<div class="page">
+<div class="cols">
+
+<section>
+<h2>Náhodný vektor</h2>
+\[ \begin{aligned} \iint f(x, y)\,dx\,dy &= 1, \qquad p((X, Y) \in G) = \iint_G f(x, y)\,dx\,dy \\ f_X(x) &= \int f(x, y)\,dy, \qquad f_Y(y) = \int f(x, y)\,dx \\ \text{nezávislé} &\iff f(x, y) = f_X(x)\,f_Y(y) \\ \text{cov}(X, Y) &= E(XY) - EX\,EY, \qquad \rho = \frac{\text{cov}(X, Y)}{\sigma_X \sigma_Y} \end{aligned} \]
+</section>
+
+<section>
+<h2>Výběrové charakteristiky</h2>
+\[ \begin{aligned} \bar x &= \frac{1}{n}\sum x_i \\ s^2 &= \frac{1}{n-1}\sum (x_i - \bar x)^2 = \frac{\sum x_i^2 - (\sum x_i)^2/n}{n-1} \\ \text{četnosti: } \bar x &= \frac{\sum x_j n_j}{n}, \qquad \sigma^2 = \frac{\sum x_j^2 n_j}{n} - \bar x^2 \end{aligned} \]
+</section>
+
+<section>
+<h2>Intervaly spolehlivosti (1 − α)</h2>
+\[ \begin{aligned} \mu &\in \bar x \pm t_{1-\alpha/2}(n-1)\,\frac{s}{\sqrt{n}} \\ \mu &\in \bar x \pm u_{1-\alpha/2}\,\frac{\sigma}{\sqrt{n}} \quad (\sigma \text{ známé}) \\ \sigma^2 &\in \left( \frac{(n-1)s^2}{\chi^2_{1-\alpha/2}(n-1)},\ \frac{(n-1)s^2}{\chi^2_{\alpha/2}(n-1)} \right) \end{aligned} \]
+</section>
+
+<section>
+<h2>Testy (K1–K5)</h2>
+<p>Oboustranný test: kvantil \(1 - \alpha/2\); jednostranný: \(1 - \alpha\).</p>
+\[ T = \frac{\bar x - \mu_0}{s}\sqrt{n} \sim t(n-1) \]
+\[ U = \frac{\bar x - \mu_0}{\sigma}\sqrt{n} \sim \text{No}(0, 1) \]
+\[ d_i = x_i - y_i: \quad T = \frac{\bar d}{s_d}\sqrt{n} \sim t(n-1) \]
+\[ s_p^2 = \frac{(n_1 - 1)s_1^2 + (n_2 - 1)s_2^2}{n_1 + n_2 - 2} \]
+\[ T = \frac{\bar x_1 - \bar x_2}{s_p\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}} \sim t(n_1 + n_2 - 2) \]
+\[ U = \frac{\bar x_1 - \bar x_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}} \approx \text{No}(0, 1) \]
+\[ F = \frac{s_1^2}{s_2^2} \sim F(n_1 - 1,\ n_2 - 1), \qquad s_1^2 \ge s_2^2 \]
+\[ \chi^2 = \frac{(n-1)s^2}{\sigma_0^2} \sim \chi^2(n-1) \]
+<p>Zamítáme \(H_0\): \(|T| \ge t_{1-\alpha/2}\); \(T \le -t_{1-\alpha}\); \(T \ge t_{1-\alpha}\); \(F \ge F_{1-\alpha/2}\).</p>
+</section>
+
+<section>
+<h2>Testy dobré shody</h2>
+\[ \chi^2 = \sum_{j=1}^{k} \frac{(n_j - E_j)^2}{E_j}, \qquad E_j = n\,p_j \ge 5, \qquad \chi^2 \ge \chi^2_{1-\alpha}(k - 1 - r) \]
+<p>r = počet odhadnutých parametrů (Po: \(\lambda = \bar x\), r = 1; No: \(\mu = \bar x\), \(\sigma\), r = 2).</p>
+\[ \text{kontingenční tabulka: } E_{ij} = \frac{r_i\,s_j}{n}, \qquad \nu = (r - 1)(s - 1) \]
+\[ \text{K–S: } D = \max_j \big|F_n(x_j) - F_0(x_j)\big|, \qquad F_n(x_j) = \frac{n_1 + \dots + n_j}{n} \]
+\[ D \ge D_n(\alpha); \qquad D_n(0{,}05) \approx \frac{1{,}36}{\sqrt{n}}, \quad D_n(0{,}01) \approx \frac{1{,}63}{\sqrt{n}} \quad (n &gt; 40) \]
+</section>
+
+<section>
+<h2>Regrese a korelace</h2>
+\[ \hat y = a + bx, \qquad b = \frac{n\sum xy - \sum x \sum y}{n\sum x^2 - (\sum x)^2}, \qquad a = \bar y - b\,\bar x \]
+\[ r = \frac{n\sum xy - \sum x \sum y}{\sqrt{\big(n\sum x^2 - (\sum x)^2\big)\big(n\sum y^2 - (\sum y)^2\big)}} \]
+</section>
+
+<section>
+<h2>Kvantily u<sub>p</sub> normovaného normálního rozdělení</h2>
+<table class="f q"><tr><th>p</th><td>0,8</td><td>0,85</td><td>0,875</td><td>0,9</td><td>0,95</td><td>0,975</td><td>0,98</td><td>0,99</td><td>0,995</td></tr>
+<tr><th>u<sub>p</sub></th><td>0,842</td><td>1,036</td><td>1,150</td><td>1,282</td><td>1,645</td><td>1,960</td><td>2,054</td><td>2,326</td><td>2,576</td></tr></table>
+</section>
+
+<section>
+<h2>Kvantily t a χ² (ν = stupně volnosti)</h2>
+<table class="f q kv">
+<tr><th>ν</th><th>t 0,95</th><th>t 0,975</th><th>t 0,995</th><th>χ² 0,025</th><th>χ² 0,05</th><th>χ² 0,95</th><th>χ² 0,975</th></tr>
+<tr><td>1</td><td>6,314</td><td>12,706</td><td>63,657</td><td>0,0010</td><td>0,0039</td><td>3,841</td><td>5,024</td></tr>
+<tr><td>2</td><td>2,920</td><td>4,303</td><td>9,925</td><td>0,051</td><td>0,103</td><td>5,991</td><td>7,378</td></tr>
+<tr><td>3</td><td>2,353</td><td>3,182</td><td>5,841</td><td>0,216</td><td>0,352</td><td>7,815</td><td>9,348</td></tr>
+<tr><td>4</td><td>2,132</td><td>2,776</td><td>4,604</td><td>0,484</td><td>0,711</td><td>9,488</td><td>11,14</td></tr>
+<tr><td>5</td><td>2,015</td><td>2,571</td><td>4,032</td><td>0,831</td><td>1,145</td><td>11,07</td><td>12,83</td></tr>
+<tr><td>6</td><td>1,943</td><td>2,447</td><td>3,707</td><td>1,237</td><td>1,635</td><td>12,59</td><td>14,45</td></tr>
+<tr><td>7</td><td>1,895</td><td>2,365</td><td>3,499</td><td>1,690</td><td>2,167</td><td>14,07</td><td>16,01</td></tr>
+<tr><td>8</td><td>1,860</td><td>2,306</td><td>3,355</td><td>2,180</td><td>2,733</td><td>15,51</td><td>17,53</td></tr>
+<tr><td>9</td><td>1,833</td><td>2,262</td><td>3,250</td><td>2,700</td><td>3,325</td><td>16,92</td><td>19,02</td></tr>
+<tr><td>10</td><td>1,812</td><td>2,228</td><td>3,169</td><td>3,247</td><td>3,940</td><td>18,31</td><td>20,48</td></tr>
+<tr><td>11</td><td>1,796</td><td>2,201</td><td>3,106</td><td>3,816</td><td>4,575</td><td>19,68</td><td>21,92</td></tr>
+<tr><td>12</td><td>1,782</td><td>2,179</td><td>3,055</td><td>4,404</td><td>5,226</td><td>21,03</td><td>23,34</td></tr>
+<tr><td>13</td><td>1,771</td><td>2,160</td><td>3,012</td><td>5,009</td><td>5,892</td><td>22,36</td><td>24,74</td></tr>
+<tr><td>14</td><td>1,761</td><td>2,145</td><td>2,977</td><td>5,629</td><td>6,571</td><td>23,68</td><td>26,12</td></tr>
+<tr><td>15</td><td>1,753</td><td>2,131</td><td>2,947</td><td>6,262</td><td>7,261</td><td>25,00</td><td>27,49</td></tr>
+<tr><td>16</td><td>1,746</td><td>2,120</td><td>2,921</td><td>6,908</td><td>7,962</td><td>26,30</td><td>28,85</td></tr>
+<tr><td>17</td><td>1,740</td><td>2,110</td><td>2,898</td><td>7,564</td><td>8,672</td><td>27,59</td><td>30,19</td></tr>
+<tr><td>18</td><td>1,734</td><td>2,101</td><td>2,878</td><td>8,231</td><td>9,390</td><td>28,87</td><td>31,53</td></tr>
+<tr><td>19</td><td>1,729</td><td>2,093</td><td>2,861</td><td>8,907</td><td>10,12</td><td>30,14</td><td>32,85</td></tr>
+<tr><td>20</td><td>1,725</td><td>2,086</td><td>2,845</td><td>9,591</td><td>10,85</td><td>31,41</td><td>34,17</td></tr>
+<tr><td>21</td><td>1,721</td><td>2,080</td><td>2,831</td><td>10,28</td><td>11,59</td><td>32,67</td><td>35,48</td></tr>
+<tr><td>22</td><td>1,717</td><td>2,074</td><td>2,819</td><td>10,98</td><td>12,34</td><td>33,92</td><td>36,78</td></tr>
+<tr><td>23</td><td>1,714</td><td>2,069</td><td>2,807</td><td>11,69</td><td>13,09</td><td>35,17</td><td>38,08</td></tr>
+<tr><td>24</td><td>1,711</td><td>2,064</td><td>2,797</td><td>12,40</td><td>13,85</td><td>36,42</td><td>39,36</td></tr>
+<tr><td>25</td><td>1,708</td><td>2,060</td><td>2,787</td><td>13,12</td><td>14,61</td><td>37,65</td><td>40,65</td></tr>
+<tr><td>26</td><td>1,706</td><td>2,056</td><td>2,779</td><td>13,84</td><td>15,38</td><td>38,89</td><td>41,92</td></tr>
+<tr><td>27</td><td>1,703</td><td>2,052</td><td>2,771</td><td>14,57</td><td>16,15</td><td>40,11</td><td>43,19</td></tr>
+<tr><td>28</td><td>1,701</td><td>2,048</td><td>2,763</td><td>15,31</td><td>16,93</td><td>41,34</td><td>44,46</td></tr>
+<tr><td>29</td><td>1,699</td><td>2,045</td><td>2,756</td><td>16,05</td><td>17,71</td><td>42,56</td><td>45,72</td></tr>
+<tr><td>30</td><td>1,697</td><td>2,042</td><td>2,750</td><td>16,79</td><td>18,49</td><td>43,77</td><td>46,98</td></tr>
+<tr><td>40</td><td>1,684</td><td>2,021</td><td>2,704</td><td>24,43</td><td>26,51</td><td>55,76</td><td>59,34</td></tr>
+<tr><td>50</td><td>1,676</td><td>2,009</td><td>2,678</td><td>32,36</td><td>34,76</td><td>67,50</td><td>71,42</td></tr>
+<tr><td>60</td><td>1,671</td><td>2,000</td><td>2,660</td><td>40,48</td><td>43,19</td><td>79,08</td><td>83,30</td></tr>
+<tr><td>80</td><td>1,664</td><td>1,990</td><td>2,639</td><td>57,15</td><td>60,39</td><td>101,88</td><td>106,63</td></tr>
+<tr><td>100</td><td>1,660</td><td>1,984</td><td>2,626</td><td>74,22</td><td>77,93</td><td>124,34</td><td>129,56</td></tr>
+<tr><td>120</td><td>1,658</td><td>1,980</td><td>2,617</td><td>91,57</td><td>95,70</td><td>146,57</td><td>152,21</td></tr>
+<tr><td>∞</td><td>1,645</td><td>1,960</td><td>2,576</td><td></td><td></td><td></td><td></td></tr>
+</table>
+</section>
+
+<section>
+<h2>Kritické hodnoty D<sub>n</sub>(α) testu K–S</h2>
+<table class="f q kv">
+<tr><th>n</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td></tr>
+<tr><th>0,05</th><td>0,975</td><td>0,842</td><td>0,708</td><td>0,624</td><td>0,563</td><td>0,519</td><td>0,483</td><td>0,454</td><td>0,430</td><td>0,409</td></tr>
+<tr><th>0,01</th><td>0,995</td><td>0,929</td><td>0,829</td><td>0,734</td><td>0,669</td><td>0,617</td><td>0,576</td><td>0,542</td><td>0,513</td><td>0,489</td></tr>
+<tr><th>n</th><td>12</td><td>14</td><td>16</td><td>18</td><td>20</td><td>25</td><td>30</td><td>35</td><td>40</td><td>&gt; 40</td></tr>
+<tr><th>0,05</th><td>0,375</td><td>0,349</td><td>0,327</td><td>0,309</td><td>0,294</td><td>0,264</td><td>0,242</td><td>0,224</td><td>0,210</td><td>1,36/√n</td></tr>
+<tr><th>0,01</th><td>0,449</td><td>0,418</td><td>0,392</td><td>0,371</td><td>0,352</td><td>0,317</td><td>0,290</td><td>0,269</td><td>0,252</td><td>1,63/√n</td></tr>
+</table>
+</section>
+
+</div>
+</div>
+
+</body>
+</html>

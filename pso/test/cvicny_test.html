@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSO – cvičný test</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="test.css">
+<script defer src="test.js"></script>
+</head>
+<body>
+<nav class="top">
+  <b>PSO · cvičný test</b>
+  <a href="index.html">← Příprava</a><a href="#zadani">Zadání</a><a href="#reseni">Řešení</a>
+  <span class="sp"></span>
+  <button type="button" data-open="1">Rozbalit řešení</button><button type="button" data-open="0">Sbalit</button>
+</nav>
+<main>
+<h1>Cvičný test</h1>
+<p class="lead">9 příkladů napříč sadami 1–8, zadání anglicky jako v testu. Nastav si 100 minut a počítej jen s tahákem, tabulkami a kalkulačkou. Teprve pak se podívej na výsledky a řešení.</p>
+<div class="box info"><span class="t">Jak pracovat</span>
+<p>Nejdřív projdi všechny příklady a začni těmi, které poznáš hned. U každého napiš rozdělení nebo hypotézy, vzorec, dosazení a výsledek. Typ úlohy je v závorce u výsledku a odkazuje na postup v přípravě.</p></div>
+
+<h2 id="zadani">Zadání (MPA-PSO, practice test)</h2>
+<ol>
+  <li id="z1"><p>Two numbers \(x, y\) are chosen randomly from the interval \(\langle 0, 3\rangle\). What is the probability that they differ by less than 1, i.e. \(|x - y| &lt; 1\)?</p></li>
+  <li id="z2"><p>A factory buys components from two suppliers: 60 % from supplier A and 40 % from supplier B. 3 % of components from A and 6 % from B are defective.</p>
+  <ol type="a"><li>What is the probability that a randomly selected component is defective?</li>
+  <li>A component is defective. What is the probability that it comes from supplier A?</li></ol></li>
+  <li id="z3"><p>The discrete random variable X has the distribution function
+  \[ F(x) = \begin{cases} 0, &amp; x \in (-\infty, 1\rangle \\ 0{,}1, &amp; x \in (1, 2\rangle \\ 0{,}5, &amp; x \in (2, 3\rangle \\ 0{,}8, &amp; x \in (3, 4\rangle \\ 1, &amp; x \in (4, \infty) \end{cases} \]
+  Find \(p(X = 3)\), \(p(X &lt; 3)\), \(p(X \ge 2)\), EX and DX.</p></li>
+  <li id="z4"><p>An average of 12 customers come to a shop per hour. Determine the probability that</p>
+  <ol type="a"><li>at least 3 customers come in 15 minutes,</li><li>no one comes in 30 minutes,</li><li>exactly 12 customers come during the hour.</li></ol></li>
+  <li id="z5"><p>The random variable X has the density function \(f(x) = a x^2\) for \(0 \le x \le 3\) and \(f(x) = 0\) otherwise. Compute (a) the parameter a, (b) the distribution function, (c) \(p(1 &lt; X &lt; 2)\), (d) EX and DX, (e) the median.</p></li>
+  <li id="z6"><p>The lifetime of a bulb is a random variable with a normal distribution with mean 1200 h and standard deviation 150 h.</p>
+  <ol type="a"><li>What is the probability that a bulb fails before 1000 h?</li><li>What is the probability that the lifetime is between 1000 h and 1400 h?</li>
+  <li>What warranty period should the producer give so that only 2 % of bulbs fail within the warranty?</li></ol></li>
+  <li id="z7"><p>A package contains 100 components. The weight of one component is a random variable with mean 2.5 g and standard deviation 0.4 g; the weights are independent. What is the probability that the total weight of the package is more than 255 g? Which total weight is exceeded with probability 0.05?</p></li>
+  <li id="z8"><p>Nine measurements of a quantity with a normal distribution \(N\!o(\mu, \sigma)\) gave: 8.1; 7.9; 8.4; 8.0; 7.6; 8.3; 8.2; 7.7; 8.1.</p>
+  <ol type="a"><li>Construct a 95 % two-sided confidence interval for μ.</li><li>At the significance level α = 0.05, test the hypothesis that μ = 8.3.</li></ol></li>
+  <li id="z9"><p>According to Mendel's theory, four types of peas occur in the ratio 9 : 3 : 3 : 1. In an experiment, the frequencies 315, 108, 101 and 32 were observed. Use the χ² test to decide at the significance level α = 0.05 whether the data agree with the theory.</p></li>
+</ol>
+
+<h2 id="vysledky">Výsledky na kontrolu</h2>
+<div class="wrap"><table>
+<tr><th>#</th><th>výsledek</th><th>typ</th></tr>
+<tr><td>1</td><td>\(5/9 \approx 0{,}556\)</td><td><a href="index.html#t2">T2</a></td></tr>
+<tr><td>2</td><td>(a) 0,042 (b) 0,4286</td><td><a href="index.html#t3">T3</a></td></tr>
+<tr><td>3</td><td>0,3; 0,5; 0,9; EX = 2,6; DX = 0,84</td><td><a href="index.html#t4">T4</a></td></tr>
+<tr><td>4</td><td>(a) 0,5768 (b) 0,00248 (c) 0,1144</td><td><a href="index.html#t6">T6</a></td></tr>
+<tr><td>5</td><td>\(a = 1/9\); \(F = x^3/27\); 7/27 ≈ 0,2593; EX = 2,25; DX = 0,3375; medián 2,381</td><td><a href="index.html#t7">T7</a></td></tr>
+<tr><td>6</td><td>(a) 0,0912 (b) 0,8176 (c) 892 h</td><td><a href="index.html#t8">T8</a></td></tr>
+<tr><td>7</td><td>0,1056; 256,6 g</td><td><a href="index.html#t9">T9</a></td></tr>
+<tr><td>8</td><td>(a) (7,83; 8,24) (b) |T| = 3,02 &gt; 2,306 → zamítáme μ = 8,3</td><td><a href="index.html#t11">T11</a>, <a href="index.html#t12">T12</a></td></tr>
+<tr><td>9</td><td>χ² = 0,47 &lt; 7,81 → nezamítáme</td><td><a href="index.html#t13">T13</a></td></tr>
+</table></div>
+
+<h2 id="reseni">Řešení</h2>
+
+<div class="uloha"><div class="h">1 · Rozdíl dvou čísel</div>
+<details class="res"><summary>Řešení</summary><div>
+<p>Ω = čtverec \(\langle 0,3\rangle^2\), plocha 9. Podmínka \(|x - y| &lt; 1\) je pás kolem úhlopříčky; mimo něj jsou dva trojúhelníky s odvěsnou 2:</p>
+\[ p = \frac{9 - 2 \cdot \frac{1}{2} \cdot 2^2}{9} = \frac{5}{9} \approx 0{,}556 \]
+</div></details></div>
+
+<div class="uloha"><div class="h">2 · Dva dodavatelé</div>
+<details class="res"><summary>Řešení</summary><div>
+<p>Hypotézy A (0,6), B (0,4), jev V = vadná.</p>
+\[ \begin{aligned} \text{(a)}\ p(V) &amp;= 0{,}6 \cdot 0{,}03 + 0{,}4 \cdot 0{,}06 \\ &amp;= 0{,}018 + 0{,}024 = 0{,}042 \\ \text{(b)}\ p(A \mid V) &amp;= \frac{0{,}018}{0{,}042} \approx 0{,}4286 \end{aligned} \]
+</div></details></div>
+
+<div class="uloha"><div class="h">3 · Distribuční funkce</div>
+<details class="res"><summary>Řešení</summary><div>
+<p>Skoky F: \(p(1) = 0{,}1\), \(p(2) = 0{,}4\), \(p(3) = 0{,}3\), \(p(4) = 0{,}2\).</p>
+<ul><li>\(p(X = 3) = 0{,}3\)</li><li>\(p(X &lt; 3) = F(3) = 0{,}5\)</li><li>\(p(X \ge 2) = 1 - F(2) = 1 - 0{,}1 = 0{,}9\)</li></ul>
+\[ \begin{aligned} EX &amp;= 1 \cdot 0{,}1 + 2 \cdot 0{,}4 + 3 \cdot 0{,}3 + 4 \cdot 0{,}2 = 2{,}6 \\ EX^2 &amp;= 0{,}1 + 1{,}6 + 2{,}7 + 3{,}2 = 7{,}6 \\ DX &amp;= 7{,}6 - 2{,}6^2 = 0{,}84 \end{aligned} \]
+</div></details></div>
+
+<div class="uloha"><div class="h">4 · Zákazníci v obchodě</div>
+<details class="res"><summary>Řešení</summary><div>
+<p>(a) Za 15 minut \(\lambda = 12/4 = 3\); aspoň 3 = doplněk k 0, 1, 2:</p>
+\[ 1 - e^{-3}\left(1 + 3 + \tfrac{9}{2}\right) = 1 - 8{,}5e^{-3} \approx 0{,}5768 \]
+<p>(b) Za 30 minut \(\lambda = 6\): \(e^{-6} \approx 0{,}00248\).</p>
+<p>(c) Za hodinu \(\lambda = 12\):</p>
+\[ e^{-12}\frac{12^{12}}{12!} \approx 0{,}1144 \]
+</div></details></div>
+
+<div class="uloha"><div class="h">5 · Hustota a x²</div>
+<details class="res"><summary>Řešení</summary><div>
+<p>(a) \(\int_0^3 x^2\,dx = 9 \Rightarrow a = 1/9\).</p>
+<p>(b) \(F(x) = 0\) pro \(x &lt; 0\); \(F(x) = \int_0^x t^2/9\,dt = x^3/27\) pro \(0 \le x \le 3\); \(F(x) = 1\) pro \(x &gt; 3\).</p>
+<p>(c) \(F(2) - F(1) = (8 - 1)/27 = 7/27 \approx 0{,}2593\).</p>
+\[ \begin{aligned} \text{(d)}\ EX &amp;= \int_0^3 \frac{x^3}{9}\,dx = \frac{81}{36} = 2{,}25 \\ EX^2 &amp;= \int_0^3 \frac{x^4}{9}\,dx = \frac{243}{45} = 5{,}4 \\ DX &amp;= 5{,}4 - 2{,}25^2 = 0{,}3375 \end{aligned} \]
+<p>(e) \(x^3/27 = 0{,}5 \Rightarrow x = \sqrt[3]{13{,}5} \approx 2{,}381\).</p>
+</div></details></div>
+
+<div class="uloha"><div class="h">6 · Životnost žárovky</div>
+<details class="res"><summary>Řešení</summary><div>
+<p>X ~ No(1200; 150).</p>
+<p>(a) Selže před 1000 h:</p>
+\[ p(X &lt; 1000) = \Phi\!\left(\tfrac{1000 - 1200}{150}\right) = \Phi(-1{,}333) = 0{,}0912 \]
+<p>(b) Mezi 1000 a 1400 h:</p>
+\[ \Phi(1{,}333) - \Phi(-1{,}333) = 0{,}8176 \]
+<p>(c) Záruka t, kdy \(p(X &lt; t) = 0{,}02\):</p>
+\[ t = 1200 + 150\,u_{0{,}02} = 1200 - 150 \cdot 2{,}054 = 891{,}9\ \text{h} \]
+</div></details></div>
+
+<div class="uloha"><div class="h">7 · Hmotnost balení</div>
+<details class="res"><summary>Řešení</summary><div>
+<p>Součet 100 hmotností: S ≈ No(100 · 2,5; 0,4 · √100) = No(250; 4).</p>
+\[ \begin{aligned} p(S &gt; 255) &amp;= 1 - \Phi\!\left(\tfrac{255 - 250}{4}\right) = 1 - \Phi(1{,}25) = 0{,}1056 \\ s &amp;= 250 + 4\,u_{0{,}95} = 250 + 4 \cdot 1{,}645 = 256{,}6\ \text{g} \end{aligned} \]
+</div></details></div>
+
+<div class="uloha"><div class="h">8 · Interval a test z dat</div>
+<details class="res"><summary>Řešení</summary><div>
+<p>Kalkulačka (1-Variable): \(n = 9\), \(\bar{x} = 8{,}0333\), \(s = 0{,}2646\) (\(s^2 = 0{,}07\)).</p>
+<p>(a) \(t_{0{,}975}(8) = 2{,}306\):</p>
+\[ \begin{aligned} 8{,}0333 \pm 2{,}306 \cdot \frac{0{,}2646}{3} &amp;= 8{,}0333 \pm 0{,}2034 \\ \mu &amp;\in (7{,}83;\ 8{,}24) \end{aligned} \]
+<p>(b) <b>K1:</b> \(H_0: \mu = 8{,}3\), \(H_1: \mu \ne 8{,}3\). <b>K2:</b></p>
+\[ T = \frac{8{,}0333 - 8{,}3}{0{,}2646}\sqrt{9} = -3{,}024 \]
+<p><b>K3:</b> t(8). <b>K4:</b> \(t_{0{,}975}(8) = 2{,}306\). <b>K5:</b> \(|T| = 3{,}02 \ge 2{,}306\) → \(H_0\) zamítáme. Souhlasí to s (a): 8,3 v intervalu neleží.</p>
+</div></details></div>
+
+<div class="uloha"><div class="h">9 · Mendelův poměr</div>
+<details class="res"><summary>Řešení</summary><div>
+<p><b>K1:</b> \(H_0\): pravděpodobnosti jsou 9/16, 3/16, 3/16, 1/16. n = 556, \(E_j = 556\,p_j\) = 312,75; 104,25; 104,25; 34,75.</p>
+\[ \begin{aligned} \chi^2 &amp;= \frac{2{,}25^2}{312{,}75} + \frac{3{,}75^2}{104{,}25} + \frac{3{,}25^2}{104{,}25} + \frac{2{,}75^2}{34{,}75} \\ &amp;= 0{,}016 + 0{,}135 + 0{,}101 + 0{,}218 = 0{,}470 \end{aligned} \]
+<p>Parametry jsme neodhadovali (r = 0) → \(4 - 1 = 3\) stupně volnosti, \(\chi^2_{0{,}95}(3) = 7{,}815\). <b>K5:</b> \(0{,}470 &lt; 7{,}815\) → \(H_0\) nezamítáme, data s teorií souhlasí.</p>
+</div></details></div>
+
+<footer>Všechna čísla přepočítaná skriptem. · <a href="index.html">příprava na test</a> · <a href="../">skripta PSO</a></footer>
+</main>
+</body>
+</html>

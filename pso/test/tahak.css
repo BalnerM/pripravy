@@ -1,0 +1,52 @@
+/* Taháky PSO na 2 A4 (tahak.html, tahak_vzorce.html). Tisk bez okrajů, rozměr stránky řídí .page. */
+:root { --ink: #111a24; --mute: #55606d; --line: #c8d0d9; --c1: #2a78d6; --c1d: #174f96; --c2: #c9501f; --bg1: #edf3fb; --th: #eef1f5; }
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #fff; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font: 7.85pt/1.22 "Segoe UI", Arial, sans-serif; }
+.page { width: 210mm; height: 297mm; padding: 4.5mm 5mm 3.5mm; overflow: hidden; break-after: page; display: flex; flex-direction: column; }
+.page:last-child { break-after: auto; }
+.cols { flex: 1; min-height: 0; column-count: 3; column-gap: 3.2mm; column-fill: auto; column-rule: .2mm solid var(--line); }
+header h1 { font-size: 10pt; line-height: 1.1; margin: 0 0 1.4mm; color: var(--c1d); }
+header h1 span { font-size: 6.8pt; font-weight: 500; color: var(--mute); margin-left: 2mm; }
+section { margin: 0 0 1.5mm; }
+h2 { font-size: 7.6pt; line-height: 1.15; margin: 0 0 .6mm; padding: .35mm 1.2mm; background: var(--c1d); color: #fff; border-radius: .6mm;
+  break-after: avoid; }
+p { margin: 0 0 .7mm; }
+ol, ul { margin: 0 0 .7mm; padding-left: 3.4mm; }
+li { margin: 0 0 .2mm; }
+b { color: #000; }
+table { width: 100%; border-collapse: collapse; margin: .3mm 0 .8mm; break-inside: avoid; }
+td, th { border-bottom: .15mm solid var(--line); padding: .2mm .7mm; text-align: left; vertical-align: top; }
+th { background: var(--th); font-weight: 600; }
+td:first-child, th:first-child { padding-left: .3mm; }
+.rz td:first-child { font-style: italic; color: var(--c1d); width: 52%; }
+.rz td { padding-top: .1mm; padding-bottom: .1mm; }
+.q td, .q th { text-align: center; padding-left: .3mm; padding-right: .3mm; }
+.q th:first-child { text-align: left; }
+.k td:first-child { white-space: nowrap; font-weight: 600; }
+.t td:first-child { white-space: nowrap; }
+.m { font-size: 6.9pt; }
+ul.c { padding-left: 3mm; }
+.katex { font-size: 1.02em; }
+.katex-display { margin: .4mm 0 .7mm; }
+.katex-display > .katex { font-size: 1.05em; }
+footer { font-size: 6.4pt; color: var(--mute); margin-top: .8mm; text-align: right; }
+@media screen {
+  html { background: #dde2e8; }
+  .page { margin: 6mm auto; background: #fff; box-shadow: 0 1mm 4mm rgba(0,0,0,.2); }
+  @media (max-width: 800px) {
+    body { font-size: 10pt; }
+    .page { width: auto; height: auto; margin: 0; padding: 16px; overflow: visible; box-shadow: none; }
+    .cols { column-count: 1; }
+    .katex-display { overflow-x: auto; overflow-y: hidden; }
+    table { display: block; overflow-x: auto; }
+  }
+}
+.kv td, .kv th { padding-top: 0; padding-bottom: 0; font-variant-numeric: tabular-nums; }
+.kv td:first-child { font-weight: 600; }
+.kv tr:nth-child(5n+1) td { border-bottom-color: #8d99a6; }
+.phi { font-size: .8em; }
+.phi td, .phi th { padding-left: .15mm; padding-right: .15mm; }
+.phi th { font-weight: 600; }
+.phi td:first-child { background: var(--th); }

@@ -24,6 +24,17 @@ předmětu (Bastinec, *Probability, Statistics and Operational research*), znač
 4. Nový HW: analogická úloha do kapitoly + řádek do tabulky `#hw` v `12_ulohy.html`.
 5. Aktualizuj popis „sady 1–N“ v kořenovém `index.html`.
 
+## Příprava na semestrální test (`test/`)
+Samostatné stránky mimo `build.py` (Actions je jen nasadí): `index.html` (14 typů úloh ze sad 1–8 a HW: poznáš
+podle, postup, kalkulačka, pozor, vzory, příklady k procvičení; sada 8 vyřešená celá), `cvicny_test.html`,
+`kalkulacka.html` (Casio fx-991CE X), `tahak.html` (2 A4 s postupy), `tahak_vzorce.html` (2 A4 jen vzorce),
+`tabulky.html` (2 A4). Společný styl `test.css` + `test.js`, taháky `tahak.css`.
+- `PYTHONIOENCODING=utf-8 uv run python pso/test/_gen/make_tabulky.py` – vygeneruje `tabulky.html` (scipy)
+- `uv run python pso/test/_gen/make_pdfs.py [soubor.html …]` – PDF (Playwright) taháků, tabulek a kalkulačky
+  + kontrola, že tahák nepřetéká z A4; PDF se commitují
+- Kontrola webu: `uv run python tools/check_layout.py --only pso --pages test/`
+- Taháky/tabulky editovat přes Edit, ne heredoc v Bashi (zkracuje `\\` v `aligned`).
+
 ## Generované soubory
 - `uv run python pso/_build/make_figures.py [název_funkce …]` – grafy do `figures/`
 - `uv run python pso/_build/make_tables.py` – fragment `obsah/13_tabulky.html` (needituj ručně)

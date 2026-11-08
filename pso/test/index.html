@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PSO – příprava na test</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="test.css">
+<script defer src="test.js"></script>
+</head>
+<body>
+<nav class="top">
+  <b>PSO · test 10. 11.</b>
+  <a href="#plan">Plán</a><a href="#typy">Typy úloh</a><a href="cvicny_test.html">Cvičný test</a><a href="kalkulacka.html">Kalkulačka</a>
+  <span class="sp"></span>
+  <button type="button" data-open="1">Rozbalit řešení</button><button type="button" data-open="0">Sbalit</button>
+</nav>
+<main>
+
+<h1>PSO – příprava na semestrální test</h1>
+<p class="lead">Rychlá cesta k tomu, abys test spočítal: 14 typů úloh ze sad 1–8 a domácích úkolů. U každého typu najdeš, podle čeho ho v anglickém zadání poznáš, postup v bodech, postup na kalkulačce, časté chyby, odkazy na vyřešené úlohy ze sad a nové příklady k procvičení s řešením krok po kroku.</p>
+
+<div class="box info">
+  <span class="t">Test: úterý 10. 11. 2026, 15:00, místnost T8/T6.16</span>
+  <p>S sebou: psací potřeby, čisté papíry, <b>statistické tabulky</b>, <b>papír se vzorci</b> a <b>kalkulačka</b>. Zadání bude anglicky jako v sadách (slovíčka jsou v boxech „Poznáš podle“).</p>
+</div>
+
+<h2 id="materialy">Materiály k tisku</h2>
+<div class="cards">
+  <div class="card"><h3>Tahák s postupy (2 A4)</h3><p>Vzorce, postupy v bodech, rozpoznávač typů, klávesy kalkulačky a chytáky. Tiskni oboustranně.</p>
+    <a class="btn" href="tahak.pdf">PDF</a><a class="btn" href="tahak.html">stránka</a></div>
+  <div class="card"><h3>Tahák jen se vzorci (2 A4)</h3><p>Záložní verze pro případ, že postupy a návody na papíře nebudou povolené. Jen vzorce a nutné podmínky.</p>
+    <a class="btn" href="tahak_vzorce.pdf">PDF</a><a class="btn" href="tahak_vzorce.html">stránka</a></div>
+  <div class="card"><h3>Statistické tabulky (2 A4)</h3><p>Φ(u), kvantily u, t, χ², F a kritické hodnoty Kolmogorovova–Smirnovova testu.</p>
+    <a class="btn" href="tabulky.pdf">PDF</a><a class="btn" href="tabulky.html">stránka</a></div>
+  <div class="card"><h3>Kalkulačka Casio fx-991CE X</h3><p>Rozdělení, statistika z dat, regrese, integrály, soustavy a tabulky hodnot, ukázané na úlohách ze sad.</p>
+    <a class="btn" href="kalkulacka.html">stránka</a><a class="btn" href="kalkulacka.pdf">PDF</a></div>
+  <div class="card"><h3>Cvičný test</h3><p>9 příkladů v rozsahu a stylu sad, na 100 minut. Výsledky a řešení jsou na konci.</p>
+    <a class="btn" href="cvicny_test.html">otevřít</a></div>
+  <div class="card"><h3>Skripta PSO</h3><p>Teorie s definicemi a vyřešené úlohy sad 1–7 krok po kroku. Sem se vracej, když postup nestačí.</p>
+    <a class="btn" href="../">skripta</a><a class="btn" href="../11_jak_poznat.html">jak poznat typ</a></div>
+</div>
+
+<h2 id="plan">Plán na 1,5 dne</h2>
+<div class="wrap"><table class="plan">
+<tr><th>kdy</th><th>co</th><th>typy</th></tr>
+<tr><td>Den 1 · dopoledne (3,5 h)</td><td>Pravděpodobnost jevů a diskrétní veličiny. U každého typu: přečti postup, spočítej 1–2 úlohy ze sad bez nahlížení, pak příklady k procvičení.</td><td><a href="#t1">T1</a>–<a href="#t5">T5</a></td></tr>
+<tr><td>Den 1 · odpoledne (3,5 h)</td><td>Poisson, spojitá veličina, normální rozdělení, limitní věty. Nastav si kalkulačku (<a href="kalkulacka.html">návod</a>) a počítej rovnou na ní.</td><td><a href="#t6">T6</a>–<a href="#t9">T9</a></td></tr>
+<tr><td>Den 1 · večer (2 h)</td><td>Náhodný vektor a intervaly spolehlivosti. Vytiskni si tahák a tabulky a od teď počítej jen s nimi.</td><td><a href="#t10">T10</a>, <a href="#t11">T11</a></td></tr>
+<tr><td>Den 2 · dopoledne (3 h)</td><td>Testy: t-testy, párový, F-test, χ² test dobré shody, Kolmogorovův–Smirnovův test, regrese. Sada 8 je tady vyřešená celá.</td><td><a href="#t12">T12</a>–<a href="#t14">T14</a></td></tr>
+<tr><td>Den 2 · odpoledne (2 h)</td><td><a href="cvicny_test.html">Cvičný test</a> na čas, jen s taháky, tabulkami a kalkulačkou. Co nešlo, zopakuj podle postupu daného typu.</td><td>vše</td></tr>
+</table></div>
+<p class="small">Mám-li málo času: projdi u každého typu jen boxy „Postup“ a „Pozor“ a spočítej první příklad k procvičení. Testy (T11–T13) dávají nejvíc bodů za postup, který se dá naučit nazpaměť.</p>
+
+<div class="box postup">
+  <span class="t">Jak u testu psát řešení, aby se daly dát body</span>
+  <ol>
+    <li>Napiš, co je náhodná veličina a jaké má rozdělení (např. „X = počet vadných, X ~ Bi(10; 0,2)“).</li>
+    <li>Převeď slova na zápis: „at least 2“ → \(p(X \ge 2) = 1 - p(X \le 1)\).</li>
+    <li>Napiš obecný vzorec, pak dosazení, pak výsledek (aspoň 4 desetinná místa).</li>
+    <li>U testů piš kroky K1–K5: hypotézy, kritérium, rozdělení a stupně volnosti, kritická hodnota, rozhodnutí slovy.</li>
+    <li>Kalkulačka je kontrola, ne řešení: na papíře musí být vzorec a dosazení.</li>
+  </ol>
+</div>
+
+<h2 id="typy">Typy úloh</h2>
+<ul class="toc">
+  <li><a href="#t1">T1 Klasická p.</a></li><li><a href="#t2">T2 Geometrická p.</a></li><li><a href="#t3">T3 Úplná p., Bayes</a></li>
+  <li><a href="#t4">T4 Diskrétní X</a></li><li><a href="#t5">T5 Bi, Ge, H</a></li><li><a href="#t6">T6 Poisson</a></li>
+  <li><a href="#t7">T7 Hustota f(x)</a></li><li><a href="#t8">T8 Normální</a></li><li><a href="#t9">T9 Limitní věty</a></li>
+  <li><a href="#t10">T10 Náhodný vektor</a></li><li><a href="#t11">T11 Intervaly</a></li><li><a href="#t12">T12 t-testy, F-test</a></li>
+  <li><a href="#t13">T13 Dobrá shoda χ², K–S</a></li><li><a href="#t14">T14 Regrese</a></li>
+</ul>
+
+<!-- ============================ T1 ============================ -->
+<h2 id="t1">T1 · Klasická pravděpodobnost a kombinatorika<span class="src">S1/1, S1/2, S1/3, S1/5, HW1/3 · skripta <a href="../01_pravdepodobnost.html#klasicka">kap. 1</a></span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<p><span class="en">die, two dice, deck of 32 cards, balls in a box, we draw / randomly select k</span> – všechny výsledky pokusu jsou stejně možné.</p></div>
+<div class="box postup"><span class="t">Postup</span>
+<ol>
+  <li>Popiš jeden výsledek pokusu: u kostek uspořádaná dvojice (1. kostka, 2. kostka), u karet skupina vytažených karet.</li>
+  <li>Spočítej všechny výsledky \(n\) a příznivé \(m\), oboje <b>stejným způsobem</b> (oboje s pořadím, nebo oboje bez pořadí).</li>
+  <li>\(p(A) = m/n\). „Aspoň jeden“ přes doplněk: \(1 - p(\text{žádný})\).</li>
+  <li>Postupné tahání bez vracení: násob podmíněné pravděpodobnosti, např. \(\frac{4}{32}\cdot\frac{3}{31}\).</li>
+</ol>
+<div class="wrap"><table>
+<tr><th>výběr k prvků z n</th><th>počet</th></tr>
+<tr><td>bez pořadí, bez opakování (karty v ruce)</td><td>\(\binom{n}{k} = \frac{n!}{k!\,(n-k)!}\)</td></tr>
+<tr><td>s pořadím, bez opakování</td><td>\(\frac{n!}{(n-k)!}\)</td></tr>
+<tr><td>s pořadím, s opakováním (hody kostkou)</td><td>\(n^k\)</td></tr>
+<tr><td>přesně j „dobrých“ z M dobrých a N − M ostatních</td><td>\(\binom{M}{j}\binom{N-M}{k-j}\)</td></tr>
+</table></div></div>
+<div class="box kalk"><span class="t">Kalkulačka</span>
+<p>\(\binom{n}{k}\): <kbd>n</kbd> <kbd>SHIFT</kbd> <kbd>÷</kbd>(nCr) <kbd>k</kbd> · \(n!/(n-k)!\): <kbd>SHIFT</kbd> <kbd>×</kbd>(nPr) · \(x!\): <kbd>SHIFT</kbd> <kbd>x⁻¹</kbd> · zlomek ↔ desetinné číslo: <kbd>S⇔D</kbd>.</p></div>
+<div class="box past"><span class="t">Pozor</span>
+<p>Dvě kostky (i „two same dice“) mají 36 uspořádaných dvojic. Součet 4 = (1,3), (3,1), (2,2) jsou 3 možnosti, ne 2.</p></div>
+<div class="box vzory"><span class="t">Vzory ze sad (vyřešené ve skriptech)</span>
+<ul>
+  <li><a href="../01_pravdepodobnost.html#u-s1-1">S1/1</a> 3 nebo 6 na kostce: \(1/3\) · <a href="../01_pravdepodobnost.html#u-s1-2">S1/2</a> součet 4 nebo 5: \(7/36\) · <a href="../01_pravdepodobnost.html#u-s1-3">S1/3</a> dva králové: \(3/248\)</li>
+  <li><a href="../02_podminena.html#u-s1-5">S1/5</a> tenisáky (dvě fáze výběru) – stejný princip jako příklad 1D níže.</li>
+</ul></div>
+
+<div class="uloha" id="p1a"><div class="h">1A · Součet na dvou kostkách<span class="tag">jako S1/2</span></div>
+<p>Hodíme dvěma kostkami. Jaká je pravděpodobnost, že padne součet 8 nebo 9?</p>
+<p class="vys">Výsledek: <b>\(9/36 = 1/4\)</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>Všech uspořádaných dvojic je \(6 \cdot 6 = 36\). Součet 8: (2,6), (3,5), (4,4), (5,3), (6,2) → 5. Součet 9: (3,6), (4,5), (5,4), (6,3) → 4.</p>
+\[ p = \frac{5 + 4}{36} = \frac{9}{36} = \frac{1}{4} \]
+</div></details></div>
+
+<div class="uloha" id="p1b"><div class="h">1B · Esa z balíčku 32 karet<span class="tag">jako S1/3</span></div>
+<p>Z balíčku 32 karet (4 esa) vytáhneme náhodně 3 karty. Jaká je pravděpodobnost, že (a) mezi nimi jsou právě 2 esa, (b) aspoň jedno eso?</p>
+<p class="vys">Výsledek: <b>(a) 0,0339 (b) 0,3395</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>Všech trojic (bez pořadí): \(\binom{32}{3} = 4960\).</p>
+<p>(a) Vybereme 2 esa ze 4 a 1 kartu z 28 ostatních:</p>
+\[ p = \frac{\binom{4}{2}\binom{28}{1}}{\binom{32}{3}} = \frac{6 \cdot 28}{4960} = \frac{168}{4960} \approx 0{,}0339 \]
+<p>(b) Doplněk „žádné eso“ = všechny 3 karty z 28:</p>
+\[ p = 1 - \frac{\binom{28}{3}}{\binom{32}{3}} = 1 - \frac{3276}{4960} \approx 0{,}3395 \]
+</div></details></div>
+
+<div class="uloha" id="p1c"><div class="h">1C · Tři kostky<span class="tag">jako HW1/3</span></div>
+<p>Hodíme třemi kostkami. Který součet je pravděpodobnější, 5, nebo 6?</p>
+<p class="vys">Výsledek: <b>součet 6 (10/216) je pravděpodobnější než 5 (6/216)</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>Všech uspořádaných trojic je \(6^3 = 216\). Rozložíme součet na hodnoty a spočítáme pořadí (3 různé hodnoty → 6 pořadí, dvě stejné → 3, tři stejné → 1):</p>
+<ul>
+  <li>součet 5: {1,1,3} → 3, {1,2,2} → 3; celkem 6;</li>
+  <li>součet 6: {1,1,4} → 3, {1,2,3} → 6, {2,2,2} → 1; celkem 10.</li>
+</ul>
+\[ p(5) = \frac{6}{216}, \qquad p(6) = \frac{10}{216} \]
+</div></details></div>
+
+<div class="uloha" id="p1d"><div class="h">1D · Nové a staré míčky ve dvou kolech<span class="tag">jako S1/5</span></div>
+<p>V krabici je 10 míčků: 6 nových a 4 staré. Náhodně vybereme 2, zahrajeme si (nové se tím stanou starými) a vrátíme je. Pak znovu vybereme 2. Jaká je pravděpodobnost, že ve druhém kole budou oba nové?</p>
+<p class="vys">Výsledek: <b>\(28/135 \approx 0{,}2074\)</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Hypotézy podle prvního kola: \(H_j\) = v 1. kole bylo \(j\) nových (\(j = 0, 1, 2\)); všech dvojic je \(\binom{10}{2} = 45\).</p>
+\[ \begin{aligned} p(H_0) &= \frac{\binom{6}{0}\binom{4}{2}}{45} = \frac{6}{45} \\ p(H_1) &= \frac{6 \cdot 4}{45} = \frac{24}{45} \\ p(H_2) &= \frac{\binom{6}{2}}{45} = \frac{15}{45} \end{aligned} \]
+<p>2. Po 1. kole zbývá \(6 - j\) nových. Pravděpodobnost dvou nových ve 2. kole:</p>
+\[ p(A \mid H_j) = \frac{\binom{6-j}{2}}{45}: \qquad \frac{15}{45},\ \frac{10}{45},\ \frac{6}{45} \]
+<p>3. Úplná pravděpodobnost:</p>
+\[ \begin{aligned} p(A) &= \frac{6 \cdot 15 + 24 \cdot 10 + 15 \cdot 6}{45^2} \\ &= \frac{420}{2025} = \frac{28}{135} \approx 0{,}2074 \end{aligned} \]
+</div></details></div>
+
+<!-- ============================ T2 ============================ -->
+<h2 id="t2">T2 · Geometrická pravděpodobnost<span class="src">S1/9, HW1/1, HW1/4, HW1/5 · skripta <a href="../01_pravdepodobnost.html#geometricka">kap. 1</a></span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<p><span class="en">randomly choose (two) numbers from the interval, a point appears randomly on the screen, we randomly select the coefficients</span> – nekonečně mnoho stejně možných výsledků.</p></div>
+<div class="box postup"><span class="t">Postup</span>
+<ol>
+  <li>Každé náhodné číslo = jedna osa. Prostor Ω je úsečka, čtverec nebo kruh. Spočítej jeho délku nebo plochu.</li>
+  <li>Podmínky přepiš na nerovnosti a vyjádři \(y\): \(x + y &lt; 1 \Rightarrow y &lt; 1 - x\), \(xy &lt; c \Rightarrow y &lt; c/x\), reálné kořeny \(\Rightarrow\) diskriminant \(\ge 0\).</li>
+  <li><b>Nakresli</b> hranice a vyšrafuj příznivou oblast. Spočítej průsečíky hranic.</li>
+  <li>\(p = \dfrac{\text{plocha příznivé oblasti}}{\text{plocha } \Omega}\). Pod křivkou integrál, oblast rozděl v průsečících.</li>
+</ol></div>
+<div class="box kalk"><span class="t">Kalkulačka</span>
+<p>Průsečíky: <kbd>MENU</kbd> → Equation/Func → Polynomial → 2. stupeň. Plocha pod křivkou: <kbd>∫</kbd> s mezemi (např. \(\int_{0{,}1}^{0{,}9} 0{,}09/x\,dx\)).</p></div>
+<div class="box past"><span class="t">Pozor</span>
+<p>Kruh: pravděpodobnost je poměr <b>ploch</b>, tedy poměr poloměrů na druhou (\(d/4\) z průměru \(d\) → poměr poloměrů \(1/2\) → \(1/4\)).</p></div>
+<div class="box vzory"><span class="t">Vzor</span>
+<p><a href="../01_pravdepodobnost.html#u-s1-9">S1/9</a> součet &lt; 1 a součin &lt; 0,09: průsečíky \(x = 0{,}1;\ 0{,}9\), plocha \(0{,}095 + 0{,}09\ln 9 + 0{,}005 \approx 0{,}298\).</p></div>
+
+<div class="uloha" id="p2a"><div class="h">2A · Součet a součin dvou čísel<span class="tag">jako S1/9</span></div>
+<p>Náhodně zvolíme dvě čísla z intervalu \(\langle 0, 1\rangle\). Jaká je pravděpodobnost, že jejich součet je menší než 1 a součin menší než 0,16?</p>
+<p class="vys">Výsledek: <b>\(0{,}2 + 0{,}16\ln 4 \approx 0{,}4218\)</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Ω = jednotkový čtverec, plocha 1. Podmínky: \(y &lt; 1 - x\) (pod přímkou) a \(y &lt; 0{,}16/x\) (pod hyperbolou).</p>
+<p>2. Průsečíky: \(x(1 - x) = 0{,}16 \Rightarrow x^2 - x + 0{,}16 = 0 \Rightarrow x = 0{,}2\) a \(x = 0{,}8\). Mezi nimi je níž hyperbola, jinde přímka.</p>
+<p>3. Plocha:</p>
+\[ \begin{aligned} P &amp;= \int_0^{0{,}2} (1 - x)\,dx + \int_{0{,}2}^{0{,}8} \frac{0{,}16}{x}\,dx + \int_{0{,}8}^{1} (1 - x)\,dx \\ &amp;= 0{,}18 + 0{,}16 \ln 4 + 0{,}02 \approx 0{,}4218 \end{aligned} \]
+</div></details></div>
+
+<div class="uloha" id="p2b"><div class="h">2B · Kořeny kvadratické rovnice<span class="tag">jako HW1/4</span></div>
+<p>Koeficienty \(b, c\) rovnice \(x^2 + 2bx + c = 0\) volíme náhodně a nezávisle z intervalu \(\langle 0, 1\rangle\). Jaká je pravděpodobnost, že rovnice má reálné kořeny?</p>
+<p class="vys">Výsledek: <b>\(1/3\)</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Ω = čtverec \(\langle 0,1\rangle^2\) v rovině \((b, c)\), plocha 1.</p>
+<p>2. Reálné kořeny ⇔ diskriminant \(D = 4b^2 - 4c \ge 0\) ⇔ \(c \le b^2\) (oblast pod parabolou).</p>
+\[ p = \int_0^1 b^2\,db = \frac{1}{3} \]
+</div></details></div>
+
+<div class="uloha" id="p2c"><div class="h">2C · Schůzka<span class="tag">klasická úloha</span></div>
+<p>Dva lidé přijdou nezávisle v náhodnou dobu mezi 12:00 a 13:00 a každý čeká 15 minut. Jaká je pravděpodobnost, že se potkají?</p>
+<p class="vys">Výsledek: <b>\(7/16 = 0{,}4375\)</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Časy příchodu \(x, y\) v hodinách: Ω = \(\langle 0,1\rangle^2\). Potkají se, když \(|x - y| \le 1/4\) (pás kolem úhlopříčky).</p>
+<p>2. Doplněk tvoří dva rohové trojúhelníky s odvěsnou \(3/4\):</p>
+\[ p = 1 - 2 \cdot \frac{1}{2}\left(\frac{3}{4}\right)^2 = 1 - \frac{9}{16} = \frac{7}{16} \]
+</div></details></div>
+
+<!-- ============================ T3 ============================ -->
+<h2 id="t3">T3 · Úplná pravděpodobnost, Bayes, „dřív než“ a střídání<span class="src">S1/4, S1/6–8, S1/10, HW1/2, HW2/1, HW2/2 · skripta <a href="../02_podminena.html">kap. 2</a></span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<p>Úplná: několik skupin / krabic / dodavatelů s různou úspěšností, <span class="en">what is the probability that a randomly selected … will have</span>. Bayes: výsledek už známe a ptáme se na příčinu: <span class="en">if a child is allergic, what is the probability that…; he corrects a successful test, what is the probability that it was written by…</span>. Opakování: <span class="en">before, take turns, game over if</span>.</p></div>
+<div class="box postup"><span class="t">Postup: úplná pravděpodobnost a Bayes</span>
+<ol>
+  <li>Hypotézy \(H_1, \dots, H_n\) = skupiny, které se vylučují a pokrývají vše. <b>Zkontroluj \(\sum p(H_i) = 1\).</b></li>
+  <li>Ke každé skupině \(p(A \mid H_i)\) = úspěšnost uvnitř skupiny.</li>
+  <li>Úplná pravděpodobnost (strom: násob podél větve, sečti větve s A):
+  \[ p(A) = \sum_i p(H_i)\,p(A \mid H_i) \]</li>
+  <li>Bayes = „moje větev / všechny větve s A“:
+  \[ p(H_k \mid A) = \frac{p(H_k)\,p(A \mid H_k)}{p(A)} \]</li>
+</ol></div>
+<div class="box postup"><span class="t">Postup: opakované pokusy</span>
+<ul>
+  <li><b>A dřív než B</b> (opakujeme, dokud nenastane A nebo B): \(p = \dfrac{p(A)}{p(A) + p(B)}\).</li>
+  <li><b>Střídání</b>, začíná hráč A s pravděpodobností úspěchu \(a\), hráč B má \(b\) (geometrická řada):
+  \[ \begin{aligned} p(\text{A vyhraje}) &= \frac{a}{1 - (1-a)(1-b)} \\ p(\text{B vyhraje}) &= 1 - p(\text{A vyhraje}) \end{aligned} \]</li>
+  <li>Monty Hall: ponechat dveře → \(1/3\), změnit → \(2/3\).</li>
+</ul></div>
+<div class="box kalk"><span class="t">Kalkulačka</span>
+<p>Součiny větví ulož: <code>0.5×0.02</code> <kbd>SHIFT</kbd> <kbd>RCL</kbd>(STO) <kbd>A</kbd>, další do B, C. Pak <code>A+B+C</code> = \(p(A)\) a <code>A÷(A+B+C)</code> = Bayes.</p></div>
+<div class="box past"><span class="t">Pozor</span>
+<p>S1/8: „zúčastnilo se 60 %, 50 % a 70 % studentů“ ze stejně velkých skupin nejsou \(p(H_i)\) (součet 1,8). Správně \(p(H_i) = 0{,}6/1{,}8;\ 0{,}5/1{,}8;\ 0{,}7/1{,}8\).</p></div>
+<div class="box vzory"><span class="t">Vzory ze sad</span>
+<ul>
+  <li><a href="../02_podminena.html#u-s1-6">S1/6</a> alergie: 0,17 a 0,441 · <a href="../02_podminena.html#u-s1-7">S1/7</a> testy: 0,555 a 0,4332 · <a href="../02_podminena.html#u-s1-8">S1/8</a>: 0,569 a 0,351</li>
+  <li><a href="../02_podminena.html#u-s1-4">S1/4</a> součet 5 dřív než 7: \(\frac{4/36}{4/36 + 6/36} = 2/5\) · <a href="../02_podminena.html#u-s1-10">S1/10</a> Monty Hall</li>
+</ul></div>
+
+<div class="uloha" id="p3a"><div class="h">3A · Tři výrobní linky<span class="tag">jako S1/6, S1/7</span></div>
+<p>Linky L1, L2, L3 vyrábějí 50 %, 30 % a 20 % produkce. Podíl zmetků je 2 %, 3 % a 5 %. (a) Jaká je pravděpodobnost, že náhodný výrobek je zmetek? (b) Výrobek je zmetek. Jaká je pravděpodobnost, že je z linky L3?</p>
+<p class="vys">Výsledek: <b>(a) 0,029 (b) 0,3448</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>Hypotézy \(H_i\) = výrobek z linky \(i\): 0,5 + 0,3 + 0,2 = 1. Jev Z = zmetek.</p>
+<p>(a) Úplná pravděpodobnost:</p>
+\[ \begin{aligned} p(Z) &= 0{,}5 \cdot 0{,}02 + 0{,}3 \cdot 0{,}03 + 0{,}2 \cdot 0{,}05 \\ &= 0{,}010 + 0{,}009 + 0{,}010 = 0{,}029 \end{aligned} \]
+<p>(b) Bayes:</p>
+\[ p(H_3 \mid Z) = \frac{0{,}010}{0{,}029} \approx 0{,}3448 \]
+</div></details></div>
+
+<div class="uloha" id="p3b"><div class="h">3B · Účast není p(H)<span class="tag">jako S1/8</span></div>
+<p>Studenti jsou ve třech stejně početných skupinách. Testu se zúčastnilo 50 % studentů 1. skupiny, 80 % 2. skupiny a 70 % 3. skupiny. Úspěšnost je 60 %, 40 % a 90 %. Učitel vezme náhodně jeden test. (a) Jaká je pravděpodobnost, že je úspěšný? (b) Je úspěšný. Jaká je pravděpodobnost, že je z 1. skupiny?</p>
+<p class="vys">Výsledek: <b>(a) 0,625 (b) 0,24</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Skupina má \(N\) studentů, testů je \(0{,}5N + 0{,}8N + 0{,}7N = 2N\). Pravděpodobnost, že test je ze skupiny \(i\):</p>
+\[ \begin{aligned} p(H_1) &= \frac{0{,}5}{2} = 0{,}25 \\ p(H_2) &= \frac{0{,}8}{2} = 0{,}40 \\ p(H_3) &= \frac{0{,}7}{2} = 0{,}35 \end{aligned} \]
+<p>2. (a) Úplná pravděpodobnost:</p>
+\[ \begin{aligned} p(U) &= 0{,}25 \cdot 0{,}6 + 0{,}40 \cdot 0{,}4 + 0{,}35 \cdot 0{,}9 \\ &= 0{,}15 + 0{,}16 + 0{,}315 = 0{,}625 \end{aligned} \]
+<p>3. (b) Bayes:</p>
+\[ p(H_1 \mid U) = \frac{0{,}15}{0{,}625} = 0{,}24 \]
+</div></details></div>
+
+<div class="uloha" id="p3c"><div class="h">3C · Dřív než a hra na střídačku<span class="tag">jako S1/4, HW2/1</span></div>
+<p>(a) Opakovaně házíme dvěma kostkami. Jaká je pravděpodobnost, že součet 6 padne dřív než součet 7? (b) Hráči A a B střídavě hází jednou kostkou, začíná A. A vyhraje, když hodí 6; B vyhraje, když hodí 5 nebo 6. Jaká je pravděpodobnost, že vyhraje A?</p>
+<p class="vys">Výsledek: <b>(a) \(5/11 \approx 0{,}4545\) (b) \(3/8 = 0{,}375\)</b>, B vyhraje s \(5/8\)</p>
+<details class="res"><summary>Řešení</summary><div>
+<p>(a) \(p(6) = 5/36\), \(p(7) = 6/36\). Hody, kde nepadne ani jedno, nic nemění:</p>
+\[ p = \frac{5/36}{5/36 + 6/36} = \frac{5}{11} \]
+<p>(b) \(a = 1/6\), \(b = 2/6 = 1/3\). A vyhraje v 1. hodu, nebo po kole, kdy oba neuspějí (\(\frac{5}{6} \cdot \frac{2}{3} = \frac{10}{18}\)), a pak vše znovu:</p>
+\[ p(A) = \frac{1/6}{1 - 10/18} = \frac{1/6}{8/18} = \frac{3}{8} \]
+</div></details></div>
+
+<div class="uloha" id="p3d"><div class="h">3D · Pozitivní test na nemoc<span class="tag">Bayes</span></div>
+<p>Nemoc má 1 % lidí. Test u nemocného vyjde pozitivní s pravděpodobností 0,95, u zdravého s pravděpodobností 0,05. Test vyšel pozitivní. Jaká je pravděpodobnost, že člověk je nemocný?</p>
+<p class="vys">Výsledek: <b>\(\approx 0{,}161\)</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>\(H_1\) = nemocný (0,01), \(H_2\) = zdravý (0,99), jev + = pozitivní test.</p>
+\[ \begin{aligned} p(+) &= 0{,}01 \cdot 0{,}95 + 0{,}99 \cdot 0{,}05 \\ &= 0{,}0095 + 0{,}0495 = 0{,}059 \end{aligned} \]
+\[ p(H_1 \mid +) = \frac{0{,}0095}{0{,}059} \approx 0{,}161 \]
+<p>Většina pozitivních jsou zdraví lidé, protože zdravých je 99krát víc.</p>
+</div></details></div>
+
+<!-- ============================ T4 ============================ -->
+<h2 id="t4">T4 · Diskrétní náhodná veličina: rozdělení, F(x), EX, DX<span class="src">S2/1, S2/3, S2/5, S2/6 · skripta <a href="../03_diskretni_nv.html">kap. 3</a></span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<p><span class="en">the random variable X indicates the number of…, determine its distribution and distribution function, expected value (mean), variance</span>, tabulka \(x_i\), \(p(x_i)\).</p></div>
+<div class="box postup"><span class="t">Postup</span>
+<ol>
+  <li>Vypiš všechny hodnoty X a pravděpodobnost každé. Kontrola: \(\sum p_i = 1\).</li>
+  <li>Distribuční funkce v kurzu: \(F(x) = p(X &lt; x)\) (ostrá nerovnost). Na intervalu \((x_i, x_{i+1}\rangle\) je \(F = p_1 + \dots + p_i\); pro \(x \le x_1\) je 0, za poslední hodnotou 1.</li>
+  <li>Čtení z F: \(p(X = k)\) = skok v bodě k (hodnota F hned za k minus hodnota v k); \(p(X &lt; a) = F(a)\); \(p(X \ge a) = 1 - F(a)\).</li>
+  <li>Charakteristiky:
+  \[ \begin{aligned} EX &= \sum x_i p_i \\ EX^2 &= \sum x_i^2 p_i \\ DX &= EX^2 - (EX)^2 \end{aligned} \]</li>
+  <li>Chybějící dvě pravděpodobnosti: soustava \(\sum p_i = 1\) a \(\sum x_i p_i = EX\).</li>
+</ol></div>
+<div class="box kalk"><span class="t">Kalkulačka</span>
+<p><b>EX a DX naráz:</b> zapni četnosti (<kbd>SHIFT</kbd> <kbd>MENU</kbd> → Statistics → Frequency: On), <kbd>MENU</kbd> → Statistics → 1-Variable. Do sloupce x hodnoty, do Freq pravděpodobnosti. <kbd>OPTN</kbd> → 1-Variable Calc: \(\bar{x} = EX\), \(\sigma^2_x = DX\) (n musí vyjít 1). Soustavu řeš v Equation/Func → Simul Equation → 2 neznámé.</p></div>
+<div class="box past"><span class="t">Pozor</span>
+<p>Kalkulačka ukazuje \(\sigma^2_x\) i \(s^2_x\). Pro rozptyl náhodné veličiny z tabulky ber \(\sigma^2_x\) (dělí součtem četností = 1).</p></div>
+<div class="box vzory"><span class="t">Vzory ze sad</span>
+<ul>
+  <li><a href="../03_diskretni_nv.html#u-s2-1">S2/1</a> tahání do první červené: 0,4; 0,3; 0,2; 0,1 · <a href="../03_diskretni_nv.html#u-s2-3">S2/3</a> čtení F: 0,3; 0,3; 0,7</li>
+  <li><a href="../03_diskretni_nv.html#u-s2-5">S2/5</a> EX = 1,03, DX = 1,4291 · <a href="../03_diskretni_nv.html#u-s2-6">S2/6</a> chybějící p: 0,2433 a 0,2067</li>
+</ul></div>
+
+<div class="uloha" id="p4a"><div class="h">4A · Tahání do první červené<span class="tag">jako S2/1</span></div>
+<p>V urně jsou 4 bílé a 2 červené koule. Taháme bez vracení, dokud nevytáhneme červenou. X = počet tahů. Urči rozdělení, distribuční funkci, EX a DX.</p>
+<p class="vys">Výsledek: <b>p(1), …, p(5) = 5/15, 4/15, 3/15, 2/15, 1/15; EX = 7/3 ≈ 2,333; DX = 14/9 ≈ 1,556</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Hodnoty 1 až 5 (nejvýš 4 bílé, pak červená). Pravděpodobnosti postupným násobením:</p>
+\[ \begin{aligned} p(1) &amp;= \tfrac{2}{6} = \tfrac{5}{15} \\ p(2) &amp;= \tfrac{4}{6}\cdot\tfrac{2}{5} = \tfrac{4}{15} \\ p(3) &amp;= \tfrac{4}{6}\cdot\tfrac{3}{5}\cdot\tfrac{2}{4} = \tfrac{3}{15} \\ p(4) &amp;= \tfrac{4}{6}\cdot\tfrac{3}{5}\cdot\tfrac{2}{4}\cdot\tfrac{2}{3} = \tfrac{2}{15} \\ p(5) &amp;= \tfrac{4}{6}\cdot\tfrac{3}{5}\cdot\tfrac{2}{4}\cdot\tfrac{1}{3}\cdot 1 = \tfrac{1}{15} \end{aligned} \]
+<p>2. Distribuční funkce \(F(x) = p(X &lt; x)\):</p>
+<div class="wrap"><table class="num"><tr><th>x</th><th>\(x \le 1\)</th><th>\((1,2\rangle\)</th><th>\((2,3\rangle\)</th><th>\((3,4\rangle\)</th><th>\((4,5\rangle\)</th><th>\(x &gt; 5\)</th></tr>
+<tr><td>F(x)</td><td>0</td><td>1/3</td><td>0,6</td><td>0,8</td><td>14/15</td><td>1</td></tr></table></div>
+<p>3. Charakteristiky:</p>
+\[ \begin{aligned} EX &amp;= \tfrac{1 \cdot 5 + 2 \cdot 4 + 3 \cdot 3 + 4 \cdot 2 + 5 \cdot 1}{15} = \tfrac{35}{15} = \tfrac{7}{3} \\ EX^2 &amp;= \tfrac{1 \cdot 5 + 4 \cdot 4 + 9 \cdot 3 + 16 \cdot 2 + 25 \cdot 1}{15} = \tfrac{105}{15} = 7 \\ DX &amp;= 7 - \tfrac{49}{9} = \tfrac{14}{9} \approx 1{,}556 \end{aligned} \]
+</div></details></div>
+
+<div class="uloha" id="p4b"><div class="h">4B · Dvě chybějící pravděpodobnosti<span class="tag">jako S2/6</span></div>
+<p>X nabývá hodnot 0–4 s pravděpodobnostmi \(p_0 = ?\), \(p_1 = 0{,}3\), \(p_2 = ?\), \(p_3 = 0{,}15\), \(p_4 = 0{,}05\). Víme, že EX = 1,5. Urči \(p_0\), \(p_2\) a DX.</p>
+<p class="vys">Výsledek: <b>\(p_0 = 0{,}225\), \(p_2 = 0{,}275\), DX = 1,3</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Součet: \(p_0 + p_2 = 1 - 0{,}3 - 0{,}15 - 0{,}05 = 0{,}5\).</p>
+<p>2. Střední hodnota (\(p_0\) se násobí nulou):</p>
+\[ \begin{aligned} 0{,}3 + 2p_2 + 0{,}45 + 0{,}2 &= 1{,}5 \\ p_2 &= 0{,}275 \\ p_0 &= 0{,}5 - 0{,}275 = 0{,}225 \end{aligned} \]
+<p>3. Rozptyl:</p>
+\[ \begin{aligned} EX^2 &amp;= 0{,}3 + 4 \cdot 0{,}275 + 9 \cdot 0{,}15 + 16 \cdot 0{,}05 = 3{,}55 \\ DX &amp;= 3{,}55 - 1{,}5^2 = 1{,}3 \end{aligned} \]
+</div></details></div>
+
+<div class="uloha" id="p4c"><div class="h">4C · Čtení z distribuční funkce<span class="tag">jako S2/3</span></div>
+<p>X má distribuční funkci \(F(x) = 0\) pro \(x \le 2\); 0,2 na \((2,3\rangle\); 0,5 na \((3,4\rangle\); 0,85 na \((4,5\rangle\); 1 pro \(x &gt; 5\). Urči \(p(X = 4)\), \(p(X &lt; 4)\), \(p(X \ge 4)\), \(p(3 \le X &lt; 5)\) a EX.</p>
+<p class="vys">Výsledek: <b>0,35; 0,5; 0,5; 0,65; EX = 3,45</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Skoky: \(p(2) = 0{,}2\), \(p(3) = 0{,}3\), \(p(4) = 0{,}35\), \(p(5) = 0{,}15\).</p>
+<p>2. Pravděpodobnosti z F:</p>
+\[ \begin{aligned} p(X &lt; 4) &= F(4) = 0{,}5 \\ p(X \ge 4) &= 1 - F(4) = 0{,}5 \\ p(3 \le X &lt; 5) &= F(5) - F(3) = 0{,}85 - 0{,}2 = 0{,}65 \end{aligned} \]
+\[ EX = 2 \cdot 0{,}2 + 3 \cdot 0{,}3 + 4 \cdot 0{,}35 + 5 \cdot 0{,}15 = 3{,}45 \]
+</div></details></div>
+
+<!-- ============================ T5 ============================ -->
+<h2 id="t5">T5 · Binomické, geometrické a hypergeometrické rozdělení<span class="src">S2/2, S2/4, S2/7–9, S3/1–7 · skripta <a href="../04_diskretni_rozdeleni.html">kap. 4</a></span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<ul>
+  <li><b>Bi(n, p)</b>: n nezávislých pokusů se stejnou p: <span class="en">5 products, 6 tests, the probability is the same every day, exactly / at least / not more than k</span>.</li>
+  <li><b>Ge</b>: opakování do prvního úspěchu nebo neúspěchu: <span class="en">until, the first late arrival, after how many attempts</span>.</li>
+  <li><b>H(N, M, n)</b>: výběr bez vracení ze souboru, kde je M „označených“: <span class="en">among 100 products there are 20 rejects, we select 10</span>.</li>
+</ul></div>
+<div class="box postup"><span class="t">Postup</span>
+<ol>
+  <li>Napiš, co X počítá, a jeho obor hodnot.</li>
+  <li>Vyber rozdělení podle tabulky a napiš parametry.</li>
+  <li>Převeď otázku na X: <span class="en">at least 2</span> → \(1 - p(0) - p(1)\); <span class="en">not more than 2</span> → \(p(0) + p(1) + p(2)\).</li>
+  <li>Dosaď. EX a DX ber z tabulky.</li>
+</ol>
+<div class="wrap"><table>
+<tr><th>rozdělení</th><th>\(p(X = k)\)</th><th>EX</th><th>DX</th></tr>
+<tr><td>Bi(n, p), \(k = 0..n\)</td><td>\(\binom{n}{k} p^k (1-p)^{n-k}\)</td><td>\(np\)</td><td>\(np(1-p)\)</td></tr>
+<tr><td>Ge, počet úspěchů před 1. neúspěchem, \(k = 0, 1, \dots\) (S3/4)</td><td>\(p^k (1 - p)\)</td><td>\(\frac{p}{1-p}\)</td><td>\(\frac{p}{(1-p)^2}\)</td></tr>
+<tr><td>Ge, číslo pokusu s 1. úspěchem, \(k = 1, 2, \dots\) (S3/5)</td><td>\((1-p)^{k-1} p\)</td><td>\(\frac{1}{p}\)</td><td>\(\frac{1-p}{p^2}\)</td></tr>
+<tr><td>H(N, M, n), \(k = 0..\min(n, M)\)</td><td>\(\frac{\binom{M}{k}\binom{N-M}{n-k}}{\binom{N}{n}}\)</td><td>\(n\frac{M}{N}\)</td><td>\(n\frac{M}{N}\left(1-\frac{M}{N}\right)\frac{N-n}{N-1}\)</td></tr>
+</table></div>
+<p>Pozor na „p“ u geometrického: v řádku „počet úspěchů před neúspěchem“ je \(p\) pravděpodobnost pokračování (úspěchu).</p></div>
+<div class="box kalk"><span class="t">Kalkulačka</span>
+<p><kbd>MENU</kbd> → Distribution → <b>Binomial PD</b> (\(p(X = x)\)) nebo <b>Binomial CD</b> (\(p(X \le x)\)) → Variable → x, N, p. Celé rozdělení najednou: Table, \(f(x) = 6\text{C}x \cdot 0{,}85^x \cdot 0{,}15^{6-x}\), Start 0, End 6, Step 1. Součet: <kbd>SHIFT</kbd> <kbd>log□□</kbd> (Σ).</p></div>
+<div class="box past"><span class="t">Pozor</span>
+<ul>
+  <li>Konkrétní pořadí („jen v 1. testu“, „šestka ve 2. a 4. hodu“) je bez \(\binom{n}{k}\): S3/1d \(0{,}85 \cdot 0{,}15^5\), S2/7 \((1/6)^2 (5/6)^3\).</li>
+  <li>Omezený počet pokusů (S3/3, max 6 testů): poslední hodnota posbírá i „všechno úspěšné“: \(p(6) = 0{,}85^5 \cdot 0{,}15 + 0{,}85^6\).</li>
+  <li>Binomial CD na kalkulačce je \(p(X \le x)\), ale \(F(x)\) v kurzu je \(p(X &lt; x)\).</li>
+</ul></div>
+<div class="box vzory"><span class="t">Vzory ze sad</span>
+<ul>
+  <li><a href="../04_diskretni_rozdeleni.html#u-s3-1">S3/1</a> Bi(6; 0,85): 0,04145; 0,9996; 0,00589; 0,000064547; 0,85 · <a href="../04_diskretni_rozdeleni.html#u-s3-2">S3/2</a> EX = 5,1, DX = 0,765</li>
+  <li><a href="../04_diskretni_rozdeleni.html#u-s2-4">S2/4</a>, <a href="../04_diskretni_rozdeleni.html#u-s2-9">S2/9</a> binomické · <a href="../04_diskretni_rozdeleni.html#u-s2-7">S2/7</a> \(5^3/6^5\) · <a href="../04_diskretni_rozdeleni.html#u-s2-8">S2/8</a> 0,16</li>
+  <li><a href="../04_diskretni_rozdeleni.html#u-s2-2">S2/2</a>, <a href="../04_diskretni_rozdeleni.html#u-s3-4">S3/4</a>, <a href="../04_diskretni_rozdeleni.html#u-s3-5">S3/5</a> geometrické · <a href="../04_diskretni_rozdeleni.html#u-s3-3">S3/3</a> omezené · <a href="../04_diskretni_rozdeleni.html#u-s3-6">S3/6</a>, <a href="../04_diskretni_rozdeleni.html#u-s3-7">S3/7</a> hypergeometrické (EX = 1,2, DX = 0,56)</li>
+</ul></div>
+
+<div class="uloha" id="p5a"><div class="h">5A · Osm testů<span class="tag">jako S3/1, S3/2</span></div>
+<p>Student píše 8 testů, každý zvládne s pravděpodobností 0,9 nezávisle na ostatních. X = počet úspěšných testů. Urči (a) \(p(X = 6)\), (b) \(p(X \ge 7)\), (c) \(p(X \le 5)\), (d) pravděpodobnost, že neuspěje jen v 1. testu, (e) EX a DX.</p>
+<p class="vys">Výsledek: <b>(a) 0,1488 (b) 0,8131 (c) 0,0381 (d) 0,0478 (e) EX = 7,2, DX = 0,72</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>X ~ Bi(8; 0,9).</p>
+<p>(a) Právě 6:</p>
+\[ p(6) = \tbinom{8}{6}\, 0{,}9^6\, 0{,}1^2 = 28 \cdot 0{,}531441 \cdot 0{,}01 \approx 0{,}1488 \]
+<p>(b) Aspoň 7:</p>
+\[ \begin{aligned} p(7) + p(8) &amp;= 8 \cdot 0{,}9^7 \cdot 0{,}1 + 0{,}9^8 \\ &amp;= 0{,}3826 + 0{,}4305 = 0{,}8131 \end{aligned} \]
+<p>(c) Nejvýš 5, přes doplněk:</p>
+\[ \begin{aligned} p(X \le 5) &= 1 - p(6) - p(7) - p(8) \\ &= 1 - 0{,}9619 = 0{,}0381 \end{aligned} \]
+<p>(d) Konkrétní pořadí (1. neúspěch, pak 7 úspěchů), bez kombinačního čísla: \(0{,}1 \cdot 0{,}9^7 \approx 0{,}0478\).</p>
+<p>(e) \(EX = 8 \cdot 0{,}9 = 7{,}2\), \(DX = 8 \cdot 0{,}9 \cdot 0{,}1 = 0{,}72\).</p>
+</div></details></div>
+
+<div class="uloha" id="p5b"><div class="h">5B · Ptá se, dokud nedostane špatnou odpověď<span class="tag">jako S3/4</span></div>
+<p>Zkoušející klade otázky, dokud student neodpoví špatně. Správně odpoví s pravděpodobností 0,7. X = počet správných odpovědí. Urči rozdělení, \(p(X = 3)\), \(p(X \ge 2)\), EX a DX.</p>
+<p class="vys">Výsledek: <b>\(p(k) = 0{,}7^k \cdot 0{,}3\); 0,1029; 0,49; EX ≈ 2,333; DX ≈ 7,778</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>X = k znamená k správných a pak špatná: \(p(k) = 0{,}7^k \cdot 0{,}3\), \(k = 0, 1, 2, \dots\) Aspoň 2 správné = první dvě odpovědi správně.</p>
+\[ \begin{aligned} p(3) &amp;= 0{,}7^3 \cdot 0{,}3 = 0{,}1029 \\ p(X \ge 2) &amp;= 0{,}7^2 = 0{,}49 \\ EX &amp;= \tfrac{0{,}7}{0{,}3} \approx 2{,}333, \qquad DX = \tfrac{0{,}7}{0{,}3^2} \approx 7{,}778 \end{aligned} \]
+</div></details></div>
+
+<div class="uloha" id="p5c"><div class="h">5C · Červivá jablka<span class="tag">jako S3/7</span></div>
+<p>V košíku je 12 jablek, z toho 4 červivá. Náhodně vybereme 3. X = počet červivých. Urči rozdělení, EX a DX.</p>
+<p class="vys">Výsledek: <b>\(p(0..3) = \frac{56}{220}, \frac{112}{220}, \frac{48}{220}, \frac{4}{220}\); EX = 1; DX ≈ 0,5455</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>X ~ H(12, 4, 3), všech trojic \(\binom{12}{3} = 220\):</p>
+\[ p(k) = \frac{\binom{4}{k}\binom{8}{3-k}}{220}: \quad \frac{1 \cdot 56}{220},\ \frac{4 \cdot 28}{220},\ \frac{6 \cdot 8}{220},\ \frac{4 \cdot 1}{220} \]
+\[ \begin{aligned} EX &amp;= 3 \cdot \tfrac{4}{12} = 1 \\ DX &amp;= 3 \cdot \tfrac{1}{3} \cdot \tfrac{2}{3} \cdot \tfrac{12 - 3}{12 - 1} = \tfrac{6}{11} \approx 0{,}5455 \end{aligned} \]
+</div></details></div>
+
+<div class="uloha" id="p5d"><div class="h">5D · Nejvýš pět pokusů<span class="tag">jako S3/3</span></div>
+<p>Student smí psát nejvýš 5 testů; po neúspěšném už nesmí pokračovat. Každý test zvládne s pravděpodobností 0,8. X = počet napsaných testů. Urči rozdělení a EX.</p>
+<p class="vys">Výsledek: <b>0,2; 0,16; 0,128; 0,1024; 0,4096; EX = 3,3616</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>Pro \(k = 1..4\): prvních \(k - 1\) testů úspěšně, k-tý neúspěšně: \(p(k) = 0{,}8^{k-1} \cdot 0{,}2\). Hodnota 5 nastane, když jsou první 4 úspěšné (pátý dopadne jakkoli):</p>
+\[ p(5) = 0{,}8^4 = 0{,}4096 \]
+\[ \begin{aligned} EX &= 1 \cdot 0{,}2 + 2 \cdot 0{,}16 + 3 \cdot 0{,}128 \\ &\quad + 4 \cdot 0{,}1024 + 5 \cdot 0{,}4096 = 3{,}3616 \end{aligned} \]
+</div></details></div>
+
+<!-- ============================ T6 ============================ -->
+<h2 id="t6">T6 · Poissonovo rozdělení<span class="src">S4/1–3 · skripta <a href="../04_diskretni_rozdeleni.html#poisson">kap. 4</a></span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<p><span class="en">an average of 20 people come per hour, requests come to the server, no one comes in 15 minutes</span>; také binomické s velkým n a malým p (<span class="en">800 computers, probability 0.01</span>).</p></div>
+<div class="box postup"><span class="t">Postup</span>
+<ol>
+  <li>Přepočítej průměr na interval ze zadání: 20 za hodinu → za 5 minut \(\lambda = 20 \cdot 5/60 = 5/3\).</li>
+  <li>\(p(X = k) = \dfrac{\lambda^k}{k!} e^{-\lambda}\), \(EX = DX = \lambda\).</li>
+  <li>Nikdo: \(e^{-\lambda}\). Aspoň jeden: \(1 - e^{-\lambda}\). Aspoň dva: \(1 - e^{-\lambda}(1 + \lambda)\).</li>
+  <li>Aproximace Bi(n, p) ≈ Po(np) pro velké n a malé p (orientačně \(n \ge 30\), \(p \le 0{,}1\)).</li>
+</ol></div>
+<div class="box kalk"><span class="t">Kalkulačka</span>
+<p><kbd>MENU</kbd> → Distribution → <b>Poisson PD</b> (\(p(X = x)\)) / <b>Poisson CD</b> (\(p(X \le x)\)) → Variable → x, λ. Aspoň 2: \(1 - \text{Poisson CD}(x = 1)\).</p></div>
+<div class="box past"><span class="t">Pozor</span>
+<p>λ se mění s délkou intervalu, k ne. „Just 20 people during the hour“ → \(\lambda = 20\), \(p(20) = e^{-20}20^{20}/20!\).</p></div>
+<div class="box vzory"><span class="t">Vzory ze sad</span>
+<p><a href="../04_diskretni_rozdeleni.html#u-s4-1">S4/1</a> restaurace (a) \(1 - e^{-5/3}(1 + 5/3)\) (b) \(e^{-5}\) (c) \(e^{-5/3}\) · <a href="../04_diskretni_rozdeleni.html#u-s4-2">S4/2</a> 0,1223 (Bi), 0,1221 (Po) · <a href="../04_diskretni_rozdeleni.html#u-s4-3">S4/3</a> \(e^{-2} = 0{,}135\)</p></div>
+
+<div class="uloha" id="p6a"><div class="h">6A · Telefonní ústředna<span class="tag">jako S4/1</span></div>
+<p>Na linku přijde průměrně 30 hovorů za hodinu. Jaká je pravděpodobnost, že (a) za 4 minuty přijdou aspoň 2 hovory, (b) za 10 minut nepřijde žádný, (c) za hodinu přijde právě 30, (d) za 6 minut přijde nejvýš 1?</p>
+<p class="vys">Výsledek: <b>(a) 0,5940 (b) 0,00674 (c) 0,0726 (d) 0,1991</b></p>
+<details class="res"><summary>Řešení</summary><div>
+\[ \begin{aligned} \text{(a)}\ \lambda &amp;= 30 \cdot \tfrac{4}{60} = 2: &amp; 1 - e^{-2}(1 + 2) &amp;\approx 0{,}5940 \\ \text{(b)}\ \lambda &amp;= 5: &amp; e^{-5} &amp;\approx 0{,}00674 \\ \text{(c)}\ \lambda &amp;= 30: &amp; e^{-30}\tfrac{30^{30}}{30!} &amp;\approx 0{,}0726 \\ \text{(d)}\ \lambda &amp;= 3: &amp; e^{-3}(1 + 3) &amp;\approx 0{,}1991 \end{aligned} \]
+</div></details></div>
+
+<div class="uloha" id="p6b"><div class="h">6B · Vadné součástky<span class="tag">jako S4/2</span></div>
+<p>Zásilka má 500 součástek, každá je vadná s pravděpodobností 0,004. Urči \(p(X = 3)\) a \(p(X \le 2)\) přesně (binomicky) i Poissonovou aproximací.</p>
+<p class="vys">Výsledek: <b>Bi: 0,1808 a 0,6767; Po: 0,1804 a 0,6767</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>Přesně Bi(500; 0,004): \(p(3) = \binom{500}{3} 0{,}004^3\, 0{,}996^{497} \approx 0{,}1808\), \(p(X \le 2) \approx 0{,}6767\) (Binomial PD/CD).</p>
+<p>Aproximace \(\lambda = np = 2\):</p>
+\[ \begin{aligned} p(3) &= e^{-2}\frac{2^3}{3!} \approx 0{,}1804 \\ p(X \le 2) &= e^{-2}(1 + 2 + 2) \approx 0{,}6767 \end{aligned} \]
+</div></details></div>
+
+<!-- ============================ T7 ============================ -->
+<h2 id="t7">T7 · Spojitá veličina: hustota, F(x), EX, DX<span class="src">S4/4, S4/5, S5/1, HW2/3 · skripta <a href="../05_spojita_nv.html">kap. 5</a></span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<p><span class="en">density function f(x), compute parameter a, prove that f(x) can be a density, distribution function, mean value, variance</span>.</p></div>
+<div class="box postup"><span class="t">Postup</span>
+<ol>
+  <li><b>Konstanta:</b> \(\int_{-\infty}^{\infty} f(x)\,dx = 1\) (integruj jen tam, kde \(f \ne 0\)). Důkaz, že f je hustota: \(f \ge 0\) a integrál je 1.</li>
+  <li><b>Pravděpodobnost:</b> \(p(a &lt; X &lt; b) = \int_a^b f(x)\,dx = F(b) - F(a)\) (u spojité nezáleží na ostrosti nerovností).</li>
+  <li><b>F(x) po částech:</b> pod nosičem 0; uvnitř \(F(x) = \int_{\text{začátek}}^{x} f(t)\,dt\); u složené hustoty k integrálu druhé části přičti plochu první části; za nosičem 1. Kontrola: F navazuje a končí jedničkou.</li>
+  <li><b>Charakteristiky:</b>
+  \[ \begin{aligned} EX &= \int x f(x)\,dx \\ EX^2 &= \int x^2 f(x)\,dx \\ DX &= EX^2 - (EX)^2 \end{aligned} \]
+  Symetrická hustota → EX je střed symetrie.</li>
+  <li><b>Medián, kvantil:</b> \(F(\tilde{x}) = 0{,}5\), \(F(x_p) = p\).</li>
+</ol>
+<p>Integrály, které se v sadách opakují:</p>
+\[ \begin{aligned} \int u v'\,dx &= uv - \int u' v\,dx \quad \text{(per partes)} \\ \int x \sin x\,dx &= \sin x - x\cos x \\ \int x^2 \sin x\,dx &= -x^2\cos x + 2x\sin x + 2\cos x \\ \int x e^{-\lambda x}\,dx &= -\frac{e^{-\lambda x}}{\lambda^2}(\lambda x + 1) \end{aligned} \]
+<p>U \(|x|\) (Laplace) rozděl integrál na \(x &lt; 0\) a \(x &gt; 0\).</p></div>
+<div class="box kalk"><span class="t">Kalkulačka</span>
+<p><kbd>∫</kbd>: např. \(\int_0^3 \frac{2}{9}(3x - x^2)\,dx\) = 1 ověří konstantu; \(\int_0^3 x \cdot f(x)\,dx\) = EX. Proměnná je klávesa <kbd>x</kbd>. Medián: <kbd>SHIFT</kbd> <kbd>CALC</kbd> (SOLVE) rovnice \(F(x) = 0{,}5\).</p></div>
+<div class="box past"><span class="t">Pozor</span>
+<p>F(x) je potřeba zapsat na <b>všech</b> intervalech včetně \(x &lt; 0\) (0) a za nosičem (1). EX a DX nejde dělat z F, ale z f.</p></div>
+<div class="box vzory"><span class="t">Vzory ze sad</span>
+<p><a href="../05_spojita_nv.html#u-s4-4">S4/4</a> \(a = 2/9\), \(13/27\), \(EX = 3/2\), \(F = x^2/3 - 2x^3/27\) · <a href="../05_spojita_nv.html#u-s4-5">S4/5</a> \(\frac12 \sin x\): \(EX = \pi/2\), \(DX = \pi^2/4 - 2\) · <a href="../05_spojita_nv.html#u-s5-1">S5/1</a> Laplace \(a = \lambda/2\), \(EX = 0\), \(DX = 2/\lambda^2\) · <a href="../05_spojita_nv.html#pr-trojuhelnik">složená hustota jako HW2/3</a></p></div>
+
+<div class="uloha" id="p7a"><div class="h">7A · Parabolická hustota<span class="tag">jako S4/4</span></div>
+<p>\(f(x) = a\,x(4 - x)\) pro \(0 \le x \le 4\), jinde 0. Urči a, \(p(1 &lt; X &lt; 3)\), EX, DX a F(x).</p>
+<p class="vys">Výsledek: <b>\(a = 3/32\); 11/16 = 0,6875; EX = 2; DX = 0,8</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Konstanta:</p>
+\[ \begin{aligned} \int_0^4 (4x - x^2)\,dx &= \left[2x^2 - \tfrac{x^3}{3}\right]_0^4 = 32 - \tfrac{64}{3} = \tfrac{32}{3} \\ a &= \tfrac{3}{32} \end{aligned} \]
+<p>2. Pravděpodobnost:</p>
+\[ p(1 &lt; X &lt; 3) = \tfrac{3}{32}\left[2x^2 - \tfrac{x^3}{3}\right]_1^3 = \tfrac{3}{32}\left(9 - \tfrac{5}{3}\right) = \tfrac{11}{16} \]
+<p>3. EX = 2 (hustota je symetrická kolem 2). Rozptyl:</p>
+\[ \begin{aligned} EX^2 &amp;= \tfrac{3}{32}\int_0^4 (4x^3 - x^4)\,dx = \tfrac{3}{32}\left(256 - \tfrac{1024}{5}\right) = 4{,}8 \\ DX &amp;= 4{,}8 - 2^2 = 0{,}8 \end{aligned} \]
+<p>4. Distribuční funkce:</p>
+\[ F(x) = \begin{cases} 0, &amp; x &lt; 0 \\ \tfrac{3x^2}{16} - \tfrac{x^3}{32}, &amp; 0 \le x \le 4 \\ 1, &amp; x &gt; 4 \end{cases} \]
+</div></details></div>
+
+<div class="uloha" id="p7b"><div class="h">7B · Hustota ze dvou částí<span class="tag">jako HW2/3</span></div>
+<p>\(f(x) = \tfrac{2}{3}x\) pro \(0 \le x \le 1\), \(f(x) = \tfrac{1}{3}(3 - x)\) pro \(1 &lt; x \le 3\), jinde 0. Urči F(x), EX, DX, \(p(X &lt; EX)\) a \(p(X &gt; 2)\).</p>
+<p class="vys">Výsledek: <b>EX = 4/3; DX = 7/18 ≈ 0,3889; \(p(X &lt; EX) \approx 0{,}5370\); \(p(X &gt; 2) = 1/6\)</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. F(x) po částech:</p>
+\[ \begin{aligned} 0 \le x \le 1:&amp;\quad F(x) = \int_0^x \tfrac{2}{3}t\,dt = \tfrac{x^2}{3}, \qquad F(1) = \tfrac{1}{3} \\ 1 &lt; x \le 3:&amp;\quad F(x) = \tfrac{1}{3} + \int_1^x \tfrac{3 - t}{3}\,dt = x - \tfrac{x^2}{6} - \tfrac{1}{2} \end{aligned} \]
+<p>Pro \(x &lt; 0\) je \(F = 0\), pro \(x &gt; 3\) je \(F = 1\). Kontrola: \(F(3) = 3 - 1{,}5 - 0{,}5 = 1\).</p>
+<p>2. Střední hodnota a rozptyl:</p>
+\[ \begin{aligned} EX &amp;= \int_0^1 \tfrac{2}{3}x^2\,dx + \int_1^3 \tfrac{x(3 - x)}{3}\,dx = \tfrac{2}{9} + \tfrac{10}{9} = \tfrac{4}{3} \\ EX^2 &amp;= \int_0^1 \tfrac{2}{3}x^3\,dx + \int_1^3 \tfrac{x^2(3 - x)}{3}\,dx = \tfrac{1}{6} + 2 = \tfrac{13}{6} \\ DX &amp;= \tfrac{13}{6} - \tfrac{16}{9} = \tfrac{7}{18} \approx 0{,}3889 \end{aligned} \]
+<p>3. Pravděpodobnosti (\(EX = 4/3\) leží ve druhé části):</p>
+\[ \begin{aligned} p(X &lt; \tfrac{4}{3}) &amp;= F(\tfrac{4}{3}) = \tfrac{4}{3} - \tfrac{16}{54} - \tfrac{1}{2} \approx 0{,}5370 \\ p(X &gt; 2) &amp;= 1 - F(2) = 1 - \left(2 - \tfrac{4}{6} - \tfrac{1}{2}\right) = \tfrac{1}{6} \end{aligned} \]
+</div></details></div>
+
+<div class="uloha" id="p7c"><div class="h">7C · Kosinová hustota<span class="tag">jako S4/5</span></div>
+<p>\(f(x) = a\cos x\) pro \(-\pi/2 \le x \le \pi/2\), jinde 0. Urči a, EX, DX a \(p(0 &lt; X &lt; \pi/4)\).</p>
+<p class="vys">Výsledek: <b>\(a = 1/2\); EX = 0; \(DX = \pi^2/4 - 2 \approx 0{,}4674\); 0,3536</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. \(\int_{-\pi/2}^{\pi/2} \cos x\,dx = [\sin x] = 2 \Rightarrow a = 1/2\). Hustota je sudá → EX = 0.</p>
+<p>2. Rozptyl (per partes dvakrát, \(\int x^2\cos x = x^2\sin x + 2x\cos x - 2\sin x\)):</p>
+\[ \begin{aligned} DX = EX^2 &= \frac{1}{2}\Big[x^2\sin x + 2x\cos x - 2\sin x\Big]_{-\pi/2}^{\pi/2} \\ &= \frac{\pi^2}{4} - 2 \approx 0{,}4674 \end{aligned} \]
+<p>3. Pravděpodobnost:</p>
+\[ p(0 &lt; X &lt; \tfrac{\pi}{4}) = \frac{1}{2}\big[\sin x\big]_0^{\pi/4} = \frac{\sqrt{2}}{4} \approx 0{,}3536 \]
+</div></details></div>
+
+<!-- ============================ T8 ============================ -->
+<h2 id="t8">T8 · Normální rozdělení<span class="src">S5/2–5 · skripta <a href="../06_normalni.html">kap. 6</a></span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<p><span class="en">normal distribution No(μ, σ), mean value 10 mA and variance 4, less than / more than / between, find the value u for which, above what value, in what limits (symmetrical around)</span>.</p></div>
+<div class="box postup"><span class="t">Postup</span>
+<ol>
+  <li>Standardizuj: \(u = \dfrac{x - \mu}{\sigma}\). Pozor, \(\sigma = \sqrt{\text{variance}}\).</li>
+  <li>Z hodnoty na pravděpodobnost:
+  \[ \begin{aligned} p(X &lt; x) &= \Phi(u) \\ p(X &gt; x) &= 1 - \Phi(u) \\ p(a &lt; X &lt; b) &= \Phi(u_b) - \Phi(u_a) \\ \Phi(-u) &= 1 - \Phi(u) \end{aligned} \]</li>
+  <li>Z pravděpodobnosti na hodnotu: najdi \(u_p\) s \(\Phi(u_p) = p\) a pak \(x = \mu + \sigma u_p\). <span class="en">Above what value with probability 0.01</span> → \(p(X &gt; x) = 0{,}01\) → \(x = \mu + \sigma u_{0{,}99}\).</li>
+  <li>Symetrické meze s pravděpodobností γ: \(\mu \pm \sigma\, u_{(1+\gamma)/2}\) (75 % → \(u_{0{,}875} = 1{,}15\)).</li>
+  <li>Nakresli zvon a vyšrafuj plochu – hned vidíš, jestli má výsledek být pod, nebo nad 0,5.</li>
+</ol></div>
+<div class="box kalk"><span class="t">Kalkulačka (tabulky Φ nejsou potřeba)</span>
+<p><b>Normal CD</b>: Lower, Upper, σ, μ → plocha mezi mezemi. \(p(X &lt; 13)\): Lower <code>−1×10^99</code> (<kbd>(−)</kbd> <kbd>1</kbd> <kbd>×10ˣ</kbd> <kbd>99</kbd>), Upper 13, σ = 2, μ = 10.<br><b>Inverse Normal</b>: Area = plocha <b>vlevo</b>, σ, μ → x. Pro \(p(X &gt; x) = 0{,}01\) zadej Area 0,99.</p></div>
+<div class="box past"><span class="t">Pozor</span>
+<p>\(\sigma^2 = 4\) → \(\sigma = 2\). Kvantil \(p(U &gt; u) = 0{,}8\) je záporný: \(u = -u_{0{,}8} = -0{,}84\).</p></div>
+<div class="box vzory"><span class="t">Vzory ze sad</span>
+<p><a href="../06_normalni.html#u-s5-2">S5/2</a> Φ hodnoty · <a href="../06_normalni.html#u-s5-3">S5/3</a> kvantily 1,28; 1,645; −0,84; 1,645 · <a href="../06_normalni.html#u-s5-4">S5/4</a> 0,933; 0,691; 0,835 · <a href="../06_normalni.html#u-s5-5">S5/5</a> 1,698; 0,384; (0,655; 1,345)</p></div>
+
+<div class="uloha" id="p8a"><div class="h">8A · Normované normální rozdělení<span class="tag">jako S5/2, S5/3</span></div>
+<p>U ~ No(0, 1). Urči \(p(U &lt; 1{,}2)\), \(p(U &gt; -0{,}8)\), \(p(-1 &lt; U &lt; 2)\) a u, pro které platí \(p(U &lt; u) = 0{,}95\), \(p(U &gt; u) = 0{,}9\), \(p(-u &lt; U &lt; u) = 0{,}95\).</p>
+<p class="vys">Výsledek: <b>0,8849; 0,7881; 0,8186; u = 1,645; −1,282; 1,960</b></p>
+<details class="res"><summary>Řešení</summary><div>
+\[ \begin{aligned} p(U &lt; 1{,}2) &amp;= \Phi(1{,}2) = 0{,}8849 \\ p(U &gt; -0{,}8) &amp;= 1 - \Phi(-0{,}8) \\ &amp;= \Phi(0{,}8) = 0{,}7881 \\ p(-1 &lt; U &lt; 2) &amp;= \Phi(2) - (1 - \Phi(1)) \\ &amp;= 0{,}9772 - 0{,}1587 = 0{,}8186 \end{aligned} \]
+<p>Kvantily:</p>
+\[ \begin{aligned} p(U &lt; u) = 0{,}95 &amp;\Rightarrow u = u_{0{,}95} = 1{,}645 \\ p(U &gt; u) = 0{,}9 &amp;\Rightarrow \Phi(u) = 0{,}1 \Rightarrow u = -1{,}282 \\ p(-u &lt; U &lt; u) = 0{,}95 &amp;\Rightarrow \Phi(u) = 0{,}975 \Rightarrow u = 1{,}960 \end{aligned} \]
+</div></details></div>
+
+<div class="uloha" id="p8b"><div class="h">8B · Měření s normální chybou<span class="tag">jako S5/4</span></div>
+<p>X ~ No(μ = 50, σ² = 16). Urči \(p(X &lt; 56)\), \(p(X &gt; 45)\), \(p(44 &lt; X &lt; 58)\) a hodnotu, kterou X překročí s pravděpodobností 0,1.</p>
+<p class="vys">Výsledek: <b>0,9332; 0,8944; 0,9104; 55,13</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>\(\sigma = 4\).</p>
+\[ \begin{aligned} p(X &lt; 56) &amp;= \Phi\!\left(\tfrac{56 - 50}{4}\right) = \Phi(1{,}5) \\ &amp;= 0{,}9332 \\ p(X &gt; 45) &amp;= 1 - \Phi(-1{,}25) = 0{,}8944 \\ p(44 &lt; X &lt; 58) &amp;= \Phi(2) - \Phi(-1{,}5) \\ &amp;= 0{,}9772 - 0{,}0668 = 0{,}9104 \\ x &amp;= 50 + 4\,u_{0{,}9} \\ &amp;= 50 + 4 \cdot 1{,}2816 = 55{,}13 \end{aligned} \]
+</div></details></div>
+
+<div class="uloha" id="p8c"><div class="h">8C · Systematická a náhodná chyba<span class="tag">jako S5/5</span></div>
+<p>Přístroj má systematickou chybu 2 a náhodnou chybu s normálním rozdělením, σ = 0,5. (a) Nad jakou hodnotu se chyba dostane s pravděpodobností 0,05? (b) Pod jakou hodnotou bude s pravděpodobností 0,1? (c) V jakých mezích symetrických kolem 2 bude chyba u 80 % měření?</p>
+<p class="vys">Výsledek: <b>(a) 2,822 (b) 1,359 (c) (1,359; 2,641)</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>Chyba X ~ No(2; 0,5).</p>
+<p>(a) \(p(X &gt; x) = 0{,}05\), tedy plocha vlevo 0,95:</p>
+\[ x = 2 + 0{,}5 \cdot u_{0{,}95} = 2 + 0{,}5 \cdot 1{,}645 = 2{,}822 \]
+<p>(b) \(p(X &lt; x) = 0{,}1\):</p>
+\[ x = 2 + 0{,}5 \cdot u_{0{,}1} = 2 - 0{,}5 \cdot 1{,}2816 = 1{,}359 \]
+<p>(c) γ = 0,8, kvantil \(u_{(1+0{,}8)/2} = u_{0{,}9}\):</p>
+\[ 2 \pm 0{,}5\,u_{0{,}9} = 2 \pm 0{,}641 \]
+</div></details></div>
+
+<!-- ============================ T9 ============================ -->
+<h2 id="t9">T9 · Limitní věty: Moivre–Laplace a centrální limitní věta<span class="src">S6/1–4 · skripta <a href="../07_limitni_vety.html">kap. 7</a></span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<p>Binomické s n ve stovkách a tisících (<span class="en">among 10000 newborns, relative frequency, how many trials do we have to do</span>); součet mnoha veličin se známým μ a σ (<span class="en">total mass of people, how many people can we take on board</span>).</p></div>
+<div class="box postup"><span class="t">Postup</span>
+<ol>
+  <li>Moivre–Laplace: \(X \sim \text{Bi}(n, p) \approx \text{No}\big(np,\ \sqrt{np(1-p)}\big)\), použitelné pro \(np(1-p) &gt; 9\). Relativní četnost \(X/n \approx \text{No}\big(p,\ \sqrt{p(1-p)/n}\big)\).</li>
+  <li>Centrální limitní věta: součet n nezávislých stejně rozdělených veličin \(S \approx \text{No}(n\mu,\ \sigma\sqrt{n})\); průměr \(\approx \text{No}(\mu,\ \sigma/\sqrt{n})\).</li>
+  <li>Dál jako T8: standardizuj a použij Φ (kurz počítá bez opravy na spojitost).</li>
+  <li>Hledání n: podmínku přepiš na nerovnost s \(u_p\), substituuj \(z = \sqrt{n}\), vyřeš kvadratickou rovnici, \(n = z^2\) zaokrouhli správným směrem a <b>ověř dosazením</b>.</li>
+</ol></div>
+<div class="box kalk"><span class="t">Kalkulačka</span>
+<p>Normal CD s μ = np, σ = √(np(1 − p)). Přesná binomická pro kontrolu: Binomial CD (funguje i pro N = 10000). Kvadratická rovnice v z: Equation/Func → Polynomial → 2.</p></div>
+<div class="box past"><span class="t">Pozor</span>
+<p>Součet n veličin má směrodatnou odchylku \(\sigma\sqrt{n}\), ne \(n\sigma\). U „kolik lidí nejvýš“ zaokrouhli dolů, u „kolik pokusů aspoň“ nahoru.</p></div>
+<div class="box vzory"><span class="t">Vzory ze sad</span>
+<p><a href="../07_limitni_vety.html#u-s6-1">S6/1</a> chlapci: Bi 0,341 / No 0,239; 0,0013; 0,399 · <a href="../07_limitni_vety.html#u-s6-2">S6/2</a> 0,9544 · <a href="../07_limitni_vety.html#u-s6-3">S6/3</a> 120 pokusů · <a href="../07_limitni_vety.html#u-s6-4">S6/4</a> 56 lidí</p></div>
+
+<div class="uloha" id="p9a"><div class="h">9A · 400 hodů mincí<span class="tag">jako S6/2</span></div>
+<p>Hodíme 400krát mincí. Jaká je pravděpodobnost, že líc padne (a) 180krát až 220krát, (b) víc než 215krát?</p>
+<p class="vys">Výsledek: <b>(a) 0,9545 (b) 0,0668</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>X ~ Bi(400; 0,5) ≈ No(200; 10), protože \(\sqrt{400 \cdot 0{,}5 \cdot 0{,}5} = 10\) a \(np(1-p) = 100 &gt; 9\).</p>
+\[ \begin{aligned} \text{(a)}\ p(180 \le X \le 220) &amp;\approx \Phi(2) - \Phi(-2) \\ &amp;= 2\Phi(2) - 1 = 0{,}9545 \\ \text{(b)}\ p(X &gt; 215) &amp;\approx 1 - \Phi(1{,}5) = 0{,}0668 \end{aligned} \]
+</div></details></div>
+
+<div class="uloha" id="p9b"><div class="h">9B · Kolik pokusů?<span class="tag">jako S6/3</span></div>
+<p>Jev A má pravděpodobnost 0,6. Kolik pokusů musíme udělat, aby A s pravděpodobností aspoň 0,95 nastal aspoň 100krát?</p>
+<p class="vys">Výsledek: <b>n = 185</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. X ~ Bi(n; 0,6) ≈ No(0,6n; \(\sqrt{0{,}24n}\)). Podmínka:</p>
+\[ p(X \ge 100) = 1 - \Phi\!\left(\frac{100 - 0{,}6n}{\sqrt{0{,}24n}}\right) \ge 0{,}95 \]
+<p>To platí, když:</p>
+\[ \frac{0{,}6n - 100}{\sqrt{0{,}24n}} \ge 1{,}645 \]
+<p>2. Substituce \(z = \sqrt{n}\) (\(1{,}645\sqrt{0{,}24} = 0{,}8059\)):</p>
+\[ \begin{aligned} 0{,}6z^2 - 0{,}8059z - 100 &amp;= 0 \\ z &amp;= 13{,}599 \\ n = z^2 &amp;= 184{,}9 \end{aligned} \]
+<p>3. Zaokrouhlíme nahoru: n = 185. Ověření: \((111 - 100)/\sqrt{44{,}4} = 1{,}651 \ge 1{,}645\).</p>
+</div></details></div>
+
+<div class="uloha" id="p9c"><div class="h">9C · Nosnost výtahu<span class="tag">jako S6/4</span></div>
+<p>Výtah unese 2000 kg. Hmotnost člověka má střední hodnotu 80 kg a směrodatnou odchylku 12 kg. Kolik lidí nejvýš může nastoupit, aby celková hmotnost byla s pravděpodobností aspoň 0,95 menší než 2000 kg?</p>
+<p class="vys">Výsledek: <b>23 lidí</b> (ne 25 = 2000/80)</p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Součet n hmotností S ≈ No(80n; \(12\sqrt{n}\)). Podmínka:</p>
+\[ \Phi\!\left(\frac{2000 - 80n}{12\sqrt{n}}\right) \ge 0{,}95 \;\Rightarrow\; \frac{2000 - 80n}{12\sqrt{n}} \ge 1{,}645 \]
+<p>2. \(z = \sqrt{n}\): \(80z^2 + 19{,}74z - 2000 = 0 \Rightarrow z = 4{,}878\), \(n = 23{,}8\).</p>
+<p>3. Zaokrouhlíme dolů: 23. Ověření: n = 23 → \(160/57{,}55 = 2{,}78 \ge 1{,}645\); n = 24 → 1,36 nestačí.</p>
+</div></details></div>
+
+<!-- ============================ T10 ============================ -->
+<h2 id="t10">T10 · Náhodný vektor<span class="src">S6/5 · skripta <a href="../08_nahodny_vektor.html">kap. 8</a></span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<p><span class="en">random vector (X, Y), simultaneous density function f(x, y), marginal density functions, p(Y ≤ X)</span>.</p></div>
+<div class="box postup"><span class="t">Postup</span>
+<ol>
+  <li>Konstanta: \(\iint f(x,y)\,dx\,dy = 1\).</li>
+  <li>Marginální hustoty: \(f_X(x) = \int f(x, y)\,dy\) (vyintegruj y), \(f_Y(y) = \int f(x, y)\,dx\).</li>
+  <li>Nezávislost: \(f(x, y) = f_X(x)\,f_Y(y)\) všude.</li>
+  <li>Pravděpodobnost oblasti G: <b>nakresli</b> G, vnější integrál má meze čísla, vnitřní může záviset na vnější proměnné. Pro \(p(Y \le X)\) na \(\langle 0,1\rangle^2\): \(\int_0^1 \int_0^x f\,dy\,dx\).</li>
+  <li>Obdélník a hustota tvaru \(g(x)\,h(y)\): dvojný integrál = součin dvou jednoduchých.</li>
+</ol></div>
+<div class="box kalk"><span class="t">Kalkulačka</span>
+<p>Vnitřní integrál spočítej ručně, vnější zkontroluj klávesou <kbd>∫</kbd>.</p></div>
+<div class="box vzory"><span class="t">Vzor ze sady</span>
+<p><a href="../08_nahodny_vektor.html#u-s6-5">S6/5</a> \(f = 4x(1 - y)\): \(f_X = 2x\), \(f_Y = 2 - 2y\); 5/64; 1/16; \(p(Y \le X) = 5/6\)</p></div>
+
+<div class="uloha" id="p10a"><div class="h">10A · Součinová hustota na obdélníku<span class="tag">jako S6/5</span></div>
+<p>\(f(x, y) = c\,x y^2\) na \(\langle 0, 2\rangle \times \langle 0, 1\rangle\), jinde 0. Urči c, marginální hustoty, \(p(X &lt; 1, Y &gt; 1/2)\) a \(p(Y &lt; X/2)\). Jsou X a Y nezávislé?</p>
+<p class="vys">Výsledek: <b>c = 3/2; \(f_X = x/2\), \(f_Y = 3y^2\); 7/32 ≈ 0,2188; 0,4; nezávislé</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Konstanta (obdélník a součinová hustota → součin integrálů):</p>
+\[ \int_0^2 x\,dx \cdot \int_0^1 y^2\,dy = 2 \cdot \frac{1}{3} = \frac{2}{3} \;\Rightarrow\; c = \frac{3}{2} \]
+<p>2. Marginální hustoty:</p>
+\[ \begin{aligned} f_X(x) &= \int_0^1 \tfrac{3}{2}xy^2\,dy = \tfrac{x}{2}, \quad 0 \le x \le 2 \\ f_Y(y) &= \int_0^2 \tfrac{3}{2}xy^2\,dx = 3y^2, \quad 0 \le y \le 1 \end{aligned} \]
+<p>\(f_X f_Y = \frac{3}{2}xy^2 = f\) → nezávislé.</p>
+<p>3. Obdélník → součin:</p>
+\[ p(X &lt; 1, Y &gt; \tfrac12) = \int_0^1 \tfrac{x}{2}\,dx \cdot \int_{1/2}^1 3y^2\,dy = \tfrac{1}{4} \cdot \tfrac{7}{8} = \tfrac{7}{32} \]
+<p>4. Oblast pod přímkou \(y = x/2\) (pro \(x \in \langle 0, 2\rangle\) je \(x/2 \le 1\)):</p>
+\[ \begin{aligned} p(Y &lt; \tfrac{X}{2}) &= \int_0^2 \int_0^{x/2} \tfrac{3}{2}xy^2\,dy\,dx = \int_0^2 \tfrac{x}{2}\cdot\tfrac{x^3}{8}\,dx \\ &= \left[\tfrac{x^5}{80}\right]_0^2 = 0{,}4 \end{aligned} \]
+</div></details></div>
+
+<div class="uloha" id="p10b"><div class="h">10B · Hustota x + y<span class="tag">jako S6/5</span></div>
+<p>\(f(x, y) = c(x + y)\) na \(\langle 0, 1\rangle^2\). Urči c, \(f_X\), \(p(X &lt; 1/2, Y &lt; 1/2)\) a \(p(X + Y &lt; 1)\).</p>
+<p class="vys">Výsledek: <b>c = 1; \(f_X = x + 1/2\); 1/8; 1/3</b>; X, Y nejsou nezávislé</p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Konstanta a marginální hustota:</p>
+\[ \begin{aligned} \int_0^1\!\int_0^1 (x + y)\,dy\,dx &= \int_0^1 \left(x + \tfrac12\right)dx = 1 \;\Rightarrow\; c = 1 \\ f_X(x) &= \int_0^1 (x + y)\,dy = x + \tfrac12 \end{aligned} \]
+<p>Stejně \(f_Y(y) = y + \tfrac12\), a protože \(f_X f_Y \ne x + y\), nejsou nezávislé.</p>
+<p>2. Čtverec \(\langle 0, \tfrac12\rangle^2\):</p>
+\[ \begin{aligned} \int_0^{1/2}\!\int_0^{1/2} (x + y)\,dy\,dx &= \int_0^{1/2} \left(\tfrac{x}{2} + \tfrac18\right)dx \\ &= \tfrac{1}{16} + \tfrac{1}{16} = \tfrac18 \end{aligned} \]
+<p>3. Trojúhelník pod \(y = 1 - x\):</p>
+\[ \begin{aligned} \int_0^1\!\int_0^{1-x} (x + y)\,dy\,dx &= \int_0^1 \frac{1 - x^2}{2}\,dx \\ &= \frac12\left(1 - \frac13\right) = \frac13 \end{aligned} \]
+</div></details></div>
+
+<!-- ============================ T11 ============================ -->
+<h2 id="t11">T11 · Intervaly spolehlivosti<span class="src">S7/1, S7/2 · skripta <a href="../09_odhady.html">kap. 9</a></span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<p><span class="en">we got realizations of X, determine a 95% two-sided confidence interval for μ, construct an interval estimate for the variance σ²</span>.</p></div>
+<div class="box postup"><span class="t">Postup</span>
+<ol>
+  <li>Z dat \(\bar{x}\) a \(s\) (dělí se \(n - 1\)), na kalkulačce \(s_x\).</li>
+  <li>\(\alpha = 1 - \text{spolehlivost}\) (0,95 → α = 0,05).</li>
+  <li>Interval pro μ (σ neznámé):
+  \[ \bar{x} \pm t_{1-\alpha/2}(n - 1)\,\frac{s}{\sqrt{n}} \]
+  (σ známé: místo t kvantil \(u_{1-\alpha/2}\) a místo s je σ.)</li>
+  <li>Interval pro σ²:
+  \[ \left( \frac{(n-1)s^2}{\chi^2_{1-\alpha/2}(n-1)},\ \frac{(n-1)s^2}{\chi^2_{\alpha/2}(n-1)} \right) \]
+  Větší kvantil dává dolní mez. Interval pro σ = odmocniny mezí.</li>
+</ol></div>
+<div class="box kalk"><span class="t">Kalkulačka</span>
+<p><kbd>MENU</kbd> → Statistics → 1-Variable → zadej data (každé <kbd>=</kbd>) → <kbd>OPTN</kbd> → 1-Variable Calc: \(\bar{x}\), \(s_x\) (výběrová, \(n - 1\)), \(\sigma_x\) (dělí n). t a χ² jsou jen v tabulkách.</p></div>
+<div class="box past"><span class="t">Pozor</span>
+<p>Stupně volnosti \(n - 1\). U χ² se kvantily vybírají „obráceně“ a interval není symetrický kolem \(s^2\).</p></div>
+<div class="box vzory"><span class="t">Vzory ze sad</span>
+<p><a href="../09_odhady.html#u-s7-1">S7/1</a> \(\bar{x} = 9{,}5\), \(s = 10{,}168\), \(t_{0{,}975}(9) = 2{,}262\) → \((2{,}23;\ 16{,}77)\) · <a href="../09_odhady.html#u-s7-2">S7/2</a> μ ∈ (1,026; 1,048), σ² ∈ (0,00009; 0,00073)</p></div>
+
+<div class="uloha" id="p11a"><div class="h">11A · Interval pro μ a σ² z dat<span class="tag">jako S7/2</span></div>
+<p>Naměřili jsme 12, 15, 9, 14, 11, 13, 16, 10 (normální rozdělení, μ i σ neznámé). Urči 95% intervaly spolehlivosti pro μ a pro σ².</p>
+<p class="vys">Výsledek: <b>μ ∈ (10,45; 14,55); σ² ∈ (2,62; 24,85)</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. \(n = 8\), \(\bar{x} = 100/8 = 12{,}5\), \(\sum (x_i - \bar{x})^2 = 42\):</p>
+\[ s^2 = \frac{42}{7} = 6, \qquad s = 2{,}449 \]
+<p>2. μ: \(t_{0{,}975}(7) = 2{,}365\):</p>
+\[ 12{,}5 \pm 2{,}365 \cdot \frac{2{,}449}{\sqrt{8}} = 12{,}5 \pm 2{,}048 \]
+<p>3. σ²: \(\chi^2_{0{,}975}(7) = 16{,}013\), \(\chi^2_{0{,}025}(7) = 1{,}690\):</p>
+\[ \left(\frac{7 \cdot 6}{16{,}013},\ \frac{7 \cdot 6}{1{,}690}\right) = (2{,}62;\ 24{,}85) \]
+</div></details></div>
+
+<div class="uloha" id="p11b"><div class="h">11B · Interval ze zadaných charakteristik<span class="tag">jako S7/1</span></div>
+<p>Z 16 měření vyšlo \(\bar{x} = 5{,}2\) a \(s = 0{,}8\). Urči 99% interval spolehlivosti pro μ.</p>
+<p class="vys">Výsledek: <b>(4,61; 5,79)</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>α = 0,01, \(t_{0{,}995}(15) = 2{,}947\), \(s/\sqrt{n} = 0{,}8/4 = 0{,}2\):</p>
+\[ 5{,}2 \pm 2{,}947 \cdot 0{,}2 = 5{,}2 \pm 0{,}589 \]
+</div></details></div>
+
+<!-- ============================ T12 ============================ -->
+<h2 id="t12">T12 · Testy o středních hodnotách a rozptylech: t-testy, párový test, F-test<span class="src">S7/3–5, S8/1, S8/2 · skripta <a href="../10_testy.html">kap. 10</a></span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<ul>
+  <li>jedna skupina a daná hodnota: <span class="en">the canteen states 100 g, test that it does not cheat</span> → jednovýběrový t-test;</li>
+  <li>dvě nezávislé skupiny: <span class="en">two groups of patients, test the hypothesis of equality of means, is hypertension correlated with weight?</span> → dvouvýběrový t-test;</li>
+  <li>stejní jedinci dvakrát: <span class="en">before and after medication, is the drug effective</span> → párový t-test;</li>
+  <li><span class="en">equality of variances</span> → F-test.</li>
+</ul></div>
+<div class="box postup"><span class="t">Postup testu K1–K5 (pro všechny testy stejný)</span>
+<ol>
+  <li><b>K1</b> hypotézy: \(H_0\) s rovností; \(H_1\) podle otázky: ≠ (liší se), &lt; (šidí, je menší), &gt; (lék snižuje tlak → rozdíl před − po &gt; 0).</li>
+  <li><b>K2</b> testové kritérium: vzorec z tabulky níže, dosazení.</li>
+  <li><b>K3</b> rozdělení kritéria za platnosti \(H_0\) a stupně volnosti.</li>
+  <li><b>K4</b> kritická hodnota: oboustranný test kvantil \(1 - \alpha/2\), jednostranný \(1 - \alpha\).</li>
+  <li><b>K5</b> rozhodnutí: kritérium v kritickém oboru → \(H_0\) <b>zamítáme</b>, jinak <b>nezamítáme</b>. Jedna věta slovy zadání.</li>
+</ol>
+<div class="wrap"><table>
+<tr><th>test</th><th>kritérium</th><th>rozdělení za \(H_0\)</th></tr>
+<tr><td>jednovýběrový, \(H_0: \mu = \mu_0\)</td><td>\(T = \dfrac{\bar{x} - \mu_0}{s}\sqrt{n}\)</td><td>t(n − 1)</td></tr>
+<tr><td>párový: rozdíly \(d_i = x_i - y_i\), \(H_0: \mu_d = 0\)</td><td>\(T = \dfrac{\bar{d}}{s_d}\sqrt{n}\)</td><td>t(n − 1)</td></tr>
+<tr><td>dvouvýběrový, \(H_0: \mu_1 = \mu_2\)</td><td>\(s_p^2 = \dfrac{(n_1-1)s_1^2 + (n_2-1)s_2^2}{n_1 + n_2 - 2}\), \(T = \dfrac{\bar{x}_1 - \bar{x}_2}{s_p\sqrt{1/n_1 + 1/n_2}}\)</td><td>t(n₁ + n₂ − 2)</td></tr>
+<tr><td>F-test, \(H_0: \sigma_1^2 = \sigma_2^2\)</td><td>\(F = s_1^2 / s_2^2\), větší rozptyl nahoru</td><td>F(n₁ − 1, n₂ − 1), zamítám při \(F \ge F_{1-\alpha/2}\)</td></tr>
+</table></div>
+<p>Zamítám, když:</p>
+<ul>
+  <li>oboustranně (≠): \(|T| \ge t_{1-\alpha/2}\);</li>
+  <li>levostranně (&lt;): \(T \le -t_{1-\alpha}\);</li>
+  <li>pravostranně (&gt;): \(T \ge t_{1-\alpha}\).</li>
+</ul>
+<p>Pro velký počet stupňů volnosti (nad 120) je t ≈ u: \(t_{0{,}975} \approx 1{,}96\), \(t_{0{,}95} \approx 1{,}645\).</p></div>
+<div class="box kalk"><span class="t">Kalkulačka</span>
+<p>Z dat \(\bar{x}\) a \(s_x\) přes Statistics → 1-Variable. Párový test: do sloupce x zadej rovnou rozdíly. Kritické hodnoty t a F jsou jen v tabulkách.</p></div>
+<div class="box past"><span class="t">Pozor</span>
+<ul>
+  <li>„Is hypertension correlated with weight?“ je otázka na <b>shodu průměrů</b> dvou skupin (S8/1), ne na korelační koeficient.</li>
+  <li>Párová data (stejní pacienti) netestuj dvouvýběrovým testem: nejdřív rozdíly.</li>
+  <li>Výsledek „nezamítáme“ neznamená, že \(H_0\) platí.</li>
+</ul></div>
+<div class="box vzory"><span class="t">Vzory ze sad</span>
+<p><a href="../10_testy.html#u-s7-5">S7/5</a> maso: T = −5,65 → zamítáme · <a href="../10_testy.html#u-s7-3">S7/3</a> T = 1,23 &lt; 2,074 → nezamítáme · <a href="../10_testy.html#u-s7-4">S7/4</a> F = 1,067 → nezamítáme. Sada 8 je vyřešená zde:</p></div>
+
+<div class="uloha" id="s8-1"><div class="h">S8/1 · Hmotnost pacientů s hypertenzí a bez ní<span class="tag">sada 8, úloha 1</span></div>
+<p>S hypertenzí: \(n_1 = 29\), \(\bar{x}_1 = 74{,}1\), \(s_1^2 = 251\). Bez hypertenze: \(n_2 = 122\), \(\bar{x}_2 = 81{,}6\), \(s_2^2 = 302{,}6\). Souvisí hypertenze s hmotností? Na hladině 5 % otestuj shodu středních hodnot.</p>
+<p class="vys">Výsledek: <b>|T| = 2,12 &gt; 1,976 → \(H_0: \mu_1 = \mu_2\) zamítáme</b></p>
+<details class="res"><summary>Řešení krok po kroku</summary><div>
+<p>Předpoklad shody rozptylů (F-test): \(F = 302{,}6/251 = 1{,}21 &lt; F_{0{,}975}(121, 28) \approx 1{,}91\) → rozptyly můžeme považovat za shodné.</p>
+<p><b>K1:</b> \(H_0: \mu_1 = \mu_2\), \(H_1: \mu_1 \ne \mu_2\).</p>
+<p><b>K2:</b> spojený rozptyl a kritérium:</p>
+\[ s_p^2 = \frac{28 \cdot 251 + 121 \cdot 302{,}6}{149} = \frac{43\,642{,}6}{149} = 292{,}90 \]
+\[ T = \frac{74{,}1 - 81{,}6}{\sqrt{292{,}90\left(\frac{1}{29} + \frac{1}{122}\right)}} = \frac{-7{,}5}{3{,}536} = -2{,}121 \]
+<p><b>K3:</b> za \(H_0\) má T rozdělení t(149).</p>
+<p><b>K4:</b> oboustranně \(t_{0{,}975}(149) \approx 1{,}976\) (≈ \(u_{0{,}975} = 1{,}96\)).</p>
+<p><b>K5:</b> \(|T| = 2{,}121 \ge 1{,}976\) → \(H_0\) zamítáme. Střední hmotnost obou skupin se na hladině 0,05 liší, hypertenze s hmotností souvisí.</p>
+</div></details></div>
+
+<div class="uloha" id="s8-2"><div class="h">S8/2 · Tlak před lékem a po něm<span class="tag">sada 8, úloha 2</span></div>
+<p>Sedmi pacientům změřili tlak před lékem: 125, 126, 138, 117, 143, 128, 146 a po něm: 120, 124, 120, 118, 140, 129, 140. Je lék účinný (α = 0,05)?</p>
+<p class="vys">Výsledek: <b>T = 1,86 &lt; 1,943 → \(H_0: \mu_d = 0\) nezamítáme</b></p>
+<details class="res"><summary>Řešení krok po kroku</summary><div>
+<p>Stejní pacienti → párový test. Rozdíly „před − po“: 5, 2, 18, −1, 3, −1, 6. Platí \(\sum d = 32\), \(\sum d^2 = 400\):</p>
+\[ \begin{aligned} \bar{d} &amp;= \frac{32}{7} = 4{,}571 \\ s_d^2 &amp;= \frac{400 - 32^2/7}{6} = 42{,}29, \qquad s_d = 6{,}503 \end{aligned} \]
+<p><b>K1:</b> \(H_0: \mu_d = 0\) (lék nepůsobí), \(H_1: \mu_d &gt; 0\) (po léku je tlak nižší).</p>
+<p><b>K2:</b></p>
+\[ T = \frac{4{,}571}{6{,}503}\sqrt{7} = 1{,}860 \]
+<p><b>K3:</b> t(6). <b>K4:</b> jednostranně \(t_{0{,}95}(6) = 1{,}943\).</p>
+<p><b>K5:</b> \(1{,}860 &lt; 1{,}943\) → \(H_0\) nezamítáme. Účinnost léku se na hladině 0,05 neprokázala (oboustranně s \(t_{0{,}975}(6) = 2{,}447\) totéž).</p>
+</div></details></div>
+
+<div class="uloha" id="p12a"><div class="h">12A · Plní výrobce lahve?<span class="tag">jako S7/5</span></div>
+<p>Výrobce uvádí objem 500 ml. Naměřili jsme 498, 502, 495, 497, 499, 496, 501, 494 ml. Otestuj na hladině 0,05, že výrobce nešidí.</p>
+<p class="vys">Výsledek: <b>T = −2,26 ≤ −1,895 → \(H_0: \mu = 500\) zamítáme</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>\(n = 8\), \(\bar{x} = 497{,}75\), \(s = 2{,}816\).</p>
+<p><b>K1:</b> \(H_0: \mu = 500\), \(H_1: \mu &lt; 500\) (šizení = méně). <b>K2:</b></p>
+\[ T = \frac{497{,}75 - 500}{2{,}816}\sqrt{8} = -2{,}260 \]
+<p><b>K3:</b> t(7). <b>K4:</b> \(t_{0{,}95}(7) = 1{,}895\), kritický obor \(T \le -1{,}895\). <b>K5:</b> \(-2{,}260 \le -1{,}895\) → zamítáme, výrobce plní méně než 500 ml.</p>
+</div></details></div>
+
+<div class="uloha" id="p12b"><div class="h">12B · Dva výběry: F-test a t-test<span class="tag">jako S7/3, S7/4</span></div>
+<p>\(\bar{x}_1 = 23{,}4\), \(s_1^2 = 9{,}6\), \(n_1 = 12\); \(\bar{x}_2 = 20{,}1\), \(s_2^2 = 12{,}3\), \(n_2 = 15\). Otestuj shodu rozptylů a pak shodu středních hodnot (α = 0,05).</p>
+<p class="vys">Výsledek: <b>F = 1,28 &lt; 3,36 → rozptyly shodné; T = 2,56 &gt; 2,060 → střední hodnoty se liší</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p><b>F-test:</b> větší rozptyl nahoru:</p>
+\[ F = \frac{12{,}3}{9{,}6} = 1{,}281 \]
+<p>\(F_{0{,}975}(14, 11) \approx 3{,}36\); \(1{,}281 &lt; 3{,}36\) → \(H_0: \sigma_1^2 = \sigma_2^2\) nezamítáme.</p>
+<p><b>t-test:</b> \(H_0: \mu_1 = \mu_2\), \(H_1: \mu_1 \ne \mu_2\).</p>
+\[ \begin{aligned} s_p^2 &amp;= \frac{11 \cdot 9{,}6 + 14 \cdot 12{,}3}{25} = 11{,}112 \\ T &amp;= \frac{23{,}4 - 20{,}1}{\sqrt{11{,}112\,(1/12 + 1/15)}} = \frac{3{,}3}{1{,}291} = 2{,}556 \end{aligned} \]
+<p>\(t_{0{,}975}(25) = 2{,}060\); \(2{,}556 \ge 2{,}060\) → zamítáme.</p>
+</div></details></div>
+
+<div class="uloha" id="p12c"><div class="h">12C · Cholesterol před a po<span class="tag">jako S8/2</span></div>
+<p>Šesti pacientům změřili cholesterol před dietou: 6,2; 5,9; 7,1; 6,5; 5,8; 6,8 a po ní: 5,8; 5,6; 6,4; 6,3; 5,9; 6,2. Snižuje dieta cholesterol (α = 0,05)?</p>
+<p class="vys">Výsledek: <b>T = 2,98 ≥ 2,015 → zamítáme, dieta cholesterol snižuje</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>Rozdíly „před − po“: 0,4; 0,3; 0,7; 0,2; −0,1; 0,6. Platí \(\sum d = 2{,}1\), \(\sum d^2 = 1{,}15\):</p>
+\[ \begin{aligned} \bar{d} &= \frac{2{,}1}{6} = 0{,}35 \\ s_d^2 &= \frac{1{,}15 - 2{,}1^2/6}{5} = 0{,}083, \qquad s_d = 0{,}2881 \end{aligned} \]
+<p><b>K1:</b> \(H_0: \mu_d = 0\), \(H_1: \mu_d &gt; 0\). <b>K2:</b></p>
+\[ T = \frac{0{,}35}{0{,}2881}\sqrt{6} = 2{,}976 \]
+<p><b>K3–K5:</b> t(5), \(t_{0{,}95}(5) = 2{,}015\); \(2{,}976 \ge 2{,}015\) → zamítáme.</p>
+</div></details></div>
+
+<div class="uloha" id="p12d"><div class="h">12D · Velké výběry<span class="tag">jako S8/1</span></div>
+<p>Tlak u 40 kuřáků: \(\bar{x}_1 = 128{,}5\), \(s_1^2 = 210\); u 60 nekuřáků: \(\bar{x}_2 = 121{,}8\), \(s_2^2 = 180\). Liší se střední tlak (α = 0,05)?</p>
+<p class="vys">Výsledek: <b>T = 2,37 &gt; 1,984 → zamítáme, liší se</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>F = 210/180 = 1,17 &lt; \(F_{0{,}975}(39, 59) \approx 1{,}75\) → shodné rozptyly.</p>
+\[ \begin{aligned} s_p^2 &amp;= \frac{39 \cdot 210 + 59 \cdot 180}{98} = 191{,}94 \\ T &amp;= \frac{6{,}7}{\sqrt{191{,}94\,(1/40 + 1/60)}} = \frac{6{,}7}{2{,}828} = 2{,}369 \end{aligned} \]
+<p>\(t_{0{,}975}(98) \approx 1{,}984\) → zamítáme.</p>
+</div></details></div>
+
+<!-- ============================ T13 ============================ -->
+<h2 id="t13">T13 · Testy dobré shody: χ² test a Kolmogorovův–Smirnovův test<span class="src">S8/3, S8/4, S8/5 · nové v sadě 8</span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<p><span class="en">frequencies n<sub>j</sub>, decide whether X can be considered a selection from the Poisson / normal distribution, use a χ² test, apply the Kolmogorov–Smirnov test</span>. Pozor: <span class="en">significance level 95%</span> v S8/3 znamená α = 0,05.</p></div>
+<div class="box postup"><span class="t">Postup: χ² test dobré shody</span>
+<ol>
+  <li><b>K1:</b> \(H_0\): X má dané rozdělení (Po, No, rovnoměrné…), \(H_1\): nemá.</li>
+  <li>Odhadni parametry z dat a zapamatuj si jejich počet r: Poisson \(\lambda = \bar{x}\) (r = 1); normální \(\mu = \bar{x}\), \(\sigma = s\) ze středů tříd (r = 2); rozdělení dané zadáním (férová kostka) r = 0.</li>
+  <li>Teoretické pravděpodobnosti tříd \(p_j\): Poisson z \(\frac{\lambda^k}{k!}e^{-\lambda}\), krajní třídy posbírají zbytek (\(X \le 2\), \(X \ge 7\)); normální \(p_j = \Phi(u_{\text{horní}}) - \Phi(u_{\text{dolní}})\), krajní třídy do \(\pm\infty\).</li>
+  <li>Očekávané četnosti \(E_j = n\,p_j\) (součet = n). Třídy s \(E_j &lt; 5\) sluč se sousední.</li>
+  <li>Kritérium:
+  \[ \chi^2 = \sum_{j=1}^{k} \frac{(n_j - E_j)^2}{E_j} \]</li>
+  <li>Stupně volnosti \(k - 1 - r\) (k = počet tříd po sloučení). Test je jen <b>pravostranný</b>: zamítám, když \(\chi^2 \ge \chi^2_{1-\alpha}(k - 1 - r)\).</li>
+</ol></div>
+<div class="box postup"><span class="t">Postup: Kolmogorovův–Smirnovův test</span>
+<ol>
+  <li>Empirická distribuční funkce: kumulativní relativní četnosti \(F_n(x_j) = (n_1 + \dots + n_j)/n\).</li>
+  <li>Teoretická \(F_0(x_j)\) ve stejných bodech (u Poissona \(p(X \le x_j)\), u spojitého F v horní hranici třídy).</li>
+  <li>\(D = \max_j |F_n(x_j) - F_0(x_j)|\).</li>
+  <li>Kritická hodnota \(D_n(\alpha)\) z tabulky; pro n &gt; 35 přibližně \(1{,}36/\sqrt{n}\) (α = 0,05), \(1{,}63/\sqrt{n}\) (α = 0,01).</li>
+  <li>\(D \ge D_n(\alpha)\) → zamítám \(H_0\).</li>
+</ol></div>
+<div class="box kalk"><span class="t">Kalkulačka</span>
+<p>λ nebo μ, σ ze četností: Statistics s Frequency On (x = hodnoty / středy tříd, Freq = \(n_j\)) → \(\bar{x}\), \(s_x\). Pravděpodobnosti tříd: Poisson PD/CD, Normal CD (Lower, Upper = hranice třídy). Součet členů χ²: každý člen <kbd>M+</kbd>, nakonec <kbd>RCL</kbd> <kbd>M</kbd> (předtím <code>0</code> <kbd>SHIFT</kbd> <kbd>RCL</kbd> <kbd>M</kbd> vynuluje paměť).</p></div>
+<div class="box past"><span class="t">Pozor</span>
+<ul>
+  <li>Stupně volnosti: odečti 1 i počet odhadnutých parametrů (Poisson −1, normální −2).</li>
+  <li>Poissonovo rozdělení má i hodnoty 0 a ≥ 10, které v datech nejsou. Krajní třídy musí obsahovat i je, aby \(\sum p_j = 1\).</li>
+</ul></div>
+
+<div class="uloha" id="s8-3"><div class="h">S8/3 · χ² test: je to Poissonovo rozdělení?<span class="tag">sada 8, úloha 3</span></div>
+<div class="wrap"><table class="num"><tr><th>x</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td></tr>
+<tr><th>\(n_j\)</th><td>4</td><td>8</td><td>16</td><td>15</td><td>8</td><td>7</td><td>8</td><td>3</td><td>2</td></tr></table></div>
+<p>Rozhodni χ² testem, zda X můžeme považovat za výběr z Poissonova rozdělení (α = 0,05).</p>
+<p class="vys">Výsledek: <b>χ² = 3,36 &lt; 9,49 → \(H_0: X \sim \text{Po}(\lambda = 4{,}338)\) nezamítáme</b></p>
+<details class="res"><summary>Řešení krok po kroku</summary><div>
+<p><b>K1:</b> \(H_0\): X ~ Po(λ), \(H_1\): X nemá Poissonovo rozdělení.</p>
+<p>1. \(n = 71\), \(\sum x n_j = 308\):</p>
+\[ \lambda = \bar{x} = \frac{308}{71} = 4{,}338 \]
+<p>2. \(E_j = 71 \cdot p(X = k)\); třídy s malým \(E_j\) sloučíme do \(X \le 2\) a \(X \ge 7\):</p>
+<div class="wrap"><table class="num">
+<tr><th>třída</th><th>\(n_j\)</th><th>\(p_j\)</th><th>\(E_j\)</th><th>\((n_j - E_j)^2/E_j\)</th></tr>
+<tr><td>\(X \le 2\)</td><td>12</td><td>0,1926</td><td>13,68</td><td>0,206</td></tr>
+<tr><td>3</td><td>16</td><td>0,1777</td><td>12,62</td><td>0,906</td></tr>
+<tr><td>4</td><td>15</td><td>0,1927</td><td>13,68</td><td>0,126</td></tr>
+<tr><td>5</td><td>8</td><td>0,1672</td><td>11,87</td><td>1,263</td></tr>
+<tr><td>6</td><td>7</td><td>0,1209</td><td>8,58</td><td>0,292</td></tr>
+<tr><td>\(X \ge 7\)</td><td>13</td><td>0,1488</td><td>10,56</td><td>0,562</td></tr>
+<tr><th>součet</th><th>71</th><th>1</th><th>71</th><th>3,356</th></tr>
+</table></div>
+<p>3. k = 6 tříd, odhadli jsme r = 1 parametr → \(6 - 1 - 1 = 4\) stupně volnosti, \(\chi^2_{0{,}95}(4) = 9{,}488\).</p>
+<p><b>K5:</b> \(3{,}356 &lt; 9{,}488\) → \(H_0\) nezamítáme, data jsou v souladu s Po(4,338). (Jiné rozumné sloučení tříd dá stejný závěr.)</p>
+</div></details></div>
+
+<div class="uloha" id="s8-4"><div class="h">S8/4 · Kolmogorovův–Smirnovův test na stejných datech<span class="tag">sada 8, úloha 4</span></div>
+<p class="vys">Výsledek: <b>D = 0,0425 &lt; 0,161 → \(H_0: X \sim \text{Po}(4{,}338)\) nezamítáme</b></p>
+<details class="res"><summary>Řešení krok po kroku</summary><div>
+<p>\(F_n\) = kumulativní součet \(n_j\) děleno 71; \(F_0(x) = p(X \le x)\) pro Po(4,338) (Poisson CD):</p>
+<div class="wrap"><table class="num compact">
+<tr><th>x</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td></tr>
+<tr><th>\(F_n\)</th><td>0,0563</td><td>0,1690</td><td>0,3944</td><td>0,6056</td><td>0,7183</td><td>0,8169</td><td>0,9296</td><td>0,9718</td><td>1</td></tr>
+<tr><th>\(F_0\)</th><td>0,0697</td><td>0,1926</td><td>0,3704</td><td>0,5631</td><td>0,7303</td><td>0,8512</td><td>0,9262</td><td>0,9668</td><td>0,9864</td></tr>
+<tr><th>\(|F_n - F_0|\)</th><td>0,013</td><td>0,024</td><td>0,024</td><td><b>0,043</b></td><td>0,012</td><td>0,034</td><td>0,003</td><td>0,005</td><td>0,014</td></tr>
+</table></div>
+<p>\(D = 0{,}0425\). Kritická hodnota pro n = 71 a α = 0,05: \(1{,}36/\sqrt{71} = 0{,}161\) (přesná tabulková 0,159).</p>
+<p><b>K5:</b> \(0{,}0425 &lt; 0{,}161\) → \(H_0\) nezamítáme.</p>
+</div></details></div>
+
+<div class="uloha" id="s8-5"><div class="h">S8/5 · χ² test: je to normální rozdělení?<span class="tag">sada 8, úloha 5</span></div>
+<div class="wrap"><table class="num"><tr><th>třída</th><td>(−∞, 5)</td><td>⟨5, 10)</td><td>⟨10, 15)</td><td>⟨15, 20)</td><td>⟨20, 25)</td><td>⟨25, ∞)</td></tr>
+<tr><th>\(n_j\)</th><td>8</td><td>10</td><td>25</td><td>32</td><td>15</td><td>10</td></tr></table></div>
+<p>Rozhodni na hladině 0,05, zda jde o výběr z normálního rozdělení.</p>
+<p class="vys">Výsledek: <b>χ² = 3,71 &lt; 7,81 → \(H_0: X \sim \text{No}(15{,}8;\ 6{,}72)\) nezamítáme</b></p>
+<details class="res"><summary>Řešení krok po kroku</summary><div>
+<p>1. Středy tříd (krajní třídy jako by měly šířku 5): 2,5; 7,5; …; 27,5. \(n = 100\), \(\sum x n_j = 1580\), \(\sum x^2 n_j = 29\,475\):</p>
+\[ \mu = \bar{x} = 15{,}8, \qquad \sigma = \sqrt{\frac{29\,475}{100} - 15{,}8^2} = 6{,}72 \]
+<p>(S dělitelem \(n - 1\) vyjde 6,75 a závěr se nezmění.)</p>
+<p>2. Pro třídu \(\langle a, b)\) a \(E_j = 100\,p_j\):</p>
+\[ p_j = \Phi\left(\frac{b - 15{,}8}{6{,}72}\right) - \Phi\left(\frac{a - 15{,}8}{6{,}72}\right) \]
+<div class="wrap"><table class="num">
+<tr><th>třída</th><th>\(n_j\)</th><th>u horní hranice</th><th>\(p_j\)</th><th>\(E_j\)</th><th>\((n_j - E_j)^2/E_j\)</th></tr>
+<tr><td>(−∞, 5)</td><td>8</td><td>−1,607</td><td>0,0540</td><td>5,40</td><td>1,250</td></tr>
+<tr><td>⟨5, 10)</td><td>10</td><td>−0,863</td><td>0,1400</td><td>14,00</td><td>1,144</td></tr>
+<tr><td>⟨10, 15)</td><td>25</td><td>−0,119</td><td>0,2586</td><td>25,86</td><td>0,028</td></tr>
+<tr><td>⟨15, 20)</td><td>32</td><td>0,625</td><td>0,2814</td><td>28,14</td><td>0,530</td></tr>
+<tr><td>⟨20, 25)</td><td>15</td><td>1,369</td><td>0,1805</td><td>18,05</td><td>0,515</td></tr>
+<tr><td>⟨25, ∞)</td><td>10</td><td>∞</td><td>0,0855</td><td>8,55</td><td>0,246</td></tr>
+<tr><th>součet</th><th>100</th><th></th><th>1</th><th>100</th><th>3,714</th></tr>
+</table></div>
+<p>3. Všechna \(E_j \ge 5\), k = 6, r = 2 → \(6 - 1 - 2 = 3\) stupně volnosti, \(\chi^2_{0{,}95}(3) = 7{,}815\).</p>
+<p><b>K5:</b> \(3{,}714 &lt; 7{,}815\) → \(H_0\) nezamítáme, normální rozdělení data popisuje dobře.</p>
+</div></details></div>
+
+<div class="uloha" id="p13a"><div class="h">13A · Je kostka férová?<span class="tag">χ², parametry dané</span></div>
+<p>Při 120 hodech kostkou padly hodnoty 1–6 s četnostmi 15, 22, 18, 25, 17, 23. Je kostka férová (α = 0,05)?</p>
+<p class="vys">Výsledek: <b>χ² = 3,8 &lt; 11,07 → nezamítáme</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>\(H_0\): \(p_j = 1/6\), \(E_j = 20\), nic jsme neodhadovali (r = 0):</p>
+\[ \chi^2 = \frac{25 + 4 + 4 + 25 + 9 + 9}{20} = 3{,}8 \]
+<p>Stupně volnosti \(6 - 1 = 5\), \(\chi^2_{0{,}95}(5) = 11{,}07\) → nezamítáme.</p>
+</div></details></div>
+
+<div class="uloha" id="p13b"><div class="h">13B · Poruchy za den: χ² test pro Poissona<span class="tag">jako S8/3</span></div>
+<p>Počet poruch za den během 80 dnů: 0 poruch 10×, 1 porucha 22×, 2 → 24×, 3 → 14×, 4 → 6×, 5 → 4×. Má počet poruch Poissonovo rozdělení (α = 0,05)?</p>
+<p class="vys">Výsledek: <b>λ = 1,95; χ² = 0,48 &lt; 7,81 → nezamítáme</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. \(\lambda = \bar{x} = \frac{0 + 22 + 48 + 42 + 24 + 20}{80} = 1{,}95\).</p>
+<p>2. Očekávané četnosti \(80\,p(k)\); třída 5 (a víc) by měla \(E = 3{,}86 &lt; 5\) → sloučíme \(X \ge 4\):</p>
+<div class="wrap"><table class="num">
+<tr><th>třída</th><td>0</td><td>1</td><td>2</td><td>3</td><td>≥ 4</td></tr>
+<tr><th>\(n_j\)</th><td>10</td><td>22</td><td>24</td><td>14</td><td>10</td></tr>
+<tr><th>\(E_j\)</th><td>11,38</td><td>22,19</td><td>21,64</td><td>14,07</td><td>10,72</td></tr>
+<tr><th>člen χ²</th><td>0,168</td><td>0,002</td><td>0,257</td><td>0,000</td><td>0,048</td></tr>
+</table></div>
+<p>3. \(\chi^2 = 0{,}475\); k = 5, r = 1 → 3 stupně volnosti, \(\chi^2_{0{,}95}(3) = 7{,}815\) → nezamítáme.</p>
+</div></details></div>
+
+<div class="uloha" id="p13c"><div class="h">13C · K–S test na datech z 13B<span class="tag">jako S8/4</span></div>
+<p class="vys">Výsledek: <b>D = 0,0197 &lt; 0,152 → nezamítáme</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<div class="wrap"><table class="num">
+<tr><th>x</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+<tr><th>\(F_n\)</th><td>0,125</td><td>0,400</td><td>0,700</td><td>0,875</td><td>0,950</td><td>1</td></tr>
+<tr><th>\(F_0 = p(X \le x)\)</th><td>0,1423</td><td>0,4197</td><td>0,6902</td><td>0,8660</td><td>0,9517</td><td>0,9852</td></tr>
+<tr><th>rozdíl</th><td>0,017</td><td><b>0,020</b></td><td>0,010</td><td>0,009</td><td>0,002</td><td>0,015</td></tr>
+</table></div>
+<p>\(D = 0{,}0197\), kritická hodnota \(1{,}36/\sqrt{80} = 0{,}152\) → nezamítáme.</p>
+</div></details></div>
+
+<div class="uloha" id="p13d"><div class="h">13D · Výšky: χ² test pro normální rozdělení<span class="tag">jako S8/5</span></div>
+<div class="wrap"><table class="num"><tr><th>třída (cm)</th><td>(−∞, 160)</td><td>⟨160, 165)</td><td>⟨165, 170)</td><td>⟨170, 175)</td><td>⟨175, 180)</td><td>⟨180, ∞)</td></tr>
+<tr><th>\(n_j\)</th><td>6</td><td>14</td><td>30</td><td>28</td><td>15</td><td>7</td></tr></table></div>
+<p>Je výška normálně rozdělená (α = 0,05)?</p>
+<p class="vys">Výsledek: <b>μ = 170,15; σ = 6,34; χ² = 0,55 &lt; 7,81 → nezamítáme</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Středy 157,5; 162,5; …; 182,5. \(\sum x n_j = 17\,015\), \(\sum x^2 n_j = 2\,899\,125\), n = 100:</p>
+\[ \mu = 170{,}15, \qquad \sigma = \sqrt{28\,991{,}25 - 170{,}15^2} = 6{,}34 \]
+<p>2. Hranice standardizované: −1,600; −0,812; −0,024; 0,765; 1,553. \(E_j\) = 5,48; 15,36; 28,22; 28,72; 16,20; 6,02.</p>
+<p>3. Členy: 0,050 + 0,121 + 0,113 + 0,018 + 0,089 + 0,159 = 0,550. Stupně volnosti \(6 - 1 - 2 = 3\), \(\chi^2_{0{,}95}(3) = 7{,}815\) → nezamítáme.</p>
+</div></details></div>
+
+<!-- ============================ T14 ============================ -->
+<h2 id="t14">T14 · Regresní přímka<span class="src">S8/6 · nové v sadě 8</span></h2>
+<div class="box poznas"><span class="t">Poznáš podle</span>
+<p><span class="en">determine the regression line predicting y based on x, relationship between age and batting average</span>.</p></div>
+<div class="box postup"><span class="t">Postup (metoda nejmenších čtverců)</span>
+<ol>
+  <li>Spočítej \(n, \sum x, \sum y, \sum x^2, \sum xy\) (pro r i \(\sum y^2\)).</li>
+  <li>Směrnice:
+  \[ b = \frac{n\sum xy - \sum x \sum y}{n\sum x^2 - \left(\sum x\right)^2} \]</li>
+  <li>Absolutní člen: \(a = \bar{y} - b\,\bar{x}\). Přímka \(\hat{y} = a + bx\) prochází bodem \([\bar{x}, \bar{y}]\).</li>
+  <li>Předpověď: dosaď x. Kvalita: korelační koeficient
+  \[ r = \frac{n\sum xy - \sum x\sum y}{\sqrt{\left(n\sum x^2 - (\sum x)^2\right)\left(n\sum y^2 - (\sum y)^2\right)}} \]
+  \(r^2\) = podíl rozptylu y vysvětlený přímkou.</li>
+</ol></div>
+<div class="box kalk"><span class="t">Kalkulačka</span>
+<p><kbd>MENU</kbd> → Statistics → <b>y=a+bx</b> → zadej sloupce x a y → <kbd>OPTN</kbd> → Regression Calc: a, b, r. Součty \(\sum x\), \(\sum xy\)… jsou v <kbd>OPTN</kbd> → 2-Variable Calc. Pozor: kalkulačka značí a = absolutní člen, b = směrnice.</p></div>
+<div class="box past"><span class="t">Pozor</span>
+<p>Přímka „y podle x“ a „x podle y“ jsou různé přímky. Malé r (S8/6: r = 0,055) znamená, že přímka předpovídá špatně, i když ji spočítat jde.</p></div>
+
+<div class="uloha" id="s8-6"><div class="h">S8/6 · Věk a úspěšnost pálkaře<span class="tag">sada 8, úloha 6</span></div>
+<p>Věk x: 18, 17, 31, 25, 22, 24, 28, 21, 21, 18, 35, 41; úspěšnost y: 0,225; 0,35; 0,15; 0,275; 0,269; 0,2; 0,32; 0,315; 0,195; 0,2; 0,31; 0,275. Urči regresní přímku předpovídající úspěšnost podle věku.</p>
+<p class="vys">Výsledek: <b>\(\hat{y} = 0{,}000465x + 0{,}245\) (r = 0,055)</b></p>
+<details class="res"><summary>Řešení krok po kroku</summary><div>
+<p>1. Součty (n = 12):</p>
+\[ \begin{aligned} \textstyle\sum x &= 301, \qquad \textstyle\sum y = 3{,}084 \\ \textstyle\sum x^2 &= 8155, \qquad \textstyle\sum xy = 77{,}638 \end{aligned} \]
+<p>2. Směrnice:</p>
+\[ b = \frac{12 \cdot 77{,}638 - 301 \cdot 3{,}084}{12 \cdot 8155 - 301^2} = \frac{3{,}372}{7259} = 0{,}000465 \]
+<p>3. Absolutní člen (\(\bar{x} = 25{,}083\), \(\bar{y} = 0{,}257\)):</p>
+\[ a = 0{,}257 - 0{,}000465 \cdot 25{,}083 = 0{,}245 \]
+<p>4. \(r = 0{,}055\), \(r^2 = 0{,}003\): věk vysvětluje jen 0,3 % rozptylu úspěšnosti, přímka je skoro vodorovná.</p>
+</div></details></div>
+
+<div class="uloha" id="p14a"><div class="h">14A · Hodiny učení a body<span class="tag">jako S8/6</span></div>
+<p>Hodiny učení x: 2, 3, 5, 6, 8, 9; body y: 10, 14, 19, 22, 27, 31. Urči regresní přímku, korelační koeficient a předpověď pro 7 hodin.</p>
+<p class="vys">Výsledek: <b>\(\hat{y} = 4{,}733 + 2{,}867x\); r = 0,998; \(\hat{y}(7) = 24{,}8\)</b></p>
+<details class="res"><summary>Řešení</summary><div>
+<p>1. Součty (n = 6):</p>
+\[ \begin{aligned} \textstyle\sum x &= 33, \qquad \textstyle\sum y = 123, \qquad \textstyle\sum x^2 = 219 \\ \textstyle\sum xy &= 784, \qquad \textstyle\sum y^2 = 2831 \end{aligned} \]
+<p>Regresní koeficienty:</p>
+\[ \begin{aligned} b &amp;= \frac{6 \cdot 784 - 33 \cdot 123}{6 \cdot 219 - 33^2} = \frac{645}{225} = 2{,}867 \\ a &amp;= 20{,}5 - 2{,}867 \cdot 5{,}5 = 4{,}733 \end{aligned} \]
+<p>2. Korelační koeficient:</p>
+\[ r = \frac{645}{\sqrt{225 \cdot (6 \cdot 2831 - 123^2)}} = \frac{645}{\sqrt{225 \cdot 1857}} = 0{,}998 \]
+<p>3. \(\hat{y}(7) = 4{,}733 + 2{,}867 \cdot 7 = 24{,}8\) bodu.</p>
+</div></details></div>
+
+<div class="kostka"><b>Poslední kontrola před testem:</b> spočítej <a href="cvicny_test.html">cvičný test</a> jen s tahákem, tabulkami a kalkulačkou. Co nepůjde, najdi tady podle typu.</div>
+
+<footer>Příprava k MPA-PSO podle sad 1–8 a domácích úkolů 1–2. Všechna čísla v příkladech jsou přepočítaná skriptem. Domácí úkoly se tu neřeší, jsou jen jako vzor podobných příkladů. · <a href="../">skripta PSO</a> · <a href="../../#pso">rozcestník</a></footer>
+</main>
+</body>
+</html>
