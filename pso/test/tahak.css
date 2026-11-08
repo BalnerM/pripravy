@@ -50,3 +50,5 @@ footer { font-size: 6.4pt; color: var(--mute); margin-top: .8mm; text-align: rig
 .phi td, .phi th { padding-left: .15mm; padding-right: .15mm; }
 .phi th { font-weight: 600; }
 .phi td:first-child { background: var(--th); }
+.vz { background: var(--bg1); padding: .3mm 1mm; border-radius: .5mm; }
+.st { font-weight: 600; color: var(--c1d); margin: .5mm 0 .2mm; }

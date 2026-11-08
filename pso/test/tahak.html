@@ -13,156 +13,153 @@
 <body>
 
 <div class="page">
-<header><h1>PSO – vzorce a postupy <span>F(x) = p(X &lt; x) · No(μ, σ) · test K1–K5 · α = 0,05 → oboustranně kvantil 0,975, jednostranně 0,95</span></h1></header>
+<header><h1>PSO – postupy krok za krokem <span>F(x) = p(X &lt; x) · No(μ, σ) · test K1–K5 · α = 0,05 · kvantily a Φ: tabulky.pdf (zvlášť)</span></h1></header>
 <div class="cols">
 
 <section>
-<h2>Rozpoznávač: v zadání → typ</h2>
+<h2>Rozpoznávač: v zadání → typ → oddíl</h2>
 <table class="rz">
-<tr><td>die, cards, balls, draw k</td><td>klasická: příznivé/všechny</td></tr>
-<tr><td>numbers from interval, point, random coefficients</td><td>geometrická: plocha/plocha, nakreslit</td></tr>
-<tr><td>groups/boxes with different rates</td><td>úplná p.; <i>if … was it from</i> → Bayes</td></tr>
-<tr><td>before; take turns</td><td>\(\frac{p_A}{p_A+p_B}\); \(\frac{a}{1-(1-a)(1-b)}\)</td></tr>
-<tr><td>table \(x_i, p_i\); F(x) given</td><td>diskrétní X: skoky, EX, DX</td></tr>
-<tr><td>n trials, same p, exactly/at least</td><td>Bi(n, p)</td></tr>
-<tr><td>until, first failure/success</td><td>Ge (od 0 / od 1)</td></tr>
-<tr><td>M rejects among N, select n</td><td>H(N, M, n)</td></tr>
-<tr><td>an average of … per hour</td><td>Po(λ), λ přepočítat</td></tr>
-<tr><td>n big, p small (800; 0,01)</td><td>Po(np)</td></tr>
-<tr><td>density f(x), parameter a</td><td>\(\int f = 1\), F, EX, DX</td></tr>
-<tr><td>normal, mean, variance; find u / value</td><td>Φ, kvantil \(x = \mu + \sigma u_p\)</td></tr>
-<tr><td>10000 newborns; how many trials</td><td>Moivre–Laplace</td></tr>
-<tr><td>total mass, how many people</td><td>CLV: No(nμ, σ√n)</td></tr>
-<tr><td>random vector, f(x, y), p(Y ≤ X)</td><td>dvojný integrál</td></tr>
-<tr><td>realizations + confidence interval</td><td>t-interval, χ²-interval</td></tr>
-<tr><td>states 100 g, does not cheat</td><td>1výb. t-test, jednostranný</td></tr>
-<tr><td>two groups, equality of means</td><td>2výb. t-test (+ F-test)</td></tr>
-<tr><td>before / after, same patients</td><td>párový t (rozdíly)</td></tr>
-<tr><td>frequencies \(n_j\), Poisson/normal?</td><td>χ² dobré shody; K–S test</td></tr>
-<tr><td>regression line predicting y</td><td>\(\hat y = a + bx\), MNČ</td></tr>
+<tr><td>die, cards, balls, draw k</td><td>klasická → 1</td></tr>
+<tr><td>numbers from interval, point, random coefficients</td><td>geometrická → 2</td></tr>
+<tr><td>groups/boxes with different rates; <i>if … was it from</i></td><td>úplná p. / Bayes → 3</td></tr>
+<tr><td>before; take turns</td><td>dřív než / střídání → 3</td></tr>
+<tr><td>table \(x_i, p_i\); F(x) given</td><td>diskrétní X → 4</td></tr>
+<tr><td>n trials, same p, exactly / at least</td><td>Bi(n, p) → 5</td></tr>
+<tr><td>until, first failure / success</td><td>Ge (od 0 / od 1) → 5</td></tr>
+<tr><td>M rejects among N, select n</td><td>H(N, M, n) → 5</td></tr>
+<tr><td>an average of … per hour</td><td>Po(λ) → 5</td></tr>
+<tr><td>density f(x), parameter a</td><td>spojitá X → 6</td></tr>
+<tr><td>normal, mean, variance</td><td>No(μ, σ) → 7</td></tr>
+<tr><td>10000 newborns; how many trials</td><td>Moivre–Laplace → 8</td></tr>
+<tr><td>total mass, how many people</td><td>CLV → 8</td></tr>
+<tr><td>random vector, f(x, y), p(Y ≤ X)</td><td>dvojný integrál → 9</td></tr>
+<tr><td>realizations + confidence interval</td><td>interval → 11</td></tr>
+<tr><td>states 100 g / does not cheat; two groups; before / after</td><td>t-testy, F-test → 12, 13</td></tr>
+<tr><td>frequencies \(n_j\), Poisson / normal?</td><td>χ², K–S → 14, 15</td></tr>
+<tr><td>regression line predicting y</td><td>\(\hat y = a + bx\) → 16</td></tr>
 </table>
-<p class="m"><b>Fráze:</b> exactly k \(X=k\) · at least k \(X\ge k = 1-p(X\le k-1)\) · at most / not more than \(X\le k\) · more/less than \(&gt;,&lt;\) · none \(X=0\) · at least one \(1-p(0)\) · either A or B \(A\cup B\) · given that \(p(\cdot\mid\cdot)\) · with/without replacement → Bi/H · confidence 0,95 → α = 0,05 · significance level 95 % (S8/3) → α = 0,05.</p>
+<p class="m"><b>Fráze:</b> exactly k \(X=k\) · at least k \(X\ge k = 1-p(X\le k-1)\) · at most / not more than \(X\le k\) · more / less than \(&gt;,&lt;\) · none \(X=0\) · at least one \(1-p(0)\) · either A or B \(A\cup B\) · given that \(p(\cdot\mid\cdot)\) · with / without replacement → Bi / H · confidence 0,95 → α = 0,05 · significance level 95 % (S8/3) → α = 0,05.</p>
 </section>
 
 <section>
-<h2>1 · Jevy, kombinatorika</h2>
-<p>\(p(\bar A) = 1 - p(A)\) · \(p(A \cup B) = p(A) + p(B) - p(AB)\) · \(p(A \mid B) = \frac{p(AB)}{p(B)}\) · nezávislé: \(p(AB) = p(A)p(B)\)</p>
-<p>Výběr k z n: bez pořadí \(\binom{n}{k}\) · s pořadím \(\frac{n!}{(n-k)!}\) · s opakováním \(n^k\) · permutace \(n!\) · j dobrých z M a zbytek z N − M: \(\binom{M}{j}\binom{N-M}{k-j}\)</p>
-<ol class="p"><li>Popiš 1 výsledek (kostky = uspořádaná dvojice, 36).</li><li>Všechny n a příznivé m <b>stejně</b> (oboje s pořadím / bez).</li><li>\(p = m/n\); „aspoň 1“ = 1 − p(žádný); tahy bez vracení: \(\frac{4}{32}\cdot\frac{3}{31}\).</li></ol>
-<p><b>Geometrická:</b> každé číslo = osa, Ω čtverec; podmínky → \(y &lt; 1-x\), \(y &lt; c/x\), \(D \ge 0\); nakreslit, průsečíky, plocha (integrál po částech) / plocha Ω. Kruh: poměr \(r^2\).</p>
+<h2>1 · Klasická pravděpodobnost</h2>
+<ol class="p">
+<li><b>Jeden výsledek</b> = co přesně padne / se vytáhne. Kostky = uspořádaná dvojice (36), i „two same dice“. Tah k karet naráz = k-tice bez pořadí.</li>
+<li><b>Všechny výsledky n:</b> k z n bez pořadí \(\binom{n}{k}\) (nCr) · s pořadím \(\frac{n!}{(n-k)!}\) (nPr) · s vracením \(n^k\) · seřazení \(n!\).</li>
+<li><b>Příznivé m</b> počítej <b>stejným způsobem</b> jako n. j dobrých z M a zbytek z ostatních: \(\binom{M}{j}\binom{N-M}{k-j}\).</li>
+<li>\(p = m/n\). „Aspoň jeden“ → \(1 - p(\text{žádný})\). Tahy po jednom bez vracení → násob zlomky \(\frac{4}{32}\cdot\frac{3}{31}\).</li></ol>
+<p>\(p(\bar A) = 1 - p(A)\) · \(p(A \cup B) = p(A) + p(B) - p(AB)\) · \(p(A \mid B) = \frac{p(AB)}{p(B)}\) · nezávislé: \(p(AB) = p(A)\,p(B)\)</p>
+<p class="vz"><b>S1/5</b> 2 kola po 3 míčcích (9 nových, 6 hraných; v 1. kole j nových, ve 2. k nových): \[ p(k) = \sum_j \frac{\binom{9}{j}\binom{6}{3-j}}{\binom{15}{3}}\cdot\frac{\binom{9-j}{k}\binom{6+j}{3-k}}{\binom{15}{3}} \]</p>
 </section>
 
 <section>
-<h2>2 · Úplná pravděpodobnost, Bayes</h2>
+<h2>2 · Geometrická pravděpodobnost</h2>
+<ol class="p">
+<li>Každé náhodné číslo = jedna osa (x, y). Ω = čtverec / obdélník, spočítej jeho plochu.</li>
+<li>Každou podmínku přepiš na „y &lt; …“: \(x+y&lt;1\) → \(y&lt;1-x\); \(xy&lt;c\) → \(y&lt;c/x\); reálné kořeny → \(D \ge 0\).</li>
+<li>Nakresli hranice a vyšrafuj, kde platí <b>všechny</b> podmínky.</li>
+<li>Průsečíky hranic (rovnice; Polynomial).</li>
+<li>Plocha = \(\int (\text{horní} - \text{dolní})\,dx\), po úsecích mezi průsečíky.</li>
+<li>\(p = \) plocha / plocha Ω. Kruh: poměr \(r^2\).</li></ol>
+<p class="vz"><b>S1/9</b> \(x+y&lt;1\), \(xy&lt;0{,}09\): průsečíky 0,1 a 0,9; \(\int_0^{0{,}1}(1-x) + \int_{0{,}1}^{0{,}9}\frac{0{,}09}{x} + \int_{0{,}9}^1 (1-x) = 0{,}298\).</p>
+</section>
+
+<section>
+<h2>3 · Úplná pravděpodobnost, Bayes</h2>
+<ol class="p">
+<li><b>Hypotézy \(H_i\)</b> = odkud věc je (skupina, krabice, stroj). Zapiš \(p(H_i)\); součet musí být 1 (účasti 60/50/70 % → \(p(H_1) = 0{,}6/1{,}8\)…).</li>
+<li>Zapiš \(p(A\mid H_i)\) = pravděpodobnost jevu A uvnitř skupiny i.</li>
+<li><b>Úplná p.:</b> pro každou větev \(p(H_i)\cdot p(A\mid H_i)\), pak sečti.</li>
+<li><b>Bayes</b> („A nastalo, z které skupiny?“): moje větev / součet z kroku 3.</li></ol>
 \[ \begin{aligned} p(A) &= \sum_i p(H_i)\,p(A\mid H_i) \\ p(H_k\mid A) &= \frac{p(H_k)\,p(A\mid H_k)}{p(A)} \end{aligned} \]
-<ol class="p"><li>\(H_i\) disjunktní, \(\sum p(H_i) = 1\)! Účasti 60/50/70 % → \(p(H_i) = 0{,}6/1{,}8\)…</li><li>\(p(A\mid H_i)\) = úspěšnost ve skupině.</li><li>Strom: násob po větvi, sečti větve s A; Bayes = moje větev / součet.</li></ol>
-<p><b>A dřív než B:</b> \(\frac{p(A)}{p(A)+p(B)}\) (S1/4: \(\frac{4}{4+6}\)). <b>Střídání</b>, začíná A: \(p_A = \frac{a}{1-(1-a)(1-b)}\). Monty Hall: změnit → 2/3. Bayes s \(p(N=k)\) (HW2/2): \(p(N=k\mid B) = \frac{p(N=k)\,p(B\mid N=k)}{\sum_j p(N=j)\,p(B\mid N=j)}\), \(\sum \frac{x^k}{k!} = e^x\).</p>
+<p><b>A dřív než B</b> (opakuji, dokud nenastane A nebo B): \(\frac{p(A)}{p(A)+p(B)}\), S1/4: \(\frac{4}{4+6}\). <b>Střídání</b>, začíná A, zásah a / b: \(p_A = \frac{a}{1-(1-a)(1-b)}\). Monty Hall: změnit → 2/3. HW2/2 s \(p(N=k)\): Bayes přes všechna k, \(\sum \frac{x^k}{k!} = e^x\).</p>
 </section>
 
 <section>
-<h2>3 · Diskrétní náhodná veličina</h2>
-<p>\(F(x) = p(X &lt; x)\): na \((x_i, x_{i+1}\rangle\) je \(F = p_1 + \dots + p_i\); pro \(x \le x_1\) 0, za max 1.</p>
-<p>\(p(X = k)\) = skok v k · \(p(X &lt; a) = F(a)\) · \(p(X \ge a) = 1 - F(a)\) · \(p(a \le X &lt; b) = F(b) - F(a)\)</p>
+<h2>4 · Diskrétní náhodná veličina</h2>
+<ol class="p">
+<li><b>Tabulka</b> \(x_i \mid p_i\), kontrola \(\sum p_i = 1\). Dvě neznámé p: \(\sum p_i = 1\) a \(\sum x_i p_i = EX\) → Simul.</li>
+<li><b>F(x) = p(X &lt; x)</b> po intervalech: \(x \le x_1\): 0 · \(x_1 &lt; x \le x_2\): \(p_1\) · \(x_2 &lt; x \le x_3\): \(p_1+p_2\) · … · za \(x_{\max}\): 1.</li>
+<li><b>Z F zpět:</b> \(p(X=k)\) = skok v k · \(p(X&lt;a) = F(a)\) · \(p(X\ge a) = 1 - F(a)\) · \(p(a\le X&lt;b) = F(b) - F(a)\).</li>
+<li><b>EX, DX</b> (kalkulačka: Statistics, Freq = \(p_i\) → \(\bar x\) = EX, \(\sigma_x^2\) = DX):</li></ol>
 \[ \begin{aligned} EX &= \textstyle\sum x_i p_i, \qquad EX^2 = \sum x_i^2 p_i \\ DX &= EX^2 - (EX)^2, \qquad \sigma = \sqrt{DX} \end{aligned} \]
 <p>\(E(aX+b) = aEX + b\) · \(D(aX+b) = a^2 DX\) · \(E(X+Y) = EX+EY\); nezávislé \(D(X+Y) = DX+DY\)</p>
-<p>2 neznámé p: \(\sum p_i = 1\) a \(\sum x_i p_i = EX\) → soustava. Tahání do 1. červené: násob \(\frac{b}{N}\cdot\frac{b-1}{N-1}\cdots\frac{r}{\cdot}\).</p>
+<p class="vz"><b>S2/1</b> do 1. červené (3 b, 2 č): \(p(1) = \frac25\), \(p(2) = \frac35\cdot\frac24\), \(p(3) = \frac35\cdot\frac24\cdot\frac23\), \(p(4) = \frac35\cdot\frac24\cdot\frac13\cdot 1\). <b>S2/3</b> F skočí v 10 z 0,3 na 0,6 → \(p(10) = 0{,}3\); \(p(X&lt;10) = F(10) = 0{,}3\).</p>
 </section>
 
 <section>
-<h2>4 · Diskrétní rozdělení</h2>
+<h2>5 · Bi, Ge, H, Po</h2>
+<ol class="p">
+<li><b>Rozdělení</b> (rozpoznávač) a parametry: n, p, \(q = 1-p\) / N, M, n / λ.</li>
+<li><b>Otázku přepiš</b> na X: exactly k → \(p(X=k)\); at most k → \(p(0)+\dots+p(k)\); at least k → \(1 - p(X\le k-1)\).</li>
+<li><b>Dosaď</b> do vzorce nebo kalkulačka: Binomial / Poisson PD = \(p(X=x)\), CD = \(p(X\le x)\).</li>
+<li><b>EX, DX</b> z tabulky.</li></ol>
 <table class="f">
 <tr><th></th><th>\(p(X=k)\)</th><th>EX</th><th>DX</th></tr>
-<tr><td>Bi(n, p), 0..n</td><td>\(\binom{n}{k}p^k q^{n-k}\)</td><td>\(np\)</td><td>\(npq\)</td></tr>
-<tr><td>Ge od 0 (k úspěchů, pak neúsp.; p = úspěch)</td><td>\(p^k q\)</td><td>\(\frac{p}{q}\)</td><td>\(\frac{p}{q^2}\)</td></tr>
-<tr><td>Ge od 1 (pokus s 1. úspěchem)</td><td>\(q^{k-1}p\)</td><td>\(\frac1p\)</td><td>\(\frac{q}{p^2}\)</td></tr>
+<tr><td>Bi(n, p), k = 0..n</td><td>\(\binom{n}{k}p^k q^{n-k}\)</td><td>\(np\)</td><td>\(npq\)</td></tr>
+<tr><td>Ge od 0 (k úspěchů, pak neúspěch; p = úspěch)</td><td>\(p^k q\)</td><td>\(\frac{p}{q}\)</td><td>\(\frac{p}{q^2}\)</td></tr>
+<tr><td>Ge od 1 (pořadí 1. úspěchu)</td><td>\(q^{k-1}p\)</td><td>\(\frac1p\)</td><td>\(\frac{q}{p^2}\)</td></tr>
 <tr><td>H(N, M, n)</td><td>\(\frac{\binom{M}{k}\binom{N-M}{n-k}}{\binom{N}{n}}\)</td><td>\(n\frac{M}{N}\)</td><td>\(n\frac{M}{N}\frac{N-M}{N}\frac{N-n}{N-1}\)</td></tr>
-<tr><td>Po(λ), 0, 1, …</td><td>\(\frac{\lambda^k}{k!}e^{-\lambda}\)</td><td>λ</td><td>λ</td></tr>
+<tr><td>Po(λ), k = 0, 1, …</td><td>\(\frac{\lambda^k}{k!}e^{-\lambda}\)</td><td>λ</td><td>λ</td></tr>
 </table>
-<p>\(q = 1 - p\). <b>Konkrétní pořadí</b> bez \(\binom{n}{k}\) (S3/1d: \(0{,}85\cdot 0{,}15^5\)). <b>Max n pokusů</b> (S3/3): poslední hodnota \(= p^{n-1}q + p^n\). <b>Po:</b> λ na interval (20/h → 5 min: 5/3); \(p(0) = e^{-\lambda}\); aspoň 2: \(1 - e^{-\lambda}(1+\lambda)\). Bi ≈ Po(np) pro n ≥ 30, p ≤ 0,1.</p>
+<p><b>Konkrétní pořadí</b> bez \(\binom{n}{k}\) (S3/1d: \(0{,}85\cdot 0{,}15^5\)). <b>Max n pokusů</b> (S3/3, max 6 testů): \(p(k) = 0{,}85^{k-1}\cdot 0{,}15\), poslední \(p(6) = 0{,}85^5\). <b>Po:</b> λ nejdřív přepočítej na délku intervalu (20/h → 5 min: λ = 5/3); \(p(0) = e^{-\lambda}\); aspoň 2: \(1 - e^{-\lambda}(1+\lambda)\). Bi ≈ Po(np) pro n ≥ 30, p ≤ 0,1.</p>
 </section>
 
 <section>
-<h2>5 · Spojitá náhodná veličina</h2>
-<ol class="p"><li>\(\int_{-\infty}^{\infty} f = 1\) → a; „prove density“: \(f \ge 0\) a \(\int f = 1\).</li>
-<li>\(p(a&lt;X&lt;b) = \int_a^b f = F(b) - F(a)\) (ostrost nevadí).</li>
-<li>\(F(x) = \int_{-\infty}^x f(t)\,dt\) <b>po částech</b>: 0 | integrál | (+ plocha předchozí části) | 1; musí navazovat.</li>
-<li>\(EX = \int x f\), \(EX^2 = \int x^2 f\), \(DX = EX^2 - (EX)^2\); symetrická → EX = střed.</li>
-<li>Medián \(F(\tilde x) = 0{,}5\); kvantil \(F(x_p) = p\).</li></ol>
+<h2>6 · Spojitá náhodná veličina</h2>
+<ol class="p">
+<li><b>Konstanta a:</b> \(\int f\,dx = 1\) přes úsek, kde \(f \ne 0\) → rovnice pro a. „Prove density“: \(f \ge 0\) a \(\int f = 1\).</li>
+<li><b>Pravděpodobnost:</b> \(p(a&lt;X&lt;b) = \int_a^b f\,dx\) (&lt; a ≤ je jedno).</li>
+<li><b>F(x) po částech:</b> vlevo od úseku 0 · na úseku \(\int_{\text{začátek}}^{x} f(t)\,dt\) · vpravo 1. Kontrola: na hranicích navazuje.</li>
+<li><b>EX, DX:</b> \(EX = \int x f\), \(EX^2 = \int x^2 f\), \(DX = EX^2 - (EX)^2\). Symetrická f → EX = střed.</li>
+<li><b>Medián / kvantil:</b> vyřeš \(F(\tilde x) = 0{,}5\) / \(F(x_p) = p\) (SOLVE).</li></ol>
+<p class="vz"><b>S4/4</b> \(f = a(3x - x^2)\) na ⟨0, 3⟩: \(a\cdot\frac92 = 1\) → \(a = \frac29\); \(F = \frac{x^2}{3} - \frac{2x^3}{27}\) na ⟨0, 3⟩.</p>
 <table class="f">
 <tr><td>rovnoměrné ⟨a, b⟩</td><td>\(f = \frac{1}{b-a}\)</td><td>\(EX = \frac{a+b}{2}\), \(DX = \frac{(b-a)^2}{12}\)</td></tr>
 <tr><td>exponenciální</td><td>\(f = \lambda e^{-\lambda x}\), \(F = 1 - e^{-\lambda x}\)</td><td>\(\frac1\lambda\); \(\frac{1}{\lambda^2}\)</td></tr>
 <tr><td>Laplace</td><td>\(f = \frac\lambda2 e^{-\lambda|x|}\)</td><td>0; \(\frac{2}{\lambda^2}\)</td></tr>
 <tr><td>trojúhelník a, c, b</td><td>vrchol \(\frac{2}{b-a}\)</td><td>\(\frac{a+b+c}{3}\); \(\frac{a^2+b^2+c^2-ab-ac-bc}{18}\)</td></tr>
 </table>
-<p><b>Integrály:</b> \(\int x^n = \frac{x^{n+1}}{n+1}\) · \(\int e^{ax} = \frac{e^{ax}}{a}\) · \(\int \frac1x = \ln|x|\) · per partes \(\int uv' = uv - \int u'v\) · \(\int x\sin x = \sin x - x\cos x\) · \(\int x\cos x = \cos x + x\sin x\) · \(\int x^2\sin x = -x^2\cos x + 2x\sin x + 2\cos x\) · \(\int x^2\cos x = x^2\sin x + 2x\cos x - 2\sin x\) · \(\int x e^{-\lambda x} = -\frac{e^{-\lambda x}}{\lambda^2}(\lambda x + 1)\) · \(\int x^2 e^{-\lambda x} = -\frac{e^{-\lambda x}}{\lambda^3}(\lambda^2x^2 + 2\lambda x + 2)\) · \(|x|\): rozděl na \(x&lt;0\), \(x&gt;0\) (sudá f → \(2\int_0^\infty\)).</p>
+<p><b>Integrály:</b> \(\int x^n = \frac{x^{n+1}}{n+1}\) · \(\int e^{ax} = \frac{e^{ax}}{a}\) · \(\int \frac1x = \ln|x|\) · per partes \(\int uv' = uv - \int u'v\) · \(\int x\sin x = \sin x - x\cos x\) · \(\int x\cos x = \cos x + x\sin x\) · \(\int x^2\sin x = -x^2\cos x + 2x\sin x + 2\cos x\) · \(\int x^2\cos x = x^2\sin x + 2x\cos x - 2\sin x\) · \(\int x e^{-\lambda x} = -\frac{e^{-\lambda x}}{\lambda^2}(\lambda x + 1)\) · \(\int x^2 e^{-\lambda x} = -\frac{e^{-\lambda x}}{\lambda^3}(\lambda^2x^2 + 2\lambda x + 2)\) · \(|x|\): rozděl na \(x&lt;0\), \(x&gt;0\) (sudá f → \(2\int_0^\infty\)). Číselně: ∫ na kalkulačce (Radian!).</p>
 </section>
 
 <section>
-<h2>6 · Normální rozdělení No(μ, σ)</h2>
-\[ u = \frac{x-\mu}{\sigma},\quad p(X&lt;x) = \Phi(u),\quad \Phi(-u) = 1 - \Phi(u) \]
-<p>\(p(X&gt;x) = 1-\Phi(u)\) · \(p(a&lt;X&lt;b) = \Phi(u_b) - \Phi(u_a)\) · σ = √variance!</p>
-<p>Hodnota z pravděpodobnosti: \(x = \mu + \sigma u_p\), \(\Phi(u_p) = p\). <i>Above what value with prob. 0,01</i> → \(u_{0{,}99}\); <i>below with 0,02</i> → \(u_{0{,}02} = -u_{0{,}98}\). Symetricky s γ: \(\mu \pm \sigma u_{(1+\gamma)/2}\). \(u_{1-p} = -u_p\).</p>
-<table class="f q"><tr><th>p</th><td>0,8</td><td>0,85</td><td>0,875</td><td>0,9</td><td>0,95</td><td>0,975</td><td>0,98</td><td>0,99</td><td>0,995</td></tr>
-<tr><th>\(u_p\)</th><td>0,842</td><td>1,036</td><td>1,150</td><td>1,282</td><td>1,645</td><td>1,960</td><td>2,054</td><td>2,326</td><td>2,576</td></tr></table>
-<p>3σ: 68,3 % / 95,4 % / 99,7 %. Kreslit zvon.</p>
+<h2>7 · Normální rozdělení No(μ, σ)</h2>
+<p class="st">A) Hodnota x → pravděpodobnost</p>
+<ol class="p">
+<li>Zapiš μ a σ (σ = √variance!).</li>
+<li>Normuj: \(u = \frac{x-\mu}{\sigma}\) (na 2 desetinná místa pro tabulku).</li>
+<li>\(p(X&lt;x) = \Phi(u)\) · \(p(X&gt;x) = 1-\Phi(u)\) · \(p(a&lt;X&lt;b) = \Phi(u_b) - \Phi(u_a)\) · záporné u: \(\Phi(-u) = 1 - \Phi(u)\).</li></ol>
+<p class="st">B) Pravděpodobnost → hodnota x</p>
+<ol class="p">
+<li>Převeď na tvar \(p(X&lt;x) = p\): <i>above x with prob. 0,01</i> → \(p = 0{,}99\); <i>below with 0,02</i> → \(p = 0{,}02\).</li>
+<li>Kvantil \(u_p\) z tabulky; pro \(p &lt; 0{,}5\): \(u_p = -u_{1-p}\).</li>
+<li>\(x = \mu + \sigma u_p\). Symetricky kolem μ s pravděpodobností γ: \(\mu \pm \sigma\,u_{(1+\gamma)/2}\).</li></ol>
+<p>Kalkulačka: Normal CD (Lower, Upper, σ, μ) · Inverse Normal (Area <b>vlevo</b>). 3σ: 68,3 / 95,4 / 99,7 %. Nakresli zvon a vyšrafuj plochu.</p>
+<p class="vz"><b>S5/5</b> chyba No(1; 0,3), hranice s 1 % nad ní: \(1 + 0{,}3\,u_{0{,}99} = 1 + 0{,}3\cdot 2{,}326 = 1{,}698\); 75 % symetricky: \(1 \pm 0{,}3\,u_{0{,}875} = 1 \pm 0{,}3\cdot 1{,}150\).</p>
 </section>
 
 <section>
-<h2>7 · Limitní věty</h2>
-<p><b>Moivre–Laplace:</b> Bi(n, p) ≈ No\((np, \sqrt{npq})\) pro \(npq &gt; 9\); rel. četnost \(X/n\) ≈ No\((p, \sqrt{pq/n})\). Bez opravy na spojitost (S6/2: \(2\Phi(2) - 1 = 0{,}9544\)).</p>
-<p><b>CLV:</b> součet n nezávislých \(S \approx\) No\((n\mu, \sigma\sqrt n)\); průměr ≈ No\((\mu, \sigma/\sqrt n)\).</p>
-<p><b>Hledání n:</b> \(\frac{4500 - 75n}{15\sqrt n} \ge u_{0{,}99}\) → \(z = \sqrt n\) → kvadratická rovnice → \(n = z^2\); lidí zaokrouhli dolů, pokusů nahoru; ověř dosazením.</p>
+<h2>8 · Limitní věty</h2>
+<p class="st">Moivre–Laplace (počet úspěchů X ~ Bi(n, p), n velké)</p>
+<ol class="p">
+<li>Ověř \(npq &gt; 9\).</li>
+<li>\(\mu = np\), \(\sigma = \sqrt{npq}\) (relativní četnost X/n: \(\mu = p\), \(\sigma = \sqrt{pq/n}\)).</li>
+<li>Dál jako 7A: \(u = \frac{x - np}{\sqrt{npq}}\), Φ. Bez opravy na spojitost.</li></ol>
+<p class="vz"><b>S6/1b</b> n = 10000, p = 0,515: μ = 5150, σ = 49,98; \(p(X&lt;5000) \approx \Phi(-3{,}00) = 0{,}00135\). <b>S6/2</b> \(2\Phi(2) - 1 = 0{,}9544\).</p>
+<p class="st">CLV (součet / průměr n nezávislých)</p>
+<ol class="p">
+<li>μ, σ <b>jedné</b> veličiny (hmotnost 1 osoby).</li>
+<li>Součet: \(\mu_S = n\mu\), \(\sigma_S = \sigma\sqrt n\) (ne nσ!) · průměr: μ, \(\sigma/\sqrt n\).</li>
+<li>Dál jako 7A.</li></ol>
+<p class="st">Hledání n (kolik lidí / pokusů)</p>
+<ol class="p">
+<li>Podmínku zapiš normovanou: \(\frac{4500 - 75n}{15\sqrt n} \ge u_{0{,}99} = 2{,}326\).</li>
+<li>Substituce \(z = \sqrt n\), roznásob: \(75z^2 + 2{,}326\cdot 15\,z - 4500 \le 0\).</li>
+<li>Polynomial → kladný kořen z; \(n = z^2\).</li>
+<li>Lidí zaokrouhli <b>dolů</b>, pokusů <b>nahoru</b>; ověř dosazením.</li></ol>
+<p class="vz"><b>S6/4</b> \(75z^2 + 34{,}89z - 4500 = 0\) → \(z = 7{,}52\), \(z^2 = 56{,}5\) → n = 56 lidí.</p>
 <p><b>Čebyšev:</b> \(p(|X - EX| \ge \varepsilon) \le DX/\varepsilon^2\).</p>
-</section>
-
-<section>
-<h2>8 · Náhodný vektor (X, Y)</h2>
-<p>\(\iint f = 1\) · \(f_X(x) = \int f(x,y)\,dy\), \(f_Y(y) = \int f(x,y)\,dx\) · nezávislé ⇔ \(f = f_X f_Y\) · \(p(G) = \iint_G f\): nakreslit, vnější meze čísla, vnitřní závisí (\(p(Y\le X) = \int_0^1\!\int_0^x f\,dy\,dx\)); obdélník a \(f = g(x)h(y)\) → součin integrálů. \(E(XY) = \iint xy f\), \(\text{cov} = E(XY) - EX\,EY\), \(\rho = \frac{\text{cov}}{\sigma_X\sigma_Y}\).</p>
-</section>
-
-<section>
-<h2>Kvantily t a χ² (ν = stupně volnosti)</h2>
-<table class="f q kv">
-<tr><th>ν</th><th>t 0,95</th><th>t 0,975</th><th>t 0,995</th><th>χ² 0,025</th><th>χ² 0,05</th><th>χ² 0,95</th><th>χ² 0,975</th></tr>
-<tr><td>1</td><td>6,314</td><td>12,706</td><td>63,657</td><td>0,0010</td><td>0,0039</td><td>3,841</td><td>5,024</td></tr>
-<tr><td>2</td><td>2,920</td><td>4,303</td><td>9,925</td><td>0,051</td><td>0,103</td><td>5,991</td><td>7,378</td></tr>
-<tr><td>3</td><td>2,353</td><td>3,182</td><td>5,841</td><td>0,216</td><td>0,352</td><td>7,815</td><td>9,348</td></tr>
-<tr><td>4</td><td>2,132</td><td>2,776</td><td>4,604</td><td>0,484</td><td>0,711</td><td>9,488</td><td>11,14</td></tr>
-<tr><td>5</td><td>2,015</td><td>2,571</td><td>4,032</td><td>0,831</td><td>1,145</td><td>11,07</td><td>12,83</td></tr>
-<tr><td>6</td><td>1,943</td><td>2,447</td><td>3,707</td><td>1,237</td><td>1,635</td><td>12,59</td><td>14,45</td></tr>
-<tr><td>7</td><td>1,895</td><td>2,365</td><td>3,499</td><td>1,690</td><td>2,167</td><td>14,07</td><td>16,01</td></tr>
-<tr><td>8</td><td>1,860</td><td>2,306</td><td>3,355</td><td>2,180</td><td>2,733</td><td>15,51</td><td>17,53</td></tr>
-<tr><td>9</td><td>1,833</td><td>2,262</td><td>3,250</td><td>2,700</td><td>3,325</td><td>16,92</td><td>19,02</td></tr>
-<tr><td>10</td><td>1,812</td><td>2,228</td><td>3,169</td><td>3,247</td><td>3,940</td><td>18,31</td><td>20,48</td></tr>
-<tr><td>11</td><td>1,796</td><td>2,201</td><td>3,106</td><td>3,816</td><td>4,575</td><td>19,68</td><td>21,92</td></tr>
-<tr><td>12</td><td>1,782</td><td>2,179</td><td>3,055</td><td>4,404</td><td>5,226</td><td>21,03</td><td>23,34</td></tr>
-<tr><td>13</td><td>1,771</td><td>2,160</td><td>3,012</td><td>5,009</td><td>5,892</td><td>22,36</td><td>24,74</td></tr>
-<tr><td>14</td><td>1,761</td><td>2,145</td><td>2,977</td><td>5,629</td><td>6,571</td><td>23,68</td><td>26,12</td></tr>
-<tr><td>15</td><td>1,753</td><td>2,131</td><td>2,947</td><td>6,262</td><td>7,261</td><td>25,00</td><td>27,49</td></tr>
-<tr><td>16</td><td>1,746</td><td>2,120</td><td>2,921</td><td>6,908</td><td>7,962</td><td>26,30</td><td>28,85</td></tr>
-<tr><td>17</td><td>1,740</td><td>2,110</td><td>2,898</td><td>7,564</td><td>8,672</td><td>27,59</td><td>30,19</td></tr>
-<tr><td>18</td><td>1,734</td><td>2,101</td><td>2,878</td><td>8,231</td><td>9,390</td><td>28,87</td><td>31,53</td></tr>
-<tr><td>19</td><td>1,729</td><td>2,093</td><td>2,861</td><td>8,907</td><td>10,12</td><td>30,14</td><td>32,85</td></tr>
-<tr><td>20</td><td>1,725</td><td>2,086</td><td>2,845</td><td>9,591</td><td>10,85</td><td>31,41</td><td>34,17</td></tr>
-<tr><td>21</td><td>1,721</td><td>2,080</td><td>2,831</td><td>10,28</td><td>11,59</td><td>32,67</td><td>35,48</td></tr>
-<tr><td>22</td><td>1,717</td><td>2,074</td><td>2,819</td><td>10,98</td><td>12,34</td><td>33,92</td><td>36,78</td></tr>
-<tr><td>23</td><td>1,714</td><td>2,069</td><td>2,807</td><td>11,69</td><td>13,09</td><td>35,17</td><td>38,08</td></tr>
-<tr><td>24</td><td>1,711</td><td>2,064</td><td>2,797</td><td>12,40</td><td>13,85</td><td>36,42</td><td>39,36</td></tr>
-<tr><td>25</td><td>1,708</td><td>2,060</td><td>2,787</td><td>13,12</td><td>14,61</td><td>37,65</td><td>40,65</td></tr>
-<tr><td>26</td><td>1,706</td><td>2,056</td><td>2,779</td><td>13,84</td><td>15,38</td><td>38,89</td><td>41,92</td></tr>
-<tr><td>27</td><td>1,703</td><td>2,052</td><td>2,771</td><td>14,57</td><td>16,15</td><td>40,11</td><td>43,19</td></tr>
-<tr><td>28</td><td>1,701</td><td>2,048</td><td>2,763</td><td>15,31</td><td>16,93</td><td>41,34</td><td>44,46</td></tr>
-<tr><td>29</td><td>1,699</td><td>2,045</td><td>2,756</td><td>16,05</td><td>17,71</td><td>42,56</td><td>45,72</td></tr>
-<tr><td>30</td><td>1,697</td><td>2,042</td><td>2,750</td><td>16,79</td><td>18,49</td><td>43,77</td><td>46,98</td></tr>
-<tr><td>40</td><td>1,684</td><td>2,021</td><td>2,704</td><td>24,43</td><td>26,51</td><td>55,76</td><td>59,34</td></tr>
-<tr><td>50</td><td>1,676</td><td>2,009</td><td>2,678</td><td>32,36</td><td>34,76</td><td>67,50</td><td>71,42</td></tr>
-<tr><td>60</td><td>1,671</td><td>2,000</td><td>2,660</td><td>40,48</td><td>43,19</td><td>79,08</td><td>83,30</td></tr>
-<tr><td>80</td><td>1,664</td><td>1,990</td><td>2,639</td><td>57,15</td><td>60,39</td><td>101,88</td><td>106,63</td></tr>
-<tr><td>100</td><td>1,660</td><td>1,984</td><td>2,626</td><td>74,22</td><td>77,93</td><td>124,34</td><td>129,56</td></tr>
-<tr><td>120</td><td>1,658</td><td>1,980</td><td>2,617</td><td>91,57</td><td>95,70</td><td>146,57</td><td>152,21</td></tr>
-<tr><td>∞</td><td>1,645</td><td>1,960</td><td>2,576</td><td></td><td></td><td></td><td></td></tr>
-</table>
-<p class="m">Oboustranný test / interval α = 0,05 → t 0,975; jednostranný → t 0,95; 99 % → t 0,995. χ² dobré shody: sloupec 0,95.</p>
 </section>
 
 </div>
@@ -172,35 +169,68 @@
 <div class="cols">
 
 <section>
-<h2>9 · Výběrové charakteristiky</h2>
-\[ \bar x = \frac{\sum x_i}{n},\quad s^2 = \frac{\sum (x_i - \bar x)^2}{n-1} = \frac{\sum x_i^2 - (\sum x_i)^2/n}{n-1} \]
-<p>Četnosti \(n_j\) (středy tříd \(x_j\)): \(\bar x = \frac{\sum x_j n_j}{n}\), \(\sigma^2 = \frac{\sum x_j^2 n_j}{n} - \bar x^2\) (S8/5: 6,72); s \(n-1\) skoro stejné.</p>
+<h2>9 · Náhodný vektor (X, Y)</h2>
+<ol class="p">
+<li><b>Konstanta:</b> \(\iint f\,dx\,dy = 1\).</li>
+<li><b>Marginální:</b> \(f_X(x) = \int f(x,y)\,dy\) (integruj přes y), \(f_Y(y) = \int f(x,y)\,dx\).</li>
+<li><b>Nezávislost:</b> platí \(f = f_X\,f_Y\) všude? Ano → nezávislé.</li>
+<li><b>p(G):</b> nakresli oblast; vnější meze čísla, vnitřní závisí na vnější proměnné; spočítej vnitřní integrál první. Obdélník a \(f = g(x)h(y)\) → součin dvou integrálů.</li>
+<li><b>cov, ρ:</b> \(E(XY) = \iint xy f\), \(\text{cov} = E(XY) - EX\,EY\), \(\rho = \frac{\text{cov}}{\sigma_X\sigma_Y}\).</li></ol>
+<p class="vz"><b>S6/5d</b> \(p(Y\le X) = \int_0^1\!\int_0^x 4x(1-y)\,dy\,dx = \int_0^1 (4x^2 - 2x^3)\,dx = \frac56\).</p>
 </section>
 
 <section>
-<h2>10 · Intervaly spolehlivosti (1 − α)</h2>
+<h2>10 · Výběrové charakteristiky</h2>
+\[ \bar x = \frac{\sum x_i}{n},\quad s^2 = \frac{\sum (x_i - \bar x)^2}{n-1} = \frac{\sum x_i^2 - (\sum x_i)^2/n}{n-1} \]
+<p>Kalkulačka: Statistics → 1-Variable → data → OPTN → 1-Variable Calc: \(\bar x\), \(s_x\) (= s, dělí n − 1), \(\sigma_x\) (dělí n). Četnosti \(n_j\) do sloupce Freq (středy tříd \(x_j\)): \(\bar x = \frac{\sum x_j n_j}{n}\), \(\sigma^2 = \frac{\sum x_j^2 n_j}{n} - \bar x^2\) (S8/5: 6,72).</p>
+</section>
+
+<section>
+<h2>11 · Interval spolehlivosti</h2>
+<ol class="p">
+<li><b>Ze zadání</b> n, \(\bar x\), s (nebo z dat kalkulačkou) a spolehlivost \(1-\alpha\) (95 % → α = 0,05).</li>
+<li><b>Řádek tabulky</b>: odhaduji μ, nebo σ²? Je σ zadané?</li>
+<li><b>Kvantil</b> (ν = n − 1): 95 % → \(t_{0{,}975}(n-1)\); pro σ² oba \(\chi^2_{0{,}975}\) a \(\chi^2_{0{,}025}\).</li>
+<li><b>Dosaď</b>: dolní a horní mez. Pro σ odmocni meze σ².</li>
+<li><b>Odpověď:</b> „S pravděpodobností 0,95 leží μ v (… ; …).“</li></ol>
 <table class="f">
 <tr><td>μ, σ neznámé</td><td>\(\bar x \pm t_{1-\alpha/2}(n-1)\,\frac{s}{\sqrt n}\)</td></tr>
 <tr><td>μ, σ známé</td><td>\(\bar x \pm u_{1-\alpha/2}\,\frac{\sigma}{\sqrt n}\)</td></tr>
 <tr><td>σ²</td><td>\(\left(\frac{(n-1)s^2}{\chi^2_{1-\alpha/2}(n-1)},\ \frac{(n-1)s^2}{\chi^2_{\alpha/2}(n-1)}\right)\)</td></tr>
-<tr><td>σ</td><td>odmocniny mezí pro σ²</td></tr>
 </table>
-<p>95 % → \(t_{0{,}975}\), \(\chi^2_{0{,}975}\) a \(\chi^2_{0{,}025}\) (větší kvantil = dolní mez). Jednostranný interval: \(1-\alpha\).</p>
+<p>Pozor: <b>větší</b> kvantil χ² dává <b>dolní</b> mez. Jednostranný interval: kvantil \(1-\alpha\) místo \(1-\alpha/2\).</p>
+<p class="vz"><b>S7/1</b> n = 10, \(\bar x = 9{,}5\), s = 10,17, \(t_{0{,}975}(9) = 2{,}262\): \(9{,}5 \pm 2{,}262\cdot\frac{10{,}17}{\sqrt{10}} = 9{,}5 \pm 7{,}27\) → (2,23; 16,77). <b>S7/2</b> σ², n = 9: \(\left(\frac{8 s^2}{17{,}535};\ \frac{8 s^2}{2{,}180}\right)\).</p>
 </section>
 
 <section>
-<h2>11 · Test hypotézy K1–K5</h2>
+<h2>12 · Test hypotézy: kroky K1–K5</h2>
 <ol class="p">
-<li><b>K1</b> \(H_0\) s „=“; \(H_1\): ≠ (liší se / is correlated) · &lt; (cheats, menší) · &gt; (effective: před − po &gt; 0).</li>
-<li><b>K2</b> kritérium (tabulka) + dosazení.</li>
-<li><b>K3</b> rozdělení za \(H_0\) a stupně volnosti.</li>
-<li><b>K4</b> kritická hodnota: ≠ → \(1-\frac\alpha2\); &lt;, &gt; → \(1-\alpha\).</li>
-<li><b>K5</b> v kritickém oboru → <b>zamítáme \(H_0\)</b>, jinak <b>nezamítáme</b> (≠ platí!) + věta slovy.</li></ol>
-<p>Zamítám: ≠ \(|T| \ge t_{1-\alpha/2}\) · &lt; \(T \le -t_{1-\alpha}\) · &gt; \(T \ge t_{1-\alpha}\). Velké ν (&gt; 120): \(t \approx u\) (1,96; 1,645). Interval ↔ test: \(\mu_0\) mimo interval ⇔ oboustranně zamítám.</p>
+<li><b>K1 Hypotézy.</b> \(H_0\): parametr <b>=</b> hodnota (\(\mu = 100\), \(\mu_1 = \mu_2\)). \(H_1\) podle otázky: „liší se / differs / is correlated“ → ≠ · „less, cheats (dává méně)“ → &lt; · „greater, effective (před − po &gt; 0)“ → &gt;.</li>
+<li><b>K2 Kritérium.</b> Vyber vzorec z oddílu 13, dosaď, vyjde jedno číslo T.</li>
+<li><b>K3 Rozdělení</b> T za \(H_0\) a stupně volnosti ν (poslední sloupec v 13).</li>
+<li><b>K4 Kritický obor</b> (kvantil z tabulek):
+<br>≠: zamítám, když \(|T| \ge t_{1-\alpha/2}(\nu)\), tj. \(t_{0{,}975}\)
+<br>&lt;: zamítám, když \(T \le -t_{1-\alpha}(\nu)\), tj. \(-t_{0{,}95}\)
+<br>&gt;: zamítám, když \(T \ge t_{1-\alpha}(\nu)\), tj. \(t_{0{,}95}\)
+<br>(u, χ², F stejně; ν &gt; 120: t ≈ u, 1,960 / 1,645).</li>
+<li><b>K5 Závěr.</b> T v kritickém oboru → „\(H_0\) <b>zamítáme</b> na hladině α, platí \(H_1\)“; jinak „\(H_0\) <b>nezamítáme</b>“ (neznamená, že platí). Napiš větou v kontextu: „výrobce nešidí“, „lék je účinný“.</li></ol>
+<p>Interval ↔ test: \(\mu_0\) mimo 95% interval ⇔ oboustranný test zamítá.</p>
+<div class="vz"><p><b>Vzor celého zápisu – S7/5</b> (jídelna uvádí 100 g; 10 vzorků; „does not cheat“, α = 0,05):</p>
+<p>K1: \(H_0: \mu = 100\) (nešidí), \(H_1: \mu &lt; 100\) (šidí).<br>
+K2: z dat \(\bar x = 95{,}53\), s = 2,503; \(T = \frac{95{,}53 - 100}{2{,}503}\sqrt{10} = -5{,}65\).<br>
+K3: za \(H_0\) má T rozdělení t(9).<br>
+K4: levostranný, \(t_{0{,}95}(9) = 1{,}833\); zamítám pro \(T \le -1{,}833\).<br>
+K5: \(-5{,}65 \le -1{,}833\) → \(H_0\) zamítáme; na hladině 0,05 jídelna šidí (porce mají méně než 100 g).</p></div>
 </section>
 
 <section>
-<h2>12 · Testy o μ a σ²</h2>
+<h2>13 · Který test a jeho vzorec</h2>
+<table class="rz">
+<tr><td>1 výběr, průměr vs. číslo</td><td>1výběrový t (σ zadané → U)</td></tr>
+<tr><td>stejní jedinci 2× (před / po)</td><td>párový t: nejdřív rozdíly \(d_i\)</td></tr>
+<tr><td>2 nezávislé skupiny, průměry</td><td>F-test rozptylů, pak 2výběrový t</td></tr>
+<tr><td>rozptyl vs. číslo</td><td>χ² test rozptylu</td></tr>
+</table>
 <table class="f t">
 <tr><th>\(H_0\)</th><th>kritérium</th><th>za \(H_0\)</th></tr>
 <tr><td>\(\mu = \mu_0\)</td><td>\(T = \frac{\bar x - \mu_0}{s}\sqrt n\)</td><td>t(n−1)</td></tr>
@@ -209,46 +239,54 @@
 <tr><td>\(\mu_1 = \mu_2\)</td><td>\(T = \frac{\bar x_1 - \bar x_2}{s_p\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}\)</td><td>t(n₁+n₂−2)</td></tr>
 <tr><td></td><td colspan="2">\(s_p^2 = \frac{(n_1-1)s_1^2 + (n_2-1)s_2^2}{n_1+n_2-2}\)</td></tr>
 <tr><td>\(\mu_1 = \mu_2\), velká n</td><td>\(U = \frac{\bar x_1 - \bar x_2}{\sqrt{s_1^2/n_1 + s_2^2/n_2}}\)</td><td>≈ No(0,1)</td></tr>
-<tr><td>\(\sigma_1^2 = \sigma_2^2\)</td><td>\(F = \frac{s_1^2}{s_2^2}\), větší nahoru</td><td>F(n₁−1, n₂−1), zam. \(F \ge F_{1-\alpha/2}\)</td></tr>
-<tr><td>\(\sigma^2 = \sigma_0^2\)</td><td>\(\chi^2 = \frac{(n-1)s^2}{\sigma_0^2}\)</td><td>χ²(n−1), oboustr. \(\chi^2_{\alpha/2}, \chi^2_{1-\alpha/2}\)</td></tr>
+<tr><td>\(\sigma_1^2 = \sigma_2^2\)</td><td>\(F = \frac{s_1^2}{s_2^2}\), větší rozptyl nahoru</td><td>F(n₁−1, n₂−1), zam. \(F \ge F_{0{,}975}\)</td></tr>
+<tr><td>\(\sigma^2 = \sigma_0^2\)</td><td>\(\chi^2 = \frac{(n-1)s^2}{\sigma_0^2}\)</td><td>χ²(n−1), zam. pod \(\chi^2_{0{,}025}\) / nad \(\chi^2_{0{,}975}\)</td></tr>
 </table>
-<p>2 výběry: nejdřív F-test (shodné rozptyly), pak t. Stejní jedinci 2× → párový. S8/1: \(s_p^2 = 292{,}9\), T = −2,12, \(|T| &gt; 1{,}976\) → zamítáme. S8/2: d = 5, 2, 18, −1, 3, −1, 6; T = 1,86 &lt; \(t_{0{,}95}(6) = 1{,}943\) → nezamítáme.</p>
-</section>
-
-<section>
-<h2>13 · χ² test dobré shody</h2>
+<p class="st">Dva nezávislé výběry, krok za krokem</p>
 <ol class="p">
-<li>\(H_0\): X ~ Po(λ) / No(μ, σ) / dané p.</li>
-<li>Odhad z dat: Po \(\lambda = \bar x\) (r = 1); No \(\mu = \bar x\), σ ze středů tříd (r = 2); dané p (kostka) r = 0.</li>
-<li>\(p_j\): Po \(\frac{\lambda^k}{k!}e^{-\lambda}\), krajní třídy „≤ k“, „≥ k“ = zbytek do 1; No \(\Phi(u_{\text{horní}}) - \Phi(u_{\text{dolní}})\), krajní do ±∞.</li>
-<li>\(E_j = n p_j\); \(E_j &lt; 5\) → sloučit se sousední.</li>
-<li>\(\chi^2 = \sum \frac{(n_j - E_j)^2}{E_j}\), ν = k − 1 − r (k po sloučení).</li>
-<li>Jen pravostranný: \(\chi^2 \ge \chi^2_{1-\alpha}(\nu)\) → zamítám.</li></ol>
-<p>S8/3: λ = 308/71 = 4,338; třídy ≤2, 3, 4, 5, 6, ≥7; χ² = 3,36 &lt; \(\chi^2_{0{,}95}(4) = 9{,}49\). S8/5: μ = 15,8, σ = 6,72; χ² = 3,71 &lt; \(\chi^2_{0{,}95}(3) = 7{,}81\). Kontingenční tabulka: \(E_{ij} = \frac{r_i s_j}{n}\), ν = (r−1)(s−1).</p>
+<li>Z každého výběru \(n_i\), \(\bar x_i\), \(s_i^2\).</li>
+<li>F-test: \(F = s_{\text{větší}}^2 / s_{\text{menší}}^2\) vs. \(F_{0{,}975}(\nu_{\text{čit}}, \nu_{\text{jm}})\). Nezamítám → rozptyly shodné.</li>
+<li>\(s_p^2\), pak T, ν = n₁ + n₂ − 2, K4, K5.</li></ol>
+<p class="vz"><b>S8/1</b> \(s_p^2 = 292{,}9\), T = −2,12, \(|T| &gt; t_{0{,}975}(149) \approx 1{,}976\) → zamítáme. <b>S8/2</b> párový: d = 5, 2, 18, −1, 3, −1, 6; T = 1,86 &lt; \(t_{0{,}95}(6) = 1{,}943\) → nezamítáme.</p>
 </section>
 
 <section>
-<h2>14 · Kolmogorovův–Smirnovův test</h2>
+<h2>14 · χ² test dobré shody</h2>
 <ol class="p">
-<li>\(F_n(x_j) = \frac{n_1 + \dots + n_j}{n}\) (kumulativní relativní četnosti).</li>
-<li>\(F_0(x_j)\) teoretická (Po: \(p(X \le x_j)\); spojité: F v horní hranici).</li>
-<li>\(D = \max_j |F_n(x_j) - F_0(x_j)|\).</li>
-<li>\(D \ge D_n(\alpha)\) → zamítám.</li></ol>
-<table class="f q"><tr><th>\(D_n(\alpha)\)</th><td>5</td><td>10</td><td>15</td><td>20</td><td>25</td><td>30</td><td>35</td><td>40</td></tr>
-<tr><th>0,05</th><td>0,563</td><td>0,409</td><td>0,338</td><td>0,294</td><td>0,264</td><td>0,242</td><td>0,224</td><td>0,210</td></tr>
-<tr><th>0,01</th><td>0,669</td><td>0,489</td><td>0,404</td><td>0,352</td><td>0,317</td><td>0,290</td><td>0,269</td><td>0,252</td></tr></table>
-<p>n &gt; 40: \(D_n(0{,}05) \approx 1{,}36/\sqrt n\), \(D_n(0{,}01) \approx 1{,}63/\sqrt n\). S8/4: D = 0,0425 &lt; \(1{,}36/\sqrt{71} = 0{,}161\) → nezamítáme.</p>
+<li><b>\(H_0\):</b> data jsou z Po(λ) / No(μ, σ) / daných p (kostka). \(H_1\): nejsou.</li>
+<li><b>Odhad parametrů</b> z dat, r = jejich počet: Po \(\lambda = \bar x\) (r = 1) · No \(\mu = \bar x\), σ ze středů tříd (r = 2) · dané p (r = 0).</li>
+<li><b>\(p_j\) každé třídy:</b> Po \(\frac{\lambda^k}{k!}e^{-\lambda}\), krajní „≥ k“ = 1 − ostatní · No \(\Phi(u_{\text{horní}}) - \Phi(u_{\text{dolní}})\), krajní třídy do ±∞.</li>
+<li><b>Očekávané</b> \(E_j = n p_j\). Je-li \(E_j &lt; 5\), slouč třídu se sousední (i \(n_j\)).</li>
+<li>\(\chi^2 = \sum \frac{(n_j - E_j)^2}{E_j}\) (M+ sčítá), ν = k − 1 − r, k = počet tříd po sloučení.</li>
+<li><b>Jen vpravo:</b> \(\chi^2 \ge \chi^2_{0{,}95}(\nu)\) → zamítám.</li></ol>
+<p class="vz"><b>S8/3</b> λ = 308/71 = 4,338; třídy ≤2, 3, 4, 5, 6, ≥7 (k = 6, r = 1, ν = 4); χ² = 3,36 &lt; 9,49 → nezamítáme. <b>S8/5</b> μ = 15,8, σ = 6,72; ν = 3, χ² = 3,71 &lt; 7,81.</p>
+<p>Kontingenční tabulka (nezávislost): \(E_{ij} = \frac{r_i s_j}{n}\) (řádkový × sloupcový součet / n), ν = (r−1)(s−1).</p>
 </section>
 
 <section>
-<h2>15 · Regresní přímka \(\hat y = a + bx\)</h2>
+<h2>15 · Kolmogorovův–Smirnovův test</h2>
+<ol class="p">
+<li>Kumulativní relativní četnosti: \(F_n(x_j) = \frac{n_1 + \dots + n_j}{n}\).</li>
+<li>Teoretická \(F_0(x_j)\): Po \(p(X \le x_j)\) (CD); spojité: F v horní hranici třídy.</li>
+<li>\(D = \max_j |F_n(x_j) - F_0(x_j)|\) (sloupec rozdílů, vyber největší).</li>
+<li>\(D \ge D_n(\alpha)\) → zamítám; n &gt; 40: \(D_n(0{,}05) \approx 1{,}36/\sqrt n\).</li></ol>
+<p class="vz"><b>S8/4</b> D = 0,0425 &lt; \(1{,}36/\sqrt{71} = 0{,}161\) → nezamítáme.</p>
+</section>
+
+<section>
+<h2>16 · Regresní přímka \(\hat y = a + bx\)</h2>
+<ol class="p">
+<li><b>Kalkulačkou:</b> Statistics → y=a+bx → zadej x, y → OPTN → Regression Calc: a, b, r. Ručně: součty \(\sum x, \sum y, \sum x^2, \sum xy\) (\(\sum y^2\) pro r).</li>
+<li>\(b\) ze vzorce, pak \(a = \bar y - b\bar x\).</li>
+<li>Předpověď: \(\hat y_0 = a + b x_0\).</li></ol>
 \[ b = \frac{n\sum xy - \sum x\sum y}{n\sum x^2 - (\sum x)^2},\qquad a = \bar y - b\bar x \]
 \[ r = \frac{n\sum xy - \sum x\sum y}{\sqrt{\left(n\sum x^2 - (\sum x)^2\right)\left(n\sum y^2 - (\sum y)^2\right)}} \]
-<p>\(r^2\) = podíl vysvětleného rozptylu; přímka jde bodem \([\bar x, \bar y]\); x podle y je jiná přímka. S8/6: n = 12, Σx = 301, Σy = 3,084, Σx² = 8155, Σxy = 77,638 → b = 3,372/7259 = 0,000465, a = 0,245, r = 0,055.</p>
+<p>\(r^2\) = podíl vysvětleného rozptylu; přímka jde bodem \([\bar x, \bar y]\); x podle y je jiná přímka.</p>
+<p class="vz"><b>S8/6</b> n = 12, Σx = 301, Σy = 3,084, Σx² = 8155, Σxy = 77,638 → b = 3,372/7259 = 0,000465, a = 0,245, r = 0,055.</p>
 </section>
 
 <section>
-<h2>16 · Kalkulačka fx-991CE X</h2>
+<h2>17 · Kalkulačka fx-991CE X</h2>
 <table class="f k">
 <tr><td>nastavení</td><td>SHIFT MENU: Angle → <b>Radian</b> (sin, cos v integrálech); Statistics → Frequency On</td></tr>
 <tr><td>nCr, nPr, x!</td><td>SHIFT ÷ · SHIFT × · SHIFT x⁻¹ · \(e^x\) SHIFT ln · zlomek S⇔D</td></tr>
@@ -262,7 +300,7 @@
 </section>
 
 <section>
-<h2>17 · Chytáky</h2>
+<h2>18 · Chytáky</h2>
 <ul class="c">
 <li>Kostky: uspořádané dvojice (36), i „two same dice“.</li>
 <li>\(\sum p(H_i) = 1\), jinak přepočítat (S1/8).</li>
@@ -281,93 +319,8 @@
 </ul>
 </section>
 
-<section>
-<h2>18 · Vzorové výpočty ze sad</h2>
-<ul class="c">
-<li><b>S1/9</b> \(x+y&lt;1\), \(xy&lt;0{,}09\): průsečíky 0,1 a 0,9; \(\int_0^{0{,}1}(1-x) + \int_{0{,}1}^{0{,}9}\frac{0{,}09}{x} + \int_{0{,}9}^1 (1-x) = 0{,}298\).</li>
-<li><b>S1/5</b> 2 kola míčků: \(\sum_j \frac{\binom{9}{j}\binom{6}{3-j}}{\binom{15}{3}}\cdot\frac{\binom{9-j}{k}\binom{6+j}{3-k}}{\binom{15}{3}}\).</li>
-<li><b>S2/1</b> do 1. červené (3 b, 2 č): \(\frac25;\ \frac35\cdot\frac24;\ \frac35\cdot\frac24\cdot\frac23;\ \frac35\cdot\frac24\cdot\frac13\cdot 1\).</li>
-<li><b>S2/3</b> skok F v 10: \(p(10) = 0{,}6 - 0{,}3\); \(p(X&lt;10) = F(10) = 0{,}3\).</li>
-<li><b>S3/3</b> max 6 testů: \(p(k) = 0{,}85^{k-1}\cdot 0{,}15\), \(p(6) = 0{,}85^5\).</li>
-<li><b>S4/4</b> \(a\int_0^3(3x - x^2) = a\cdot\frac92 = 1\) → \(a = \frac29\); \(F = \frac{x^2}{3} - \frac{2x^3}{27}\).</li>
-<li><b>S5/5</b> chyba No(1; 0,3): \(1 + 0{,}3\,u_{0{,}99} = 1{,}698\); 75 %: \(1 \pm 0{,}3\cdot 1{,}150\).</li>
-<li><b>S6/1b</b> 10000, p = 0,515: \(p(X &lt; 5000) \approx \Phi\big(\frac{5000 - 5150}{49{,}98}\big) = 0{,}00135\).</li>
-<li><b>S6/4</b> \(\frac{4500 - 75n}{15\sqrt n} \ge 2{,}326\) → \(z = 7{,}52\), n = 56.</li>
-<li><b>S6/5d</b> \(\int_0^1\!\int_0^x 4x(1-y)\,dy\,dx = \int_0^1 (4x^2 - 2x^3)\,dx = \frac56\).</li>
-<li><b>S7/1</b> \(\bar x = 9{,}5\), s = 10,17: \(9{,}5 \pm 2{,}262\cdot\frac{10{,}17}{\sqrt{10}}\) = (2,23; 16,77).</li>
-<li><b>S7/2</b> σ²: \(\frac{8 s^2}{17{,}535}\), \(\frac{8 s^2}{2{,}180}\), \(s^2 = 0{,}0002\).</li>
-</ul>
-</section>
-
-<section>
-<h2>Φ(u) = p(U &lt; u), U ~ No(0, 1); Φ(−u) = 1 − Φ(u)</h2>
-<table class="f q kv phi">
-<tr><th>u</th><th>0,00</th><th>0,01</th><th>0,02</th><th>0,03</th><th>0,04</th><th>0,05</th><th>0,06</th><th>0,07</th><th>0,08</th><th>0,09</th></tr>
-<tr><td>0,0</td><td>,5000</td><td>,5040</td><td>,5080</td><td>,5120</td><td>,5160</td><td>,5199</td><td>,5239</td><td>,5279</td><td>,5319</td><td>,5359</td></tr>
-<tr><td>0,1</td><td>,5398</td><td>,5438</td><td>,5478</td><td>,5517</td><td>,5557</td><td>,5596</td><td>,5636</td><td>,5675</td><td>,5714</td><td>,5753</td></tr>
-<tr><td>0,2</td><td>,5793</td><td>,5832</td><td>,5871</td><td>,5910</td><td>,5948</td><td>,5987</td><td>,6026</td><td>,6064</td><td>,6103</td><td>,6141</td></tr>
-<tr><td>0,3</td><td>,6179</td><td>,6217</td><td>,6255</td><td>,6293</td><td>,6331</td><td>,6368</td><td>,6406</td><td>,6443</td><td>,6480</td><td>,6517</td></tr>
-<tr><td>0,4</td><td>,6554</td><td>,6591</td><td>,6628</td><td>,6664</td><td>,6700</td><td>,6736</td><td>,6772</td><td>,6808</td><td>,6844</td><td>,6879</td></tr>
-<tr><td>0,5</td><td>,6915</td><td>,6950</td><td>,6985</td><td>,7019</td><td>,7054</td><td>,7088</td><td>,7123</td><td>,7157</td><td>,7190</td><td>,7224</td></tr>
-<tr><td>0,6</td><td>,7257</td><td>,7291</td><td>,7324</td><td>,7357</td><td>,7389</td><td>,7422</td><td>,7454</td><td>,7486</td><td>,7517</td><td>,7549</td></tr>
-<tr><td>0,7</td><td>,7580</td><td>,7611</td><td>,7642</td><td>,7673</td><td>,7704</td><td>,7734</td><td>,7764</td><td>,7794</td><td>,7823</td><td>,7852</td></tr>
-<tr><td>0,8</td><td>,7881</td><td>,7910</td><td>,7939</td><td>,7967</td><td>,7995</td><td>,8023</td><td>,8051</td><td>,8078</td><td>,8106</td><td>,8133</td></tr>
-<tr><td>0,9</td><td>,8159</td><td>,8186</td><td>,8212</td><td>,8238</td><td>,8264</td><td>,8289</td><td>,8315</td><td>,8340</td><td>,8365</td><td>,8389</td></tr>
-<tr><td>1,0</td><td>,8413</td><td>,8438</td><td>,8461</td><td>,8485</td><td>,8508</td><td>,8531</td><td>,8554</td><td>,8577</td><td>,8599</td><td>,8621</td></tr>
-<tr><td>1,1</td><td>,8643</td><td>,8665</td><td>,8686</td><td>,8708</td><td>,8729</td><td>,8749</td><td>,8770</td><td>,8790</td><td>,8810</td><td>,8830</td></tr>
-<tr><td>1,2</td><td>,8849</td><td>,8869</td><td>,8888</td><td>,8907</td><td>,8925</td><td>,8944</td><td>,8962</td><td>,8980</td><td>,8997</td><td>,9015</td></tr>
-<tr><td>1,3</td><td>,9032</td><td>,9049</td><td>,9066</td><td>,9082</td><td>,9099</td><td>,9115</td><td>,9131</td><td>,9147</td><td>,9162</td><td>,9177</td></tr>
-<tr><td>1,4</td><td>,9192</td><td>,9207</td><td>,9222</td><td>,9236</td><td>,9251</td><td>,9265</td><td>,9279</td><td>,9292</td><td>,9306</td><td>,9319</td></tr>
-<tr><td>1,5</td><td>,9332</td><td>,9345</td><td>,9357</td><td>,9370</td><td>,9382</td><td>,9394</td><td>,9406</td><td>,9418</td><td>,9429</td><td>,9441</td></tr>
-<tr><td>1,6</td><td>,9452</td><td>,9463</td><td>,9474</td><td>,9484</td><td>,9495</td><td>,9505</td><td>,9515</td><td>,9525</td><td>,9535</td><td>,9545</td></tr>
-<tr><td>1,7</td><td>,9554</td><td>,9564</td><td>,9573</td><td>,9582</td><td>,9591</td><td>,9599</td><td>,9608</td><td>,9616</td><td>,9625</td><td>,9633</td></tr>
-<tr><td>1,8</td><td>,9641</td><td>,9649</td><td>,9656</td><td>,9664</td><td>,9671</td><td>,9678</td><td>,9686</td><td>,9693</td><td>,9699</td><td>,9706</td></tr>
-<tr><td>1,9</td><td>,9713</td><td>,9719</td><td>,9726</td><td>,9732</td><td>,9738</td><td>,9744</td><td>,9750</td><td>,9756</td><td>,9761</td><td>,9767</td></tr>
-<tr><td>2,0</td><td>,9772</td><td>,9778</td><td>,9783</td><td>,9788</td><td>,9793</td><td>,9798</td><td>,9803</td><td>,9808</td><td>,9812</td><td>,9817</td></tr>
-<tr><td>2,1</td><td>,9821</td><td>,9826</td><td>,9830</td><td>,9834</td><td>,9838</td><td>,9842</td><td>,9846</td><td>,9850</td><td>,9854</td><td>,9857</td></tr>
-<tr><td>2,2</td><td>,9861</td><td>,9864</td><td>,9868</td><td>,9871</td><td>,9875</td><td>,9878</td><td>,9881</td><td>,9884</td><td>,9887</td><td>,9890</td></tr>
-<tr><td>2,3</td><td>,9893</td><td>,9896</td><td>,9898</td><td>,9901</td><td>,9904</td><td>,9906</td><td>,9909</td><td>,9911</td><td>,9913</td><td>,9916</td></tr>
-<tr><td>2,4</td><td>,9918</td><td>,9920</td><td>,9922</td><td>,9925</td><td>,9927</td><td>,9929</td><td>,9931</td><td>,9932</td><td>,9934</td><td>,9936</td></tr>
-<tr><td>2,5</td><td>,9938</td><td>,9940</td><td>,9941</td><td>,9943</td><td>,9945</td><td>,9946</td><td>,9948</td><td>,9949</td><td>,9951</td><td>,9952</td></tr>
-<tr><td>2,6</td><td>,9953</td><td>,9955</td><td>,9956</td><td>,9957</td><td>,9959</td><td>,9960</td><td>,9961</td><td>,9962</td><td>,9963</td><td>,9964</td></tr>
-<tr><td>2,7</td><td>,9965</td><td>,9966</td><td>,9967</td><td>,9968</td><td>,9969</td><td>,9970</td><td>,9971</td><td>,9972</td><td>,9973</td><td>,9974</td></tr>
-<tr><td>2,8</td><td>,9974</td><td>,9975</td><td>,9976</td><td>,9977</td><td>,9977</td><td>,9978</td><td>,9979</td><td>,9979</td><td>,9980</td><td>,9981</td></tr>
-<tr><td>2,9</td><td>,9981</td><td>,9982</td><td>,9982</td><td>,9983</td><td>,9984</td><td>,9984</td><td>,9985</td><td>,9985</td><td>,9986</td><td>,9986</td></tr>
-<tr><td>3,0</td><td>,9987</td><td>,9987</td><td>,9987</td><td>,9988</td><td>,9988</td><td>,9989</td><td>,9989</td><td>,9989</td><td>,9990</td><td>,9990</td></tr>
-</table>
-<p class="m">Hodnoty bez „0“: ,8413 = 0,8413. Φ(3,5) = 0,99977.</p>
-</section>
-
-<section>
-<h2>F<sub>0,975</sub>(ν₁, ν₂) pro oboustranný F-test, α = 0,05</h2>
-<table class="f q kv phi">
-<tr><th>ν₂\ν₁</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>12</th><th>15</th><th>20</th></tr>
-<tr><td>4</td><td>9,605</td><td>9,364</td><td>9,197</td><td>9,074</td><td>8,980</td><td>8,905</td><td>8,844</td><td>8,751</td><td>8,657</td><td>8,560</td></tr>
-<tr><td>5</td><td>7,388</td><td>7,146</td><td>6,978</td><td>6,853</td><td>6,757</td><td>6,681</td><td>6,619</td><td>6,525</td><td>6,428</td><td>6,329</td></tr>
-<tr><td>6</td><td>6,227</td><td>5,988</td><td>5,820</td><td>5,695</td><td>5,600</td><td>5,523</td><td>5,461</td><td>5,366</td><td>5,269</td><td>5,168</td></tr>
-<tr><td>7</td><td>5,523</td><td>5,285</td><td>5,119</td><td>4,995</td><td>4,899</td><td>4,823</td><td>4,761</td><td>4,666</td><td>4,568</td><td>4,467</td></tr>
-<tr><td>8</td><td>5,053</td><td>4,817</td><td>4,652</td><td>4,529</td><td>4,433</td><td>4,357</td><td>4,295</td><td>4,200</td><td>4,101</td><td>3,999</td></tr>
-<tr><td>9</td><td>4,718</td><td>4,484</td><td>4,320</td><td>4,197</td><td>4,102</td><td>4,026</td><td>3,964</td><td>3,868</td><td>3,769</td><td>3,667</td></tr>
-<tr><td>10</td><td>4,468</td><td>4,236</td><td>4,072</td><td>3,950</td><td>3,855</td><td>3,779</td><td>3,717</td><td>3,621</td><td>3,522</td><td>3,419</td></tr>
-<tr><td>11</td><td>4,275</td><td>4,044</td><td>3,881</td><td>3,759</td><td>3,664</td><td>3,588</td><td>3,526</td><td>3,430</td><td>3,330</td><td>3,226</td></tr>
-<tr><td>12</td><td>4,121</td><td>3,891</td><td>3,728</td><td>3,607</td><td>3,512</td><td>3,436</td><td>3,374</td><td>3,277</td><td>3,177</td><td>3,073</td></tr>
-<tr><td>13</td><td>3,996</td><td>3,767</td><td>3,604</td><td>3,483</td><td>3,388</td><td>3,312</td><td>3,250</td><td>3,153</td><td>3,053</td><td>2,948</td></tr>
-<tr><td>14</td><td>3,892</td><td>3,663</td><td>3,501</td><td>3,380</td><td>3,285</td><td>3,209</td><td>3,147</td><td>3,050</td><td>2,949</td><td>2,844</td></tr>
-<tr><td>15</td><td>3,804</td><td>3,576</td><td>3,415</td><td>3,293</td><td>3,199</td><td>3,123</td><td>3,060</td><td>2,963</td><td>2,862</td><td>2,756</td></tr>
-<tr><td>16</td><td>3,729</td><td>3,502</td><td>3,341</td><td>3,219</td><td>3,125</td><td>3,049</td><td>2,986</td><td>2,889</td><td>2,788</td><td>2,681</td></tr>
-<tr><td>18</td><td>3,608</td><td>3,382</td><td>3,221</td><td>3,100</td><td>3,005</td><td>2,929</td><td>2,866</td><td>2,769</td><td>2,667</td><td>2,559</td></tr>
-<tr><td>20</td><td>3,515</td><td>3,289</td><td>3,128</td><td>3,007</td><td>2,913</td><td>2,837</td><td>2,774</td><td>2,676</td><td>2,573</td><td>2,464</td></tr>
-<tr><td>25</td><td>3,353</td><td>3,129</td><td>2,969</td><td>2,848</td><td>2,753</td><td>2,677</td><td>2,613</td><td>2,515</td><td>2,411</td><td>2,300</td></tr>
-<tr><td>30</td><td>3,250</td><td>3,026</td><td>2,867</td><td>2,746</td><td>2,651</td><td>2,575</td><td>2,511</td><td>2,412</td><td>2,307</td><td>2,195</td></tr>
-<tr><td>40</td><td>3,126</td><td>2,904</td><td>2,744</td><td>2,624</td><td>2,529</td><td>2,452</td><td>2,388</td><td>2,288</td><td>2,182</td><td>2,068</td></tr>
-<tr><td>60</td><td>3,008</td><td>2,786</td><td>2,627</td><td>2,507</td><td>2,412</td><td>2,334</td><td>2,270</td><td>2,169</td><td>2,061</td><td>1,944</td></tr>
-<tr><td>120</td><td>2,894</td><td>2,674</td><td>2,515</td><td>2,395</td><td>2,299</td><td>2,222</td><td>2,157</td><td>2,055</td><td>1,945</td><td>1,825</td></tr>
-</table>
-<p class="m">ν₁ = n − 1 výběru s větším rozptylem (čitatel). Ostatní ν a F<sub>0,95</sub> v tabulky.pdf.</p>
-</section>
-
 </div>
-<footer>Úplné tabulky: tabulky.pdf · balnerm.github.io/pripravy/pso/test/</footer>
+<footer>Statistické tabulky (Φ, u, t, χ², F, D<sub>n</sub>): tabulky.pdf · balnerm.github.io/pripravy/pso/test/</footer>
 </div>
 
 </body>
