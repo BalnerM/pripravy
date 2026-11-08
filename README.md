@@ -9,6 +9,7 @@ Studijní materiály k jednotlivým předmětům, zveřejněné přes GitHub Pag
 | `mlr/` | Strojové učení (MPA-MLR), přednášky 1–7; i anglicky. Navíc `mlr/test1/`: příprava na průběžný test 1 podle typů úloh (CZ i EN) a shrnutí na 2 A4 (`priprava_2A4.pdf`) | https://balnerm.github.io/pripravy/mlr/ (EN: …/mlr/en/, test: …/mlr/test1/) |
 | `sad/` | Měření a zpracování biosignálů (SAD): skripta na půlsemestrální test (základy Z1–Z4) a samostatná skripta na závěrečnou zkoušku (přednášky se zapracovanými základy, `sad/zkouska/`) | https://balnerm.github.io/pripravy/sad/ |
 | `pso/` | Pravděpodobnost a statistika (MPA-PSO): česká skripta s anglickými termíny, kapitoly podle typů úloh ze sad cvičení | https://balnerm.github.io/pripravy/pso/ |
+| `bez/` | Bezpečnost el. zařízení (MPC-BEZ): procvičovací ABC test ke kontrolnímu testu (62 otázek, opakování chybných). Samostatná stránka bez `_build/`: `bez/index.html` se generuje ručně `python bez/_gen/make_quiz.py` z `../bezpecnost/Otázky KT - správné odpovědi.md` | https://balnerm.github.io/pripravy/bez/ |
 
 ## Jak to funguje
 - `index.html` v kořeni je rozcestník: úvodní stránka ukazuje předměty, po rozkliknutí se objeví materiály

@@ -84,7 +84,7 @@ footer a { color: var(--accent-ink); }
   <div id="view"></div>
   <noscript>
     <h1>Přípravy na zkoušky</h1>
-    <ul><li><a href="vmm/">Vícerozměrné metody (VMM)</a></li><li><a href="mlr/">Strojové učení (MLR)</a></li></ul>
+    <ul><li><a href="vmm/">Vícerozměrné metody (VMM)</a></li><li><a href="mlr/">Strojové učení (MLR)</a></li><li><a href="bez/">Bezpečnost el. zařízení (BEZ)</a></li></ul>
   </noscript>
   <footer>Zdroje a historie verzí: <a href="https://github.com/BalnerM/pripravy">github.com/BalnerM/pripravy</a></footer>
 </main>
@@ -176,6 +176,15 @@ var PREDMETY = [
       { typ: "Skripta · zkouška", nazev: "Skripta podle typů úloh",
         popis: "Česky s anglickými termíny. Kapitoly podle typů úloh ze sad 1–7 (další přibývají): definice, postup „jak poznat“, vyřešené úlohy krok po kroku, anglická slovíčka, otázky. Rozpoznávač úloh, přehled úloh, statistické tabulky, slovník.",
         odkazy: [["Otevřít skripta", "pso/"], ["Jak poznat typ úlohy", "pso/11_jak_poznat.html"], ["Přehled úloh", "pso/12_ulohy.html"], ["Tabulky", "pso/13_tabulky.html"], ["Celá na jedné stránce", "pso/skripta_vse.html"], ["PDF", "pso/pdf/skripta_vse.pdf"]] }
+    ]
+  },
+  {
+    id: "bez", zkratka: "BEZ", nazev: "Bezpečnost el. zařízení",
+    popis: "Kontrolní test MPC-BEZ: legislativa a kvalifikace, sítě TN/TT/IT, značení a barvy vodičů, krytí IP, ochrana před úrazem, bezpečnostní značky, revize.",
+    materialy: [
+      { typ: "Procvičování · kontrolní test", nazev: "ABC test – 62 otázek ke KT",
+        popis: "Všech 62 otázek z oficiálního seznamu (verze 2022) v doslovném znění. Po kliknutí hned vidíš, jestli je odpověď správně; chybné otázky se opakují, dokud je nezodpovíš správně. Režim všech 62 nebo náhodných 40 jako v testu.",
+        odkazy: [["Spustit procvičování", "bez/"]] }
     ]
   }
 ];

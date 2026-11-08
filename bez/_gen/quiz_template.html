@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bezpečnost el. zařízení – procvičování</title>
+<meta name="description" content="Procvičovací ABC test ke kontrolnímu testu MPC-BEZ: 62 otázek, okamžitá zpětná vazba, opakování chybných.">
+<script>try{var t=localStorage.getItem("vmm-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var f=parseFloat(localStorage.getItem("vmm-fs"));if(f>=.8&&f<=1.6)document.documentElement.style.setProperty("--fs",f)}catch(e){}</script>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f9f9f7; --surface: #fcfcfb; --ink: #1a1a19; --ink-2: #52514e; --muted: #7a7873;
+  --line: #e1e0d9; --line-strong: #c9c7be; --accent: #2a78d6; --accent-ink: #1c5cab;
+  --ok: #137a55; --ok-bg: #e5f5ee; --ok-line: #1baf7a;
+  --bad: #b3261e; --bad-bg: #fbe9e7; --bad-line: #d9534a;
+  --shadow: 0 1px 2px rgba(11,11,11,.06), 0 4px 16px rgba(11,11,11,.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a988f;
+    --line: #2c2c2a; --line-strong: #44443f; --accent: #5598e7; --accent-ink: #86b6ef;
+    --ok: #5fd3a3; --ok-bg: #0f2a20; --ok-line: #1baf7a;
+    --bad: #f08a80; --bad-bg: #331512; --bad-line: #d9534a;
+    --shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #9a988f;
+  --line: #2c2c2a; --line-strong: #44443f; --accent: #5598e7; --accent-ink: #86b6ef;
+  --ok: #5fd3a3; --ok-bg: #0f2a20; --ok-line: #1baf7a;
+  --bad: #f08a80; --bad-bg: #331512; --bad-line: #d9534a;
+  --shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+header { display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px; border-bottom: 1px solid var(--line); }
+header .spacer { flex: 1; }
+header a.home { color: var(--accent-ink); text-decoration: none; font-size: 14px; white-space: nowrap; }
+header a.home:hover { text-decoration: underline; }
+header b { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+button {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  border-radius: 8px; height: 34px; padding: 0 10px; font: inherit; font-size: 14px; cursor: pointer;
+}
+button:hover { border-color: var(--line-strong); }
+button:disabled { opacity: .4; cursor: default; }
+.fsgroup { display: inline-flex; gap: 4px; }
+main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; zoom: var(--fs, 1); }
+h1 { font-size: 30px; line-height: 1.2; margin: 0 0 14px; letter-spacing: -.01em; }
+.lead { color: var(--ink-2); font-size: 17px; margin: 0 0 24px; }
+.panel { padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); margin-bottom: 16px; }
+.panel h2 { font-size: 17px; margin: 0 0 12px; }
+.choices { display: grid; gap: 10px; }
+.btn-main {
+  height: auto; min-height: 44px; padding: 10px 16px; font-size: 16px; font-weight: 600; text-align: left;
+  background: var(--accent); border-color: var(--accent); color: #fff; border-radius: 10px;
+}
+.btn-main:hover { filter: brightness(1.08); border-color: var(--accent); }
+.btn-sec { height: auto; min-height: 44px; padding: 10px 16px; font-size: 16px; text-align: left; border-radius: 10px; }
+.btn-main small, .btn-sec small { display: block; font-weight: 400; font-size: 13.5px; opacity: .85; }
+label.opt { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; color: var(--ink-2); margin: 8px 0 0; cursor: pointer; }
+label.opt input { margin-top: 5px; accent-color: var(--accent); }
+.hint { color: var(--muted); font-size: 13.5px; margin: 12px 0 0; }
+
+/* průběh */
+.bar-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 14px; color: var(--ink-2); margin-bottom: 8px; }
+.bar-top .round { font-weight: 650; color: var(--accent-ink); }
+.bar-top .spacer { flex: 1; }
+.bar-top .ok { color: var(--ok); font-weight: 600; }
+.bar-top .bad { color: var(--bad); font-weight: 600; }
+.progress { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; margin-bottom: 20px; }
+.progress span { display: block; height: 100%; background: var(--accent); width: 0; transition: width .25s; }
+
+.qnum { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: 6px; }
+.qtext { font-size: 20px; line-height: 1.4; font-weight: 600; margin: 0 0 18px; }
+.answers { display: grid; gap: 10px; }
+.ans {
+  display: flex; gap: 12px; align-items: flex-start; width: 100%; height: auto; min-height: 52px;
+  padding: 12px 14px; text-align: left; font-size: 16px; line-height: 1.45; border-radius: 10px;
+  border: 1.5px solid var(--line); background: var(--surface);
+}
+.ans:hover:not(:disabled) { border-color: var(--accent); }
+.ans:disabled { opacity: 1; cursor: default; }
+.ans .l {
+  flex: none; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--line-strong);
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: var(--ink-2);
+}
+.ans .tx { flex: 1; padding-top: 2px; }
+.ans .mk { flex: none; font-weight: 700; padding-top: 2px; }
+.ans.correct { border-color: var(--ok-line); background: var(--ok-bg); }
+.ans.correct .l { border-color: var(--ok-line); background: var(--ok-line); color: #fff; }
+.ans.correct .mk { color: var(--ok); }
+.ans.wrong { border-color: var(--bad-line); background: var(--bad-bg); }
+.ans.wrong .l { border-color: var(--bad-line); background: var(--bad-line); color: #fff; }
+.ans.wrong .mk { color: var(--bad); }
+.ans.dim { opacity: .55; }
+
+.feedback { margin: 16px 0 0; padding: 12px 14px; border-radius: 10px; font-size: 15.5px; }
+.feedback.ok { background: var(--ok-bg); color: var(--ok); }
+.feedback.bad { background: var(--bad-bg); color: var(--bad); }
+.feedback b { font-weight: 700; }
+.note { margin: 10px 0 0; font-size: 14px; color: var(--ink-2); border-left: 3px solid var(--line-strong); padding: 2px 0 2px 12px; }
+.nav { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 18px; }
+.nav .spacer { flex: 1; }
+.nav .btn-main { text-align: center; }
+.linkbtn { border: 0; background: none; color: var(--muted); padding: 0; height: auto; font-size: 14px; text-decoration: underline; }
+.linkbtn:hover { color: var(--ink); }
+.auto { font-size: 13.5px; color: var(--muted); }
+
+/* souhrn */
+.big { font-size: 40px; font-weight: 700; line-height: 1.1; margin: 4px 0; }
+.big small { font-size: 18px; color: var(--ink-2); font-weight: 500; }
+.wlist { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.wlist li { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.wlist .q { font-weight: 600; font-size: 15px; }
+.wlist .a { color: var(--ok); font-size: 15px; margin-top: 2px; }
+.wlist .n { color: var(--muted); font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.hist { font-size: 14.5px; color: var(--ink-2); margin: 8px 0 0; padding-left: 18px; }
+footer { color: var(--muted); font-size: 13.5px; margin-top: 40px; }
+footer a { color: var(--accent-ink); }
+kbd { font: 12px ui-monospace, Consolas, monospace; border: 1px solid var(--line-strong); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; }
+@media (max-width: 560px) {
+  header .hide-s { display: none; }
+  h1 { font-size: 25px; }
+  .qtext { font-size: 18px; }
+  .kbdhint { display: none; }
+}
+</style>
+</head>
+<body>
+<header>
+  <a class="home" href="../#bez" title="Zpět na rozcestník">← <span class="hide-s">Přípravy</span></a>
+  <b>Bezpečnost el. zařízení</b>
+  <span class="spacer"></span>
+  <span class="fsgroup hide-s">
+    <button id="fsDown" type="button" title="Zmenšit písmo" aria-label="Zmenšit písmo">A−</button>
+    <button id="fsVal" type="button" title="Původní velikost písma">100 %</button>
+    <button id="fsUp" type="button" title="Zvětšit písmo" aria-label="Zvětšit písmo">A+</button>
+  </span>
+  <button id="themeBtn" type="button">Tmavý režim</button>
+</header>
+<main>
+  <div id="view" aria-live="polite"></div>
+  <noscript><p>Procvičování potřebuje zapnutý JavaScript.</p></noscript>
+  <footer>Otázky: oficiální seznam ke kontrolnímu testu MPC-BEZ (verze 2022), doslovné znění. Správné odpovědi určeny podle přednášek MPC-BEZ 1–8.
+    Zdroje: <a href="https://github.com/BalnerM/pripravy">github.com/BalnerM/pripravy</a></footer>
+</main>
+<script>
+// q = text otázky, o = možnosti v pořadí jako v PDF, c = index správné možnosti, n = poznámka (volitelná)
+var QUESTIONS = /*__DATA__*/;
+</script>
+<script>
+(function () {
+  /* ---------- lišta: tmavý režim a písmo (stejné klíče jako zbytek webu) ---------- */
+  var r = document.documentElement, tb = document.getElementById("themeBtn");
+  function dark() {
+    var t = r.getAttribute("data-theme");
+    return t ? t === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function tlabel() { tb.textContent = dark() ? "Světlý režim" : "Tmavý režim"; }
+  tb.addEventListener("click", function () {
+    var t = dark() ? "light" : "dark";
+    r.setAttribute("data-theme", t);
+    try { localStorage.setItem("vmm-theme", t); } catch (e) {}
+    tlabel();
+  });
+  tlabel();
+  var STEPS = [0.85, 0.9, 0.95, 1, 1.05, 1.1], DEF = 3, down = document.getElementById("fsDown"),
+      up = document.getElementById("fsUp"), val = document.getElementById("fsVal");
+  function fidx() {
+    var f = parseFloat(r.style.getPropertyValue("--fs")) || 1, best = DEF;
+    STEPS.forEach(function (s, i) { if (Math.abs(s - f) < Math.abs(STEPS[best] - f)) best = i; });
+    return best;
+  }
+  function setFs(i) {
+    i = Math.max(0, Math.min(STEPS.length - 1, i));
+    r.style.setProperty("--fs", STEPS[i]);
+    try { localStorage.setItem("vmm-fs", STEPS[i]); } catch (e) {}
+    val.textContent = Math.round(STEPS[i] * 100) + " %";
+    down.disabled = i === 0; up.disabled = i === STEPS.length - 1;
+  }
+  down.addEventListener("click", function () { setFs(fidx() - 1); });
+  up.addEventListener("click", function () { setFs(fidx() + 1); });
+  val.addEventListener("click", function () { setFs(DEF); });
+  setFs(fidx());
+
+  /* ---------- test ---------- */
+  var KEY = "bez-kt-v1", LETTERS = ["a", "b", "c", "d"], view = document.getElementById("view");
+  var S = null;          // stav běhu (ukládá se do localStorage)
+  var answered = null;   // index zvolené zobrazené možnosti u aktuální otázky, nebo null
+  var timer = null;
+
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function range(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); return a; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  function load() {
+    try {
+      var s = JSON.parse(localStorage.getItem(KEY));
+      if (s && s.v === 1 && s.total === QUESTIONS.length && s.queue && s.queue.length) return s;
+    } catch (e) {}
+    return null;
+  }
+  function clearSaved() { try { localStorage.removeItem(KEY); } catch (e) {} }
+  function prefs() {
+    var p = { mix: true, auto: true };
+    try { var x = JSON.parse(localStorage.getItem(KEY + "-prefs")); if (x) { p.mix = x.mix !== false; p.auto = x.auto !== false; } } catch (e) {}
+    return p;
+  }
+  function savePrefs(p) { try { localStorage.setItem(KEY + "-prefs", JSON.stringify(p)); } catch (e) {} }
+  function pct(a, b) { return b ? Math.round(100 * a / b) : 0; }
+  function otazek(n) { return n + (n === 1 ? " otázka" : n >= 2 && n <= 4 ? " otázky" : " otázek"); }
+
+  function makeQueue(ids, mix) {
+    return shuffle(ids).map(function (i) {
+      return { i: i, p: mix ? shuffle(range(QUESTIONS[i].o.length)) : range(QUESTIONS[i].o.length) };
+    });
+  }
+
+  function start(count) {
+    var p = prefs(), ids = shuffle(range(QUESTIONS.length)).slice(0, count);
+    S = { v: 1, total: QUESTIONS.length, mix: p.mix, auto: p.auto, round: 1, pos: 0,
+          queue: makeQueue(ids, p.mix), wrong: [], good: 0, hist: [], size: ids.length };
+    answered = null; save(); renderQ();
+  }
+
+  /* úvod */
+  function renderStart() {
+    clearTimeout(timer);
+    var p = prefs(), saved = load(), n = QUESTIONS.length, h = "";
+    h += '<h1>Procvičování ke kontrolnímu testu</h1>' +
+      '<p class="lead">' + n + ' otázek ABC ze seznamu ke KT předmětu MPC-BEZ. Po kliknutí hned uvidíš, jestli je odpověď správně. ' +
+      'Na konci kola se znovu zobrazí jen ty, které jsi měl/a špatně, dokud nebudou všechny správně.</p>';
+    if (saved) {
+      var q = saved.queue.length;
+      h += '<div class="panel"><h2>Rozpracovaný test</h2><div class="choices">' +
+        '<button class="btn-main" id="resume">Pokračovat<small>Kolo ' + saved.round + ' · otázka ' + Math.min(saved.pos + 1, q) + ' z ' + q + '</small></button>' +
+        '</div></div>';
+    }
+    h += '<div class="panel"><h2>' + (saved ? "Nebo začni znovu" : "Začít") + '</h2><div class="choices">' +
+      '<button class="' + (saved ? "btn-sec" : "btn-main") + '" id="all">Všech ' + n + ' otázek<small>Celý seznam v náhodném pořadí</small></button>' +
+      '<button class="btn-sec" id="kt">Náhodných 40 otázek<small>Jako ve skutečném testu (40 otázek, 40 minut)</small></button>' +
+      '</div>' +
+      '<label class="opt"><input type="checkbox" id="mix"' + (p.mix ? " checked" : "") + '> Míchat pořadí možností a, b, c (doporučeno – v seznamu je správná odpověď většinou první)</label>' +
+      '<label class="opt"><input type="checkbox" id="auto"' + (p.auto ? " checked" : "") + '> Po správné odpovědi automaticky přejít na další otázku</label>' +
+      '<p class="hint kbdhint">Ovládání klávesnicí: <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> (nebo <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd>) zvolí odpověď, <kbd>Enter</kbd> = další otázka.</p>' +
+      '</div>';
+    view.innerHTML = h;
+    function readPrefs() { var x = { mix: document.getElementById("mix").checked, auto: document.getElementById("auto").checked }; savePrefs(x); }
+    document.getElementById("mix").onchange = readPrefs;
+    document.getElementById("auto").onchange = readPrefs;
+    document.getElementById("all").onclick = function () { start(n); };
+    document.getElementById("kt").onclick = function () { start(Math.min(40, n)); };
+    if (saved) document.getElementById("resume").onclick = function () { S = saved; answered = null; renderQ(); };
+    window.scrollTo(0, 0);
+  }
+
+  /* otázka */
+  function renderQ() {
+    clearTimeout(timer);
+    if (S.pos >= S.queue.length) { renderRoundEnd(); return; }
+    var it = S.queue[S.pos], Q = QUESTIONS[it.i], len = S.queue.length, done = S.pos;
+    var h = '<div class="bar-top"><span class="round">Kolo ' + S.round + (S.round > 1 ? " · opakování chybných" : "") + '</span>' +
+      '<span>Otázka ' + (S.pos + 1) + ' z ' + len + '</span><span class="spacer"></span>' +
+      '<span class="ok">✓ ' + S.good + '</span><span class="bad">✗ ' + S.wrong.length + '</span></div>' +
+      '<div class="progress"><span style="width:' + pct(done, len) + '%"></span></div>' +
+      '<div class="panel"><div class="qnum">Otázka č. ' + (it.i + 1) + ' ze seznamu</div>' +
+      '<p class="qtext">' + esc(Q.q) + '</p><div class="answers">';
+    it.p.forEach(function (oi, k) {
+      h += '<button class="ans" data-k="' + k + '"><span class="l">' + LETTERS[k] + '</span><span class="tx">' + esc(Q.o[oi]) + '</span><span class="mk"></span></button>';
+    });
+    h += '</div><div id="fb"></div></div>' +
+      '<div class="nav"><button class="linkbtn" id="quit">Ukončit a vrátit se na začátek</button></div>';
+    view.innerHTML = h;
+    Array.prototype.forEach.call(view.querySelectorAll(".ans"), function (b) {
+      b.onclick = function () { choose(+b.getAttribute("data-k")); };
+    });
+    document.getElementById("quit").onclick = function () { renderStart(); };
+    answered = null;
+    window.scrollTo(0, 0);
+  }
+
+  function choose(k) {
+    if (answered !== null) return;
+    var it = S.queue[S.pos], Q = QUESTIONS[it.i], ck = it.p.indexOf(Q.c), ok = k === ck;
+    answered = k;
+    var btns = view.querySelectorAll(".ans");
+    Array.prototype.forEach.call(btns, function (b, j) {
+      b.disabled = true;
+      if (j === ck) { b.classList.add("correct"); b.querySelector(".mk").textContent = "✓"; }
+      else if (j === k) { b.classList.add("wrong"); b.querySelector(".mk").textContent = "✗"; }
+      else b.classList.add("dim");
+    });
+    if (ok) S.good++; else S.wrong.push(it.i);
+    S.pos++; save();
+    var fb = ok ? '<div class="feedback ok"><b>Správně.</b></div>'
+                : '<div class="feedback bad"><b>Špatně.</b> Správná odpověď je <b>' + LETTERS[ck] + ')</b> ' + esc(Q.o[Q.c]) + '</div>';
+    if (Q.n) fb += '<p class="note">' + esc(Q.n) + '</p>';
+    var last = S.pos >= S.queue.length;
+    fb += '<div class="nav"><button class="btn-main" id="next">' + (last ? "Vyhodnotit kolo →" : "Další otázka →") + '</button>' +
+      (ok && S.auto && !Q.n ? '<span class="auto">pokračuje se automaticky…</span>' : '') + '</div>';
+    document.getElementById("fb").innerHTML = fb;
+    var bar = view.querySelector(".bar-top");
+    bar.querySelector(".ok").textContent = "✓ " + S.good;
+    bar.querySelector(".bad").textContent = "✗ " + S.wrong.length;
+    view.querySelector(".progress span").style.width = pct(S.pos, S.queue.length) + "%";
+    var nb = document.getElementById("next");
+    nb.onclick = next;
+    nb.focus({ preventScroll: true });
+    if (!ok || Q.n) nb.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (ok && S.auto && !Q.n) timer = setTimeout(next, 900);
+  }
+
+  function next() { if (answered === null) return; answered = null; renderQ(); }
+
+  /* konec kola */
+  function renderRoundEnd() {
+    clearTimeout(timer);
+    var len = S.queue.length, good = S.good, wrong = S.wrong.slice();
+    if (!S.closed) { S.hist.push({ round: S.round, good: good, total: len }); S.closed = true; save(); }
+    var h = '<h1>' + (wrong.length ? "Kolo " + S.round + " hotovo" : "Hotovo!") + '</h1>';
+    h += '<div class="panel"><div class="big">' + good + ' <small>z ' + len + ' správně (' + pct(good, len) + ' %)</small></div>';
+    if (S.hist.length > 1) {
+      h += '<ul class="hist">';
+      S.hist.forEach(function (x) { h += '<li>Kolo ' + x.round + ': ' + x.good + ' z ' + x.total + '</li>'; });
+      h += '</ul>';
+    }
+    if (!wrong.length) h += '<p class="lead" style="margin:12px 0 0">Všech ' + otazek(S.size) + ' máš zodpovězeno správně' +
+      (S.hist.length > 1 ? " (na " + S.hist.length + " kola)" : " hned v prvním kole") + '.</p>';
+    h += '</div><div class="nav">';
+    if (wrong.length) h += '<button class="btn-main" id="again">Opakovat chybné (' + wrong.length + ') →</button>';
+    h += '<button class="btn-sec" id="restart">Začít znovu</button></div>';
+    if (wrong.length) {
+      h += '<div class="panel" style="margin-top:16px"><h2>Tyto otázky přijdou znovu</h2><ul class="wlist">';
+      wrong.slice().sort(function (a, b) { return a - b; }).forEach(function (i) {
+        var Q = QUESTIONS[i];
+        h += '<li><div class="n">Otázka č. ' + (i + 1) + '</div><div class="q">' + esc(Q.q) + '</div><div class="a">✓ ' + esc(Q.o[Q.c]) + '</div></li>';
+      });
+      h += '</ul></div>';
+    }
+    view.innerHTML = h;
+    if (wrong.length) {
+      var again = document.getElementById("again");
+      again.onclick = function () {
+        S.round++; S.pos = 0; S.good = 0; S.queue = makeQueue(wrong, S.mix); S.wrong = []; S.closed = false;
+        save(); renderQ();
+      };
+      again.focus({ preventScroll: true });
+    } else clearSaved();
+    document.getElementById("restart").onclick = function () { clearSaved(); renderStart(); };
+    window.scrollTo(0, 0);
+  }
+
+  /* klávesnice */
+  document.addEventListener("keydown", function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (!S || !view.querySelector(".answers")) return;
+    var k = e.key.toLowerCase(), map = { "1": 0, "2": 1, "3": 2, "4": 3, a: 0, b: 1, c: 2, d: 3 };
+    if (answered === null && k in map && map[k] < view.querySelectorAll(".ans").length) { e.preventDefault(); choose(map[k]); }
+    else if (answered !== null && (k === "enter" || k === " " || k === "arrowright")) {
+      e.preventDefault(); next();
+    }
+  });
+
+  renderStart();
+})();
+</script>
+</body>
+</html>
