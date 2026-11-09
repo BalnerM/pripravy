@@ -58,9 +58,9 @@ footer { font-size: 6.4pt; color: var(--mute); margin-top: .8mm; text-align: rig
 .rz3 td:last-child { width: 3.5mm; text-align: right; font-weight: 600; color: var(--c1d); padding-right: .3mm; }
 .rz3 tr.g th { background: none; color: var(--c1d); font-size: .95em; padding: .4mm .3mm 0; border-bottom: .2mm solid var(--c1d); }
 /* Hustší varianta jen pro tahak.html (body.hust) – víc textu postupů na 2 A4 */
-body.hust { font-size: 7.5pt; line-height: 1.17; }
+body.hust { font-size: 7.6pt; line-height: 1.17; }
 .hust .rz3 { font-size: 6.6pt; }
 .hust .katex-display { margin: .3mm 0 .5mm; }
-/* kontrolní řádek: zadání → výsledek (ověření, že postup používám správně) */
-.kt { color: #3d4855; border-left: .5mm solid var(--c1); padding-left: 1mm; }
-.kt b { color: var(--c1d); }
+.hust .vz.cel { break-inside: avoid; }
+.hust table.t { break-inside: auto; }
+.hust table.t tr { break-inside: avoid; }

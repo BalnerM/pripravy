@@ -88,7 +88,11 @@
 <li><b>Příznivé m</b> počítej <b>stejným způsobem</b> jako n. j dobrých z M a zbytek z ostatních: \(\binom{M}{j}\binom{N-M}{k-j}\).</li>
 <li>\(p = m/n\). „Aspoň jeden“ → \(1 - p(\text{žádný})\). Tahy po jednom bez vracení → násob zlomky: 2 králové \(\frac{4}{32}\cdot\frac{3}{31} = \frac{3}{248}\).</li></ol>
 <p><b>Součet 2 kostek s:</b> počet dvojic \(6 - |s-7|\) (s = 2…12: 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1); součet 4 nebo 5: \(\frac{3+4}{36}\). <b>Součet 3 kostek:</b> vypiš trojice \(a \ge b \ge c\) se součtem s, každou počítej 6× (vše různé), 3× (dvě stejné), 1× (tři stejné), děl 216.</p>
-<p class="vz"><b>HW1/3</b> 11: 641, 632, 542 (6×) + 551, 533, 443 (3×) = 27; 12: 651, 642, 543 (6×) + 633, 552 (3×) + 444 = 25 → 11 je pravděpodobnější (27/216 &gt; 25/216).</p>
+<p class="vz cel"><b>HW1/3</b> 3 kostky: je pravděpodobnější součet 11, nebo 12?<br>
+1. n = 6³ = 216.<br>
+2. Součet 11: 641, 632, 542 → 3 × 6; 551, 533, 443 → 3 × 3; m = 27.<br>
+3. Součet 12: 651, 642, 543 → 3 × 6; 633, 552 → 2 × 3; 444 → 1; m = 25.<br>
+4. 27/216 &gt; 25/216 → 11 je pravděpodobnější.</p>
 <p>\(p(\bar A) = 1 - p(A)\) · \(p(A \cup B) = p(A) + p(B) - p(AB)\) · \(p(A \mid B) = \frac{p(AB)}{p(B)}\) · nezávislé: \(p(AB) = p(A)\,p(B)\)</p>
 <p class="vz"><b>S1/5</b> 2 kola po 3 míčcích (9 nových, 6 hraných; v 1. kole j nových, ve 2. k nových): \[ p(k) = \sum_j \frac{\binom{9}{j}\binom{6}{3-j}}{\binom{15}{3}}\cdot\frac{\binom{9-j}{k}\binom{6+j}{3-k}}{\binom{15}{3}} \]</p>
 </section>
@@ -103,7 +107,15 @@
 <li>Plocha = \(\int (\text{horní} - \text{dolní})\,dx\), po úsecích mezi průsečíky.</li>
 <li>\(p = \) plocha / plocha Ω.</li></ol>
 <p><b>Kruh:</b> \(p = (r/R)^2\); HW1/1 bod blíž než d/4 od středu: \(\left(\frac{d/4}{d/2}\right)^2 = \frac14\). Bod ve čtverci mimo vepsaný kruh (HW1/5): \(1 - \frac{\pi}{4} = 0{,}215\).</p>
-<p class="vz"><b>S1/9</b> \(x+y&lt;1\), \(xy&lt;0{,}09\): průsečíky 0,1 a 0,9; \(\int_0^{0{,}1}(1-x) + \int_{0{,}1}^{0{,}9}\frac{0{,}09}{x} + \int_{0{,}9}^1 (1-x) = 0{,}298\).<br><b>HW1/4</b> oblast pod parabolou \(q = p^2/4\) a nad \(q = -1\): plocha \(\int_{-1}^{1}\left(\frac{p^2}{4} + 1\right)dp = \frac16 + 2 = \frac{13}{6}\); \(p = \frac{13/6}{4} = \frac{13}{24} = 0{,}542\).</p>
+<p class="vz"><b>S1/9</b> 2 čísla z ⟨0, 1⟩, součet &lt; 1 a součin &lt; 0,09:<br>
+1.–2. Ω = jednotkový čtverec (plocha 1); \(y &lt; 1-x\), \(y &lt; 0{,}09/x\).<br>
+3.–4. Nižší je přímka u krajů, hyperbola uprostřed; \(x^2 - x + 0{,}09 = 0\) → 0,1 a 0,9.<br>
+5. \(\int_0^{0{,}1}(1-x) + \int_{0{,}1}^{0{,}9}\frac{0{,}09}{x} + \int_{0{,}9}^1 (1-x) = 0{,}298\).<br>
+6. p = 0,298 / 1 = 0,298.<br>
+<b>HW1/4</b> \(|p|, |q| \le 1\), oba kořeny \(x^2 + px + q\) reálné:<br>
+1.–2. Ω = čtverec 2 × 2 (plocha 4); \(p^2 - 4q \ge 0\) → \(q \le p^2/4\).<br>
+3.–5. Pod parabolou, nad q = −1: \(\int_{-1}^{1}\left(\frac{p^2}{4} + 1\right)dp = \frac16 + 2 = \frac{13}{6}\).<br>
+6. \(p = \frac{13/6}{4} = \frac{13}{24} = 0{,}542\).</p>
 </section>
 
 <section>
@@ -111,11 +123,10 @@
 <ol class="p">
 <li><b>Hypotézy \(H_i\)</b> = odkud věc je (skupina, krabice, stroj). Zapiš \(p(H_i)\); součet musí být 1 (účasti 60/50/70 % → \(p(H_1) = 0{,}6/1{,}8\)…; náhodně 1 z m krabic → \(1/m\)).</li>
 <li>Zapiš \(p(A\mid H_i)\) = pravděpodobnost jevu A uvnitř skupiny i.</li>
-<li><b>Úplná p.:</b> pro každou větev \(p(H_i)\cdot p(A\mid H_i)\), pak sečti.</li>
+<li><b>Úplná p.:</b> pro každou větev \(p(H_i)\cdot p(A\mid H_i)\), pak sečti (\(\sum_{i=1}^{n} i = \frac{n(n+1)}{2}\)).</li>
 <li><b>Bayes</b> („A nastalo, z které skupiny?“): moje větev / součet z kroku 3.</li></ol>
 \[ \begin{aligned} p(A) &= \sum_i p(H_i)\,p(A\mid H_i) \\ p(H_k\mid A) &= \frac{p(H_k)\,p(A\mid H_k)}{p(A)} \end{aligned} \]
-<p class="kt"><b>S1/6</b> p(A) = 0,17; \(p(H_1\mid A) = 0{,}441\) · <b>HW1/2</b> \(\sum_{i=1}^{20}\frac{1}{20}\cdot\frac{i}{20} = 0{,}525\) (\(\sum_{i=1}^n i = \frac{n(n+1)}{2}\))</p>
-<p><b>A dřív než B</b> (opakuji, dokud nenastane A nebo B): \(\frac{p(A)}{p(A)+p(B)}\), S1/4: \(\frac{4}{4+6}\).<br><b>Střídání</b> (začíná A; A vyhraje v hodu s p. a, B s p. b; kolo bez vítěze \((1-a)(1-b)\)): \(p_A = \frac{a}{1-(1-a)(1-b)}\), \(p_B = 1 - p_A\) (HW2/1: \(a = \frac16\), \(b = \frac26\) → 3/8, 5/8). Monty Hall: změnit 2/3, ponechat 1/3.</p>
+<p><b>A dřív než B</b> (opakuji, dokud nenastane A nebo B): \(\frac{p(A)}{p(A)+p(B)}\), S1/4: \(\frac{4}{4+6}\).<br><b>Střídání</b> (začíná A; A vyhraje v hodu s p. a, B s p. b; kolo bez vítěze \((1-a)(1-b)\)): \(p_A = \frac{a}{1-(1-a)(1-b)}\), \(p_B = 1 - p_A\). Monty Hall: změnit 2/3, ponechat 1/3.</p>
 <p class="st">Bayes přes nekonečně hypotéz (HW2/2: N černých + 1 bílá)</p>
 <ol class="p">
 <li>\(H_k = \{N = k\}\): \(p(H_k) = \frac{e^{-1}}{k!}\), \(p(B\mid H_k) = \frac{1}{k+1}\) (bílá je 1 z k + 1).</li>
@@ -133,14 +144,13 @@
 <li><b>EX, DX</b> (kalkulačka: Statistics, Freq = \(p_i\) → \(\bar x\) = EX, \(\sigma_x^2\) = DX):</li></ol>
 \[ \begin{aligned} EX &= \textstyle\sum x_i p_i, \qquad EX^2 = \sum x_i^2 p_i \\ DX &= EX^2 - (EX)^2, \qquad \sigma = \sqrt{DX} \end{aligned} \]
 <p>\(E(aX+b) = aEX + b\) · \(D(aX+b) = a^2 DX\) · \(E(X+Y) = EX+EY\); nezávislé \(D(X+Y) = DX+DY\)</p>
-<p class="kt"><b>S2/1</b> (3 b, 2 č, do červené): \(p(2) = \frac35\cdot\frac24\); p = 0,4; 0,3; 0,2; 0,1 → F = 0; 0,4; 0,7; 0,9; 1 · <b>S2/3</b> p(10) = 0,3; p(X &lt; 10) = 0,3; p(X ≥ 10) = 0,7 · <b>S2/6</b> \(p_0 + p_3 = 0{,}45\), \(0{,}88 + 3p_3 = 1{,}5\) → \(p_3 = 0{,}2067\), \(p_0 = 0{,}2433\)</p>
 </section>
 
 <section>
 <h2>5 · Bi, Ge, H, Po</h2>
 <ol class="p">
 <li><b>Rozdělení</b> (rozpoznávač) a parametry: n, p, \(q = 1-p\) / N, M, n / λ.</li>
-<li><b>Otázku přepiš</b> na X: exactly k → \(p(X=k)\); at most k → \(p(0)+\dots+p(k)\); at least k → \(1 - p(X\le k-1)\).</li>
+<li><b>Otázku přepiš</b> na X: exactly k → \(p(X=k)\); at most k → \(p(0)+\dots+p(k)\); at least k → \(1 - p(X\le k-1)\)</li>
 <li><b>Dosaď</b> do vzorce (kalkulačka Binomial / Poisson: PD = \(p(X=x)\), CD = \(p(X\le x)\)).</li>
 <li><b>EX, DX</b> z tabulky.</li></ol>
 <table class="f">
@@ -161,7 +171,6 @@
 <li>Předepsané pořadí („2. a 4. hod“) → jen součin, bez \(\binom{n}{k}\) (S2/7: \((\frac56)^3(\frac16)^2\)).</li>
 </ul>
 <p>Po: \(p(0) = e^{-\lambda}\); aspoň 2: \(1 - e^{-\lambda}(1+\lambda)\).</p>
-<p class="kt"><b>S3/1</b> Bi(6; 0,85): přesně 3 → 0,0415; aspoň 2 → 0,9996; nejvýš 2 → 0,0039; EX 5,1, DX 0,765 · <b>S3/7</b> H(10, 3, 4): EX 1,2, DX 0,56 · <b>S4/2</b> Po(8): p(6) = 0,122</p>
 </section>
 
 <section>
@@ -172,16 +181,14 @@
 <li><b>F(x) po částech:</b> vlevo od úseku 0 · na úseku \(\int_{\text{začátek}}^{x} f(t)\,dt\) · vpravo 1. <b>f ze 2 kusů:</b> na 2. kusu \(F(x) = F(\text{konec 1. kusu}) + \int_{\text{začátek 2. kusu}}^{x} f_2\). Kontrola: na hranicích navazuje, na konci 1.</li>
 <li><b>EX, DX:</b> \(EX = \int x f\), \(EX^2 = \int x^2 f\) (u kusů součet integrálů), \(DX = EX^2 - (EX)^2\). Symetrická f → EX = střed.</li>
 <li><b>Medián / kvantil:</b> vyřeš \(F(\tilde x) = 0{,}5\) / \(F(x_p) = p\) (SOLVE).</li></ol>
-<p class="vz"><b>HW2/3</b> \(f = \frac{x}{6}\) na ⟨0, 3⟩, \(\frac{4-x}{2}\) na (3, 4⟩.<br>
-F: 0 pro x &lt; 0 · \(\frac{x^2}{12}\) na ⟨0, 3⟩, F(3) = 0,75 · na (3, 4⟩ \(0{,}75 + \int_3^x \frac{4-t}{2}dt = 2x - \frac{x^2}{4} - 3\) · 1 pro x &gt; 4.<br>
-\(EX = \int_0^3 \frac{x^2}{6} + \int_3^4 \frac{x(4-x)}{2} = \frac73\), \(EX^2 = \frac{37}{6}\), \(DX = \frac{13}{18}\).<br>
-\(p(X&lt;\frac73) = F(\frac73) = \frac{49}{108}\) · \(p(X&gt;\frac{10}{3}) = 1 - F(\frac{10}{3}) = \frac19\) · \(p(X&gt;\frac{14}{3}) = 0\).</p>
-<p class="kt"><b>S4/4</b> \(a = \frac29\), \(p(1&lt;X&lt;2) = \frac{13}{27}\), EX = 1,5, \(F = \frac{x^2}{3} - \frac{2x^3}{27}\) · <b>S4/5</b> \(\frac12\sin x\): EX = π/2, \(DX = \frac{\pi^2}{4} - 2\)</p>
+<p class="vz"><b>HW2/3</b> \(f = \frac{x}{6}\) na ⟨0, 3⟩, \(\frac{4-x}{2}\) na (3, 4⟩:<br>
+3. F: 0 pro x &lt; 0 · \(\frac{x^2}{12}\) na ⟨0, 3⟩, F(3) = 0,75 · na (3, 4⟩ \(0{,}75 + \int_3^x \frac{4-t}{2}dt = 2x - \frac{x^2}{4} - 3\) · 1 pro x &gt; 4.<br>
+4. \(EX = \int_0^3 \frac{x^2}{6} + \int_3^4 \frac{x(4-x)}{2} = \frac73\), \(EX^2 = \frac{37}{6}\), \(DX = \frac{37}{6} - \frac{49}{9} = \frac{13}{18}\).<br>
+2. \(p(X&lt;\frac73) = F(\frac73) = \frac{49}{108}\) · \(p(X&gt;\frac{10}{3}) = 1 - F(\frac{10}{3}) = \frac19\) · \(p(X&gt;\frac{14}{3}) = 0\) (14/3 &gt; 4).</p>
 <table class="f">
 <tr><td>Laplace \(a e^{-\lambda|x|}\)</td><td>\(a = \frac\lambda2\); \(F = \frac12 e^{\lambda x}\) (x ≤ 0), \(1 - \frac12 e^{-\lambda x}\) (x &gt; 0)</td><td>0; \(\frac{2}{\lambda^2}\)</td></tr>
 <tr><td>rovnoměrné ⟨a, b⟩</td><td>\(f = \frac{1}{b-a}\)</td><td>\(EX = \frac{a+b}{2}\), \(DX = \frac{(b-a)^2}{12}\)</td></tr>
 <tr><td>exponenciální</td><td>\(f = \lambda e^{-\lambda x}\), \(F = 1 - e^{-\lambda x}\)</td><td>\(\frac1\lambda\); \(\frac{1}{\lambda^2}\)</td></tr></table>
-<p><b>Integrály:</b> \(\int x^n = \frac{x^{n+1}}{n+1}\) · \(\int e^{ax} = \frac{e^{ax}}{a}\) · \(\int \frac1x = \ln|x|\) · per partes \(\int uv' = uv - \int u'v\) · \(\int x\sin x = \sin x - x\cos x\) · \(\int x\cos x = \cos x + x\sin x\) · \(\int x^2\sin x = -x^2\cos x + 2x\sin x + 2\cos x\) · \(\int x^2\cos x = x^2\sin x + 2x\cos x - 2\sin x\) · \(\int x e^{-\lambda x} = -\frac{e^{-\lambda x}}{\lambda^2}(\lambda x + 1)\) · \(\int x^2 e^{-\lambda x} = -\frac{e^{-\lambda x}}{\lambda^3}(\lambda^2x^2 + 2\lambda x + 2)\) · \(|x|\): rozděl na \(x&lt;0\), \(x&gt;0\) (sudá f → \(2\int_0^\infty\)). Číselně: ∫ na kalkulačce (Radian!).</p>
 </section>
 
 
@@ -198,7 +205,6 @@ F: 0 pro x &lt; 0 · \(\frac{x^2}{12}\) na ⟨0, 3⟩, F(3) = 0,75 · na (3, 4�
 <li>Zapiš μ a σ (σ = √variance!).</li>
 <li>Normuj: \(u = \frac{x-\mu}{\sigma}\) (na 2 desetinná místa pro tabulku).</li>
 <li>\(p(X&lt;x) = \Phi(u)\) · \(p(X&gt;x) = 1-\Phi(u)\) · \(p(a&lt;X&lt;b) = \Phi(u_b) - \Phi(u_a)\) · záporné u: \(\Phi(-u) = 1 - \Phi(u)\) · \(p(|U| &lt; u) = 2\Phi(u) - 1\).</li></ol>
-<p class="kt"><b>S5/4</b> μ = 10, σ = 2: p(X &lt; 13) = Φ(1,5) = 0,933 · p(X &gt; 9) = Φ(0,5) = 0,691 · p(5 &lt; X &lt; 12) = 0,835</p>
 <p class="st">B) Pravděpodobnost γ → hodnota x</p>
 <ol class="p">
 <li>Urči p pro tvar \(p(X&lt;x) = p\):
@@ -207,7 +213,6 @@ F: 0 pro x &lt; 0 · \(\frac{x^2}{12}\) na ⟨0, 3⟩, F(3) = 0,75 · na (3, 4�
 <br>· symetricky kolem μ s γ → p = (1 + γ)/2 (0,9 → 0,95; 75 % → 0,875)</li>
 <li>Kvantil \(u_p\) z tabulky; pro \(p &lt; 0{,}5\): \(u_p = -u_{1-p}\) (\(u_{0{,}2} = -0{,}84\)).</li>
 <li>\(x = \mu + \sigma u_p\); symetricky \(\mu \pm \sigma u_p\).</li></ol>
-<p class="kt"><b>S5/3</b> 1,28; 1,645; −0,84; 1,645 · <b>S5/5</b> No(1; 0,3): 1 % nad → 1,698; 2 % pod → 0,384; 75 % → (0,655; 1,345)</p>
 <p>Nakresli zvon a vyšrafuj plochu. 3σ: 68,3 / 95,4 / 99,7 %. Kalkulačka: Normal CD, Inverse Normal (Area <b>vlevo</b>).</p>
 </section>
 
@@ -219,7 +224,6 @@ F: 0 pro x &lt; 0 · \(\frac{x^2}{12}\) na ⟨0, 3⟩, F(3) = 0,75 · na (3, 4�
 <li>Spočítej npq. \(npq \le 9\) (např. n = 10) → <b>přesně Bi</b>, sečti p(k) (S6/1a: \(p(X\le 4) = 0{,}341\)). \(npq &gt; 9\) → normální aproximace:</li>
 <li>\(\mu = np\), \(\sigma = \sqrt{npq}\) (relativní četnost X/n: \(\mu = p\), \(\sigma = \sqrt{pq/n}\)).</li>
 <li>Dál jako 7A: \(u = \frac{x - np}{\sqrt{npq}}\), Φ. Bez opravy na spojitost (&lt; a ≤ je jedno).</li></ol>
-<p class="kt"><b>S6/1b</b> μ 5150, σ 49,98 → Φ(−3,00) = 0,00135 · <b>S6/1c</b> σ = 0,00158 → 0,398 · <b>S6/2</b> μ 5000, σ 50 → 2Φ(2) − 1 = 0,9544</p>
 <p class="st">CLV (součet / průměr n nezávislých)</p>
 <ol class="p">
 <li>μ, σ <b>jedné</b> veličiny (hmotnost 1 osoby).</li>
@@ -234,7 +238,7 @@ F: 0 pro x &lt; 0 · \(\frac{x^2}{12}\) na ⟨0, 3⟩, F(3) = 0,75 · na (3, 4�
 <li>Substituce \(z = \sqrt n\), vynásob jmenovatelem, vše na jednu stranu → \(az^2 + bz + c = 0\).</li>
 <li>Kladný kořen \(z = \frac{-b + \sqrt{b^2 - 4ac}}{2a}\); \(n = z^2\).</li>
 <li>Zaokrouhli tak, aby podmínka platila: s větším n se zhoršuje (lidé na lodi) → <b>dolů</b>; zlepšuje (pokusy, vzorek) → <b>nahoru</b>. Ověř dosazením.</li></ol>
-<p class="vz"><b>S6/4</b> \(75z^2 + 34{,}89z - 4500 = 0\) → \(z = 7{,}52\), \(z^2 = 56{,}5\) → 56 lidí.<br><b>S6/3</b> \(0{,}8z^2 - 0{,}513z - 90 = 0\) → \(z = 10{,}93\), \(z^2 = 119{,}5\) → 120 pokusů.</p>
+<p class="vz"><b>S6/4</b> 4. \(75z^2 + 34{,}89z - 4500 = 0\) · 5. z = 7,52, n = 56,5 · 6. lidé → dolů: 56.<br><b>S6/3</b> 4. \(0{,}8z^2 - 0{,}513z - 90 = 0\) · 5. z = 10,93, n = 119,5 · 6. pokusy → nahoru: 120.</p>
 <p><b>Čebyšev:</b> \(p(|X - EX| \ge \varepsilon) \le DX/\varepsilon^2\).</p>
 </section>
 
@@ -246,7 +250,16 @@ F: 0 pro x &lt; 0 · \(\frac{x^2}{12}\) na ⟨0, 3⟩, F(3) = 0,75 · na (3, 4�
 <li><b>Nezávislost:</b> platí \(f = f_X\,f_Y\) všude? Ano → nezávislé.</li>
 <li><b>p(G):</b> nakresli oblast; vnější meze čísla, vnitřní závisí na vnější proměnné; spočítej vnitřní integrál první. Obdélník a \(f = g(x)h(y)\) → součin dvou integrálů.</li>
 <li><b>cov, ρ:</b> \(E(XY) = \iint xy f\), \(\text{cov} = E(XY) - EX\,EY\), \(\rho = \frac{\text{cov}}{\sigma_X\sigma_Y}\).</li></ol>
-<p class="vz"><b>S6/5</b> \(f = 4x(1-y)\) na \(⟨0,1⟩^2\): \(f_X = \int_0^1 4x(1-y)\,dy = 2x\), \(f_Y = 2 - 2y\) → \(f = f_X f_Y\), nezávislé. (b) \(\int_{1/2}^{3/4} 2x\,dx\cdot\int_{1/2}^1 (2-2y)\,dy = \frac{5}{16}\cdot\frac14 = \frac{5}{64}\); (c) \(\frac14\cdot\frac14 = \frac{1}{16}\); (d) \(p(Y\le X) = \int_0^1\!\int_0^x 4x(1-y)\,dy\,dx = \int_0^1 (4x^2 - 2x^3)\,dx = \frac56\).</p>
+<p class="vz"><b>S6/5</b> \(f = 4x(1-y)\) na \(⟨0,1⟩^2\):<br>
+2. \(f_X = \int_0^1 4x(1-y)\,dy = 2x\), \(f_Y = \int_0^1 4x(1-y)\,dx = 2 - 2y\).<br>
+3. \(2x\cdot(2-2y) = f\) → nezávislé.<br>
+4. Obdélník: \(p(\frac12&lt;X&lt;\frac34, Y&gt;\frac12) = \int_{1/2}^{3/4} 2x\,dx\cdot\int_{1/2}^1 (2-2y)\,dy = \frac{5}{16}\cdot\frac14 = \frac{5}{64}\).<br>
+4. Trojúhelník: \(p(Y\le X) = \int_0^1\!\int_0^x 4x(1-y)\,dy\,dx = \int_0^1 (4x^2 - 2x^3)\,dx = \frac56\).</p>
+</section>
+
+<section>
+<h2>Integrály (k oddílům 6 a 9)</h2>
+<p>\(\int x^n = \frac{x^{n+1}}{n+1}\) · \(\int e^{ax} = \frac{e^{ax}}{a}\) · \(\int \frac1x = \ln|x|\) · per partes \(\int uv' = uv - \int u'v\) · \(\int x\sin x = \sin x - x\cos x\) · \(\int x\cos x = \cos x + x\sin x\) · \(\int x^2\sin x = -x^2\cos x + 2x\sin x + 2\cos x\) · \(\int x^2\cos x = x^2\sin x + 2x\cos x - 2\sin x\) · \(\int x e^{-\lambda x} = -\frac{e^{-\lambda x}}{\lambda^2}(\lambda x + 1)\) · \(\int x^2 e^{-\lambda x} = -\frac{e^{-\lambda x}}{\lambda^3}(\lambda^2x^2 + 2\lambda x + 2)\) · \(|x|\): rozděl na \(x&lt;0\), \(x&gt;0\) (sudá f → \(2\int_0^\infty\)). Číselně: ∫ na kalkulačce (Radian!).</p>
 </section>
 
 <section>
@@ -269,7 +282,6 @@ F: 0 pro x &lt; 0 · \(\frac{x^2}{12}\) na ⟨0, 3⟩, F(3) = 0,75 · na (3, 4�
 <tr><td>σ²</td><td>\(\left(\frac{(n-1)s^2}{\chi^2_{1-\alpha/2}(n-1)},\ \frac{(n-1)s^2}{\chi^2_{\alpha/2}(n-1)}\right)\)</td></tr>
 </table>
 <p>Pozor: <b>větší</b> kvantil χ² dává <b>dolní</b> mez. Jednostranný interval: kvantil \(1-\alpha\) místo \(1-\alpha/2\).</p>
-<p class="kt"><b>S7/1</b> \(\bar x = 9{,}5\), s = 10,17, \(t_{0{,}975}(9) = 2{,}262\) → 9,5 ± 7,27 = (2,23; 16,77) · <b>S7/2</b> \(\bar x = 1{,}0367\), s² = 0,0002, t(8) = 2,306 → μ (1,026; 1,048); χ² 17,535 a 2,180 → σ² (0,00009; 0,00073)</p>
 </section>
 
 <section>
@@ -316,8 +328,10 @@ K5: \(-5{,}65 \le -1{,}833\) → \(H_0\) zamítáme; na hladině 0,05 jídelna �
 <li>Z každého výběru \(n_i\), \(\bar x_i\), \(s_i^2\) (zadané \(s^2\) je už rozptyl, neumocňuj).</li>
 <li>F-test: \(F = s_{\text{větší}}^2 / s_{\text{menší}}^2\) vs. \(F_{0{,}975}(n_{\text{čit}} - 1,\ n_{\text{jm}} - 1)\). Nezamítám → rozptyly shodné.</li>
 <li>\(s_p^2\), pak T, ν = n₁ + n₂ − 2, K4, K5.</li></ol>
-<p class="vz"><b>S7/3–4</b> \(F = \frac{16}{15} = 1{,}067 &lt; F_{0{,}975}(9, 13) = 3{,}31\) → shodné; \(s_p^2 = \frac{9\cdot 16 + 13\cdot 15}{22} = 15{,}41\); \(T = \frac{62 - 60}{\sqrt{15{,}41\,(\frac{1}{10} + \frac{1}{14})}} = 1{,}23 &lt; t_{0{,}975}(22) = 2{,}074\) → nezamítáme.</p>
-<p class="kt"><b>S8/1</b> \(s_p^2 = 292{,}9\), T = −2,12, |T| &gt; 1,976 → zamítáme · <b>S8/2</b> d = 5, 2, 18, −1, 3, −1, 6; T = 1,86 &lt; \(t_{0{,}95}(6) = 1{,}943\) → nezamítáme</p>
+<p class="vz"><b>S7/3–4</b> \(\bar x = 62\), \(s_x^2 = 16\), \(n_x = 10\); \(\bar y = 60\), \(s_y^2 = 15\), \(n_y = 14\); stejný průměr?<br>
+2. \(F = \frac{16}{15} = 1{,}067 &lt; F_{0{,}975}(9, 13) = 3{,}31\) → rozptyly shodné.<br>
+3. \(s_p^2 = \frac{9\cdot 16 + 13\cdot 15}{22} = 15{,}41\); \(T = \frac{62 - 60}{\sqrt{15{,}41\,(\frac{1}{10} + \frac{1}{14})}} = 1{,}23\), ν = 22.<br>
+K4–K5: \(|T| &lt; t_{0{,}975}(22) = 2{,}074\) → \(H_0: \mu_x = \mu_y\) nezamítáme.</p>
 </section>
 
 <section>
@@ -329,7 +343,15 @@ K5: \(-5{,}65 \le -1{,}833\) → \(H_0\) zamítáme; na hladině 0,05 jídelna �
 <li><b>Očekávané</b> \(E_j = n p_j\) (kontrola: \(\sum E_j = n\)). Je-li \(E_j &lt; 5\), slučuj krajní třídu se sousední (sečti \(p_j\) i \(n_j\)), dokud všechna \(E_j \ge 5\).</li>
 <li>\(\chi^2 = \sum \frac{(n_j - E_j)^2}{E_j}\) (tabulka: třída, \(n_j\), \(p_j\), \(E_j\), člen), ν = k − 1 − r, k = počet tříd po sloučení.</li>
 <li><b>Jen vpravo:</b> \(\chi^2 \ge \chi^2_{0{,}95}(\nu)\) → zamítám.</li></ol>
-<p class="vz"><b>S8/3</b> λ = 308/71 = 4,338; třídy ≤2, 3, 4, 5, 6, ≥7: \(n_j\) = 12, 16, 15, 8, 7, 13; \(E_j\) = 13,68; 12,62; 13,68; 11,87; 8,58; 10,56; k = 6, r = 1, ν = 4; χ² = 3,36 &lt; 9,49 → nezamítáme.<br><b>S8/5</b> středy 2,5 … 27,5 → μ = 15,8, σ = 6,72; u hranic 5, 10, 15, 20, 25: −1,61; −0,86; −0,12; 0,63; 1,37; \(E_j\) = 5,39; 14,00; 25,87; 28,15; 18,05; 8,54; ν = 6 − 1 − 2 = 3; χ² = 3,7 &lt; 7,81 → nezamítáme.</p>
+<p class="vz"><b>S8/3</b> četnosti hodnot 1–9, n = 71; Poisson?<br>
+2. λ = 308/71 = 4,338, r = 1.<br>
+3.–4. E(0) = 0,93, E(1) = 4,02, E(8) = 2,88 &lt; 5 → třídy ≤2, 3, 4, 5, 6, ≥7: \(n_j\) = 12, 16, 15, 8, 7, 13; \(E_j\) = 13,68; 12,62; 13,68; 11,87; 8,58; 10,56.<br>
+5.–6. χ² = 3,36, ν = 6 − 1 − 1 = 4; 3,36 &lt; \(\chi^2_{0{,}95}(4) = 9{,}49\) → nezamítáme.<br>
+<b>S8/5</b> 6 tříd po 5 (krajní otevřené), n = 100; normální?<br>
+2. Středy 2,5 … 27,5 → μ = 15,8, σ = 6,72 (dělí n), r = 2.<br>
+3. u hranic 5, 10, 15, 20, 25: −1,61; −0,86; −0,12; 0,63; 1,37 → \(p_j\) jako rozdíly Φ.<br>
+4. \(E_j\) = 5,39; 14,00; 25,87; 28,15; 18,05; 8,54 (vše ≥ 5, nic neslučuji).<br>
+5.–6. χ² = 3,7, ν = 6 − 1 − 2 = 3; 3,7 &lt; \(\chi^2_{0{,}95}(3) = 7{,}81\) → nezamítáme.</p>
 <p><b>Kontingenční tabulka</b> (nezávislost 2 znaků): \(E_{ij} = \frac{r_i s_j}{n}\) (řádkový × sloupcový součet / n), \(\chi^2 = \sum_{ij} \frac{(n_{ij} - E_{ij})^2}{E_{ij}}\), ν = (r−1)(s−1), zamítám nad \(\chi^2_{0{,}95}(\nu)\).</p>
 </section>
 
@@ -340,7 +362,6 @@ K5: \(-5{,}65 \le -1{,}833\) → \(H_0\) zamítáme; na hladině 0,05 jídelna �
 <li>Teoretická \(F_0(x_j)\) (parametry jako v 14): Po \(p(X \le x_j) = p(0) + \dots + p(x_j)\); spojité: F v horní hranici třídy (No: \(\Phi(u_{\text{horní}})\)).</li>
 <li>\(D = \max_j |F_n(x_j) - F_0(x_j)|\) (největší rozdíl).</li>
 <li>\(D \ge D_n(\alpha)\) → zamítám; n &gt; 40: \(D_n(0{,}05) \approx 1{,}36/\sqrt n\).</li></ol>
-<p class="kt"><b>S8/4</b> v x = 4: \(F_n = \frac{43}{71} = 0{,}6056\), \(F_0 = 0{,}5631\) → D = 0,0425 &lt; 0,161 → nezamítáme</p>
 </section>
 
 <section>
@@ -351,7 +372,6 @@ K5: \(-5{,}65 \le -1{,}833\) → \(H_0\) zamítáme; na hladině 0,05 jídelna �
 \[ b = \frac{n\sum xy - \sum x\sum y}{n\sum x^2 - (\sum x)^2},\qquad a = \bar y - b\bar x \]
 \[ r = \frac{n\sum xy - \sum x\sum y}{\sqrt{\left(n\sum x^2 - (\sum x)^2\right)\left(n\sum y^2 - (\sum y)^2\right)}} \]
 <p>\(r^2\) = podíl vysvětleného rozptylu; přímka jde bodem \([\bar x, \bar y]\).</p>
-<p class="kt"><b>S8/6</b> n = 12, Σx = 301, Σy = 3,084, Σx² = 8155, Σxy = 77,638 → b = 3,372/7259 = 0,000465, a = 0,245, r = 0,055.</p>
 </section>
 
 </div>
